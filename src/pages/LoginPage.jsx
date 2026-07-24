@@ -5,6 +5,7 @@ import AdminDashboard from './AdminDashboard'
 import './LoginPage.css'
 
 function LoginPage({ setIsAdmin }) {
+
     const navigate = useNavigate();
 
     const [adminInfo, setAdminInfo] = useState({ name: '', password: '' });
@@ -24,13 +25,16 @@ function LoginPage({ setIsAdmin }) {
         event.preventDefault();
 
         if ((adminInfo.name === "owais" || adminInfo.name === "rslan" || adminInfo.name === "mariam") && adminInfo.password === "1234") {
+
+            localStorage.setItem("isAdmin", "true")
             setIsAdmin(true);
+
             setIsLoading(true);
 
             setTimeout(() => {
                 navigate('/dashboard');
                 setIsLoading(false);
-            }, 5000);
+            }, 500);
         } else {
             setAdminInfo({ name: '', password: '' });
             alert("The user name or the password is wrong")

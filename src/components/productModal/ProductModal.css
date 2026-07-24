@@ -1,0 +1,45 @@
+/* الحاجز الخلفي (يغطي كل الشاشة ويمنع اللمس خلفه) */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    /* top:0, right:0, bottom:0, left:0 */
+    background: rgba(0, 0, 0, 0.6);
+    /* خلفية داكنة شفافة */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    /* يكون فوق كل شيء */
+}
+
+/* البطاقة البيضاء (المربع الأوسط) */
+.modal-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    padding: 30px 35px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 300px;
+    max-height: 90vh;
+    /* لو كانت طويلة، تظهر شريط تمرير داخلي */
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+/* تنسيق الأزرار في صف واحد */
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+label {
+    text-align: start;
+    display: block;
+    color: #333;
+    font-size: 16px;
+}

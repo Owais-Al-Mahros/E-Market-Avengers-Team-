@@ -6,7 +6,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom';
 
 
@@ -14,6 +14,20 @@ import { Navigate, useNavigate } from 'react-router-dom';
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const StorgedAdmin = localStorage.getItem('isAdmin');
+    if (StorgedAdmin === 'true') {
+      setIsAdmin(true)
+    }
+    setIsLoading(false)
+  }, [])
+
+  if (isLoading) {
+    return <><h1>... waite a minute</h1></>
+
+  }
 
   return (
     <>
