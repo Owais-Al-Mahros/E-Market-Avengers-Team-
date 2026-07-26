@@ -1,4 +1,5 @@
 import "./AdminDashboardProductCard.css"
+import image from "../assets/image.jpg"
 
 export default function AdminDashboardProductCar(props) {
 
@@ -7,7 +8,7 @@ export default function AdminDashboardProductCar(props) {
             <div className="Card">
                 <h2>{props.name}</h2>
                 <p>{props.description}</p>
-                <img src={props.image} alt="" />
+                <img src={image} alt="" />
                 <hr />
                 <p>{props.category}</p>
                 <p>{props.price}</p>

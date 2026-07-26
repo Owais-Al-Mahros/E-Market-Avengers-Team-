@@ -1,16 +1,186 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.Card {
-    border: 3px dashed #1A2A3A;
-    text-align: center;
-    width: 180px;
-    height: 250px;
-    font-size: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+body {
+  width: 100%;
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  column-gap: 0px;
+  width: 300px;
+  height: 500px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  box-shadow: 10px 2px 20px 2px rgb(112, 111, 111);
+}
+
+.sub-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  column-gap: 0px;
+  margin-top: 20px;
+  width: 100%;
+  height: 440px;
+  border-top-left-radius: 15%;
+  border-top-right-radius: 15%;
+  background-color: rgb(225, 207, 244);
+}
+
+.sub-container-two {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin-top: 10px;
+  width: 80%;
+  height: 100%;
+}
+
+.section-one {
+  display: flex;
+  justify-content: space-between;
+}
+
+.section-two {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.section-three,
+.section-four {
+  display: flex;
+  flex-direction: column;
+  font-size: small;
+  margin-top: 10px;
+}
+
+.group-color {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 10px;
+}
+
+.group-size {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.group-size input {
+  display: none;
+}
+
+.group-size label:hover {
+  cursor: pointer;
+}
+
+.group-size label {
+  width: 1px;
+  height: 1px;
+  margin-right: 15px;
+}
+
+.btn {
+  margin-top: auto;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  width: 100%;
+  height: 40px;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  border: none;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  box-shadow: 0 0 15px rgba(101, 126, 225, 0.7);
+}
+
+input[type="checkbox"][id="red"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  appearance: none;
+  border-radius: 50%;
+  background-color: red;
+  transition: all 0.3s;
+  vertical-align: middle;
+}
+
+input[type="checkbox"][id="green"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  appearance: none;
+  border-radius: 50%;
+  background-color: green;
+  transition: all 0.3s;
+  vertical-align: middle;
+}
+
+input[type="checkbox"][id="blue"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  appearance: none;
+  border-radius: 50%;
+  background-color: blue;
+  transition: all 0.3s;
+  vertical-align: middle;
+}
+
+input[type="checkbox"]:checked::after {
+  content: "✓";
+  display: block;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  line-height: 20px;
+}
+
+.btn-counter {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.price {
+  font-family: fantasy;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.span-size {
+  margin-bottom: 5px;
+}
+
+.span-color {
+  margin-top: 10px;
+}
+
+h3 {
+  margin-top: 30px;
+  margin-bottom: 5px;
+}
+
+p {
+  margin: 10px;
+  font-size: small;
+  max-width: 50%;
+  text-align: center;
+}
+
+img {
+  width: 80%;
+  height: 150px;
+  margin-top: 10px;
+  border-radius: 5%;
 }

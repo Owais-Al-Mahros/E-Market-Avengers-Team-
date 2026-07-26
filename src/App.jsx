@@ -1,6 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
 
-import heroImg from './assets/hero.png'
 
 import AdminDashboard from './pages/AdminDashboard'
 import HomePage from './pages/HomePage'
