@@ -43,9 +43,9 @@ function ProductModal({ closeModel, onProductAdded }) {
 
     return (
         // 1. الحاجز: يغطي الشاشة كلها ويمنع التفاعل مع الخلفية
-        <div className="modal-overlay">
+        <div className="modal-overlay" onClick={closeModel}>
             {/* 2. البطاقة: المربع الأبيض الذي يظهر في المنتصف */}
-            <div className="modal-card">
+            <div className="modal-card" onClick={(e) => e.stopPropagation()}>
 
                 {/* 3. النموذج: نفس حقول الإدخال لديك */}
 
@@ -60,11 +60,11 @@ function ProductModal({ closeModel, onProductAdded }) {
                         value={productInfo.description} onChange={(e) => setProductInfo({ ...productInfo, description: e.target.value })} />
 
                     <label htmlFor="productPrice" >Price of the product</label>
-                    <input id="productPrice" type="text"
+                    <input id="productPrice" type="number"
                         value={productInfo.price} onChange={(e) => setProductInfo({ ...productInfo, price: e.target.value })} />
 
                     <label htmlFor="productImage" >image of the product</label>
-                    <input maxLength={10000} id="productImage" type="text"
+                    <input id="productImage" type="text"
                         value={productInfo.image} onChange={(e) => setProductInfo({ ...productInfo, image: e.target.value })} />
 
                     <label htmlFor="productCategory">category of the product</label>

@@ -37,6 +37,10 @@
     margin-top: 20px;
 }
 
+.modal-actions>button {
+    cursor: pointer;
+}
+
 label {
     text-align: start;
     display: block;

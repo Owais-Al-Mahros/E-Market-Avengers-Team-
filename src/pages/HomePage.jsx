@@ -4,6 +4,7 @@ import "./HomePage.css"
 
 import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
+import HomePageFooter from "../components/HomePageFooter";
 
 function HomePage() {
     // const storedAdmin = localStorage.getItem("isAdmin")
@@ -22,6 +23,7 @@ function HomePage() {
                 key={index}
                 name={product.name}
                 description={product.description}
+                image={product.image}
                 price={product.price} />
         ))
     }
@@ -43,6 +45,7 @@ function HomePage() {
 
 
             <Link to="/login">Go To DashBoard</Link>
+            <HomePageFooter />
             {/* <Link to={storedAdmin == "true" ? "/dashboard" : "/login"}>Go To DashBoard</Link> */}
         </>
     )

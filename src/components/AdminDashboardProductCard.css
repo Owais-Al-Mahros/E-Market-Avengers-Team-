@@ -5,6 +5,7 @@
 }
 
 .Card {
+
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -12,4 +13,16 @@
     border: 3px dashed black;
     width: 220px;
     height: 330px;
+
+    animation: fadeInUp 0.4s ease forwards;
+    opacity: 0;
+    /* يبدأ مخفياً ثم يظهر */
+    transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
