@@ -8,7 +8,7 @@ export default function HomePageFooter() {
           <div className="information">
             <div className="logo">
               <img src="/logo.png" className="logo-icon"></img>
-              <h2 className="logo-name">E-Market</h2>
+              <h1 className="logo-name">E-Market</h1>
             </div>
             <div className="description">
               Your first store for electronics and smart tools.
@@ -18,24 +18,24 @@ export default function HomePageFooter() {
                 href="https://www.instagram.com/mohamad_rslan_/"
                 className="social-link"
               >
-                <img src="/iconInstagram.png" alt="Instagram"></img>
-                <span>instagram</span>
+                <img className="social-media-logo" src="/iconInstagram.png" alt="Instagram"></img>
+                <span className="platForms">instagram</span>
               </a>
               <a
                 href="https://www.facebook.com/Rslan.Nwelaty/"
                 className="social-link"
               >
-                <img src="/iconFacebook.png" alt="facebook"></img>
-                <span>Facebook</span>
+                <img className="social-media-logo" src="/iconFacebook.png" alt="facebook"></img>
+                <span className="platForms" >Facebook</span>
               </a>
               <a href="https://x.com/MohamadRslan5" className="social-link">
-                <img src="/twitter-x-.webp" alt="X"></img>
-                <span>X</span>
+                <img className="social-media-logo" src="/twitter-x-.webp" alt="X"></img>
+                <span className="platForms" >X</span>
               </a>
             </div>
           </div>
           <div className="category">
-            <h3>Prominent categories</h3>
+            <h3 className="subTitles">Prominent categories</h3>
             <ul className="category-list">
               <a href="#" className="category-link">
                 <li>Phone</li>
@@ -52,7 +52,7 @@ export default function HomePageFooter() {
             </ul>
           </div>
           <div className="customer-service">
-            <h3>Customer Service</h3>
+            <h3 className="subTitles">Customer Service</h3>
             <ul className="service-list">
               <a href="#" className="service-link">
                 <li>FAQ</li>
@@ -67,19 +67,19 @@ export default function HomePageFooter() {
           </div>
           <div className="contact-us">
             <div className="contact-phone">
-              <img src="/phone-call.png"></img>
+              <img className="social-media-logo" src="/phone-call.png"></img>
               <a href="tel:+9639851678464" className="phone-number">
                 +963-985-178-464
               </a>
             </div>
             <div className="contact-email">
-              <img src="/email.png"></img>
+              <img className="social-media-logo" src="/email.png"></img>
               <a href="mailto:mdrslannwelaty@gmail.com" className="email">
                 mdrslannwelaty@gmail.com
               </a>
             </div>
             <div className="contact-location">
-              <img src="/location-pin.png"></img>
+              <img className="social-media-logo" src="/location-pin.png"></img>
               <a
                 href="https://maps.app.goo.gl/2SoetBmTHDYJ4ms89?g_st=ic"
                 target="_blank"
