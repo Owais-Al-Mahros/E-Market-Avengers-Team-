@@ -1,17 +1,16 @@
 .title {
-    color: #F5E6D3;
-    background-color: #1A2A3A;
-    padding: 10px;
-    text-align: center;
-    margin-bottom: 10px;
+  color: #f5e6d3;
+  background-color: #1a2a3a;
+  padding: 10px;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .body {
-    margin: 10%;
-    gap: 5px;
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    flex-direction: row-reverse;
-
+  margin: 10%;
+  gap: 5px;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  flex-direction: row-reverse;
 }

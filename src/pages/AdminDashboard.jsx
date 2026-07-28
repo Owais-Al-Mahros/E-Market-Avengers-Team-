@@ -3,85 +3,86 @@ import { Link } from "react-router-dom";
 import "./AdminDashboard.css";
 
 import ButtonAddProduct from "../components/ButtonAddProduct";
-import ProductModal from "../components/productModal/ProductModal";
+import ProductModal from "../components/ProductModal/ProductModal";
 import ProductCard from "../components/ProductCard";
 import AdminDashboardProductCard from "../components/AdminDashboardProductCard";
 
 function AdminDashboard() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [userName, setUserName] = useState("");
-    const [products, setProducts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [products, setProducts] = useState([]);
 
-    const openModel = () => setIsModalOpen(true);
-    const closeModel = () => setIsModalOpen(false);
+  const openModel = () => setIsModalOpen(true);
+  const closeModel = () => setIsModalOpen(false);
 
+  const Delete = (productName) => {
+    const updatedProducts = products.filter(
+      (product) => product.name !== productName,
+    );
+    setProducts(updatedProducts);
+    localStorage.setItem("products", JSON.stringify(updatedProducts));
+  };
 
-
-
-    const Delete = (productName) => {
-        const updatedProducts = products.filter(product => product.name !== productName);
-        setProducts(updatedProducts);
-        localStorage.setItem("products", JSON.stringify(updatedProducts));
-    };
-
-
-
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        if (userName) {
-            localStorage.setItem("data", userName);
-        }
-        setUserName("");
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (userName) {
+      localStorage.setItem("data", userName);
     }
+    setUserName("");
+  };
 
-    const loadProduts = () => {
-        const StoredProducts = localStorage.getItem("products");
-        setProducts(StoredProducts ? JSON.parse(StoredProducts) : []);
-    };
+  const loadProduts = () => {
+    const StoredProducts = localStorage.getItem("products");
+    setProducts(StoredProducts ? JSON.parse(StoredProducts) : []);
+  };
 
-    const renderProducts = () => {
-        return products.map((product, index) => (
-            <AdminDashboardProductCard
-                key={index}
-                name={product.name}
-                description={product.description}
-                price={product.price}
-                image={product.image}
-                Delete={Delete} />
-        ))
-    }
+  const renderProducts = () => {
+    return products.map((product, index) => (
+      <AdminDashboardProductCard
+        key={index}
+        name={product.name}
+        description={product.description}
+        price={product.price}
+        image={product.image}
+        Delete={Delete}
+      />
+    ));
+  };
 
-    useEffect(() => {
-        loadProduts();
-    }, [])
+  useEffect(() => {
+    loadProduts();
+  }, []);
 
+  return (
+    <>
+      <h1 className="title">Admin Dashboard</h1>
 
+      <form onSubmit={handleSubmit}>
+        <label>
+          {" "}
+          Please enter your name{" "}
+          <input
+            name="Name"
+            onChange={(e) => setUserName(e.target.value)}
+            type="text"
+            value={userName}
+          />
+        </label>
 
+        <button type="submit">submit</button>
+      </form>
+      <Link to="/">Go to Home Page</Link>
 
-    return (
-        <>
+      <div className="body">
+        {renderProducts()}
+        <ButtonAddProduct openModel={openModel} />
+      </div>
 
-            <h1 className="title">Admin Dashboard</h1>
-
-            <form onSubmit={handleSubmit}>
-                <label> Please enter your name <input name="Name" onChange={(e) => setUserName(e.target.value)} type="text" value={userName} /></label>
-
-                <button type="submit">submit</button>
-            </form>
-            <Link to="/">Go to Home Page</Link>
-
-            <div className="body">
-                {renderProducts()}
-                <ButtonAddProduct openModel={openModel} />
-            </div>
-
-
-            {isModalOpen && <ProductModal closeModel={closeModel} onProductAdded={loadProduts} />}
-
-
-        </>
-    )
+      {isModalOpen && (
+        <ProductModal closeModel={closeModel} onProductAdded={loadProduts} />
+      )}
+    </>
+  );
 }
 
-export default AdminDashboard
+export default AdminDashboard;

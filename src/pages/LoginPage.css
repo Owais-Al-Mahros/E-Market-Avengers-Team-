@@ -1,122 +1,124 @@
 /* تنسيق الصفحة بالكامل - خلفية كحلية */
 .login-container {
-    display: flex;
-    justify-content: center;
-    /* توسيط أفقي */
-    align-items: center;
-    /* توسيط رأسي */
-    min-height: 100vh;
-    /* تأخذ ارتفاع الشاشة بالكامل */
-    margin: 0;
-    background-color: #1A2A3A;
-    /* اللون الكحلي الغامق */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  justify-content: center;
+  /* توسيط أفقي */
+  align-items: center;
+  /* توسيط رأسي */
+  min-height: 100vh;
+  /* تأخذ ارتفاع الشاشة بالكامل */
+  margin: 0;
+  background-color: #1a2a3a;
+  /* اللون الكحلي الغامق */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* البطاقة البيج التي تحتوي على الفورم */
 .login-card {
-    background-color: #F5E6D3;
-    /* اللون البيج الفاتح */
-    padding: 40px 35px;
-    border-radius: 16px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-    /* ظل عميق للفخامة */
-    width: 100%;
-    max-width: 380px;
-    /* الحد الأقصى للعرض */
-    transition: transform 0.3s ease;
+  background-color: #f5e6d3;
+  /* اللون البيج الفاتح */
+  padding: 40px 35px;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  /* ظل عميق للفخامة */
+  width: 100%;
+  max-width: 380px;
+  /* الحد الأقصى للعرض */
+  transition: transform 0.3s ease;
 }
 
 /* تأثير عند تمرير الماوس (اختياري) */
 .login-card:hover {
-    transform: translateY(-5px);
+  transform: translateY(-5px);
 }
 
 /* عنوان تسجيل الدخول */
 .login-card h2 {
-    text-align: center;
-    color: #1A2A3A;
-    /* كحلي غامق للعنوان ليتناسب مع البيج */
-    margin-bottom: 25px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    border-bottom: 2px solid #1A2A3A;
-    padding-bottom: 10px;
+  text-align: center;
+  color: #1a2a3a;
+  /* كحلي غامق للعنوان ليتناسب مع البيج */
+  margin-bottom: 25px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #1a2a3a;
+  padding-bottom: 10px;
 }
 
 /* تنسيق كل حقل (اسم + مدخل) */
 .input-group {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .password-fileds {
-    position: relative;
+  position: relative;
 }
 
 .password-filed {
-    position: absolute;
-    top: 25%;
-    right: 10px;
-    border: none;
-    background: none;
+  position: absolute;
+  top: 25%;
+  right: 10px;
+  border: none;
+  background: none;
 }
 
 /* تنسيق التسميات (Label) */
 .input-group label {
-    display: block;
-    margin-bottom: 6px;
-    color: #1A2A3A;
-    font-weight: 600;
-    font-size: 14px;
+  display: block;
+  margin-bottom: 6px;
+  color: #1a2a3a;
+  font-weight: 600;
+  font-size: 14px;
 }
 
 /* تنسيق حقول الإدخال */
 .input-group input {
-    width: 100%;
-    padding: 12px 12px;
-    border: 2px solid #d4c5b3;
-    /* لون حدود بيج غامق قليلاً */
-    border-radius: 8px;
-    font-size: 16px;
-    background-color: #ffffff;
-    box-sizing: border-box;
-    /* مهم جداً عشان لا يزيد العرض عن الحاوية */
-    transition: border-color 0.3s;
-    padding-right: 40px;
+  width: 100%;
+  padding: 12px 12px;
+  border: 2px solid #d4c5b3;
+  /* لون حدود بيج غامق قليلاً */
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  /* مهم جداً عشان لا يزيد العرض عن الحاوية */
+  transition: border-color 0.3s;
+  padding-right: 40px;
 }
 
 /* تغيير لون الحدود عند التركيز على الحقل */
 .input-group input:focus {
-    outline: none;
-    border-color: #1A2A3A;
-    /* الكحلي يظهر عند التركيز */
-    box-shadow: 0 0 0 3px rgba(26, 42, 58, 0.2);
+  outline: none;
+  border-color: #1a2a3a;
+  /* الكحلي يظهر عند التركيز */
+  box-shadow: 0 0 0 3px rgba(26, 42, 58, 0.2);
 }
 
 /* تنسيق زر تسجيل الدخول */
 .login-btn {
-    width: 100%;
-    padding: 12px;
-    background-color: #1A2A3A;
-    /* خلفية كحلية */
-    color: #F5E6D3;
-    /* النص باللون البيج */
-    border: none;
-    border-radius: 8px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s;
-    margin-top: 5px;
+  width: 100%;
+  padding: 12px;
+  background-color: #1a2a3a;
+  /* خلفية كحلية */
+  color: #f5e6d3;
+  /* النص باللون البيج */
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    transform 0.1s;
+  margin-top: 5px;
 }
 
 /* تأثير عند تمرير الماوس على الزر */
 .login-btn:hover {
-    background-color: #0f1a26;
-    /* كحلي أغمق قليلاً */
+  background-color: #0f1a26;
+  /* كحلي أغمق قليلاً */
 }
 
 /* تأثير عند الضغط على الزر */
 .login-btn:active {
-    transform: scale(0.97);
+  transform: scale(0.97);
 }

@@ -10,12 +10,10 @@
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   box-shadow: 10px 2px 20px 2px rgb(112, 111, 111);
   transition: transform 0.5s ease;
-
 }
 
 .container:hover {
   transform: scale(1.1);
-
 }
 
 .sub-container {
@@ -29,6 +27,25 @@
   border-top-left-radius: 15%;
   border-top-right-radius: 15%;
   background-color: rgb(225, 207, 244);
+
+  h3 {
+    margin-top: 30px;
+    margin-bottom: 5px;
+  }
+
+  p {
+    margin: 10px;
+    font-size: small;
+    max-width: 50%;
+    text-align: center;
+  }
+
+  img {
+    width: 80%;
+    height: 120px;
+    margin-top: 10px;
+    border-radius: 5%;
+  }
 }
 
 .sub-container-two {
@@ -101,7 +118,7 @@
   box-shadow: 0 0 15px rgba(101, 126, 225, 0.7);
 }
 
-input[type="checkbox"][id="red"] {
+input[type="checkbox"][class="red"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
@@ -112,7 +129,7 @@ input[type="checkbox"][id="red"] {
   vertical-align: middle;
 }
 
-input[type="checkbox"][id="green"] {
+input[type="checkbox"][class="green"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
@@ -123,7 +140,7 @@ input[type="checkbox"][id="green"] {
   vertical-align: middle;
 }
 
-input[type="checkbox"][id="blue"] {
+input[type="checkbox"][class="blue"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
@@ -164,23 +181,4 @@ input[type="checkbox"]:checked::after {
 
 .span-color {
   margin-top: 10px;
-}
-
-h3 {
-  margin-top: 30px;
-  margin-bottom: 5px;
-}
-
-p {
-  margin: 10px;
-  font-size: small;
-  max-width: 50%;
-  text-align: center;
-}
-
-img {
-  width: 80%;
-  height: 120px;
-  margin-top: 10px;
-  border-radius: 5%;
 }
