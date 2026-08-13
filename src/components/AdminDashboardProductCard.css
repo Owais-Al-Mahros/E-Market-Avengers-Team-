@@ -1,11 +1,4 @@
-* {
-    margin: 0px;
-    padding: 0px;
-    box-sizing: border-box;
-}
-
 .Card {
-
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -18,6 +11,15 @@
     opacity: 0;
     /* يبدأ مخفياً ثم يظهر */
     transform: translateY(20px);
+
+    img {
+        width: 80%;
+        height: 150px;
+    }
+}
+
+.description {
+    text-align: center;
 }
 
 @keyframes fadeInUp {

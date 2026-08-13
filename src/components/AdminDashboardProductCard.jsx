@@ -7,7 +7,7 @@ export default function AdminDashboardProductCar(props) {
         <>
             <div className="Card">
                 <h2>{props.name}</h2>
-                <p>{props.description}</p>
+                <p className="description">{props.description}</p>
                 <img src={props.image} alt="" />
                 <hr />
                 <p>{props.category}</p>

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { supabase } from '../lib/supabase';
 
 import "./HomePage.css"
 
@@ -16,17 +17,28 @@ function HomePage() {
         setProducts(storedProducts ? JSON.parse(storedProducts) : []);
     }, []);
 
+    const fetchProducts = async () => {
+        const { data, error } = await supabase
+            .from("products")
+            .select('*');
+        setProducts(data);
+    };
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
 
     const renderProducts = () => {
         return products.map((product, index) => (
             <ProductCard
-                key={index}
+                key={product.id}
                 name={product.name}
                 description={product.description}
                 image={product.image}
                 price={product.price} />
         ))
-    }
+    };
 
     return (
 

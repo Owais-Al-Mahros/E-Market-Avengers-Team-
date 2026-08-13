@@ -6,6 +6,7 @@ import ButtonAddProduct from "../components/ButtonAddProduct";
 import ProductModal from "../components/ProductModal/ProductModal";
 import ProductCard from "../components/ProductCard";
 import AdminDashboardProductCard from "../components/AdminDashboardProductCard";
+import { supabase } from '../lib/supabase';
 
 function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,13 +16,6 @@ function AdminDashboard() {
   const openModel = () => setIsModalOpen(true);
   const closeModel = () => setIsModalOpen(false);
 
-  const Delete = (productName) => {
-    const updatedProducts = products.filter(
-      (product) => product.name !== productName,
-    );
-    setProducts(updatedProducts);
-    localStorage.setItem("products", JSON.stringify(updatedProducts));
-  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -31,27 +25,35 @@ function AdminDashboard() {
     setUserName("");
   };
 
-  const loadProduts = () => {
-    const StoredProducts = localStorage.getItem("products");
-    setProducts(StoredProducts ? JSON.parse(StoredProducts) : []);
-  };
+  const featchProducts = async () => {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*");
+    if (error) {
+      alert(error.message)
+    } else {
+      setProducts(data);
+    }
+  }
+
+  useEffect(() => {
+    featchProducts();
+  }, [])
+
 
   const renderProducts = () => {
     return products.map((product, index) => (
       <AdminDashboardProductCard
-        key={index}
+        key={product.id}
         name={product.name}
         description={product.description}
         price={product.price}
         image={product.image}
-        Delete={Delete}
+
       />
     ));
   };
 
-  useEffect(() => {
-    loadProduts();
-  }, []);
 
   return (
     <>
@@ -79,7 +81,7 @@ function AdminDashboard() {
       </div>
 
       {isModalOpen && (
-        <ProductModal closeModel={closeModel} onProductAdded={loadProduts} />
+        <ProductModal closeModel={closeModel} onProductAdded={featchProducts} />
       )}
     </>
   );
