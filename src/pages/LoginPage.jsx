@@ -1,45 +1,63 @@
-import { useState } from "react";
-import { Navigate, useAsyncError, useNavigate } from "react-router-dom";
-import AdminDashboard from "./AdminDashboard";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "./LoginPage.css";
+import AdminDashboard from "./AdminDashboard";
+import { fetchData } from "../hooks/useProduct.js"
 
 function LoginPage({ setIsAdmin }) {
   const navigate = useNavigate();
 
-  const [adminInfo, setAdminInfo] = useState({ name: "", password: "" });
+  const [adminInfo, setAdminInfo] = useState({ name: "", password: "", });
+  const [adminsList, setAdminsList] = useState([]);
   const [showpassword, setShowpassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (event) => {
     const { id, value } = event.target;
+
     setAdminInfo((prevState) => ({
       ...prevState,
       [id]: value,
     }));
+
   };
+
+  const fetchAdminsInfo = async () => {
+    const AdminsInfoFromDataBase = await fetchData("Admins");
+    setAdminsList(AdminsInfoFromDataBase);
+  }
+  useEffect(() => {
+    fetchAdminsInfo();
+  }, [])
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    setIsLoading(true);
 
-    if (
-      (adminInfo.name === "owais" ||
-        adminInfo.name === "rslan" ||
-        adminInfo.name === "mariam") &&
-      adminInfo.password === "1234"
-    ) {
+    const foundAdmin = adminsList.find(
+      (admin) =>
+        admin.name.toLowerCase() === adminInfo.name.trim().toLowerCase() &&
+        admin.password === adminInfo.password.trim()
+    );
+
+    if (foundAdmin) {
+
       localStorage.setItem("isAdmin", "true");
+      localStorage.setItem("adminName", foundAdmin.name);
       setIsAdmin(true);
 
-      setIsLoading(true);
-
       setTimeout(() => {
-        navigate("/dashboard");
         setIsLoading(false);
+        navigate("/dashboard");
       }, 500);
-    } else {
+
+    }
+    else {
       setAdminInfo({ name: "", password: "" });
       alert("The user name or the password is wrong");
+      setIsLoading(false);
     }
   };
 
@@ -74,14 +92,15 @@ function LoginPage({ setIsAdmin }) {
                 className="password-filed"
                 type="button"
                 onMouseLeave={() => setShowpassword(false)}
-                onMouseMove={() => setShowpassword((prev) => !prev)}
+                onMouseDown={() => setShowpassword(true)}
+                onMouseUp={() => setShowpassword(false)}
               >
                 {showpassword ? "✋" : "✍"}
               </button>
             </div>
           </div>
           <button type="submit" className="login-btn">
-            Enter
+            {isLoading ? "Loding.." : "Enter"}
           </button>
         </form>
       </div>

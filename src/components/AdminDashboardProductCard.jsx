@@ -13,8 +13,8 @@ export default function AdminDashboardProductCar(props) {
                 <p>{props.category}</p>
                 <p>{props.price}</p>
                 <div className="EditorTools">
-                    <button>Edite</button>
-                    <button onClick={() => props.Delete(props.name)}>Deleate</button>
+                    <button onClick={props.Edit}>Edite</button>
+                    <button onClick={() => props.onDelete(props.id)}>Deleate</button>
                 </div>
             </div>
 

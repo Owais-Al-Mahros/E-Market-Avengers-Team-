@@ -1,29 +1,23 @@
 import { Link } from "react-router-dom"
 import { supabase } from '../lib/supabase';
+import { useEffect, useState } from "react";
+
 
 import "./HomePage.css"
-
-import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import HomePageFooter from "../components/HomePageFooter";
+import { fetchData } from "../hooks/useProduct.js"
+
 
 function HomePage() {
     // const storedAdmin = localStorage.getItem("isAdmin")
     const [products, setProducts] = useState([])
 
 
-    useEffect(() => {
-        const storedProducts = localStorage.getItem("products");
-        setProducts(storedProducts ? JSON.parse(storedProducts) : []);
-    }, []);
-
     const fetchProducts = async () => {
-        const { data, error } = await supabase
-            .from("products")
-            .select('*');
-        setProducts(data);
+        const productsFromDataBase = await fetchData("products");
+        setProducts(productsFromDataBase);
     };
-
     useEffect(() => {
         fetchProducts();
     }, []);
@@ -44,16 +38,10 @@ function HomePage() {
 
         <>
             <h1>Home page</h1>
-            <h3>Hello {localStorage.getItem("data")}</h3>
-
-
             <h2>Products</h2>
             <div className="Products">
                 {renderProducts()}
             </div>
-
-
-
 
 
             <Link to="/login">Go To DashBoard</Link>
