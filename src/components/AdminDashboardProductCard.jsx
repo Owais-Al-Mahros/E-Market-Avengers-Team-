@@ -1,7 +1,14 @@
 import "./AdminDashboardProductCard.css"
 import image from "../assets/image.jpg"
+import EditProduct from "./productModal/EditProduct";
+import { useState } from "react";
+import { createPortal } from "react-dom";
 
 export default function AdminDashboardProductCar(props) {
+
+    const [isEditCArdModalOpen, setIsEditCArdModalOpen] = useState(false);
+    const openEditCardModel = () => setIsEditCArdModalOpen(true);
+    const closeEditCardModel = () => setIsEditCArdModalOpen(false);
 
     return (
         <>
@@ -13,9 +20,22 @@ export default function AdminDashboardProductCar(props) {
                 <p>{props.category}</p>
                 <p>{props.price}</p>
                 <div className="EditorTools">
-                    <button onClick={props.Edit}>Edite</button>
+                    <button onClick={openEditCardModel}>Edite</button>
                     <button onClick={() => props.onDelete(props.id)}>Deleate</button>
                 </div>
+                {isEditCArdModalOpen &&
+                    createPortal(
+                        <EditProduct
+                            id={props.id}
+                            name={props.name}
+                            image={props.image}
+                            category={props.category}
+                            price={props.price}
+                            closeModel={closeEditCardModel}
+                            onUpdate={props.onUpdate} />
+                        , document.body)
+
+                }
             </div>
 
 

@@ -9,15 +9,11 @@ import EditProduct from "../components/productModal/EditProduct.jsx";
 import { supabase } from '../lib/supabase';
 import { fetchData } from "../hooks/useProduct.js"
 import { deleteProduct } from "../hooks/useProduct"
-
+import { updateProduct } from "../hooks/useProduct.js";
 
 function AdminDashboard() {
   const [products, setProducts] = useState([]);
 
-
-  const [isEditCArdModalOpen, setIsEditCArdModalOpen] = useState(false);
-  const openEditCardModel = () => setIsEditCArdModalOpen(true);
-  const closeEditCardModel = () => setIsEditCArdModalOpen(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModel = () => setIsModalOpen(true);
@@ -37,8 +33,17 @@ function AdminDashboard() {
   const handleDelete = async (productId) => {
     const success = await deleteProduct(productId);
     setProducts((prev) => prev.filter((product) => product.id !== productId));
-
   }
+
+  const handleUpdates = async (productId, updatedProduct) => {
+    const success = await updateProduct(productId, updatedProduct);
+    setProducts((prev) =>
+      prev.map((product) =>
+        product.id === updatedProduct.id ? updatedProduct : product
+      ));
+    return success;
+  }
+
   const renderProducts = () => {
     return products.map((product, index) => (
       <AdminDashboardProductCard
@@ -46,10 +51,12 @@ function AdminDashboard() {
         id={product.id}
         name={product.name}
         description={product.description}
+        category={product.category}
         price={product.price}
         image={product.image}
         onDelete={handleDelete}
-        Edit={openEditCardModel}
+        onUpdate={handleUpdates}
+
       />
     ));
   };
@@ -68,9 +75,6 @@ function AdminDashboard() {
       {isModalOpen && (
         <ProductModal closeModel={closeModel} onProductAdded={fetchProducts} />
       )}
-      {
-        isEditCArdModalOpen && <EditProduct closeModel={closeEditCardModel} />
-      }
     </>
   );
 }

@@ -28,26 +28,19 @@ export async function deleteProduct(id) {
     }
 }
 
-export async function updateProduct(id, updaateData) {
+export async function updateProduct(id, updatedData) {
     try {
         const { data, error } = await supabase
             .from("products")
-            .update(updaateData)
+            .update(updatedData)
             .eq("id", id)
             .select();
 
         if (error) throw error;
 
-        // console.log("✅ تم التحديث بنجاح:", data);
-        return { success: true, data: data[0] };
-
+        return { success: true, data: data[0] }; // ✅ كائن success: true
     } catch (error) {
-        // console.error("❌ فشل التحديث:", error.message);
-        // alert(`فشل تحديث المنتج: ${error.message}`);
-        return { success: false, error: error.message };
+        console.error("❌ فشل التحديث:", error.message);
+        return { success: false, error: error.message }; // ✅ كائن success: false
     }
-
-
-
-
 }
