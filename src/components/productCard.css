@@ -1,184 +1,98 @@
-.container {
+:root {
+  --bg-card: #27272a;
+  --primary: #6d28d9;
+  --primary-800: #4c1d95;
+  --primary-shadow: #2e1065;
+  --light: #d9d9d9;
+  --zinc-800: #18181b;
+  --bg-linear: linear-gradient(0deg, var(--primary) 50%, var(--light) 125%);
+  --bg-linear-hover: rgba(20, 20, 22, 0.4);
+}
+.card-container {
+  position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  column-gap: 0px;
-  width: 300px;
-  height: 500px;
-  border-radius: 15px;
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
-  box-shadow: 10px 2px 20px 2px rgb(112, 111, 111);
-  transition: transform 0.5s ease;
+  gap: 0.75rem;
+  padding: 1rem;
+  width: 14rem;
+  background-color: var(--bg-card);
+  border-radius: 1rem;
+  transition: box-shadow 0.2s ease-in-out;
 }
-
-.container:hover {
-  transform: scale(1.1);
+.card-container:hover {
+  box-shadow: 0 0 3rem 0.5rem var(--bg-linear-hover);
 }
-
-.sub-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  column-gap: 0px;
-  margin-top: 20px;
+.image-container {
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  z-index: 5;
   width: 100%;
-  height: 440px;
-  border-top-left-radius: 15%;
-  border-top-right-radius: 15%;
-  background-color: rgb(225, 207, 244);
-
-  h3 {
-    margin-top: 30px;
-    margin-bottom: 5px;
-  }
-
-  p {
-    margin: 10px;
-    font-size: small;
-    max-width: 50%;
-    text-align: center;
-  }
-
-  img {
-    width: 80%;
-    height: 120px;
-    margin-top: 10px;
-    border-radius: 5%;
-  }
+  height: 8rem;
+  background-color: var(--primary-800);
+  border-radius: 0.5rem;
 }
 
-.sub-container-two {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  margin-top: 10px;
-  width: 80%;
+.image-container .image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
   height: 100%;
+  fill: var(--light);
 }
 
-.section-one {
-  display: flex;
-  justify-content: space-between;
-}
-
-.section-two {
-  display: flex;
-  flex-direction: row-reverse;
-}
-
-.section-three,
-.section-four {
-  display: flex;
-  flex-direction: column;
-  font-size: small;
-  margin-top: 10px;
-}
-
-.group-color {
-  display: flex;
-  flex-direction: row;
+.title {
+  overflow: clip;
   width: 100%;
-  gap: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--light);
+  text-transform: capitalize;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
 }
 
-.group-size {
+.weight {
+  color: var(--light);
+}
+
+.action {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.group-size input {
-  display: none;
-}
-
-.group-size label:hover {
-  cursor: pointer;
-}
-
-.group-size label {
-  width: 1px;
-  height: 1px;
-  margin-right: 15px;
-}
-
-.btn {
-  margin-top: auto;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  width: 100%;
-  height: 40px;
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
-  color: white;
-  border: none;
-  transition: 0.3s;
-}
-
-.btn:hover {
-  box-shadow: 0 0 15px rgba(101, 126, 225, 0.7);
-}
-
-input[type="checkbox"][class="red"] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  appearance: none;
-  border-radius: 50%;
-  background-color: red;
-  transition: all 0.3s;
-  vertical-align: middle;
-}
-
-input[type="checkbox"][class="green"] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  appearance: none;
-  border-radius: 50%;
-  background-color: green;
-  transition: all 0.3s;
-  vertical-align: middle;
-}
-
-input[type="checkbox"][class="blue"] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  appearance: none;
-  border-radius: 50%;
-  background-color: blue;
-  transition: all 0.3s;
-  vertical-align: middle;
-}
-
-input[type="checkbox"]:checked::after {
-  content: "✓";
-  display: block;
-  text-align: center;
-  font-weight: bold;
-  color: white;
-  line-height: 20px;
-}
-
-.btn-counter {
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 25px;
-  margin-left: 5px;
-  margin-right: 5px;
+  align-items: center;
+  gap: 1rem;
 }
 
 .price {
-  font-family: fantasy;
-  font-weight: bold;
-  font-size: 20px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--light);
 }
 
-.span-size {
-  margin-bottom: 5px;
+.add-button {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  width: 100%;
+  background-image: var(--bg-linear);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--light);
+  text-wrap: nowrap;
+  border: 2px solid hsla(262, 83%, 58%, 0.5);
+  border-radius: 0.5rem;
+  box-shadow: inset 0 0 0.25rem 1px var(--light);
+  transition: transform 0.2s ease-in-out;
 }
 
-.span-color {
-  margin-top: 10px;
+.add-button:hover {
+  transform: scale(1.1);
+}
+
+.add-button .add-icon {
+  width: 1rem;
 }
