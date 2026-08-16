@@ -9,7 +9,6 @@ export default function ProductCard(props) {
     <div className="container">
       <div className="sub-container">
         <h3>{props.name}</h3>
-        <p>{props.description}</p>
         <img src={props.image} />
         <div className="sub-container-two">
           <div className="section-one">
@@ -59,13 +58,13 @@ export default function ProductCard(props) {
             <span className="span-color">COLOR</span>
             <div className="group-color">
               <label>
-                <input type="checkbox" className="red"/>
+                <input type="checkbox" className="red" />
               </label>
               <label>
-                <input type="checkbox" className="green"/>
+                <input type="checkbox" className="green" />
               </label>
               <label>
-                <input type="checkbox" className="blue"/>
+                <input type="checkbox" className="blue" />
               </label>
             </div>
           </div>

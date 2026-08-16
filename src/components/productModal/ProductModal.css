@@ -1,49 +1,360 @@
-/* الحاجز الخلفي (يغطي كل الشاشة ويمنع اللمس خلفه) */
+/* ===== الخلفية المظللة ===== */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    /* top:0, right:0, bottom:0, left:0 */
-    background: rgba(27, 6, 6, 0.6);
-    /* خلفية داكنة شفافة */
+    background: rgba(98, 111, 71, 0.4);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 999;
-    /* يكون فوق كل شيء */
+    padding: 16px;
+    backdrop-filter: blur(2px);
 }
 
-/* البطاقة البيضاء (المربع الأوسط) */
+/* ===== البطاقة البيضاء ===== */
 .modal-card {
+    scrollbar-width: none;
+    /* Firefox: إخفاء شريط التمرير */
+    -ms-overflow-style: none;
+    /* Internet Explorer/Edge: إخفاء شريط التمرير */
+    overflow-y: auto;
+    background: #ffffff;
+    padding: 24px 28px;
+    border-radius: 28px;
+    width: 100%;
+    max-width: 420px;
+    max-height: 92vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(98, 111, 71, 0.15);
+    z-index: 1000;
+    border: 1px solid rgba(203, 255, 169, 0.3);
+}
+
+.modal-card::-webkit-scrollbar {
+    display: none;
+    /* يخفي الشريط تماماً */
+}
+
+/* ===== الكارد الداخلي ===== */
+.edit-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ===== الصورة (الأيقونة المؤقتة) ===== */
+.image-section {
     display: flex;
     justify-content: center;
-    align-items: center;
-    background: white;
-    padding: 30px 35px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 300px;
-    max-height: 90vh;
-    /* لو كانت طويلة، تظهر شريط تمرير داخلي */
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
 }
 
-/* تنسيق الأزرار في صف واحد */
-.modal-actions {
+.placeholder-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #e8f5e0;
+    border: 4px solid #CBFFA9;
     display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin-top: 20px;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #626F47;
+    box-shadow: 0 4px 16px rgba(98, 111, 71, 0.15);
 }
 
-.modal-actions>button {
+/* ===== حقل الاسم ===== */
+.name-section {
+    display: flex;
+    justify-content: center;
+}
+
+.product-name {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #626F47;
+    border: 2px solid #CBFFA9;
+    border-radius: 16px;
+    background: #fafff7;
+    text-align: center;
+    transition: 0.2s;
+}
+
+.product-name:focus {
+    border-color: #626F47;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(98, 111, 71, 0.1);
+}
+
+/* ===== الحاوية الخضراء الرئيسية ===== */
+.green-container {
+    background: #CBFFA9;
+    border-radius: 20px;
+    padding: 20px 16px;
+    border: 1px solid #b8e09a;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ===== صف الحقول (المربع الكبير + الفئة) ===== */
+.info-row {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+}
+
+/* ===== المربع الكبير (السعر + الضريبة + الإجمالي) ===== */
+.info-item.large-item {
+    flex: 2;
+    /* يأخذ مساحة أكبر من الفئة */
+    background: white;
+    border-radius: 14px;
+    padding: 12px 14px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+/* ===== المجموعة العمودية داخل المربع الكبير ===== */
+.vertical-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.weghit-category {
+    gap: 30px;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.field-group .info-label {
+    font-size: 12px;
+    margin-bottom: 2px;
+    font-weight: 700;
+    color: #4d5a37;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.total-group .info-value {
+    color: #3b6b1e;
+    font-size: 20px;
+}
+
+/* ===== مربع الفئة ===== */
+.info-item.category-item {
+    flex: 1;
+    background: white;
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    margin-bottom: 10px;
+}
+
+/* ===== حقول الإدخال داخل المربعات ===== */
+.box-input {
+    width: 100%;
+    padding: 5px 8px;
+    border: 2px solid #e0e8d8;
+    border-radius: 8px;
+    font-size: 13px;
+    background: #fafcf8;
+    transition: 0.2s;
+}
+
+.box-input:focus {
+    border-color: #626F47;
+    outline: none;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(98, 111, 71, 0.08);
+}
+
+/* ===== حقل السعر الإجمالي (معطل) ===== */
+.disabled-input {
+    background: #eef5e8;
+    color: #3b4a2a;
+    font-weight: 700;
+    cursor: not-allowed;
+    border-color: #cce0b8;
+}
+
+/* ===== قسم رابط الصورة (أسفل الحاوية الخضراء) ===== */
+.url-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    padding: 10px 12px;
+}
+
+.url-section .info-label {
+    font-size: 11px;
+    color: #4d5a37;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.url-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid #cce0b8;
+    border-radius: 10px;
+    font-size: 14px;
+    background: white;
+    transition: 0.2s;
+}
+
+.url-input:focus {
+    border-color: #626F47;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(98, 111, 71, 0.1);
+}
+
+/* ===== أزرار التحكم ===== */
+.modal-actions {
+
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.action-btn {
+    margin-top: 10px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 40px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.save-btn {
+    background: #626F47;
+    color: white;
+}
+
+.save-btn:hover {
+    background: #4b5635;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(98, 111, 71, 0.3);
+}
+
+.save-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.cancel-btn {
+    background: #CBFFA9;
+    color: #626F47;
+    border: 1px solid #b8e09a;
+}
+
+.cancel-btn:hover {
+    background: #b8e09a;
+    transform: translateY(-2px);
+}
+
+.cancel-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ===== التجاوب مع الشاشات الصغيرة (الهواتف) ===== */
+@media (max-width: 480px) {
+    .modal-card {
+        padding: 16px;
+    }
+
+    .placeholder-image {
+        width: 90px;
+        height: 90px;
+        font-size: 36px;
+    }
+
+    .product-name {
+        font-size: 18px;
+    }
+
+    .info-row {
+        flex-direction: column;
+        /* 🔥 يصبح المربع الكبير فوق الفئة */
+        gap: 10px;
+    }
+
+    .info-item.large-item,
+    .info-item.category-item {
+        flex: unset;
+        width: 100%;
+    }
+
+    .info-value {
+        font-size: 18px;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ===== مجموعة الوزن (حقل الإدخال + القائمة المنسدلة) ===== */
+.weight-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+.weight-input {
+    flex: 2;
+}
+
+.unit-select {
+    flex: 1;
+    padding: 5px 4px;
+    font-size: 13px;
+    background: #fafcf8;
+    border: 2px solid #e0e8d8;
+    border-radius: 8px;
     cursor: pointer;
 }
 
-label {
-    text-align: start;
-    display: block;
-    color: #333;
-    font-size: 16px;
+.unit-select:focus {
+    border-color: #626F47;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(98, 111, 71, 0.08);
+}
+
+/* ===== تحسين للشاشات الصغيرة ===== */
+@media (max-width: 480px) {
+    .weight-group {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .weight-input,
+    .unit-select {
+        width: 100%;
+    }
 }

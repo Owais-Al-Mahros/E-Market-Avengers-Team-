@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "./AdminDashboard.css";
 
 import ButtonAddProduct from "../components/ButtonAddProduct";
-import ProductModal from "../components/ProductModal/ProductModal";
+import ProductModal from "../components/productModal/ProductModal";
 import AdminDashboardProductCard from "../components/AdminDashboardProductCard";
 import EditProduct from "../components/productModal/EditProduct.jsx";
 import { supabase } from '../lib/supabase';
@@ -50,13 +50,15 @@ function AdminDashboard() {
         key={product.id}
         id={product.id}
         name={product.name}
-        description={product.description}
         category={product.category}
         price={product.price}
         image={product.image}
+        weight={product.weight}
+        tax_rate={product.tax_rate}
+        weight_unit={product.weight_unit}
+        total_price={product.total_price}
         onDelete={handleDelete}
         onUpdate={handleUpdates}
-
       />
     ));
   };

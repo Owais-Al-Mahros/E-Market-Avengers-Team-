@@ -14,7 +14,6 @@ export default function AdminDashboardProductCar(props) {
         <>
             <div className="Card">
                 <h2>{props.name}</h2>
-                <p className="description">{props.description}</p>
                 <img src={props.image} alt="" />
                 <hr />
                 <p>{props.category}</p>
@@ -31,8 +30,16 @@ export default function AdminDashboardProductCar(props) {
                             image={props.image}
                             category={props.category}
                             price={props.price}
+                            weight={props.weight}
+                            tax_rate={props.tax_rate}
+                            weight_unit={props.weight_unit}
+                            total_price={props.total_price}
                             closeModel={closeEditCardModel}
-                            onUpdate={props.onUpdate} />
+                            onUpdate={props.onUpdate}
+
+
+
+                        />
                         , document.body)
 
                 }
