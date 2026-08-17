@@ -77,6 +77,7 @@ function AdminDashboard() {
       {isModalOpen && (
         <ProductModal closeModel={closeModel} onProductAdded={fetchProducts} />
       )}
+
     </>
   );
 }

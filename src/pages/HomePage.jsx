@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabase";
 import { useEffect, useState } from "react";
 
 import "./HomePage.css";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "../components/ProductCard.jsx";
 import HomePageFooter from "../components/HomePageFooter";
 import { fetchData } from "../hooks/useProduct.js";
 
@@ -23,10 +23,19 @@ function HomePage() {
     return products.map((product, index) => (
       <ProductCard
         key={product.id}
+        id={product.id}
         name={product.name}
-        description={product.description}
         image={product.image}
+        category={product.category}
         price={product.price}
+        weight={product.weight}
+        tax_rate={product.tax_rate}
+        weight_unit={product.weight_unit}
+        total_price={product.total_price}
+        description={product.description}
+        nutritionObject={product.nutrition_facts}  // 🔥 الكائن الجديد
+        storageObject={product.storage_notes}       // 🔥 الكائن الجديد
+        ingredients={product.ingredients}
       />
     ));
   };
@@ -52,7 +61,7 @@ function HomePage() {
             <button className="header-cart-button">
               <img src="/cart.png" alt="Cart" className="header-cart-icon" />
             </button>
-              <span className="counter-of-items">0</span>
+            <span className="counter-of-items">0</span>
           </div>
         </div>
       </div>
