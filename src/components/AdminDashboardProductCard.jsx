@@ -51,6 +51,9 @@ export default function AdminDashboardProductCar(props) {
             tax_rate={props.tax_rate}
             weight_unit={props.weight_unit}
             total_price={props.total_price}
+            nutritionObject={props.nutritionObject}  // 🔥 الكائن الجديد
+            storageObject={props.storageObject}       // 🔥 الكائن الجديد
+            ingredients={props.ingredients}
             closeModel={closeEditCardModel}
             onUpdate={props.onUpdate}
           />,

@@ -13,7 +13,7 @@
 /* ===== البطاقة البيضاء ===== */
 .modal-card {
     background: #2b2b34;
-    padding: 24px 28px;
+    padding: 20px 25px;
     border-radius: 28px;
     width: 100%;
     max-width: 400px;
@@ -129,6 +129,10 @@
 }
 
 /* ===== قسم رابط الصورة (أسفل الحاوية) ===== */
+.section-title {
+    color: #CBFFA9;
+}
+
 .url-section {
     display: flex;
     flex-direction: column;

@@ -57,6 +57,9 @@ function AdminDashboard() {
         tax_rate={product.tax_rate}
         weight_unit={product.weight_unit}
         total_price={product.total_price}
+        nutritionObject={product.nutrition_facts}  // 🔥 الكائن الجديد
+        storageObject={product.storage_notes}       // 🔥 الكائن الجديد
+        ingredients={product.ingredients}
         onDelete={handleDelete}
         onUpdate={handleUpdates}
       />

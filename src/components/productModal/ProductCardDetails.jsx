@@ -57,20 +57,14 @@ export default function ProductCardDetails({
     <>
       <div className="section-title">🥗 Nutritional Values</div>
       <div className="nutrition-grid">
-        {ingredients && (
-          <div className="ingredients-section">
-            <h4>Ingredients : </h4>
-            <span>{ingredients}</span>
-          </div>
-        )}
+
         {nutritionObject && Object.keys(nutritionObject).length > 0 ? (
           <div className="nutrition-items">
-            <h4>Nutritional Values (per 100g)</h4>
             <table className="nutrition-table">
               <thead>
                 <tr>
-                  <th className="items">Item</th>
-                  <th className="quantity">Quantity</th>
+                  <th className="items">Nutritional Value</th>
+                  <th className="quantity">per 100 ml</th>
                 </tr>
               </thead>
               <tbody>
@@ -82,6 +76,12 @@ export default function ProductCardDetails({
                 ))}
               </tbody>
             </table>
+            {ingredients && (
+              <div className="ingredients-section">
+                <h4>Ingredients : </h4>
+                <span>{ingredients}</span>
+              </div>
+            )}
           </div>
         ) : (
           <p className="empty-message">

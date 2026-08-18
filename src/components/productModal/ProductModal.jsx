@@ -1,4 +1,4 @@
-import "./ProductModal.css?v=2";
+import "./ProductModal.css";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 
@@ -276,7 +276,7 @@ export default function ProductModal({ closeModel, onProductAdded }) {
 
     () => (<div className="dynamic-section">
       <div className="section-header">
-        <span className="section-title">📦 ملاحظات وتعليمات التخزين</span>
+        <span className="section-title">📦 Storage and Notes</span>
       </div>
       {storageFields.map((field, index) => (
         <div key={index} className="dynamic-field-row">
