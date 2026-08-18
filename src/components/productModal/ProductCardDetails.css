@@ -1,3 +1,10 @@
+:root{
+    --fc-title: #3D5A4C;
+    --fc-label: #19412b;
+    --fc-value: #4d5a3a;
+    
+}
+
 /* خلفية المودال */
 .modal-overlay {
     position: fixed;
@@ -27,12 +34,17 @@
 
 /* قسم الصورة */
 .product-image-section {
-    background: #f5f8f0;
+    background: #F4F6F4;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 30px;
+    
+    img{
+        border-radius: 12px;
+    }
 }
+
 
 .product-image-section img {
     max-width: 100%;
@@ -47,6 +59,7 @@
     flex-direction: column;
     justify-content: space-between;
     overflow-y: auto;
+    
 }
 
 /* منطقة المحتوى المتغير */
@@ -55,10 +68,50 @@
     min-height: 200px;
 }
 
+/* قسم القيم الغذائية  */
+.nutrition-items{
+    display: flex;
+    flex-direction: column;
+    margin-top : 0.5rem;
+    
+    td{
+        padding: 6px 12px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    th{
+        padding: 6px 12px;
+        border-bottom: 2px solid #E0E0E0;
+        color:var(--fc-label);
+    }
+    .items{
+        text-align: left;
+        /* font-weight: 700; */
+    }
+    .quantity{
+        text-align: right;
+    }
+    .name-of-item{
+        text-align: left;
+        right:10rem;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+    .value-of-item{
+        text-align: right;
+    }
+}
+
+.ingredients-section{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
 .section-title {
     font-size: 18px;
     font-weight: 700;
-    color: #626F47;
+    color: #1E2E28;
     border-bottom: 2px solid #CBFFA9;
     padding-bottom: 8px;
     margin-bottom: 12px;
@@ -67,22 +120,27 @@
 .product-title {
     font-size: 24px;
     font-weight: 800;
-    color: #2d3a20;
+    color: var(--fc-title);
     margin-bottom: 4px;
 }
 
 .product-price {
     font-size: 28px;
     font-weight: 800;
-    color: #3b6b1e;
+    color: #2E6F40;
     margin: 8px 0;
 }
 
 .details-grid {
-    background: #f8faf5;
+    background: #F4F6F4;
     padding: 12px 16px;
     border-radius: 12px;
     margin: 8px 0;
+
+    .body-text{
+        color: var(--fc-value);
+        font-weight: 500;
+    }
 }
 
 .details-grid>div {
@@ -94,14 +152,14 @@
 
 .details-grid>div span {
     font-weight: 600;
-    color: #8a9a7a;
+    color: var(--fc-label);
     text-transform: uppercase;
 }
 
 .product-desc {
     font-size: 14px;
     line-height: 1.6;
-    color: #4d5a3a;
+    color: var(--fc-text);
     margin-top: 8px;
 }
 
@@ -109,13 +167,18 @@
 
 .nutrition-grid>div {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     font-size: 14px;
+
+    h4{
+        color: var(--fc-label);
+        font-weight: 700;
+    }
 }
 
 .nutrition-grid>div span {
     font-weight: 600;
-    color: #6b7a5a;
+    color: var(--fc-value);
 }
 
 .nutrition-note {
@@ -125,28 +188,28 @@
     font-style: italic;
 }
 
+.ingredients-section{
+    display: flex;
+    flex-wrap: wrap;
+}
+
 /* التخزين */
-.storage-content h4 {
-    font-size: 15px;
-    color: #626F47;
-    margin: 8px 0 4px;
-}
+.storage-content  {
+    li{
+        color: var(--fc-value);
+        font-weight: 600;
+    }
+    ul{
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
 
-.storage-content ul {
-    padding-left: 20px;
-    margin: 4px 0 8px;
-}
-
-.storage-content ul li {
-    font-size: 14px;
-    color: #4d5a3a;
-    margin-bottom: 2px;
-}
-
-.storage-content p {
-    font-size: 14px;
-    color: #4d5a3a;
-    margin: 6px 0 0;
+    .body-text{
+        color: var(--fc-label);
+        font-size: 1rem;
+        font-weight: 600;
+    }
 }
 
 /* نقاط التنقل */
@@ -154,7 +217,7 @@
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin: 12px 0 8px;
+    margin: 12px 0 15px;
 }
 
 .dot {
@@ -179,7 +242,7 @@
 
 /* زر الإضافة */
 .add-to-cart-btn {
-    background: #626F47;
+    background: #4A7C59;
     color: white;
     border: none;
     padding: 14px 20px;
@@ -193,7 +256,7 @@
 }
 
 .add-to-cart-btn:hover {
-    background: #4b5635;
+    background: #33563d;
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(98, 111, 71, 0.3);
 }
@@ -201,7 +264,7 @@
 /* زر الإغلاق */
 .close-btn {
     position: absolute;
-    top: 16px;
+    top: 10px;
     right: 20px;
     background: rgba(255, 255, 255, 0.9);
     border: none;
