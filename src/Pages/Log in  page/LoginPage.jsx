@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import AdminDashboard from "../Admin dashboard/AdminDashboard.jsx";
 import { fetchData } from "../../hooks/useProduct.js"
+import { supabase } from "../../lib/supabase.js";
 
 function LoginPage({ setIsAdmin }) {
   const navigate = useNavigate();
@@ -55,7 +56,7 @@ function LoginPage({ setIsAdmin }) {
     // 3. نذهب إلى جدول profiles لمعرفة إذا كان هذا المستخدم أدمن
     const { data: profileData, error: profileError } = await supabase
       .from("profiles")
-      .select("is_admin, name")
+      .select("is_admin, email")
       .eq("id", user.id)
       .single();
 
@@ -69,7 +70,7 @@ function LoginPage({ setIsAdmin }) {
     // 4. إذا كان الأدمن (is_admin = true)، نسمح بالدخول
     if (profileData.is_admin === true) {
       localStorage.setItem("isAdmin", "true");
-      localStorage.setItem("adminName", profileData.name || adminInfo.name);
+      localStorage.setItem("adminName", profileData.email || adminInfo.name);
       setIsAdmin(true);
 
       setTimeout(() => {
