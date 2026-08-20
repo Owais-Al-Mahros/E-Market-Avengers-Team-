@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 
-import AdminDashboard from "./pages/AdminDashboard";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
+import AdminDashboard from "./Pages/Admin dashboard/AdminDashboard";
+import HomePage from "./Pages/Home page/HomePage";
+import LoginPage from "./Pages/Log in  page/LoginPage";
 
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";

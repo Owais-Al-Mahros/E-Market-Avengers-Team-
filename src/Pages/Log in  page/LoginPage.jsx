@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "./LoginPage.css";
-import AdminDashboard from "./AdminDashboard";
-import { fetchData } from "../hooks/useProduct.js"
+import AdminDashboard from "../Admin dashboard/AdminDashboard.jsx";
+import { fetchData } from "../../hooks/useProduct.js"
 
 function LoginPage({ setIsAdmin }) {
   const navigate = useNavigate();
@@ -32,34 +32,59 @@ function LoginPage({ setIsAdmin }) {
   }, [])
 
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
 
-    const foundAdmin = adminsList.find(
-      (admin) =>
-        admin.name.toLowerCase() === adminInfo.name.trim().toLowerCase() &&
-        admin.password === adminInfo.password.trim()
-    );
+    // 1. محاولة تسجيل الدخول عبر Supabase Auth
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: adminInfo.name, // هنا نستخدم البريد الإلكتروني
+      password: adminInfo.password,
+    });
 
-    if (foundAdmin) {
+    if (error) {
+      alert(`Login failed: ${error.message}`);
+      setAdminInfo({ name: "", password: "" });
+      setIsLoading(false);
+      return;
+    }
 
+    // 2. بعد نجاح تسجيل الدخول، نحصل على بيانات المستخدم من Auth
+    const user = data.user;
+
+    // 3. نذهب إلى جدول profiles لمعرفة إذا كان هذا المستخدم أدمن
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .select("is_admin, name")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError || !profileData) {
+      alert("Your account is not fully set up. Please contact support.");
+      await supabase.auth.signOut(); // تسجيل الخروج فوراً
+      setIsLoading(false);
+      return;
+    }
+
+    // 4. إذا كان الأدمن (is_admin = true)، نسمح بالدخول
+    if (profileData.is_admin === true) {
       localStorage.setItem("isAdmin", "true");
-      localStorage.setItem("adminName", foundAdmin.name);
+      localStorage.setItem("adminName", profileData.name || adminInfo.name);
       setIsAdmin(true);
 
       setTimeout(() => {
         setIsLoading(false);
         navigate("/dashboard");
       }, 500);
-
-    }
-    else {
+    } else {
+      // 5. إذا لم يكن أدمن، نمنع الدخول ونسجل الخروج
+      alert("Access denied. You are not an admin.");
+      await supabase.auth.signOut();
       setAdminInfo({ name: "", password: "" });
-      alert("The user name or the password is wrong");
       setIsLoading(false);
     }
   };
+
 
   return (
     <div className="login-container">

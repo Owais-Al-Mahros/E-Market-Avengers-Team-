@@ -1,6 +1,6 @@
 import "./ProductModal.css";
 import { useState, useEffect } from "react";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../../lib/supabase";
 
 export default function ProductModal({ closeModel, onProductAdded }) {
   const [loading, setLoading] = useState(false);

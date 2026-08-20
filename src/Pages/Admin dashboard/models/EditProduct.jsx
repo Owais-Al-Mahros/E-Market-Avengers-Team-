@@ -17,13 +17,13 @@ export default function EditProduct(props) {
 
     // ===== تحويل كائن القيم الغذائية إلى مصفوفة =====
     const [nutritionFields, setNutritionFields] = useState(() => {
-        const obj = props.nutrition_facts || {};
+        const obj = props.nutritionObject || {};
         return Object.entries(obj).map(([key, value]) => ({ key, value }));
     });
 
     // ===== تحويل كائن التخزين إلى مصفوفة =====
     const [storageFields, setStorageFields] = useState(() => {
-        const obj = props.storage_notes || {};
+        const obj = props.storageObject || {};
         return Object.entries(obj).map(([key, value]) => ({ key, value }));
     });
 

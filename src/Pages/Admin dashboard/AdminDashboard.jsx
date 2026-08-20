@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./AdminDashboard.css";
 
-import ButtonAddProduct from "../components/ButtonAddProduct";
-import ProductModal from "../components/productModal/ProductModal";
-import AdminDashboardProductCard from "../components/AdminDashboardProductCard";
-import EditProduct from "../components/productModal/EditProduct.jsx";
-import { supabase } from '../lib/supabase';
-import { fetchData } from "../hooks/useProduct.js"
-import { deleteProduct } from "../hooks/useProduct"
-import { updateProduct } from "../hooks/useProduct.js";
+import ButtonAddProduct from "./components/ButtonAddProduct.jsx";
+import ProductModal from "./models/ProductModal.jsx";
+import AdminDashboardProductCard from "./components/AdminDashboardProductCard.jsx";
+import EditProduct from "./models/EditProduct.jsx";
+import { supabase } from '../../lib/supabase.js';
+import { fetchData } from "../../hooks/useProduct.js"
+import { deleteProduct } from "../../hooks/useProduct.js"
+import { updateProduct } from "../../hooks/useProduct.js";
 
 function AdminDashboard() {
   const [products, setProducts] = useState([]);

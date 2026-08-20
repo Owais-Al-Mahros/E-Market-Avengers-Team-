@@ -1,6 +1,6 @@
 import "./ProductCard.css";
 import { useState } from "react";
-import ProductCardDetails from "./productModal/ProductCardDetails.jsx";
+import ProductCardDetails from "../models/ProductCardDetails.jsx";
 import { createPortal } from "react-dom";
 
 export default function ProductCard(props) {

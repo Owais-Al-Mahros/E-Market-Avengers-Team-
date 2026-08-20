@@ -1,6 +1,5 @@
 import "./AdminDashboardProductCard.css";
-import image from "../assets/image.jpg";
-import EditProduct from "./productModal/EditProduct";
+import EditProduct from "../models/EditProduct";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 

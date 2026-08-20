@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase.js";
 import { useEffect, useState } from "react";
 
 import "./HomePage.css";
-import ProductCard from "../components/ProductCard.jsx";
-import HomePageFooter from "../components/HomePageFooter";
-import { fetchData } from "../hooks/useProduct.js";
+import ProductCard from "./components/ProductCard.jsx";
+import HomePageFooter from "./components/HomePageFooter.jsx";
+import { fetchData } from "../../hooks/useProduct.js";
 
 function HomePage() {
   // const storedAdmin = localStorage.getItem("isAdmin")
