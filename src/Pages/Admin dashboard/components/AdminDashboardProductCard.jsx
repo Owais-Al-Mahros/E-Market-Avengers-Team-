@@ -22,7 +22,7 @@ export default function AdminDashboardProductCar(props) {
             Weight: {props.weight} {props.weight_unit}
           </span>
           <div className="price">
-            <span>{props.price}$</span>
+            <span>{props.total_price}€</span>
           </div>
         </div>
         <div className="action-admin">

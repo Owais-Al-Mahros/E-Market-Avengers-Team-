@@ -29,7 +29,7 @@ export default function ProductCard(props) {
         </div>
         <div className="action">
           <div className="price">
-            <span>{props.price}$</span>
+            <span>{props.price}€</span>
           </div>
           <button className="add-button" onClick={(e) => e.stopPropagation()}>
             <img src="/cart.png" className="add-icon" alt="cart" />

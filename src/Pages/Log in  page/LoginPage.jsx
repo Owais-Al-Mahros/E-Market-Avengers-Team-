@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-hot-toast';
 
 import "./LoginPage.css";
-import AdminDashboard from "../Admin dashboard/AdminDashboard.jsx";
-import { fetchData } from "../../hooks/useProduct.js"
 import { supabase } from "../../lib/supabase.js";
 
 function LoginPage({ setIsAdmin }) {
   const navigate = useNavigate();
 
   const [adminInfo, setAdminInfo] = useState({ name: "", password: "", });
-  const [adminsList, setAdminsList] = useState([]);
   const [showpassword, setShowpassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,13 +22,7 @@ function LoginPage({ setIsAdmin }) {
 
   };
 
-  const fetchAdminsInfo = async () => {
-    const AdminsInfoFromDataBase = await fetchData("Admins");
-    setAdminsList(AdminsInfoFromDataBase);
-  }
-  useEffect(() => {
-    fetchAdminsInfo();
-  }, [])
+
 
 
   const handleSubmit = async (event) => {
@@ -44,16 +36,14 @@ function LoginPage({ setIsAdmin }) {
     });
 
     if (error) {
-      alert(`Login failed: ${error.message}`);
+      toast.error(`Login failed: ${error.message}`);
       setAdminInfo({ name: "", password: "" });
       setIsLoading(false);
       return;
     }
 
-    // 2. بعد نجاح تسجيل الدخول، نحصل على بيانات المستخدم من Auth
     const user = data.user;
 
-    // 3. نذهب إلى جدول profiles لمعرفة إذا كان هذا المستخدم أدمن
     const { data: profileData, error: profileError } = await supabase
       .from("profiles")
       .select("is_admin, email")
@@ -61,7 +51,7 @@ function LoginPage({ setIsAdmin }) {
       .single();
 
     if (profileError || !profileData) {
-      alert("Your account is not fully set up. Please contact support.");
+      toast.error("Your account is not fully set up. Please contact support.");
       await supabase.auth.signOut(); // تسجيل الخروج فوراً
       setIsLoading(false);
       return;
@@ -69,6 +59,7 @@ function LoginPage({ setIsAdmin }) {
 
     // 4. إذا كان الأدمن (is_admin = true)، نسمح بالدخول
     if (profileData.is_admin === true) {
+      toast.success("Login successful");
       localStorage.setItem("isAdmin", "true");
       localStorage.setItem("adminName", profileData.email || adminInfo.name);
       setIsAdmin(true);
@@ -79,7 +70,7 @@ function LoginPage({ setIsAdmin }) {
       }, 500);
     } else {
       // 5. إذا لم يكن أدمن، نمنع الدخول ونسجل الخروج
-      alert("Access denied. You are not an admin.");
+      toast.error("Access denied. You are not an admin.");
       await supabase.auth.signOut();
       setAdminInfo({ name: "", password: "" });
       setIsLoading(false);

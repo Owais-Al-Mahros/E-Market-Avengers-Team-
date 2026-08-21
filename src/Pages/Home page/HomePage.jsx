@@ -1,25 +1,18 @@
 import { Link } from "react-router-dom";
-import { supabase } from "../../lib/supabase.js";
-import { useEffect, useState } from "react";
 
 import "./HomePage.css";
 import ProductCard from "./components/ProductCard.jsx";
 import HomePageFooter from "./components/HomePageFooter.jsx";
-import { fetchData } from "../../hooks/useProduct.js";
-
+import { useProducts } from "../../context/ProductContext.jsx"
 function HomePage() {
   // const storedAdmin = localStorage.getItem("isAdmin")
-  const [products, setProducts] = useState([]);
 
-  const fetchProducts = async () => {
-    const productsFromDataBase = await fetchData("products");
-    setProducts(productsFromDataBase);
-  };
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  const { products, loading } = useProducts();
 
   const renderProducts = () => {
+    if (loading) {
+      return (<h1>...loading products</h1>);
+    }
     return products.map((product, index) => (
       <ProductCard
         key={product.id}

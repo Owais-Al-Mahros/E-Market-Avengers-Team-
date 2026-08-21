@@ -1,11 +1,11 @@
 import { Routes, Route } from "react-router-dom";
-
+import { Toaster } from "react-hot-toast";
 import AdminDashboard from "./Pages/Admin dashboard/AdminDashboard";
 import HomePage from "./Pages/Home page/HomePage";
 import LoginPage from "./Pages/Log in  page/LoginPage";
 
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -29,6 +29,8 @@ function App() {
 
   return (
     <>
+      <Toaster position="top-center" reverseOrder={false} />
+
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route

@@ -1,5 +1,6 @@
 import "./EditProduct.css";
 import { useState, useMemo } from "react";
+import { useDynamicFields } from "../../../hooks/useDynamicFields";
 
 export default function EditProduct(props) {
     // ===== البيانات الأساسية =====
@@ -15,77 +16,39 @@ export default function EditProduct(props) {
         ingredients: props.ingredients || "",
     });
 
-    // ===== تحويل كائن القيم الغذائية إلى مصفوفة =====
-    const [nutritionFields, setNutritionFields] = useState(() => {
-        const obj = props.nutritionObject || {};
-        return Object.entries(obj).map(([key, value]) => ({ key, value }));
-    });
-
-    // ===== تحويل كائن التخزين إلى مصفوفة =====
-    const [storageFields, setStorageFields] = useState(() => {
-        const obj = props.storageObject || {};
-        return Object.entries(obj).map(([key, value]) => ({ key, value }));
-    });
 
     const [isLoading, setIsLoading] = useState(false);
     const [currentSection, setCurrentSection] = useState(0);
 
-    // ===== حساب السعر الإجمالي =====
     const totalPrice = useMemo(() => {
         const netPrice = parseFloat(productInfo.price) || 0;
         const taxRate = parseFloat(productInfo.tax_rate) || 0;
         return netPrice + (netPrice * taxRate / 100);
     }, [productInfo.price, productInfo.tax_rate]);
 
-    // ===== دوال Nutrition =====
-    const addNutritionField = () => {
-        setNutritionFields([...nutritionFields, { key: "", value: "" }]);
-    };
+    const initialNutrition = props.nutritionObject
+        ? Object.entries(props.nutritionObject).map(([key, value]) => ({ key, value }))
+        : [];
 
-    const updateNutritionField = (index, field, newValue) => {
-        const updated = [...nutritionFields];
-        updated[index][field] = newValue;
-        setNutritionFields(updated);
-    };
+    const initialStorage = props.storageObject
+        ? Object.entries(props.storageObject).map(([key, value]) => ({ key, value }))
+        : [];
 
-    const removeNutritionField = (index) => {
-        setNutritionFields(nutritionFields.filter((_, i) => i !== index));
-    };
+    const nutrition = useDynamicFields(initialNutrition);
+    const storage = useDynamicFields(initialStorage);
 
-    // ===== دوال Storage =====
-    const addStorageField = () => {
-        setStorageFields([...storageFields, { key: "", value: "" }]);
-    };
 
-    const updateStorageField = (index, field, newValue) => {
-        const updated = [...storageFields];
-        updated[index][field] = newValue;
-        setStorageFields(updated);
-    };
-
-    const removeStorageField = (index) => {
-        setStorageFields(storageFields.filter((_, i) => i !== index));
-    };
 
     // ===== معالجة التحديث =====
     const handleUpdate = async () => {
         setIsLoading(true);
 
-        const nutritionObject = nutritionFields.reduce((acc, field) => {
-            if (field.key.trim()) acc[field.key.trim()] = field.value.trim();
-            return acc;
-        }, {});
-
-        const storageObject = storageFields.reduce((acc, field) => {
-            if (field.key.trim()) acc[field.key.trim()] = field.value.trim();
-            return acc;
-        }, {});
 
         const updatedData = {
             ...productInfo,
             total_price: totalPrice,
-            nutrition_facts: nutritionObject,
-            storage_notes: storageObject,
+            nutrition_facts: nutrition.toObject(),
+            storage_notes: storage.toObject(),
         };
 
         const result = await props.onUpdate(productInfo.id, updatedData);
@@ -186,30 +149,24 @@ export default function EditProduct(props) {
                 <div className="section-header">
                     <span className="section-title">🥗 Nutritional Values</span>
                 </div>
-                {nutritionFields.map((field, index) => (
+                {nutrition.fields.map((field, index) => (
                     <div key={index} className="dynamic-field-row">
                         <input
                             type="text"
-                            className="dynamic-input"
                             placeholder="Energy"
                             value={field.key}
-                            onChange={(e) => updateNutritionField(index, "key", e.target.value)}
+                            onChange={(e) => nutrition.updateField(index, 'key', e.target.value)}
                         />
                         <input
                             type="text"
-                            className="dynamic-input"
-                            placeholder="245 kJ"
+                            placeholder="245 for 1kg"
                             value={field.value}
-                            onChange={(e) => updateNutritionField(index, "value", e.target.value)}
+                            onChange={(e) => nutrition.updateField(index, 'value', e.target.value)}
                         />
-                        <button type="button" className="remove-field-btn" onClick={() => removeNutritionField(index)}>
-                            ✕
-                        </button>
+                        <button onClick={() => nutrition.removeField(index)}>✕</button>
                     </div>
                 ))}
-                <button type="button" className="add-field-btn" onClick={addNutritionField}>
-                    ➕ Add field
-                </button>
+                <button onClick={nutrition.addField}>➕ Add field</button>
                 <hr className="hr-separator" />
                 <label className="ingredients-input-label">
                     Ingredients
@@ -230,30 +187,24 @@ export default function EditProduct(props) {
                 <div className="section-header">
                     <span className="section-title">📦 Storage and Notes</span>
                 </div>
-                {storageFields.map((field, index) => (
+                {storage.fields.map((field, index) => (
                     <div key={index} className="dynamic-field-row">
                         <input
                             type="text"
-                            className="dynamic-input"
-                            placeholder="Storage"
+                            placeholder="Storge"
                             value={field.key}
-                            onChange={(e) => updateStorageField(index, "key", e.target.value)}
+                            onChange={(e) => storage.updateField(index, 'key', e.target.value)}
                         />
                         <input
                             type="text"
-                            className="dynamic-input"
-                            placeholder="Store in cold place"
+                            placeholder="save in cold place"
                             value={field.value}
-                            onChange={(e) => updateStorageField(index, "value", e.target.value)}
+                            onChange={(e) => storage.updateField(index, 'value', e.target.value)}
                         />
-                        <button type="button" className="remove-field-btn" onClick={() => removeStorageField(index)}>
-                            ✕
-                        </button>
+                        <button onClick={() => storage.removeField(index)}>✕</button>
                     </div>
                 ))}
-                <button type="button" className="add-field-btn" onClick={addStorageField}>
-                    ➕ Add field
-                </button>
+                <button onClick={storage.addField}>➕ Add field</button>
             </div>
         ),
     ];

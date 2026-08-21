@@ -1,6 +1,7 @@
 import "./ProductModal.css";
 import { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
+import { useDynamicFields } from "../../../hooks/useDynamicFields";
 
 export default function ProductModal({ closeModel, onProductAdded }) {
   const [loading, setLoading] = useState(false);
@@ -18,32 +19,10 @@ export default function ProductModal({ closeModel, onProductAdded }) {
 
   const [currentSection, setCurrentSection] = useState(0);
 
-  const [nutritionFields, setNutritionFields] = useState([]);
-  const addNutritionField = () => {
-    setNutritionFields([...nutritionFields, { key: '', value: '' }]);
-  };
-  const updateNutritionField = (index, field, newValue) => {
-    const updated = [...nutritionFields];
-    updated[index][field] = newValue;
-    setNutritionFields(updated);
-  };
-  const removeNutritionField = (index) => {
-    setNutritionFields(nutritionFields.filter((_, i) => i !== index));
-  };
 
-  const [storageFields, setStorageFields] = useState([]);
-  const addStorageField = () => {
-    setStorageFields([...storageFields, { key: '', value: '' }]);
-  };
-  const updateStorageField = (index, field, newValue) => {
-    const updated = [...storageFields];
-    updated[index][field] = newValue;
-    setStorageFields(updated);
-  };
-  const removeStorageField = (index) => {
-    setStorageFields(storageFields.filter((_, i) => i !== index));
-  };
 
+  const nutrition = useDynamicFields([]);
+  const storage = useDynamicFields([]);
 
   useEffect(() => {
     const priceNum = parseFloat(productInfo.price) || 0;
@@ -69,6 +48,8 @@ export default function ProductModal({ closeModel, onProductAdded }) {
     });
     setTaxRate(0);
     setTotalPrice(0);
+    nutrition.resetFields();
+    storage.resetFields();
     closeModel();
   };
 
@@ -76,17 +57,8 @@ export default function ProductModal({ closeModel, onProductAdded }) {
     event.preventDefault();
     setLoading(true);
 
-    // تحويل المصفوفات إلى كائنات JSON
-    const nutritionObject = nutritionFields.reduce((acc, field) => {
-      if (field.key.trim()) acc[field.key.trim()] = field.value.trim();
-      return acc;
-    }, {});
-
-    const storageObject = storageFields.reduce((acc, field) => {
-      if (field.key.trim()) acc[field.key.trim()] = field.value.trim();
-      return acc;
-    }, {});
-
+    const nutritionObject = nutrition.toObject();
+    const storageObject = storage.toObject();
 
     try {
       const finalPrice = parseFloat(productInfo.price) || 0;
@@ -249,14 +221,24 @@ export default function ProductModal({ closeModel, onProductAdded }) {
           <span className="section-title">🥗 Nutritional Values</span>
 
         </div>
-        {nutritionFields.map((field, index) => (
+        {nutrition.fields.map((field, index) => (
           <div key={index} className="dynamic-field-row">
-            <input type="text" className="dynamic-input" placeholder="Energy" value={field.key} onChange={(e) => updateNutritionField(index, 'key', e.target.value)} />
-            <input type="text" className="dynamic-input" placeholder="245 for 1kg" value={field.value} onChange={(e) => updateNutritionField(index, 'value', e.target.value)} />
-            <button type="button" className="remove-field-btn" onClick={() => removeNutritionField(index)}>✕</button>
+            <input
+              type="text"
+              placeholder="Energy"
+              value={field.key}
+              onChange={(e) => nutrition.updateField(index, 'key', e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="245 for 1kg"
+              value={field.value}
+              onChange={(e) => nutrition.updateField(index, 'value', e.target.value)}
+            />
+            <button onClick={() => nutrition.removeField(index)}>✕</button>
           </div>
         ))}
-        <button type="button" className="add-field-btn" onClick={addNutritionField}>➕ Add field</button>
+        <button onClick={nutrition.addField}>➕ Add field</button>
         <hr className="hr-separator" />
         <label className="ingredients-input-label"> Ingredients
           <input
@@ -278,14 +260,24 @@ export default function ProductModal({ closeModel, onProductAdded }) {
       <div className="section-header">
         <span className="section-title">📦 Storage and Notes</span>
       </div>
-      {storageFields.map((field, index) => (
+      {storage.fields.map((field, index) => (
         <div key={index} className="dynamic-field-row">
-          <input type="text" className="dynamic-input" placeholder="Storage" value={field.key} onChange={(e) => updateStorageField(index, 'key', e.target.value)} />
-          <input type="text" className="dynamic-input" placeholder="store in cold place" value={field.value} onChange={(e) => updateStorageField(index, 'value', e.target.value)} />
-          <button type="button" className="remove-field-btn" onClick={() => removeStorageField(index)}>✕</button>
+          <input
+            type="text"
+            placeholder="Storge"
+            value={field.key}
+            onChange={(e) => storage.updateField(index, 'key', e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="save in cold place"
+            value={field.value}
+            onChange={(e) => storage.updateField(index, 'value', e.target.value)}
+          />
+          <button onClick={() => storage.removeField(index)}>✕</button>
         </div>
       ))}
-      <button type="button" className="add-field-btn" onClick={addStorageField}>➕ Add field</button>
+      <button onClick={storage.addField}>➕ Add field</button>
     </div>)]
 
   return (

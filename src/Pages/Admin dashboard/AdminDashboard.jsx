@@ -1,50 +1,49 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./AdminDashboard.css";
 
 import ButtonAddProduct from "./components/ButtonAddProduct.jsx";
 import ProductModal from "./models/ProductModal.jsx";
 import AdminDashboardProductCard from "./components/AdminDashboardProductCard.jsx";
-import EditProduct from "./models/EditProduct.jsx";
-import { supabase } from '../../lib/supabase.js';
-import { fetchData } from "../../hooks/useProduct.js"
-import { deleteProduct } from "../../hooks/useProduct.js"
-import { updateProduct } from "../../hooks/useProduct.js";
+import { useProducts } from "../../context/ProductContext.jsx";
+import { deleteProduct as deleteProductAPI } from "../../hooks/useProduct.js"; // ✅ استيراد API الحذف
+import { updateProduct as updateProductAPI } from "../../hooks/useProduct.js"; // ✅ استيراد API التحديث
+
 
 function AdminDashboard() {
-  const [products, setProducts] = useState([]);
-
+  const { products, loading, deleteProduct, updateProduct, refreshProducts } = useProducts();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModel = () => setIsModalOpen(true);
   const closeModel = () => setIsModalOpen(false);
 
 
-  const fetchProducts = async () => {
-    const productsFromDataBase = await fetchData("products");
-    setProducts(productsFromDataBase);
-  }
-
-  useEffect(() => {
-    fetchProducts();
-  }, [])
-
-
   const handleDelete = async (productId) => {
-    const success = await deleteProduct(productId);
-    setProducts((prev) => prev.filter((product) => product.id !== productId));
-  }
+    const confirmed = window.confirm("Are you sure you want to delete this product?");
+    if (!confirmed) return;
 
-  const handleUpdates = async (productId, updatedProduct) => {
-    const success = await updateProduct(productId, updatedProduct);
-    setProducts((prev) =>
-      prev.map((product) =>
-        product.id === updatedProduct.id ? updatedProduct : product
-      ));
-    return success;
-  }
+    const success = await deleteProductAPI(productId); // استدعاء API الحذف
+    if (success) {
+      deleteProduct(productId); // ✅ تحديث السياق محلياً (بدون إعادة جلب)
+    } else {
+      alert("Failed to delete product.");
+    }
+  };
+
+  const handleUpdate = async (productId, updatedData) => {
+    const result = await updateProductAPI(productId, updatedData); // استدعاء API التحديث
+    if (result.success) {
+      updateProduct(result.data); // ✅ تحديث السياق بالمنتج الجديد (ملاحظة: result.data هو المنتج المحدث)
+    } else {
+      alert("Failed to update product.");
+    }
+    return result;
+  };
 
   const renderProducts = () => {
+    if (loading) {
+      return (<h1>...loading products</h1>);
+    }
     return products.map((product, index) => (
       <AdminDashboardProductCard
         key={product.id}
@@ -61,7 +60,7 @@ function AdminDashboard() {
         storageObject={product.storage_notes}       // 🔥 الكائن الجديد
         ingredients={product.ingredients}
         onDelete={handleDelete}
-        onUpdate={handleUpdates}
+        onUpdate={handleUpdate}
       />
     ));
   };
@@ -74,11 +73,11 @@ function AdminDashboard() {
 
       <div className="body">
         {renderProducts()}
-        <ButtonAddProduct openModel={openModel} />
+        {(!loading) && <ButtonAddProduct openModel={openModel} />}
       </div>
 
       {isModalOpen && (
-        <ProductModal closeModel={closeModel} onProductAdded={fetchProducts} />
+        <ProductModal closeModel={closeModel} onProductAdded={refreshProducts} />
       )}
 
     </>

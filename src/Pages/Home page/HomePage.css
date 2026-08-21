@@ -1,12 +1,12 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 :root {
   --primary-color: #1a2a3a;
   --secondary-color: #f5e6d3;
 }
+
+body {
+  background-color: #FFFCEB;
+}
+
 .header {
   color: #f5e6d3;
   background-color: var(--primary-color);
@@ -46,7 +46,7 @@
   right: 0;
   padding: 0.1rem;
   border: none;
-  background : none;
+  background: none;
   border-radius: 5px;
   cursor: pointer;
   margin-left: 0px;

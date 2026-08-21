@@ -8,6 +8,7 @@
   --bg-linear: linear-gradient(0deg, var(--primary) 50%, var(--light) 125%);
   --bg-linear-hover: rgba(20, 20, 22, 0.4);
 }
+
 .card-container {
   position: relative;
   display: flex;
@@ -19,10 +20,13 @@
   border-radius: 1rem;
   transition: box-shadow 0.2s ease-in-out;
 }
+
 .card-container:hover {
   box-shadow: 0 0 3rem 0.5rem var(--bg-linear-hover);
 }
+
 .image-container {
+  perspective: 1000px;
   overflow: hidden;
   cursor: pointer;
   position: relative;
@@ -41,6 +45,14 @@
   width: 100%;
   height: 100%;
   fill: var(--light);
+  background-color: var(--bg-card);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.4s ease,
+    filter 0.4s ease;
+}
+
+.image-container .image:hover {
+  transform: translate(-50%, -50%) scale(1.1) translateZ(40px);
 }
 
 .title {
@@ -52,6 +64,7 @@
   text-transform: capitalize;
   text-wrap: nowrap;
   text-overflow: ellipsis;
+  border-radius: 20px;
 }
 
 .weight {

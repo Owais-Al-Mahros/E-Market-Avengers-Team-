@@ -1,4 +1,3 @@
-import { renderMatches } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 
 export async function fetchData(tableName) {
