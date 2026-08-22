@@ -1,5 +1,5 @@
 import "./AdminDashboardProductCard.css";
-import EditProduct from "../models/EditProduct";
+import EditProduct from "../modals/EditProduct";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -7,10 +7,10 @@ export default function AdminDashboardProductCar(props) {
   const [isEditCArdModalOpen, setIsEditCArdModalOpen] = useState(false);
   const openEditCardModel = () => setIsEditCArdModalOpen(true);
   const closeEditCardModel = () => setIsEditCArdModalOpen(false);
-
+  const [deleteButton, setDeleteButton] = useState(true);
   return (
     <>
-      <div className="card-container-admin">
+      <div className="card-container-admin" onClick={openEditCardModel}>
         <div className="image-container-admin">
           <img src={props.image} alt="product" className="image-admin" />
         </div>
@@ -26,15 +26,20 @@ export default function AdminDashboardProductCar(props) {
           </div>
         </div>
         <div className="action-admin">
-          <button onClick={openEditCardModel} className="edit-button-admin">
-            Edit
-          </button>
-          <button
-            onClick={() => props.onDelete(props.id)}
-            className="delete-button"
-          >
-            Delete
-          </button>
+          {deleteButton && <button
+            onClick={(e) => { setDeleteButton(false); e.stopPropagation(); }}
+            className="delete-button"> 🗑️ </button>}
+          {(!deleteButton) &&
+            <div className="action-admin">
+              <button
+                onClick={(e) => { e.stopPropagation(); props.onDelete(props.id); }}
+                className="Confirm-button">Confirm</button>
+
+              <button
+                onClick={(e) => { e.stopPropagation(); setDeleteButton(true); }}
+                className="Cancel-button">Cancel</button>
+            </div>
+          }
         </div>
       </div>
 

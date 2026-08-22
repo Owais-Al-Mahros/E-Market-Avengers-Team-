@@ -1,0 +1,52 @@
+/* ===== تنسيقات خاصة بمودال التعديل ===== */
+
+.modal-card {
+    background: #2b2b34;
+    padding: 20px 25px;
+    /* يختلف عن الإضافة */
+}
+
+/* صورة المنتج */
+.product-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #CBFFA9;
+    box-shadow: 0 4px 16px rgba(98, 111, 71, 0.15);
+}
+
+.edit-card {
+    gap: 16px;
+    /* يختلف عن الإضافة */
+}
+
+.product-name {
+    max-width: 70%;
+    margin: 0;
+    margin-bottom: 20px;
+    padding: 5px;
+    font-size: 24px;
+    color: #626F47;
+    border: #626F47 solid 1px;
+    background-color: #CBFFA9;
+}
+
+.green-container {
+    padding: 20px 16px;
+}
+
+.info-item {
+    flex: 1;
+    background: white;
+    border-radius: 14px;
+    padding: 10px 12px;
+}
+
+.modal-actions {
+    margin-top: 4px;
+}
+
+.action-btn {
+    padding: 10px 24px;
+}

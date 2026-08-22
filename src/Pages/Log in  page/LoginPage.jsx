@@ -8,22 +8,17 @@ import { supabase } from "../../lib/supabase.js";
 function LoginPage({ setIsAdmin }) {
   const navigate = useNavigate();
 
-  const [adminInfo, setAdminInfo] = useState({ name: "", password: "", });
+  const [adminInfo, setAdminInfo] = useState({ name: "", password: "" });
   const [showpassword, setShowpassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (event) => {
     const { id, value } = event.target;
-
     setAdminInfo((prevState) => ({
       ...prevState,
       [id]: value,
     }));
-
   };
-
-
-
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -31,7 +26,7 @@ function LoginPage({ setIsAdmin }) {
 
     // 1. محاولة تسجيل الدخول عبر Supabase Auth
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: adminInfo.name, // هنا نستخدم البريد الإلكتروني
+      email: adminInfo.name,
       password: adminInfo.password,
     });
 
@@ -44,39 +39,35 @@ function LoginPage({ setIsAdmin }) {
 
     const user = data.user;
 
+    // 2. التحقق من جدول profiles
     const { data: profileData, error: profileError } = await supabase
       .from("profiles")
-      .select("is_admin, email")
+      .select("is_admin, email, name, image")
       .eq("id", user.id)
       .single();
 
     if (profileError || !profileData) {
       toast.error("Your account is not fully set up. Please contact support.");
-      await supabase.auth.signOut(); // تسجيل الخروج فوراً
+      await supabase.auth.signOut();
       setIsLoading(false);
       return;
     }
 
-    // 4. إذا كان الأدمن (is_admin = true)، نسمح بالدخول
+    // 3. إذا كان الأدمن، نقوم بتحديث حالة التطبيق (بدون localStorage)
     if (profileData.is_admin === true) {
       toast.success("Login successful");
-      localStorage.setItem("isAdmin", "true");
-      localStorage.setItem("adminName", profileData.email || adminInfo.name);
+      // ✅ تحديث حالة الأدمن في App (بدون localStorage)
       setIsAdmin(true);
+      setIsLoading(false);
+      navigate("/dashboard");
 
-      setTimeout(() => {
-        setIsLoading(false);
-        navigate("/dashboard");
-      }, 500);
     } else {
-      // 5. إذا لم يكن أدمن، نمنع الدخول ونسجل الخروج
       toast.error("Access denied. You are not an admin.");
       await supabase.auth.signOut();
       setAdminInfo({ name: "", password: "" });
       setIsLoading(false);
     }
   };
-
 
   return (
     <div className="login-container">

@@ -1,0 +1,63 @@
+/* ===== تنسيقات خاصة بمودال الإضافة ===== */
+
+.modal-card {
+    background: #ffffff;
+    padding: 6px 7px;
+    /* يختلف عن التعديل */
+}
+
+/* الصورة المؤقتة (أيقونة) */
+.placeholder-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #e8f5e0;
+    border: 4px solid #CBFFA9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #626F47;
+    box-shadow: 0 4px 16px rgba(98, 111, 71, 0.15);
+}
+
+/* ضبط المسافات الداخلية */
+.edit-card {
+    gap: 6px;
+    /* يختلف عن التعديل */
+}
+
+/* حقل الاسم في الإضافة */
+.product-name {
+    color: #626F47;
+    border: 2px solid #CBFFA9;
+    background: #fafff7;
+}
+
+/* المربع الكبير والفئة في الإضافة */
+.info-item.large-item {
+    flex: 2;
+    background: white;
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.info-item.category-item {
+    flex: 1;
+    background: white;
+    border-radius: 14px;
+    padding: 6px 7px;
+    margin-bottom: 10px;
+}
+
+.weghit-category {
+    gap: 30px;
+}
+
+.modal-actions {
+    margin-top: 0px;
+}
+
+.action-btn {
+    margin-top: 0px;
+}
