@@ -74,3 +74,36 @@ export async function updateCategory(id, updatedData) {
         return { success: false, error: error.message }; // ✅ كائن success: false
     }
 }
+
+export async function uploadProductImage(file) {
+    try{
+        const fileName = `${Date.now()}_${file.name}`;
+        const { data, error } = await supabase.storage
+            .from("upload-image")
+            .upload(fileName, file);
+    
+        if (error) throw error;
+        const {data : publicUrlData} = supabase.storage 
+        .from("upload-image")      
+        .getPublicUrl(fileName);
+        return { success: true, publicUrl: publicUrlData.publicUrl }; // ✅ كائن success: true
+
+    }catch (error) {
+        console.error("❌ فشل رفع الصورة:", error.message);
+        return { success: false, error: error.message }; // ✅ كائن success: false
+    }
+}
+export async function addProduct(productData) {
+    try{
+        const { data , error} = await supabase
+        .from("products")
+        .insert([productData])
+        .select()
+        if (error) throw error
+        return { success : true , data : data[0] }
+
+    }catch(error){
+        console.error("فشل تحميل المنتج " , error.message)
+        return {success : false , error : error.message}
+    }
+}

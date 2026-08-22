@@ -76,7 +76,7 @@ function ProductsSection() {
                 <div className="add-buttons">
                     <button className="ps-add-btn" onClick={openCategoryModal}>
                         <span className="material-symbols-outlined">add</span>
-                        Add Catagory
+                        Add Category
                     </button>
                     <button className="ps-add-btn" onClick={openModal}>
                         <span className="material-symbols-outlined">add</span>

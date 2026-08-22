@@ -13,6 +13,18 @@ export default function ProductCard(props) {
     setIsDetailsOpen(false);
   };
 
+  const [counter, setCounter] = useState(1);
+  
+  const increaseCounter = (e) => {
+    e.stopPropagation();
+    setCounter((prevCounter) => prevCounter + 1);
+  }
+
+  const decreaseCounter = (e) => {
+    e.stopPropagation();
+    setCounter((prevCounter) => (prevCounter > 1 ? prevCounter - 1 : 1));
+  }
+
   return (
     <>
       <div className="card-container" onClick={openDetails}>
@@ -26,6 +38,11 @@ export default function ProductCard(props) {
           <span>
             Weight: {props.weight} {props.weight_unit}
           </span>
+          <div>
+            <button className="increase-button" onClick={increaseCounter}>+</button>
+            <span className="counter-of-products">{counter}</span>
+            <button className="decrease-button" onClick={decreaseCounter}>-</button>
+          </div>
         </div>
         <div className="action">
           <div className="price">
