@@ -7,7 +7,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 100;
     padding: 20px;
 }
 
@@ -149,6 +149,7 @@
 
 /* ===== قائمة الفئات ===== */
 .categories-list {
+
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -184,6 +185,7 @@
 }
 
 .category-name {
+    cursor: pointer;
     font-weight: 600;
     color: #ffffff;
     font-size: 16px;
@@ -362,4 +364,108 @@
     .category-info {
         flex-wrap: wrap;
     }
+}
+
+/* ===== تنسيق Toast التأكيد ===== */
+.delete-confirm-toast {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.delete-confirm-message {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #f5e6d3;
+}
+
+.delete-confirm-message strong {
+    color: #FFA02E;
+}
+
+.delete-confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.delete-confirm-btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.delete-confirm-btn.delete-btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.custom-toast {
+    z-index: 99999 !important;
+}
+
+.delete-confirm-btn.delete-btn-danger:hover {
+    background: #dc2626;
+    transform: scale(1.02);
+}
+
+.delete-confirm-btn.delete-btn-cancel {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f5e6d3;
+}
+
+.delete-confirm-btn.delete-btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== إجراءات الفئة ===== */
+.category-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.delete-category-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.3);
+    transition: all 0.2s;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-category-btn:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    transform: scale(1.15);
+}
+
+/* ✅ تعديل العنصر ليصبح مرناً */
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border-left: 3px solid #FFA02E;
+    color: #ffffff;
+    font-weight: 500;
+    transition: 0.2s;
+    cursor: default;
+}
+
+.category-item:hover {
+    background: rgba(255, 239, 145, 0.08);
 }

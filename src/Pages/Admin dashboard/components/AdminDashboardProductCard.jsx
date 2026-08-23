@@ -7,7 +7,7 @@ export default function AdminDashboardProductCar(props) {
   const [isEditCArdModalOpen, setIsEditCArdModalOpen] = useState(false);
   const openEditCardModel = () => setIsEditCArdModalOpen(true);
   const closeEditCardModel = () => setIsEditCArdModalOpen(false);
-  const [deleteButton, setDeleteButton] = useState(true);
+  // const [deleteButton, setDeleteButton] = useState(true);
   return (
     <>
       <div className="card-container-admin" onClick={openEditCardModel}>
@@ -26,20 +26,16 @@ export default function AdminDashboardProductCar(props) {
           </div>
         </div>
         <div className="action-admin">
-          {deleteButton && <button
-            onClick={(e) => { setDeleteButton(false); e.stopPropagation(); }}
-            className="delete-button"> 🗑️ </button>}
-          {(!deleteButton) &&
-            <div className="action-admin">
-              <button
-                onClick={(e) => { e.stopPropagation(); props.onDelete(props.id); }}
-                className="Confirm-button">Confirm</button>
-
-              <button
-                onClick={(e) => { e.stopPropagation(); setDeleteButton(true); }}
-                className="Cancel-button">Cancel</button>
-            </div>
-          }
+          {/* ✅ زر حذف بسيط يستدعي التنبيه المؤكد مباشرة مع اسم المنتج */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              props.onDelete(props.id, props.name);
+            }}
+            className="delete-button"
+          >
+            🗑️
+          </button>
         </div>
       </div>
 
@@ -55,8 +51,8 @@ export default function AdminDashboardProductCar(props) {
             tax_rate={props.tax_rate}
             weight_unit={props.weight_unit}
             total_price={props.total_price}
-            nutritionObject={props.nutritionObject}  // 🔥 الكائن الجديد
-            storageObject={props.storageObject}       // 🔥 الكائن الجديد
+            nutritionObject={props.nutritionObject} // 🔥 الكائن الجديد
+            storageObject={props.storageObject} // 🔥 الكائن الجديد
             ingredients={props.ingredients}
             closeModel={closeEditCardModel}
             onUpdate={props.onUpdate}

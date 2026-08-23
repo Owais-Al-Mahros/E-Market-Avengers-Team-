@@ -1,102 +1,223 @@
 import { useCategories } from "../../../context/CategoryContext";
 import { useState } from "react";
+import AddSubCategory from "./components/AddSubCategory";
 import "./AddCategory.css";
+import toast from "react-hot-toast";
 
 export default function AddCategory({ closeModel, onCategoryAdded }) {
-    const { categories, loading, addCategory } = useCategories();
+    const { categories, loading, addCategory, deleteCategory } = useCategories();
     const [category, setCategory] = useState({ name: "", image: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+    const [showSubCategoryView, setShowSubCategoryView] = useState(false);
+
+    const openSubCategoryView = (categoryId) => {
+        setSelectedCategoryId(categoryId);
+        setShowSubCategoryView(true);
+    };
+
+    const closeSubCategoryView = () => {
+        setShowSubCategoryView(false);
+        setSelectedCategoryId(null);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!category.name.trim()) return;
-
+        if (!category.name.trim()) {
+            toast.error("Category name is required");
+            return;
+        }
         setIsSubmitting(true);
 
         try {
-            // ✅ إرسال الفئة إلى Supabase عبر السياق
             await addCategory({
                 name: category.name.trim(),
                 image: category.image.trim() || null,
             });
-
-            // إعادة تعيين الحقول
             setCategory({ name: "", image: "" });
-
-            // استدعاء دالة التحديث إذا وُجدت
+            toast.success("Category added successfully!");
             if (onCategoryAdded) await onCategoryAdded();
-
-            closeModel();
         } catch (error) {
             console.error("Error adding category:", error);
-            alert("Failed to add category: " + error.message);
+            toast.error("Failed to add category: " + error.message);
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    // ✅ دالة الحذف مع toast مخصص
+    const handleDeleteCategory = (e, id, name) => {
+        e.stopPropagation();
+
+        // عرض toast تأكيد مخصص
+        toast(
+            (t) => (
+                <div className="delete-confirm-toast">
+                    <p className="delete-confirm-message">
+                        Are you sure you want to delete the category <strong>"{name}"</strong> and all its subcategories?
+                    </p>
+                    <div className="delete-confirm-actions">
+                        <button
+                            className="delete-confirm-btn delete-btn-danger"
+                            onClick={() => {
+                                toast.dismiss(t.id);
+                                // عرض toast التحميل
+                                const deletePromise = deleteCategory(id).then(async () => {
+                                    if (onCategoryAdded) await onCategoryAdded();
+                                });
+
+                                toast.promise(deletePromise, {
+                                    loading: "Deleting category...",
+                                    success: "Category deleted successfully!",
+                                    error: (err) => `Failed to delete: ${err.message}`,
+                                });
+                            }}
+                        >
+                            Delete
+                        </button>
+                        <button
+                            className="delete-confirm-btn delete-btn-cancel"
+                            onClick={() => toast.dismiss(t.id)}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            ),
+            {
+                duration: Infinity,
+                position: "top-center",
+                className: 'custom-toast',
+                style: {
+                    maxWidth: "420px",
+                    background: "#1a2a3a",
+                    color: "#f5e6d3",
+                    borderRadius: "12px",
+                    padding: "20px",
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+                },
+            }
+        );
+    };
+
     const renderCategories = () => {
         if (loading) return <p className="loading-text">Loading categories...</p>;
         if (categories.length === 0)
-            return <p className="empty-text">No categories yet. Add your first one!</p>;
+            return (
+                <p className="empty-text">No categories yet. Add your first one!</p>
+            );
 
         return categories.map((cat) => (
             <div key={cat.id} className="category-item">
-                <div className="category-info">
+                <div
+                    className="category-info"
+                    onClick={() => openSubCategoryView(cat.id)}
+                >
                     {cat.image && (
-                        <img src={cat.image} alt={cat.name} className="category-thumb" />
+                        <img
+                            src={cat.image}
+                            alt={cat.name}
+                            className="category-thumb"
+                        />
                     )}
                     <span className="category-name">{cat.name}</span>
                 </div>
-                <span className="category-count">
-                    {cat.subcategories?.length || 0} sub
-                </span>
+                <div className="category-actions">
+                    <span className="category-count">
+                        {cat.subcategories?.length || 0} sub
+                    </span>
+                    <button
+                        type="button"
+                        className="delete-category-btn"
+                        onClick={(e) => handleDeleteCategory(e, cat.id, cat.name)}
+                    >
+                        🗑️
+                    </button>
+                </div>
             </div>
         ));
     };
 
+    const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
+
     return (
         <div className="modal-overlay" onClick={closeModel}>
             <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-                {/* الرأس */}
-                <div className="modal-header">
-                    <h2>📂 Manage Categories</h2>
-                </div>
+                {!showSubCategoryView && (
+                    <div className="modal-header">
+                        <h2>📂 Manage Categories</h2>
+                    </div>
+                )}
 
-                <form className="modal-body" onSubmit={handleSubmit}>
-                    <div className="add-category-form">
-                        <div className="form-fields">
-                            <input
-                                type="text"
-                                placeholder="Category name..."
-                                value={category.name}
-                                onChange={(e) => setCategory({ ...category, name: e.target.value })}
-                                disabled={isSubmitting}
-                                required
-                            />
-                            <input
-                                type="text"
-                                placeholder="Image URL (optional)..."
-                                value={category.image}
-                                onChange={(e) => setCategory({ ...category, image: e.target.value })}
-                                disabled={isSubmitting}
-                            />
-                        </div>
-                        <button type="submit" className="add-btn" disabled={isSubmitting}>
-                            <span className="material-symbols-outlined">add</span>
-                            {isSubmitting ? "Adding..." : "Add"}
-                        </button>
+                <div className="modal-body-wrapper">
+                    {/* الواجهة الرئيسية */}
+                    <div
+                        className={`view-container ${showSubCategoryView ? "fade-out" : "fade-in"
+                            }`}
+                    >
+                        {!showSubCategoryView && (
+                            <>
+                                <form className="modal-body" onSubmit={handleSubmit}>
+                                    <div className="add-category-form">
+                                        <div className="form-fields">
+                                            <input
+                                                type="text"
+                                                placeholder="Category name..."
+                                                value={category.name}
+                                                onChange={(e) =>
+                                                    setCategory({ ...category, name: e.target.value })
+                                                }
+                                                disabled={isSubmitting}
+                                                required
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Image URL (optional)..."
+                                                value={category.image}
+                                                onChange={(e) =>
+                                                    setCategory({ ...category, image: e.target.value })
+                                                }
+                                                disabled={isSubmitting}
+                                            />
+                                        </div>
+                                        <button
+                                            type="submit"
+                                            className="add-btn"
+                                            disabled={isSubmitting}
+                                        >
+                                            <span className="material-symbols-outlined">add</span>
+                                            {isSubmitting ? "Adding..." : "Add"}
+                                        </button>
+                                    </div>
+                                    <div className="categories-list">{renderCategories()}</div>
+                                </form>
+                                <div className="modal-footer">
+                                    <button
+                                        type="button"
+                                        className="close-modal-btn"
+                                        onClick={closeModel}
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
 
-                    <div className="categories-list">{renderCategories()}</div>
-                </form>
-
-                {/* التذييل */}
-                <div className="modal-footer">
-                    <button type="button" className="close-modal-btn" onClick={closeModel}>
-                        Close
-                    </button>
+                    {/* واجهة الفئات الفرعية */}
+                    <div
+                        className={`view-container ${showSubCategoryView ? "fade-in" : "fade-out"
+                            }`}
+                    >
+                        {showSubCategoryView && selectedCategory && (
+                            <AddSubCategory
+                                category={selectedCategory}
+                                onBack={closeSubCategoryView}
+                                onUpdate={onCategoryAdded}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

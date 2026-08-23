@@ -1,5 +1,6 @@
 import ProductForm from "./components/ProductForm.jsx";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import "./EditProduct.css";
 
 export default function EditProduct(props) {
@@ -21,19 +22,20 @@ export default function EditProduct(props) {
 
     const handleSubmit = async (data) => {
         setLoading(true);
-        try {
-            // ✅ استخدم onUpdate من props (التي تقوم بتحديث السياق)
-            const result = await props.onUpdate(props.id, data);
-            if (result.success) {
-                props.closeModel(); // أغلق المودال بعد النجاح
-            } else {
-                alert("Update failed: " + (result.error || "Unknown error"));
-                setLoading(false);
+
+        const updatePromise = props.onUpdate(props.id, data).then((result) =>{
+            if(result.success){
+                props.closeModel()
+            }else{
+                throw new Error(result.error || "Unknown Error...")
             }
-        } catch (error) {
-            alert("An error occurred: " + error.message);
-            setLoading(false);
-        }
+        })
+
+        toast.promise(updatePromise,{
+            loading : "Update Product Details...",
+            success : "Update Product Successfully! ✏️",
+            error : (err)=> `Update Failed : ${err.message}`,
+        }).finally(()=>setLoading(false))
     };
 
     return (
