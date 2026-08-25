@@ -149,7 +149,7 @@ export default function ShoppingCart() {
                             </div>
 
                             <button
-                                onClick={() => navigate("/cart/checkout")}
+                                onClick={() => navigate("Checkout")}
                                 className="btn w-full tc py-4 rounded-xl fw-bold text-xl flex items-center justify-center gap-2 mt-4"
                             >
                                 <span className="material-symbols-outlined">lock</span>

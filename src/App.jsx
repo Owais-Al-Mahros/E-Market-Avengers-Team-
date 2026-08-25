@@ -78,7 +78,7 @@ function App() {
       <ProductProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/Cart&Payments" element={<CartAndPayments />} />
+          <Route path="/Cart&Payments/*" element={<CartAndPayments />} />
           <Route
             path="/dashboard"
             element={

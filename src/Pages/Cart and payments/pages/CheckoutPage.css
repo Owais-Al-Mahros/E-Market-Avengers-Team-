@@ -1,0 +1,633 @@
+/* ============================================
+   CHECKOUT PAGE - GreenCart Style
+   Colors: #FFFADC (bg), #B6F500 (neon), 
+           #A4DD00 (light), #98CD00 (lime)
+   ============================================ */
+
+/* ===== Global Reset & Base ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Atkinson Hyperlegible Next', sans-serif;
+    background-color: #FFFADC;
+    color: #1a1a1a;
+}
+
+/* ===== Container ===== */
+.chk-container {
+    min-height: 100vh;
+    background-color: #FFFADC;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================
+   NAVBAR
+   ============================================ */
+.chk-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    background-color: #1a2a3a;
+    color: #f5e6d3;
+    padding: 12px 24px;
+    min-height: 72px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 4px solid #98CD00;
+}
+
+.chk-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.chk-brand {
+    font-size: 28px;
+    font-weight: 800;
+    color: #B6F500;
+}
+
+.chk-brand-sub {
+    font-size: 14px;
+    color: #f5e6d3;
+    display: none;
+}
+
+.chk-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.chk-nav-link {
+    color: #f5e6d3;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    transition: color 0.2s;
+    display: none;
+}
+
+.chk-nav-link:hover {
+    color: #B6F500;
+}
+
+.chk-nav-btn {
+    background: transparent;
+    border: none;
+    color: #B6F500;
+    cursor: pointer;
+    min-width: 48px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: color 0.2s;
+}
+
+.chk-nav-btn:hover {
+    color: #A4DD00;
+}
+
+.chk-nav-btn .material-symbols-outlined {
+    font-size: 28px;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.chk-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 20px 40px;
+    width: 100%;
+    flex: 1;
+}
+
+/* ===== Header ===== */
+.chk-header {
+    margin-bottom: 24px;
+}
+
+.chk-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1a1a1a;
+}
+
+.chk-header p {
+    font-size: 18px;
+    color: #4a4a4a;
+    margin-top: 4px;
+}
+
+/* ===== Progress Bar ===== */
+.chk-progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f5f6ed;
+    border: 2px solid #98CD00;
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chk-step {
+    font-size: 16px;
+    font-weight: 600;
+    color: #4a4a4a;
+    padding: 4px 12px;
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+
+.chk-step.active {
+    color: #1a1a1a;
+    background: #B6F500;
+    border: 2px solid #98CD00;
+}
+
+.chk-step::after {
+    content: " → ";
+    color: #98CD00;
+    font-weight: 700;
+    margin-left: 8px;
+}
+
+.chk-step:last-child::after {
+    content: "";
+}
+
+/* ============================================
+   TWO-COLUMN LAYOUT
+   ============================================ */
+.chk-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+@media (min-width: 992px) {
+    .chk-layout {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+/* ============================================
+   LEFT: FORM
+   ============================================ */
+.chk-form {
+    flex: 1;
+    background: #f5f6ed;
+    border: 2px solid #98CD00;
+    border-radius: 16px;
+    padding: 28px 24px;
+}
+
+/* ===== Form Sections ===== */
+.chk-section {
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid rgba(152, 205, 0, 0.2);
+}
+
+.chk-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.chk-section h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+}
+
+/* ===== Form Rows ===== */
+.chk-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+@media (min-width: 600px) {
+    .chk-row {
+        flex-direction: row;
+        gap: 16px;
+    }
+}
+
+/* ===== Form Fields ===== */
+.chk-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.chk-field label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.chk-field input,
+.chk-field select,
+.chk-field textarea {
+    padding: 12px 16px;
+    border: 2px solid #98CD00;
+    border-radius: 12px;
+    font-size: 18px;
+    font-family: inherit;
+    background: #FFFADC;
+    color: #1a1a1a;
+    transition: all 0.2s;
+    min-height: 52px;
+    width: 100%;
+}
+
+.chk-field input:focus,
+.chk-field select:focus,
+.chk-field textarea:focus {
+    outline: none;
+    border-color: #B6F500;
+    box-shadow: 0 0 0 4px rgba(182, 245, 0, 0.25);
+}
+
+.chk-field textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.chk-hint {
+    font-size: 14px;
+    color: #4a4a4a;
+    margin-top: 2px;
+}
+
+.chk-full {
+    flex: 1 1 100%;
+}
+
+/* ===== Form Actions ===== */
+.chk-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 2px solid rgba(152, 205, 0, 0.2);
+}
+
+@media (min-width: 600px) {
+    .chk-actions {
+        flex-direction: row;
+    }
+}
+
+.chk-btn-cancel {
+    padding: 14px 24px;
+    background: transparent;
+    color: #1a1a1a;
+    border: 2px solid #98CD00;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 56px;
+    flex: 1;
+}
+
+.chk-btn-cancel:hover {
+    background: #A4DD00;
+}
+
+.chk-btn-submit {
+    padding: 14px 32px;
+    background: #B6F500;
+    color: #1a1a1a;
+    border: 2px solid #98CD00;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 56px;
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.chk-btn-submit:hover {
+    background: #A4DD00;
+    transform: scale(1.02);
+    box-shadow: 0 4px 20px rgba(182, 245, 0, 0.3);
+}
+
+.chk-btn-submit:active {
+    transform: scale(0.97);
+}
+
+/* ============================================
+   RIGHT: ORDER SUMMARY
+   ============================================ */
+.chk-summary {
+    width: 100%;
+}
+
+@media (min-width: 992px) {
+    .chk-summary {
+        width: 380px;
+        flex-shrink: 0;
+    }
+}
+
+.chk-summary-card {
+    background: #f5f6ed;
+    border: 2px solid #98CD00;
+    border-radius: 16px;
+    padding: 24px;
+    position: sticky;
+    top: 100px;
+}
+
+.chk-summary-card h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+    border-bottom: 2px solid #98CD00;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+}
+
+/* ===== Summary Items ===== */
+.chk-summary-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.chk-summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 16px;
+    color: #1a1a1a;
+    border-bottom: 1px dashed rgba(152, 205, 0, 0.2);
+}
+
+.chk-summary-item span:last-child {
+    font-weight: 700;
+    color: #98CD00;
+}
+
+/* ===== Summary Totals ===== */
+.chk-summary hr {
+    border: none;
+    border-top: 2px solid #98CD00;
+    margin: 12px 0;
+}
+
+.chk-summary-totals {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chk-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    color: #1a1a1a;
+}
+
+.chk-total-row span:last-child {
+    font-weight: 700;
+}
+
+.chk-highlight {
+    color: #B6F500;
+    font-weight: 600;
+}
+
+.chk-highlight span:last-child {
+    color: #B6F500;
+}
+
+.chk-grand-total {
+    font-size: 22px;
+    font-weight: 800;
+    padding-top: 8px;
+    border-top: 2px solid #98CD00;
+    margin-top: 4px;
+}
+
+.chk-grand-total span:last-child {
+    color: #B6F500;
+    font-size: 24px;
+}
+
+/* ===== Secure Badge ===== */
+.chk-secure {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #4a4a4a;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(152, 205, 0, 0.2);
+}
+
+.chk-secure .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.chk-footer {
+    background: #1a2a3a;
+    color: #f5e6d3;
+    border-top: 4px solid #98CD00;
+    padding: 20px 24px;
+    margin-top: 40px;
+}
+
+.chk-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .chk-footer {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+    }
+}
+
+.chk-footer p {
+    font-size: 18px;
+    font-weight: 700;
+    color: #B6F500;
+}
+
+.chk-footer-links {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.chk-footer-links a {
+    color: #f5e6d3;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+.chk-footer-links a:hover {
+    color: #B6F500;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* Tablets */
+@media (max-width: 991px) {
+    .chk-main {
+        padding: 90px 16px 30px;
+    }
+
+    .chk-form {
+        padding: 20px 16px;
+    }
+
+    .chk-summary-card {
+        position: static;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .chk-brand {
+        font-size: 22px;
+    }
+
+    .chk-brand-sub {
+        display: none;
+    }
+
+    .chk-header h1 {
+        font-size: 24px;
+    }
+
+    .chk-header p {
+        font-size: 16px;
+    }
+
+    .chk-step {
+        font-size: 13px;
+        padding: 2px 8px;
+    }
+
+    .chk-step::after {
+        content: " → ";
+        margin-left: 4px;
+    }
+
+    .chk-field input,
+    .chk-field select,
+    .chk-field textarea {
+        font-size: 16px;
+        padding: 10px 14px;
+        min-height: 48px;
+    }
+
+    .chk-btn-submit {
+        font-size: 17px;
+        padding: 12px 20px;
+    }
+
+    .chk-btn-cancel {
+        font-size: 16px;
+        padding: 12px 16px;
+    }
+
+    .chk-summary-card {
+        padding: 16px;
+    }
+
+    .chk-grand-total {
+        font-size: 18px;
+    }
+
+    .chk-grand-total span:last-child {
+        font-size: 20px;
+    }
+
+    .chk-footer-links {
+        gap: 12px;
+    }
+
+    .chk-footer-links a {
+        font-size: 14px;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 360px) {
+    .chk-navbar {
+        padding: 8px 12px;
+        min-height: 60px;
+    }
+
+    .chk-brand {
+        font-size: 18px;
+    }
+
+    .chk-main {
+        padding: 80px 10px 20px;
+    }
+
+    .chk-form {
+        padding: 14px 10px;
+    }
+
+    .chk-actions {
+        flex-direction: column;
+    }
+
+    .chk-btn-submit,
+    .chk-btn-cancel {
+        flex: unset;
+        width: 100%;
+    }
+}
