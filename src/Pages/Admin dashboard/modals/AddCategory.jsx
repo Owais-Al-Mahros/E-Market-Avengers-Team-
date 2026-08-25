@@ -1,5 +1,6 @@
 import { useCategories } from "../../../context/CategoryContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../../../lib/supabase"; // ✅ استيراد supabase
 import AddSubCategory from "./components/AddSubCategory";
 import "./AddCategory.css";
 import toast from "react-hot-toast";
@@ -11,6 +12,41 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
 
     const [selectedCategoryId, setSelectedCategoryId] = useState(null);
     const [showSubCategoryView, setShowSubCategoryView] = useState(false);
+
+    // ✅ حالة لتخزين أعداد الفئات الفرعية لكل فئة
+    const [subCounts, setSubCounts] = useState({});
+
+    // ✅ جلب أعداد الفئات الفرعية عند تحميل الفئات
+    useEffect(() => {
+        const fetchSubCounts = async () => {
+            if (categories.length === 0) return;
+
+            try {
+                // استعلام واحد لجلب الأعداد لكل الفئات
+                const { data, error } = await supabase
+                    .from("subcategories")
+                    .select("category_id")
+                    .in(
+                        "category_id",
+                        categories.map((c) => c.id)
+                    );
+
+                if (error) throw error;
+
+                // حساب الأعداد لكل category_id
+                const counts = {};
+                data.forEach((sub) => {
+                    counts[sub.category_id] = (counts[sub.category_id] || 0) + 1;
+                });
+
+                setSubCounts(counts);
+            } catch (error) {
+                console.error("Error fetching subcategory counts:", error);
+            }
+        };
+
+        fetchSubCounts();
+    }, [categories]); // ✅ يُعاد الجلب عند تغير الفئات
 
     const openSubCategoryView = (categoryId) => {
         setSelectedCategoryId(categoryId);
@@ -50,7 +86,6 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
     const handleDeleteCategory = (e, id, name) => {
         e.stopPropagation();
 
-        // عرض toast تأكيد مخصص
         toast(
             (t) => (
                 <div className="delete-confirm-toast">
@@ -62,7 +97,6 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
                             className="delete-confirm-btn delete-btn-danger"
                             onClick={() => {
                                 toast.dismiss(t.id);
-                                // عرض toast التحميل
                                 const deletePromise = deleteCategory(id).then(async () => {
                                     if (onCategoryAdded) await onCategoryAdded();
                                 });
@@ -88,7 +122,7 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
             {
                 duration: Infinity,
                 position: "top-center",
-                className: 'custom-toast',
+                className: "custom-toast",
                 style: {
                     maxWidth: "420px",
                     background: "#1a2a3a",
@@ -104,29 +138,19 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
     const renderCategories = () => {
         if (loading) return <p className="loading-text">Loading categories...</p>;
         if (categories.length === 0)
-            return (
-                <p className="empty-text">No categories yet. Add your first one!</p>
-            );
+            return <p className="empty-text">No categories yet. Add your first one!</p>;
 
         return categories.map((cat) => (
             <div key={cat.id} className="category-item">
-                <div
-                    className="category-info"
-                    onClick={() => openSubCategoryView(cat.id)}
-                >
+                <div className="category-info" onClick={() => openSubCategoryView(cat.id)}>
                     {cat.image && (
-                        <img
-                            src={cat.image}
-                            alt={cat.name}
-                            className="category-thumb"
-                        />
+                        <img src={cat.image} alt={cat.name} className="category-thumb" />
                     )}
                     <span className="category-name">{cat.name}</span>
                 </div>
                 <div className="category-actions">
-                    <span className="category-count">
-                        {cat.subcategories?.length || 0} sub
-                    </span>
+                    {/* ✅ استخدم الأعداد المخزنة في الحالة */}
+                    <span className="category-count">{subCounts[cat.id] || 0} sub</span>
                     <button
                         type="button"
                         className="delete-category-btn"
@@ -153,8 +177,7 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
                 <div className="modal-body-wrapper">
                     {/* الواجهة الرئيسية */}
                     <div
-                        className={`view-container ${showSubCategoryView ? "fade-out" : "fade-in"
-                            }`}
+                        className={`view-container ${showSubCategoryView ? "fade-out" : "fade-in"}`}
                     >
                         {!showSubCategoryView && (
                             <>
@@ -207,8 +230,7 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
 
                     {/* واجهة الفئات الفرعية */}
                     <div
-                        className={`view-container ${showSubCategoryView ? "fade-in" : "fade-out"
-                            }`}
+                        className={`view-container ${showSubCategoryView ? "fade-in" : "fade-out"}`}
                     >
                         {showSubCategoryView && selectedCategory && (
                             <AddSubCategory

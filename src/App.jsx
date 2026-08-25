@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import AdminDashboard from "./Pages/Admin dashboard/AdminDashboard";
 import HomePage from "./Pages/Home page/HomePage";
 import LoginPage from "./Pages/Log in  page/LoginPage";
+import CartAndPayments from "./Pages/Cart and payments/CartAndPayments";
 import { useEffect, useState, useRef } from "react";
 import { Navigate } from "react-router-dom";
 import { ProductProvider } from "./context/ProductContext";
@@ -77,6 +78,7 @@ function App() {
       <ProductProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/Cart&Payments" element={<CartAndPayments />} />
           <Route
             path="/dashboard"
             element={

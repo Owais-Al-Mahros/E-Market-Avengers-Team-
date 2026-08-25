@@ -16,7 +16,7 @@ export default function ProductModal({ closeModel, onProductAdded }) {
       if (file) {
         const uploadRes = await uploadProductImage(file);
         if (!uploadRes.success) throw new Error(uploadRes.error);
-        imageUrl = uploadRes.url;
+        imageUrl = uploadRes.publicUrl; // ✅;
       }
       const { error } = await supabase.from("products").insert([{ ...data, image: imageUrl }]);
       if (error) throw error;

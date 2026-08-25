@@ -487,11 +487,11 @@
     }
 }
 
-.container-of-product-image{
+.container-of-product-image {
     position: relative;
     width: 120px;
     height: 120px;
-    margin : 0 auto 15px auto;
+    margin: 0 auto 15px auto;
     border-radius: 50%;
     background-color: #1e2128;
     overflow: hidden;
@@ -501,18 +501,18 @@
     border: 2px dashed #4a5568;
 }
 
-.image-of-product-dashboard{
+.image-of-product-dashboard {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.icon-of-image-dashboard{
+.icon-of-image-dashboard {
     position: absolute;
-    top : 50%;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%);
-    background-color: rgba(0,0,0,0.65);
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.65);
     color: #fff;
     border: 2px solid #fff;
     border-radius: 50%;
@@ -523,4 +523,17 @@
     justify-content: center;
     cursor: pointer;
     z-index: 10;
+}
+
+/* ===== عنصر الفئة ===== */
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    border-left: 4px solid #FFA02E;
+    transition: all 0.2s;
+    cursor: default;
 }

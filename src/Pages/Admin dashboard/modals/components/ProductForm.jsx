@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useDynamicFields } from "../../../../hooks/useDynamicFields";
 import "./ProductForm.css";
 import { useCategories } from "../../../../context/CategoryContext";
-
+import { useSubcategories } from "../../../../context/SubcategoryContext";
 export default function ProductForm({
   initialProductInfo = {},
   onSubmit,
@@ -15,7 +15,8 @@ export default function ProductForm({
     name: "",
     price: "",
     image: "",
-    category: "",
+    category_id: "",      // ✅ بدلاً من category (النص)
+    subcategory_id: "",   // ✅ للفئة الفرعية
     weight: "",
     weight_unit: "kg",
     tax_rate: 0,
@@ -49,19 +50,23 @@ export default function ProductForm({
 
   const [currentSection, setCurrentSection] = useState(0);
   const { categories } = useCategories();
+  const { subcategories } = useSubcategories();
 
+  const filteredSubcategories = subcategories.filter(
+    (sub) => sub.category_id === parseInt(productInfo.category_id)
+  );
   const initialNutrition = initialProductInfo.nutrition_facts
     ? Object.entries(initialProductInfo.nutrition_facts).map(([k, v]) => ({
-        key: k,
-        value: v,
-      }))
+      key: k,
+      value: v,
+    }))
     : [];
 
   const initialStorage = initialProductInfo.storage_notes
     ? Object.entries(initialProductInfo.storage_notes).map(([k, v]) => ({
-        key: k,
-        value: v,
-      }))
+      key: k,
+      value: v,
+    }))
     : [];
 
   const nutrition = useDynamicFields(initialNutrition);
@@ -87,6 +92,8 @@ export default function ProductForm({
       total_price: totalPrice,
       nutrition_facts: nutrition.toObject(),
       storage_notes: storage.toObject(),
+      category_id: parseInt(productInfo.category_id) || null, // ✅ تحويل إلى int
+      subcategory_id: parseInt(productInfo.subcategory_id) || null, // ✅ تحويل إلى int
     };
     await onSubmit(dataToSubmit, selectedFile);
   };
@@ -143,23 +150,41 @@ export default function ProductForm({
                 <select
                   required
                   className="edit-input box-input unit-select"
-                  value={productInfo.category}
-                  onChange={(e) =>
-                    setProductInfo({ ...productInfo, category: e.target.value })
-                  }
+                  value={productInfo.category_id}
+                  onChange={(e) => {
+                    setProductInfo({
+                      ...productInfo,
+                      category_id: e.target.value,
+                      subcategory_id: "", // إعادة تعيين الفئة الفرعية عند تغيير الفئة
+                    });
+                  }}
                 >
                   <option value="">Select Category</option>
-                  {categories.map((category) => (
-                    <option
-                      key={category.id || category.name}
-                      value={category.name}
-                    >
-                      {category.name}
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
                     </option>
                   ))}
                 </select>
               </div>
-
+              <div className="field-group">
+                <span className="info-label">Subcategory</span>
+                <select
+                  className="edit-input box-input unit-select"
+                  value={productInfo.subcategory_id}
+                  onChange={(e) =>
+                    setProductInfo({ ...productInfo, subcategory_id: e.target.value })
+                  }
+                  disabled={!productInfo.category_id} // تعطيل إذا لم يتم اختيار فئة
+                >
+                  <option value="">Select Subcategory</option>
+                  {filteredSubcategories.map((sub) => (
+                    <option key={sub.id} value={sub.id}>
+                      {sub.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="field-group">
                 <span className="info-label">Weight</span>
                 <div className="weight-group">

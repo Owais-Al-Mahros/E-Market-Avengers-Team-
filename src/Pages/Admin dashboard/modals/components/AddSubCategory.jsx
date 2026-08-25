@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
+
 import "./AddSubCategory.css";
 
 export default function AddSubCategory({ category, onBack, onUpdate }) {
@@ -46,7 +47,7 @@ export default function AddSubCategory({ category, onBack, onUpdate }) {
                 {
                     name: newSubName.trim(),
                     image: newSubImage.trim() || null,
-                    category_id: category.id,
+                    category_id: parseInt(category.id),
                 },
             ])
             .select();

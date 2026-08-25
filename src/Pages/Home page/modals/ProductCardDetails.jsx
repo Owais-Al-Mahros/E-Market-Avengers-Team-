@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import "./ProductCardDetails.css";
+import { useCart } from "../../../context/CartContext.jsx"; // ✅ استيراد السياق
+import toast from "react-hot-toast"; // ✅ اختياري
 
 export default function ProductCardDetails({
   id,
@@ -17,7 +19,41 @@ export default function ProductCardDetails({
   storageObject,
   ingredients,
 }) {
-  // تعريف جميع الأقسام كدوال مع أسماء واضحة
+  const { addToCart } = useCart(); // ✅ جلب دالة الإضافة
+  const [quantity, setQuantity] = useState(1); // ✅ كمية المنتج داخل المودال
+
+  // ✅ زيادة الكمية
+  const increaseQty = (e) => {
+    e.stopPropagation();
+    setQuantity((prev) => prev + 1);
+  };
+
+  // ✅ نقص الكمية
+  const decreaseQty = (e) => {
+    e.stopPropagation();
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  };
+
+  // ✅ دالة إضافة المنتج للسلة (مع الكمية المحددة)
+  const handleAddToCart = () => {
+    addToCart(
+      {
+        id,
+        name,
+        price,
+        image,
+        weight,
+        weight_unit,
+      },
+      quantity
+    );
+
+    toast.success(`Added ${quantity} × ${name} to cart!`, {
+      duration: 2000,
+    });
+  };
+
+  // ... تعريف الأقسام (مثل السابق)
   const renderBasicInfo = () => (
     <>
       <div className="section-title">📋 Basic Information</div>
@@ -57,7 +93,6 @@ export default function ProductCardDetails({
     <>
       <div className="section-title">🥗 Nutritional Values</div>
       <div className="nutrition-grid">
-
         {nutritionObject && Object.keys(nutritionObject).length > 0 ? (
           <div className="nutrition-items">
             <table className="nutrition-table">
@@ -101,7 +136,9 @@ export default function ProductCardDetails({
             Object.keys(storageObject).length > 0 &&
             Object.entries(storageObject).map(([key, value]) => (
               <div key={key}>
-                <li><span className="body-text">{key}:</span> {value}</li>
+                <li>
+                  <span className="body-text">{key}:</span> {value}
+                </li>
               </div>
             ))}
         </ul>
@@ -109,46 +146,28 @@ export default function ProductCardDetails({
     </>
   );
 
-  // تحديد الأقسام النشطة بناءً على البيانات
+  // تحديد الأقسام النشطة
   const hasNutrition =
     ingredients || (nutritionObject && Object.keys(nutritionObject).length > 0);
   const hasStorage = storageObject && Object.keys(storageObject).length > 0;
 
-  // بناء مصفوفة الأقسام النشطة مع الفهرس الأصلي
-  const activeSections = [
-    { id: 0, render: renderBasicInfo }, // الأساسي موجود دائماً
-  ];
-  if (hasNutrition) {
-    activeSections.push({ id: 1, render: renderNutrition });
-  }
-  if (hasStorage) {
-    activeSections.push({ id: 2, render: renderStorage });
-  }
+  const activeSections = [{ id: 0, render: renderBasicInfo }];
+  if (hasNutrition) activeSections.push({ id: 1, render: renderNutrition });
+  if (hasStorage) activeSections.push({ id: 2, render: renderStorage });
 
-  // currentSection يمثل الفهرس داخل المصفوفة النشطة (وليس id القسم)
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // إذا أصبح القسم الحالي غير نشط، نعيد تعيينه إلى 0
   useEffect(() => {
-    if (currentIndex >= activeSections.length) {
-      setCurrentIndex(0);
-    }
+    if (currentIndex >= activeSections.length) setCurrentIndex(0);
   }, [activeSections.length, currentIndex]);
 
-  // دالة تغيير القسم (تستقبل الفهرس في المصفوفة النشطة)
-  const goToSection = (index) => {
-    setCurrentIndex(index);
-  };
-
-  // الحصول على القسم الحالي
+  const goToSection = (index) => setCurrentIndex(index);
   const currentSection = activeSections[currentIndex];
 
   return (
     <div className="modal-overlay" onClick={closeModal}>
       <div className="product-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="close-btn" onClick={closeModal}>
-          ✕
-        </button>
+        <button className="close-btn" onClick={closeModal}>✕</button>
 
         <div className="product-image-section">
           <img src={image} alt={name} />
@@ -159,7 +178,6 @@ export default function ProductCardDetails({
             {currentSection && currentSection.render()}
           </div>
 
-          {/* عرض النقاط فقط إذا كان هناك أكثر من قسم نشط */}
           {activeSections.length > 1 && (
             <div className="nav-dots">
               {activeSections.map((section, index) => (
@@ -167,13 +185,22 @@ export default function ProductCardDetails({
                   key={section.id}
                   className={`dot ${index === currentIndex ? "active" : ""}`}
                   onClick={() => goToSection(index)}
-                  aria-label={`القسم ${section.id + 1}`}
                 />
               ))}
             </div>
           )}
 
-          <button className="add-to-cart-btn">🛒 Add To Cart </button>
+          {/* ✅ تحسين زر الإضافة مع عداد الكمية */}
+          <div className="cart-controls">
+            <div className="quantity-controls">
+              <button onClick={decreaseQty} className="qty-btn">−</button>
+              <span className="qty-value">{quantity}</span>
+              <button onClick={increaseQty} className="qty-btn">+</button>
+            </div>
+            <button className="add-to-cart-btn" onClick={handleAddToCart}>
+              🛒 Add To Cart ({(price * quantity).toFixed(2)} $)
+            </button>
+          </div>
         </div>
       </div>
     </div>

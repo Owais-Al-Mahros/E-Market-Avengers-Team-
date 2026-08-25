@@ -1,6 +1,7 @@
 import ProductForm from "./components/ProductForm.jsx";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { uploadProductImage } from "../../../hooks/useProduct.js"; // ✅ استيراد دالة رفع الصورة
 import "./EditProduct.css";
 
 export default function EditProduct(props) {
@@ -11,7 +12,8 @@ export default function EditProduct(props) {
         name: props.name,
         price: props.price,
         image: props.image,
-        category: props.category,
+        category_id: props.category_id ? Number(props.category_id) : null,
+        subcategory_id: props.subcategory_id ? Number(props.subcategory_id) : null,
         weight: props.weight,
         weight_unit: props.weight_unit,
         tax_rate: props.tax_rate,
@@ -20,22 +22,39 @@ export default function EditProduct(props) {
         storage_notes: props.storageObject,
     };
 
-    const handleSubmit = async (data) => {
+    const handleSubmit = async (data, file) => {
         setLoading(true);
 
-        const updatePromise = props.onUpdate(props.id, data).then((result) =>{
-            if(result.success){
-                props.closeModel()
-            }else{
-                throw new Error(result.error || "Unknown Error...")
-            }
-        })
+        // ✅ دالة التحديث مع رفع الصورة إن وجدت
+        const updatePromise = (async () => {
+            let imageUrl = data.image; // الرابط القديم
 
-        toast.promise(updatePromise,{
-            loading : "Update Product Details...",
-            success : "Update Product Successfully! ✏️",
-            error : (err)=> `Update Failed : ${err.message}`,
-        }).finally(()=>setLoading(false))
+            // إذا كان هناك ملف جديد، نرفعه
+            if (file) {
+                const uploadRes = await uploadProductImage(file);
+                if (!uploadRes.success) throw new Error(uploadRes.error);
+                imageUrl = uploadRes.publicUrl; // الرابط الجديد
+            }
+
+            // تحديث البيانات بالرابط الجديد
+            const updatedData = { ...data, image: imageUrl };
+
+            // إزالة الحقل category إن وجد
+            const { category, ...cleanData } = updatedData;
+
+            // تنفيذ التحديث
+            const result = await props.onUpdate(props.id, cleanData);
+            if (!result.success) {
+                throw new Error(result.error || "Unknown Error...");
+            }
+            props.closeModel();
+        })();
+
+        toast.promise(updatePromise, {
+            loading: "Updating product and image...",
+            success: "Product updated successfully! ✏️",
+            error: (err) => `Update Failed: ${err.message}`,
+        }).finally(() => setLoading(false));
     };
 
     return (

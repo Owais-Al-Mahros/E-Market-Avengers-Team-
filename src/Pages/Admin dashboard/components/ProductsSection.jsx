@@ -60,8 +60,8 @@ function ProductsSection() {
       ),
       {
         id: "delete-confirm-toast",
-        duration : Infinity,
-        position : "top-center",
+        duration: Infinity,
+        position: "top-center",
         className: "custom-delete-toast-wrapper"
       },
     );
@@ -90,7 +90,8 @@ function ProductsSection() {
         key={product.id}
         id={product.id}
         name={product.name}
-        category={product.category}
+        category_id={product.category_id}      // ✅
+        subcategory_id={product.subcategory_id} // ✅
         price={product.price}
         image={product.image}
         weight={product.weight}
@@ -163,7 +164,7 @@ function ProductsSection() {
           onProductAdded={refreshProducts}
         />
       )}
-      {CategoryModal && <AddCataeory closeModel={closeCategoryModal} />}
+      {CategoryModal && <AddCataeory closeModel={closeCategoryModal} onCategoryAdded={refreshProducts} />}
     </div>
   );
 }
