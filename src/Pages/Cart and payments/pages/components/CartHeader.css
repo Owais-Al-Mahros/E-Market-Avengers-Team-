@@ -1,0 +1,107 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap");
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+:root {
+  --bg-button: #a7e204;
+  --bg-button-hover: #a4dd00;
+  --bg-navbar: #98cd00;
+  --bg-g-one: rgba(46, 125, 50, 0.3);
+  --bg-g-two: rgba(46, 125, 50, 0.2);
+  --color: #2f2727;
+}
+
+.material-symbols-outlined {
+  font-size: 1.5rem;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.cart-header-container {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  padding: 1rem;
+  justify-content: space-between;
+  background-color: var(--bg-navbar);
+}
+
+.cart-header-right {
+  display: flex;
+  align-items: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  color: var(--color);
+
+  .link {
+    text-decoration: none;
+    color: var(--color);
+  }
+}
+.cart-search-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  color: var(--color);
+
+  .forget-text {
+    font-size: 1rem;
+    font-weight: 1000;
+  }
+
+  .search-input {
+    width: 40rem;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    transition: all 0.2s ease-in-out;
+    border-style: none;
+  }
+
+  .search-input:focus {
+    outline: none;
+    box-shadow:
+      0 0 0 4px var(--bg-g-one),
+      0 8px 30px var(--bg-g-two);
+  }
+
+  .btn-search {
+    padding: 0.5rem;
+    border-radius: 1rem;
+    text-decoration: none;
+    border: none;
+    /* background-color: var(--bg-button); */
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-search:hover {
+    box-shadow:
+      0 0 0 4px var(--bg-g-one),
+      0 8px 30px var(--bg-g-two);
+  }
+}
+
+.cart-header-left {
+  padding: 0.5rem;
+  border-radius: 1rem;
+  transition: all 0.2s ease-in-out;
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #2e7d32;
+
+  .link {
+    text-decoration: none;
+    color: var(--color);
+  }
+}
+.cart-header-left:hover {
+  box-shadow:
+    0 0 0 4px var(--bg-g-one),
+    0 8px 30px var(--bg-g-two);
+  color: chartreuse;
+}
