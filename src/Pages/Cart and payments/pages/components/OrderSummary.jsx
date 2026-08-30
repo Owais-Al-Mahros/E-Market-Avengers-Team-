@@ -39,18 +39,7 @@ function OrderSummary() {
                 </span>
               </div>
             ))}
-          </div>
 
-          {/* Shipping */}
-          <div className="order-summary-row border-bottom">
-            <span className="order-summary-label">Estimated Shipping</span>
-            <span className="order-summary-value">${shipping.toFixed(2)}</span>
-          </div>
-
-          {/* Tax */}
-          <div className="order-summary-row border-bottom">
-            <span className="order-summary-label">Estimated Tax</span>
-            <span className="order-summary-value">${tax.toFixed(2)}</span>
           </div>
 
           {/* Total Price */}
@@ -71,7 +60,7 @@ function OrderSummary() {
 
         {/* Checkout Button */}
         <button
-          onClick={() => navigate("/cart/checkout")}
+          onClick={() => navigate("/Cart&Payments/Checkout")}
           className="order-summary-checkout-btn"
         >
           <span className="material-symbols-outlined">lock</span>

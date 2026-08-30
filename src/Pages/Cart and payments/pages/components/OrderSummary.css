@@ -6,8 +6,9 @@
   --c-value: #1e2a3a;
   --bg-button: #b6f500;
 }
+
 .order-summary-container {
-  width: 70%;
+  width: 50%;
 }
 
 .order-summary-card {
@@ -48,6 +49,7 @@
   padding-bottom: 10px;
   font-size: 1.125rem;
 }
+
 .col-name {
   flex: 2;
   text-align: left;
@@ -66,12 +68,14 @@
   text-align: right;
   font-weight: 600;
 }
+
 .note {
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
 }
+
 .border-bottom {
   border-bottom: 1px solid var(--c-row);
 }

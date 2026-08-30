@@ -110,6 +110,7 @@
     transition: all 0.25s ease;
     font-weight: 700;
     font-size: 14px;
+
   }
 
   button:hover {
@@ -196,10 +197,21 @@
 }
 
 /* ✅ أزرار + و - */
+.increase-decrease-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  /* width: 12%; */
+  /* height: 12%; */
+}
+
+
 .increase-button:hover {
   background: var(--neon-green) !important;
   color: var(--dark-green) !important;
   border-color: var(--neon-green) !important;
+
 }
 
 .decrease-button:hover {

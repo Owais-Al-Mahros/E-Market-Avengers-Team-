@@ -57,7 +57,7 @@ export default function ProductCard(props) {
           <span>
             Weight: {props.weight} {props.weight_unit}
           </span>
-          <div>
+          <div className="increase-decrease-button">
             <button className="increase-button" onClick={increaseCounter}>
               +
             </button>

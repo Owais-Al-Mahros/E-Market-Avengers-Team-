@@ -1,0 +1,127 @@
+/* ============================================
+   OrderConfirmation.css
+   ============================================ */
+
+/* ===== صفحة الإلغاء ===== */
+.cancelled-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+    background: #fef2f2;
+    animation: fadeIn 0.4s ease;
+}
+
+.cancelled-card {
+    background: #ffffff;
+    border: 3px solid #ef4444;
+    border-radius: 28px;
+    padding: 40px 32px;
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(239, 68, 68, 0.15);
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cancelled-card .cancel-icon {
+    font-size: 72px;
+    color: #ef4444;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.cancelled-card h2 {
+    font-size: 30px;
+    font-weight: 800;
+    color: #991b1b;
+    margin: 8px 0 12px;
+}
+
+.cancelled-card p {
+    font-size: 18px;
+    color: #4a4a4a;
+    margin: 6px 0;
+    line-height: 1.7;
+}
+
+.cancelled-card .cancel-message {
+    font-size: 16px;
+    color: #6b7280;
+    margin-top: 12px;
+}
+
+/* ===== الزر ===== */
+.cancelled-card .btn-home {
+    margin-top: 24px;
+    padding: 14px 32px;
+    background: #468432;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cancelled-card .btn-home:hover {
+    background: #2e6b1c;
+    transform: scale(1.02);
+    box-shadow: 0 4px 16px rgba(70, 132, 50, 0.3);
+}
+
+/* ===== نص إعادة التوجيه ===== */
+.redirect-notice {
+    display: block;
+    margin-top: 18px;
+    font-size: 14px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* ===== استجابة للجوال ===== */
+@media (max-width: 480px) {
+    .cancelled-card {
+        padding: 28px 20px;
+    }
+
+    .cancelled-card h2 {
+        font-size: 24px;
+    }
+
+    .cancelled-card p {
+        font-size: 16px;
+    }
+
+    .cancelled-card .btn-home {
+        font-size: 16px;
+        padding: 12px 24px;
+    }
+}

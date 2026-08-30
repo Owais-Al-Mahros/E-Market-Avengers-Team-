@@ -1,0 +1,854 @@
+/* ============================================
+   Order Management Section - GreenCart Colors
+   #FFFADC (cream), #B6F500 (neon green),
+   #A4DD00 (light green), #98CD00 (lime green)
+   ============================================ */
+
+/* ===== Container ===== */
+.orders-container {
+    background: #FFFADC;
+    /* ✅ Cream background */
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(152, 205, 0, 0.12);
+    margin: 16px 0;
+    border: 1px solid rgba(164, 221, 0, 0.2);
+}
+
+/* ===== Header ===== */
+.orders-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.orders-header h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a2a3a;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.orders-header h2 .material-symbols-outlined {
+    font-size: 28px;
+    color: #98CD00;
+    /* ✅ Lime green */
+}
+
+.orders-header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn-refresh {
+    padding: 8px 20px;
+    background: #B6F500;
+    /* ✅ Neon green */
+    color: #1a2a3a;
+    border: 2px solid #98CD00;
+    /* ✅ Lime green border */
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-refresh:hover {
+    background: #A4DD00;
+    /* ✅ Light green on hover */
+    transform: scale(1.02);
+    box-shadow: 0 4px 16px rgba(182, 245, 0, 0.3);
+}
+
+.btn-refresh:active {
+    transform: scale(0.96);
+}
+
+/* ===== Table Wrapper ===== */
+.orders-table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 2px solid #98CD00;
+    /* ✅ Lime green border */
+    background: #FFFADC;
+}
+
+/* ===== Table ===== */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    min-width: 700px;
+}
+
+.orders-table thead {
+    background: #A4DD00;
+    /* ✅ Light green header */
+}
+
+.orders-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 700;
+    color: #1a2a3a;
+    border-bottom: 2px solid #98CD00;
+    white-space: nowrap;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.orders-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(152, 205, 0, 0.2);
+    vertical-align: middle;
+    color: #1a2a3a;
+    background: #FFFADC;
+}
+
+.orders-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.orders-table tbody tr:hover td {
+    background: #faffd0;
+    /* Slightly lighter cream on hover */
+}
+
+.orders-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== Order Number ===== */
+.order-number {
+    font-weight: 700;
+    color: #1a2a3a;
+    font-size: 15px;
+}
+
+/* ===== Customer Info ===== */
+.customer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.customer-name {
+    font-weight: 600;
+    color: #1a2a3a;
+}
+
+.customer-email {
+    font-size: 13px;
+    color: #4a4a4a;
+}
+
+/* ===== Date ===== */
+.order-date {
+    font-size: 14px;
+    color: #1a2a3a;
+}
+
+.order-date small {
+    display: block;
+    color: #4a4a4a;
+    font-size: 12px;
+}
+
+/* ===== Total ===== */
+.order-total {
+    font-weight: 700;
+    color: #98CD00;
+    /* ✅ Lime green */
+    font-size: 17px;
+}
+
+/* ===== Status Badges ===== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: capitalize;
+    white-space: nowrap;
+    border: 2px solid transparent;
+}
+
+.status-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-pending {
+    background: #FFFADC;
+    color: #92400e;
+    border-color: #FFA02E;
+}
+
+.status-pending::before {
+    background: #FFA02E;
+}
+
+.status-confirmed {
+    background: #FFFADC;
+    color: #1a2a3a;
+    border-color: #98CD00;
+}
+
+.status-confirmed::before {
+    background: #98CD00;
+}
+
+.status-shipped {
+    background: #FFFADC;
+    color: #1a2a3a;
+    border-color: #B6F500;
+}
+
+.status-shipped::before {
+    background: #B6F500;
+}
+
+.status-delivered {
+    background: #FFFADC;
+    color: #1a2a3a;
+    border-color: #A4DD00;
+}
+
+.status-delivered::before {
+    background: #A4DD00;
+}
+
+.status-cancelled {
+    background: #FFFADC;
+    color: #991b1b;
+    border-color: #ef4444;
+}
+
+.status-cancelled::before {
+    background: #ef4444;
+}
+
+/* ===== Actions Buttons ===== */
+.actions-cell {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.btn-action {
+    padding: 6px 16px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-action:active {
+    transform: scale(0.95);
+}
+
+.btn-confirm {
+    background: #B6F500;
+    /* ✅ Neon green */
+    color: #1a2a3a;
+    border-color: #98CD00;
+}
+
+.btn-confirm:hover {
+    background: #A4DD00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(182, 245, 0, 0.3);
+}
+
+.btn-ship {
+    background: #B6F500;
+    color: #1a2a3a;
+    border-color: #98CD00;
+}
+
+.btn-ship:hover {
+    background: #A4DD00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(182, 245, 0, 0.3);
+}
+
+.btn-deliver {
+    background: #B6F500;
+    color: #1a2a3a;
+    border-color: #98CD00;
+}
+
+.btn-deliver:hover {
+    background: #A4DD00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(182, 245, 0, 0.3);
+}
+
+.btn-cancel {
+    background: #FFFADC;
+    color: #991b1b;
+    border-color: #ef4444;
+}
+
+.btn-cancel:hover {
+    background: #fee2e2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.btn-disabled {
+    background: #e5e7eb;
+    color: #6b7280;
+    border-color: #d1d5db;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: #4a4a4a;
+}
+
+.empty-state .material-symbols-outlined {
+    font-size: 56px;
+    color: #98CD00;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.empty-state p {
+    font-size: 18px;
+    margin: 0;
+}
+
+/* ===== Loading ===== */
+.loading-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: #4a4a4a;
+    font-size: 18px;
+}
+
+.loading-state .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #A4DD00;
+    border-top-color: #B6F500;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== Error State ===== */
+.error-state {
+    text-align: center;
+    padding: 32px 20px;
+    background: #FFFADC;
+    border-radius: 12px;
+    color: #991b1b;
+    border: 2px solid #ef4444;
+}
+
+.error-state .material-symbols-outlined {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .orders-container {
+        padding: 16px;
+    }
+
+    .orders-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .orders-header h2 {
+        font-size: 22px;
+    }
+
+    .orders-table {
+        font-size: 13px;
+        min-width: 600px;
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 10px 12px;
+    }
+
+    .status-badge {
+        font-size: 12px;
+        padding: 3px 10px;
+    }
+
+    .btn-action {
+        font-size: 12px;
+        padding: 4px 12px;
+    }
+
+    .actions-cell {
+        gap: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .orders-header h2 {
+        font-size: 20px;
+    }
+
+    .orders-table {
+        font-size: 12px;
+        min-width: 500px;
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 8px 10px;
+    }
+
+    .btn-action {
+        font-size: 11px;
+        padding: 3px 8px;
+    }
+}
+
+/* ============================================
+   Order Number - Clickable Button
+   ============================================ */
+.order-number-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-size: inherit;
+    font-weight: 700;
+    color: #1a2a3a;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s;
+}
+
+.order-number-btn:hover {
+    color: #98CD00;
+}
+
+/* ============================================
+   Address Info
+   ============================================ */
+.address-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 14px;
+}
+
+.address-info span {
+    display: block;
+}
+
+.address-detail {
+    font-size: 12px;
+    color: #4a4a4a;
+}
+
+.customer-phone {
+    font-size: 12px;
+    color: #4a4a4a;
+}
+
+/* ============================================
+   4. إضافات إلى OrderManagementSection.css
+   ============================================ */
+
+/* ===== عمود الوزن ===== */
+.order-weight {
+    font-weight: 600;
+    color: #4a4a4a;
+}
+
+/* ===== تحديث الحالة داخل المودال ===== */
+.status-update-section {
+    background: rgba(182, 245, 0, 0.06) !important;
+    border: 2px solid #98CD00 !important;
+}
+
+.status-update-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.status-update-buttons .btn-action {
+    min-width: 100px;
+    justify-content: center;
+}
+
+.status-update-buttons .btn-action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.status-label.final-status {
+    font-size: 16px;
+    font-weight: 700;
+    color: #065f46;
+    padding: 8px 16px;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 8px;
+}
+
+/* ===== رسالة فارغة في جدول المنتجات ===== */
+.empty-items {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 16px !important;
+}
+
+/* ============================================
+   OrderManagementSection.css
+   تحديث ألوان حالات الطلبات لتسهيل التمييز
+   ============================================ */
+
+/* ===== Status Badges ===== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: capitalize;
+    white-space: nowrap;
+    border: 2px solid transparent;
+}
+
+.status-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* 🔶 Pending (معلق) – برتقالي */
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #f59e0b;
+}
+
+.status-pending::before {
+    background: #f59e0b;
+}
+
+/* 🔵 Confirmed (مؤكد) – أزرق */
+.status-confirmed {
+    background: #dbeafe;
+    color: #1e40af;
+    border-color: #3b82f6;
+}
+
+.status-confirmed::before {
+    background: #3b82f6;
+}
+
+/* 🟣 Shipped (تم الشحن) – بنفسجي */
+.status-shipped {
+    background: #ede9fe;
+    color: #5b21b6;
+    border-color: #8b5cf6;
+}
+
+.status-shipped::before {
+    background: #8b5cf6;
+}
+
+/* 🟢 Delivered (تم التوصيل) – أخضر غامق */
+.status-delivered {
+    background: #d1fae5;
+    color: #065f46;
+    border-color: #10b981;
+}
+
+.status-delivered::before {
+    background: #10b981;
+}
+
+/* 🔴 Cancelled (ملغي) – أحمر */
+.status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #ef4444;
+}
+
+.status-cancelled::before {
+    background: #ef4444;
+}
+
+/* ===== شريط جانبي ملون للصف (اختياري) ===== */
+.orders-table tbody tr {
+    border-left: 4px solid transparent;
+    transition: border-color 0.2s;
+}
+
+/* يمكن إضافة كلاس للصف حسب الحالة، لكننا سنكتفي بالبادج */
+
+/* ===== تحسين التباين في المودال ===== */
+.modal-section .status-badge {
+    font-size: 14px;
+    padding: 4px 16px;
+}
+
+/* ============================================
+   OrderManagementSection.css
+   ألوان خلفية الصفوف حسب حالة الطلب
+   ============================================ */
+
+/* ===== خلفيات الصفوف ===== */
+.order-row-pending {
+    background-color: #fffbeb;
+    /* أصفر فاتح جداً */
+    border-left: 4px solid #f59e0b;
+    /* برتقالي */
+}
+
+.order-row-confirmed {
+    background-color: #eff6ff;
+    /* أزرق فاتح جداً */
+    border-left: 4px solid #3b82f6;
+    /* أزرق */
+}
+
+.order-row-shipped {
+    background-color: #f5f3ff;
+    /* بنفسجي فاتح جداً */
+    border-left: 4px solid #8b5cf6;
+    /* بنفسجي */
+}
+
+.order-row-delivered {
+    background-color: #ecfdf5;
+    /* أخضر فاتح جداً */
+    border-left: 4px solid #10b981;
+    /* أخضر */
+}
+
+.order-row-cancelled {
+    background-color: #fef2f2;
+    /* أحمر فاتح جداً */
+    border-left: 4px solid #ef4444;
+    /* أحمر */
+}
+
+/* ===== تحسين التباين عند التمرير ===== */
+.order-row-pending:hover {
+    background-color: #fef3c7 !important;
+}
+
+.order-row-confirmed:hover {
+    background-color: #dbeafe !important;
+}
+
+.order-row-shipped:hover {
+    background-color: #ede9fe !important;
+}
+
+.order-row-delivered:hover {
+    background-color: #d1fae5 !important;
+}
+
+.order-row-cancelled:hover {
+    background-color: #fee2e2 !important;
+}
+
+/* ===== الحفاظ على تباين النصوص ===== */
+.order-row td {
+    color: #1a2a3a;
+    font-weight: 500;
+}
+
+/* ===== البادج (حالة الطلب) تبقى كما هي مع ألوانها ===== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: capitalize;
+    white-space: nowrap;
+    border: 2px solid transparent;
+}
+
+.status-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #f59e0b;
+}
+
+.status-pending::before {
+    background: #f59e0b;
+}
+
+.status-confirmed {
+    background: #dbeafe;
+    color: #1e40af;
+    border-color: #3b82f6;
+}
+
+.status-confirmed::before {
+    background: #3b82f6;
+}
+
+.status-shipped {
+    background: #ede9fe;
+    color: #5b21b6;
+    border-color: #8b5cf6;
+}
+
+.status-shipped::before {
+    background: #8b5cf6;
+}
+
+.status-delivered {
+    background: #d1fae5;
+    color: #065f46;
+    border-color: #10b981;
+}
+
+.status-delivered::before {
+    background: #10b981;
+}
+
+.status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #ef4444;
+}
+
+.status-cancelled::before {
+    background: #ef4444;
+}
+
+/* src/Pages/Admin dashboard/components/OrderManagementSection.css */
+
+.orders-management-container {
+    background: #FFFADC;
+    border-radius: 16px;
+    padding: 20px 24px;
+    border: 2px solid #98CD00;
+}
+
+/* ===== TABS HEADER ===== */
+.tabs-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 16px;
+    font-weight: 600;
+    color: #4a4a4a;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 0;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: #1a2a3a;
+    background: rgba(182, 245, 0, 0.06);
+}
+
+.tab-btn.active {
+    color: #1a2a3a;
+    font-weight: 700;
+    border-bottom-color: #98CD00;
+}
+
+.tab-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* ===== المحتوى ===== */
+.tabs-content {
+    margin-top: 4px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+    .tabs-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tab-btn {
+        justify-content: center;
+        padding: 8px 12px;
+    }
+}
