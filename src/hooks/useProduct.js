@@ -123,3 +123,19 @@ export async function countSubCategory(categoryId) {
         return { success: false, error: error.message };
     }
 }
+
+export async function searchProduct(searchItem) {
+    try{
+        const { data , error } = await supabase 
+            .from("products")
+            .select("*")
+            .ilike("name" , `%${searchItem}%`)
+            .order(`id` , { ascending: true})
+
+        if (error) throw error
+        return data || []
+    }catch(error){
+        console.error("error in search " , error.message)
+        return []
+    }
+}

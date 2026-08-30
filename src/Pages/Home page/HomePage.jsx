@@ -4,10 +4,24 @@ import ProductCard from "./components/ProductCard.jsx";
 import HomePageFooter from "./components/HomePageFooter.jsx";
 import HomePageHeader from "./components/HomePageHeader.jsx";
 import { useProducts } from "../../context/ProductContext.jsx"
+import { useState , useEffect } from "react";
+import { fetchData } from "../../hooks/useProduct.js";
 function HomePage() {
   // const storedAdmin = localStorage.getItem("isAdmin")
 
-  const { products, loading } = useProducts();
+  const [ loading, setLoading ] = useState(true);
+  const [products, setProducts] = useState([]); // المصفوفة التي تُعرض في الواجهة
+
+  // جلب كافة المنتجات عند تحميل الصفحة لأول مرة
+  useEffect(() => {
+    async function loadProducts() {
+      setLoading(true)
+      const data = await fetchData('products');
+      setProducts(data);
+      setLoading(false)
+    }
+    loadProducts();
+  }, []);
 
   const renderProducts = () => {
     if (loading) {
@@ -35,7 +49,7 @@ function HomePage() {
 
   return (
     <>
-      <HomePageHeader />
+      <HomePageHeader setProducts={setProducts}/>
       <h2>Products</h2>
       <div className="Products">{renderProducts()}</div>
       <Link to="/login">Go To DashBoard</Link>

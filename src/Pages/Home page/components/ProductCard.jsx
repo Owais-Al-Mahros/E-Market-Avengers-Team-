@@ -28,15 +28,18 @@ export default function ProductCard(props) {
     e.stopPropagation(); // منع فتح تفاصيل المنتج
 
     // إضافة المنتج مع الكمية المحددة
-    addToCart({
-      id: props.id,
-      name: props.name,
-      price: props.price,
-      image: props.image,
-      weight: props.weight,
-      weight_unit: props.weight_unit,
-      // يمكن إضافة أي بيانات أخرى تحتاجها
-    }, counter); // الكمية المحددة من العداد
+    addToCart(
+      {
+        id: props.id,
+        name: props.name,
+        price: props.price,
+        image: props.image,
+        weight: props.weight,
+        weight_unit: props.weight_unit,
+        // يمكن إضافة أي بيانات أخرى تحتاجها
+      },
+      counter,
+    ); // الكمية المحددة من العداد
 
     // رسالة تأكيد (اختياري)
     toast.success(`Added ${counter} × ${props.name} to cart!`, {
@@ -54,7 +57,7 @@ export default function ProductCard(props) {
           <span>{props.name}</span>
         </div>
         <div className="weight">
-          <span>
+          <span className="num-weight">
             Weight: {props.weight} {props.weight_unit}
           </span>
           <div className="increase-decrease-button">
@@ -72,10 +75,12 @@ export default function ProductCard(props) {
             <span>{(props.price * counter).toFixed(2)}€</span>
           </div>
           {/* ✅ زر الإضافة للسلة */}
-          <button className="add-button" onClick={handleAddToCart}>
-            <img src="/cart.png" className="add-icon" alt="cart" />
-            <span>Add to cart</span>
-          </button>
+          <div className="add-btn-container">
+            <button className="add-button" onClick={handleAddToCart}>
+              <img src="/cart.png" className="add-icon" alt="cart" />
+              <span>Add to cart</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -97,7 +102,7 @@ export default function ProductCard(props) {
             storageObject={props.storageObject}
             ingredients={props.ingredients}
           />,
-          document.body
+          document.body,
         )}
     </>
   );

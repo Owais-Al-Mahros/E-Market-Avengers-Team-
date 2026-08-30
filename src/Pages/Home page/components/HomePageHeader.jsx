@@ -2,13 +2,29 @@ import "./HomePageHeader.css";
 import { useCart } from "../../../context/CartContext.jsx"; // ✅ استيراد السياق
 import { useState } from "react";
 import Cart from "../modals/Cart.jsx"; // ✅ سننشئه قريباً
+import { fetchData, searchProduct  } from "../../../hooks/useProduct.js"; // دالة البحث 
 
-function HomePageHeader() {
+function HomePageHeader( { setProducts }) {
   const { totalItems } = useCart(); // ✅ جلب العدد الإجمالي
   const [isCartOpen, setIsCartOpen] = useState(false); // ✅ حالة فتح المودال
+  const [searchTerm , setSearchTerm ] = useState('')
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
+
+  const handleSearch = async(e) =>{
+    e.preventDefault()
+    if(!searchTerm.trim()) {
+      const allProducts = await fetchData("products")
+      if(setProducts) setProducts(allProducts)
+        return
+    }
+    
+    const result = await searchProduct(searchTerm)
+
+    if(setProducts)
+      setProducts(result)
+  }
 
   return (
     <>
@@ -17,12 +33,15 @@ function HomePageHeader() {
           <img src="/logo.png" alt="Logo" className="logo" />
         </div>
 
-        <div className="header-search">
-          <input type="text" placeholder="Search products..." />
+        <form onSubmit={handleSearch} className="header-search">
+          <input type="text"
+           placeholder="Search products..."
+           value={searchTerm}
+           onChange={(e) => setSearchTerm(e.target.value)} />
           <button className="header-search-button">
             <img src="/Search.png" alt="Search" className="search-icon" />
           </button>
-        </div>
+        </form>
 
         <div className="header-links">
           <button className="header-login">Login</button>
