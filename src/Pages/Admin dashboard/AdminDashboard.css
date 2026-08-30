@@ -1,92 +1,14 @@
-/* ===== حاوية الصفحة ===== */
+/* ==========================================
+   ADMIN DASHBOARD (لوحة تحكم الأدمن)
+   ========================================== */
+
 .dashboard-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #f8f9fa;
+  background-color: var(--bg-color);
 }
 
-/* ===== الشريط العلوي ===== */
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 32px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-  position: sticky;
-  top: 0;
-  z-index: 40;
-}
-
-.top-bar-left h2 {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1a2a3a;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.top-bar-subtitle {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0;
-}
-
-.top-bar-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.top-bar-btn {
-  position: relative;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #4b5563;
-  transition: background 0.2s;
-}
-
-.top-bar-btn:hover {
-  background: #f3f4f6;
-}
-
-.top-bar-btn .material-symbols-outlined {
-  font-size: 24px;
-}
-
-.notification-badge {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  background: #ef4444;
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logout-btn {
-  color: #ef4444;
-}
-
-.logout-btn:hover {
-  background: #fee2e2;
-}
-
-/* ===== التخطيط الرئيسي ===== */
 .dashboard-layout {
   display: flex;
   gap: 20px;
@@ -107,7 +29,81 @@
   overflow: hidden;
 }
 
-/* ===== استجابة للجوال ===== */
+/* الشريط العلوي */
+.top-bar {
+  padding: 16px 32px;
+  background: var(--cream);
+  border-bottom: 2px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-bar-left h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--dark-green);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.top-bar-subtitle {
+  font-size: 14px;
+  color: var(--mid-green);
+  font-weight: 600;
+  margin: 4px 0 0 0;
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* التنبيهات وإجراءات الشريط العلوي */
+.notification-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: var(--danger-color, #ef4444);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--cream);
+}
+
+.logout-btn {
+  color: var(--danger-color, #ef4444);
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.logout-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.logout-btn:active {
+  transform: scale(0.96);
+}
+
+/* التجاوب مع الشاشات الصغيرة */
 @media (max-width: 768px) {
   .top-bar {
     padding: 12px 16px;
@@ -115,14 +111,14 @@
     gap: 8px;
   }
 
-  .top-bar-left h2 {
-    font-size: 20px;
+  .top-bar-left h2 { 
+    font-size: 20px; 
   }
-
-  .top-bar-subtitle {
-    display: none;
+  
+  .top-bar-subtitle { 
+    display: none; 
   }
-
+  
   .dashboard-layout {
     flex-direction: column;
     padding: 10px;
@@ -132,6 +128,5 @@
     flex: unset;
     width: 100%;
     position: static;
-    top: unset;
   }
 }
