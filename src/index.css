@@ -1,9 +1,120 @@
+/* ==========================================
+   1. GLOBAL VARIABLES & RESET
+   ========================================== */
+
+:root {
+  /* Branding Palette */
+  --primary-color: #468432;
+  --secondary-color: #fefefec8;
+  --accent-color:#f7f9f5;
+  --bg-color: #E8F0E3;
+  --danger-color: #ef4444;
+
+  /* Product & Theme Colors */
+  --cream: #F4EFD9;
+  --neon-green: #4bb429;
+  --lime-light: #61b927;
+  --lime-mid: #61b927;
+  --dark-green: #2D4A00;
+  --mid-green: #5A8C00;
+  --light-bg: #D4E8B0;
+  
+  /* Utilities */
+  --shadow-color: rgba(98, 207, 25, 0.989);
+  --border-color: rgba(207, 241, 144, 0.933);
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-full: 9999px;
+  --transition-fast: all 0.2s ease;
+  --transition-normal: all 0.3s ease;
+}
+
 * {
-    margin: 0px;
-    padding: 0px;
-    box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    background-color: aqua;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--primary-color);
+  background-color: var(--bg-color) !important;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+input {
+  font-family: inherit;
+  outline: none;
+}
+
+/* ==========================================
+   2. UTILITY CLASSES (فئات مركزية للاستخدام المكرر)
+   ========================================== */
+
+/* Flexbox Helpers */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Base Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  transition: var(--transition-fast);
+}
+
+.btn-primary {
+  background-color: var(--dark-green);
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background-color: var(--mid-green);
+}
+
+.btn-neon {
+  background-color: var(--neon-green);
+  color: var(--dark-green);
+  border: 2px solid var(--lime-mid);
+  font-weight: 700;
+}
+.btn-neon:hover {
+  background-color: var(--lime-light);
+  transform: scale(1.04);
+}
+
+.btn-rounded {
+  border-radius: var(--radius-full);
+}
+
+.btn-icon {
+  padding: 6px;
+  border-radius: 50%;
+  transition: var(--transition-fast);
+}
+.btn-icon:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }

@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-
-import "./HomePage.css";
+import './HomePage.css';
 import ProductCard from "./components/ProductCard.jsx";
 import HomePageFooter from "./components/HomePageFooter.jsx";
 import HomePageHeader from "./components/HomePageHeader.jsx";

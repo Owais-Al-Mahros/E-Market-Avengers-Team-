@@ -1,10 +1,9 @@
 .Products {
-  gap: 10px;
-  color: #1a2a3a;
   display: flex;
-  color: #1a2a3a;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  gap: 10px;
+  color: var(--primary-color);
   margin-bottom: 10rem;
 }

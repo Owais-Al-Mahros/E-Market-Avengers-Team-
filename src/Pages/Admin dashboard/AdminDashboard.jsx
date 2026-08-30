@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./AdminDashboard.css";
+import './AdminDashboard.css';
 import AdminSideNavbar from "./components/AdminSideNavbar.jsx";
 import ProductsSection from "./components/ProductsSection.jsx";
 import { Toaster } from "react-hot-toast";

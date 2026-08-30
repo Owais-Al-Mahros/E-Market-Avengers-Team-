@@ -1,453 +1,440 @@
-/* ===== حاوية الفئات الفرعية ===== */
+/* ==========================================
+   SUBCATEGORY MANAGER (حاوية الفئات الفرعية والرأس)
+   ========================================== */
+
 .subcategory-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
 }
 
-/* ===== رأس الفئة الفرعية ===== */
 .sub-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-bottom: 2px solid rgba(255, 239, 145, 0.2);
-    padding-bottom: 12px;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1.5px solid var(--border-color);
+  padding-bottom: 14px;
+  flex-wrap: wrap;
 }
 
 .back-btn {
-    display: flex;
-    align-self: flex-end;
-    align-items: center;
-    gap: 4px;
-    background: rgba(255, 255, 255, 0.08);
-    border: none;
-    border-radius: 30px;
-    padding: 6px 14px;
-    color: #ffffff;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.2s;
+  display: flex;
+  align-self: flex-end;
+  align-items: center;
+  gap: 6px;
+  background: var(--light-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 30px;
+  padding: 6px 16px;
+  color: var(--dark-green);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .back-btn:hover {
-    background: rgba(255, 239, 145, 0.15);
+  background: var(--neon-green);
+  border-color: var(--lime-mid);
+  transform: translateY(-1px);
 }
 
+/* ==========================================
+   عرض الفئة الرئيسية والتعديل عليها
+   ========================================== */
+
 .category-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
 }
 
 .category-title h3 {
-    font-size: 20px;
-    font-weight: 700;
-    color: #ffffff;
-    margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--dark-green);
+  margin: 0;
+}
+
+.category-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.category-display .category-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
 }
 
 .edit-category-btn {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    font-size: 16px;
-    transition: 0.2s;
+  background: none;
+  border: none;
+  color: var(--mid-green);
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  padding: 4px;
+  border-radius: 50%;
 }
 
 .edit-category-btn:hover {
-    color: #FFEF91;
+  color: var(--dark-green);
+  background: var(--light-bg);
+  transform: scale(1.1);
 }
 
 .edit-category-form {
-    display: flex;
-    gap: 6px;
-    flex: 1;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+  width: 100%;
 }
 
 .edit-category-form input {
-    flex: 1;
-    padding: 6px 12px;
-    border-radius: 10px;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.06);
-    color: #ffffff;
-    font-size: 16px;
-    outline: none;
+  flex: 1;
+  min-width: 120px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--light-bg);
+  color: var(--dark-green);
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.edit-category-form input::placeholder {
+  color: var(--mid-green);
 }
 
 .edit-category-form input:focus {
-    border-color: #9AD872;
+  border-color: var(--dark-green);
+  box-shadow: 0 0 0 3px rgba(30, 46, 40, 0.1);
 }
 
 .edit-category-form button {
-    padding: 6px 14px;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .edit-category-form button:first-of-type {
-    background: #9AD872;
-    color: #1a2a3a;
+  background: var(--neon-green);
+  color: var(--dark-green);
+  border: 1px solid var(--lime-mid);
 }
 
 .edit-category-form button:last-of-type {
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
+  background: var(--light-bg);
+  color: var(--dark-green);
+  border: 1px solid var(--border-color);
 }
 
-/* ===== نموذج إضافة فئة فرعية ===== */
-/* ===== عرض الفئة الفرعية ===== */
+.edit-category-form button:hover {
+  transform: translateY(-1px);
+}
+
+/* ==========================================
+   عرض الفئة الفرعية وتعديلها
+   ========================================== */
+
 .sub-display {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
 }
 
 .sub-thumb {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
 }
 
-/* ===== أزرار التعديل والحذف ===== */
 .sub-actions {
-    display: flex;
-    gap: 6px;
+  display: flex;
+  gap: 6px;
 }
 
 .edit-sub-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    color: rgba(255, 255, 255, 0.4);
-    transition: 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--mid-green);
+  transition: all 0.2s ease;
+  padding: 4px;
+  border-radius: 50%;
 }
 
 .edit-sub-btn:hover {
-    color: #FFEF91;
-    transform: scale(1.1);
+  color: var(--dark-green);
+  background: var(--cream);
+  transform: scale(1.1);
 }
 
-/* ===== نموذج تعديل الفئة الفرعية ===== */
 .edit-sub-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    width: 100%;
-    align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+  align-items: center;
 }
 
 .edit-sub-form input {
-    flex: 1;
-    min-width: 100px;
-    padding: 6px 10px;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.06);
-    color: #ffffff;
-    font-size: 14px;
-    outline: none;
+  flex: 1;
+  min-width: 100px;
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--cream);
+  color: var(--dark-green);
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
 }
 
 .edit-sub-form input:focus {
-    border-color: #9AD872;
+  border-color: var(--dark-green);
 }
 
 .edit-sub-form button {
-    padding: 6px 14px;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .edit-sub-form button:first-of-type {
-    background: #9AD872;
-    color: #1a2a3a;
+  background: var(--neon-green);
+  color: var(--dark-green);
+  border: 1px solid var(--lime-mid);
 }
 
 .edit-sub-form button:last-of-type {
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
+  background: var(--light-bg);
+  color: var(--dark-green);
+  border: 1px solid var(--border-color);
 }
 
-/* ===== تعديل نموذج الإضافة ليصبح بثلاثة حقول ===== */
+/* ==========================================
+   نموذج إضافة فئة فرعية
+   ========================================== */
+
 .add-sub-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .add-sub-form input {
-    flex: 1;
-    min-width: 120px;
-    padding: 10px 14px;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    border-radius: 14px;
-    font-size: 15px;
-    background: rgba(255, 255, 255, 0.06);
-    color: #ffffff;
-    outline: none;
-    transition: 0.25s;
+  flex: 1;
+  min-width: 120px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--light-bg);
+  color: var(--dark-green);
+  outline: none;
+  transition: all 0.2s ease;
 }
 
 .add-sub-form input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+  color: var(--mid-green);
 }
 
 .add-sub-form input:focus {
-    border-color: #9AD872;
+  border-color: var(--dark-green);
+  box-shadow: 0 0 0 3px rgba(30, 46, 40, 0.1);
 }
 
 .add-sub-form button {
-    padding: 10px 22px;
-    background: #9AD872;
-    color: #1a2a3a;
-    border: none;
-    border-radius: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s;
-    white-space: nowrap;
+  padding: 10px 22px;
+  background: var(--neon-green);
+  color: var(--dark-green);
+  border: 1px solid var(--lime-mid);
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(182, 245, 0, 0.2);
 }
 
 .add-sub-form button:hover {
-    background: #FFEF91;
-    transform: scale(1.02);
+  background: var(--lime-light);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(182, 245, 0, 0.35);
 }
 
 .add-sub-form button:disabled {
-    opacity: 0.6;
-    transform: none;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
 }
 
-/* ===== استجابة للجوال ===== */
-@media (max-width: 480px) {
-    .add-sub-form {
-        flex-direction: column;
-    }
+/* ==========================================
+   قائمة الفئات الفرعية والعناصر
+   ========================================== */
 
-    .edit-sub-form {
-        flex-direction: column;
-    }
-
-    .subcategory-item {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .sub-actions {
-        margin-left: auto;
-    }
-}
-
-/* ===== قائمة الفئات الفرعية ===== */
 .subcategories-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 280px;
-    overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .subcategories-list::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .subcategory-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    border-left: 3px solid #FFA02E;
-    color: #ffffff;
-    font-weight: 500;
-    transition: 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--light-bg);
+  border-radius: 14px;
+  border-left: 4px solid var(--neon-green);
+  border-top: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--dark-green);
+  font-weight: 700;
+  transition: all 0.2s ease;
 }
 
 .subcategory-item:hover {
-    background: rgba(255, 239, 145, 0.08);
-    transform: translateX(4px);
+  background: var(--cream);
+  transform: translateX(-4px);
+  border-left-color: var(--dark-green);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 }
 
 .delete-sub-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    color: rgba(255, 255, 255, 0.4);
-    transition: 0.2s;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--mid-green);
+  transition: all 0.2s ease;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .delete-sub-btn:hover {
-    color: #ef4444;
-    transform: scale(1.1);
+  color: var(--danger-color, #ef4444);
+  background: #fee2e2;
+  transform: scale(1.1);
 }
 
 .loading-text,
 .empty-text {
-    color: rgba(255, 255, 255, 0.5);
-    font-style: italic;
-    text-align: center;
-    padding: 20px 0;
+  color: var(--mid-green);
+  font-style: italic;
+  font-weight: 600;
+  text-align: center;
+  padding: 20px 0;
+  font-size: 14px;
 }
 
-/* ===== أنيميشن الانتقال بين الواجهات ===== */
+/* ==========================================
+   أنيميشن الانتقال
+   ========================================== */
+
 .view-container {
-    transition: all 0.3s ease;
-    width: 100%;
+  transition: all 0.3s ease;
+  width: 100%;
 }
 
 .fade-in {
-    animation: fadeIn 0.3s ease forwards;
+  animation: fadeIn 0.3s ease forwards;
 }
 
 .fade-out {
-    animation: fadeOut 0.3s ease forwards;
+  animation: fadeOut 0.3s ease forwards;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.97) translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 @keyframes fadeOut {
-    from {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-
-    to {
-        opacity: 0;
-        transform: scale(0.97) translateY(-10px);
-    }
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97) translateY(-10px);
+  }
 }
 
-/* ===== استجابة للجوال ===== */
+/* ==========================================
+   استجابة للشاشات الصغيرة (الجوال)
+   ========================================== */
+
 @media (max-width: 480px) {
-    .sub-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-    }
-
-    .category-title {
-        justify-content: space-between;
-    }
-
-    .add-sub-form {
-        flex-direction: column;
-    }
-
-    .edit-category-form {
-        flex-wrap: wrap;
-    }
-}
-
-/* ===== عرض الفئة ===== */
-.category-display {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.category-display .category-thumb {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-}
-
-.category-title h3 {
-    font-size: 20px;
-    font-weight: 700;
-    color: #ffffff;
-    margin: 0;
-}
-
-/* ===== نموذج تعديل الفئة ===== */
-.edit-category-form {
-    display: flex;
+  .sub-header {
+    flex-direction: column;
+    align-items: stretch;
     gap: 8px;
+  }
+
+  .category-title {
+    justify-content: space-between;
+  }
+
+  .add-sub-form,
+  .edit-sub-form,
+  .edit-category-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .edit-category-form input {
+    min-width: unset;
+  }
+
+  .subcategory-item {
     flex-wrap: wrap;
-    width: 100%;
-}
+    gap: 8px;
+  }
 
-.edit-category-form input {
-    flex: 1;
-    min-width: 120px;
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.06);
-    color: #ffffff;
-    font-size: 15px;
-    outline: none;
-}
-
-.edit-category-form input:focus {
-    border-color: #9AD872;
-}
-
-.edit-category-form input::placeholder {
-    color: rgba(255, 255, 255, 0.35);
-}
-
-.edit-category-form button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.edit-category-form button:first-of-type {
-    background: #9AD872;
-    color: #1a2a3a;
-}
-
-.edit-category-form button:last-of-type {
-    background: rgba(255, 255, 255, 0.08);
-    color: #ffffff;
-}
-
-.edit-category-form button:hover {
-    transform: scale(1.03);
-}
-
-/* ===== استجابة للجوال ===== */
-@media (max-width: 480px) {
-    .edit-category-form {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .edit-category-form input {
-        min-width: unset;
-    }
+  .sub-actions {
+    margin-left: auto;
+  }
 }
