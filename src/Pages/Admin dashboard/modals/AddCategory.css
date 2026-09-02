@@ -67,28 +67,6 @@
   margin: 0;
 }
 
-.close-btn {
-  background: var(--light-bg);
-  border: 1px solid var(--border-color);
-  font-size: 20px;
-  cursor: pointer;
-  color: var(--dark-green);
-  transition: all 0.2s ease;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.close-btn:hover {
-  background: #fee2e2;
-  border-color: #fca5a5;
-  color: #ef4444;
-  transform: rotate(90deg);
-}
-
 /* جسم المودال */
 .modal-body {
   display: flex;

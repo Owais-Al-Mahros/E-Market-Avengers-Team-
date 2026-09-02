@@ -74,12 +74,6 @@
   font-weight: 600;
 }
 
-.price-admin {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--primary-admin);
-}
-
 .action-admin {
   display: flex;
   justify-content: space-between;
@@ -103,30 +97,6 @@
   border-radius: 50px;
   transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
-
-/* زر التأكيد أو التعديل */
-.Confirm-button {
-  background-color: var(--bg-edit-card);
-  color: var(--dark-green);
-  border: 1px solid var(--lime-mid) !important;
-}
-
-.Confirm-button:hover {
-  background-color: var(--lime-light);
-  box-shadow: 0 4px 12px rgba(182, 245, 0, 0.4);
-}
-
-/* زر الإلغاء */
-.Cancel-button {
-  background-color: var(--light-bg);
-  color: var(--dark-green);
-  border: 1px solid var(--border-color) !important;
-}
-
-.Cancel-button:hover {
-  background-color: #e2e8f0;
-}
-
 /* زر الحذف */
 .delete-button {
   background-color: var(--bg-delete-card);

@@ -184,14 +184,6 @@
   box-shadow: 0 0 0 3px rgba(30, 46, 40, 0.1);
 }
 
-.disabled-input {
-  background: var(--light-bg);
-  color: var(--mid-green);
-  font-weight: 700;
-  cursor: not-allowed;
-  border-color: var(--border-color);
-}
-
 /* رابط الصورة */
 .url-section {
   display: flex;
@@ -326,25 +318,6 @@
   border-color: var(--dark-green);
   outline: none;
   box-shadow: 0 0 0 3px rgba(30, 46, 40, 0.1);
-}
-
-.add-field-btn {
-  margin: 4px 0;
-  display: inline-flex;
-  background: var(--neon-green);
-  color: var(--dark-green);
-  border: 1px solid var(--lime-mid);
-  border-radius: 30px;
-  padding: 6px 16px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.add-field-btn:hover {
-  background: var(--lime-light);
-  transform: scale(1.02);
 }
 
 .remove-field-btn {

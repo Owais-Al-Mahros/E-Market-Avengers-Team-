@@ -129,7 +129,7 @@ function ProductsSection() {
       <div className="ps-toolbar">
         <div className="ps-search-group">
           <div className="ps-search">
-            <span className="material-symbols-outlined">search</span>
+            <span className="material-symbols-outlined">Search</span>
             <input
               type="text"
               placeholder="Search by name..."
