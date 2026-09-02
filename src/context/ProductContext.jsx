@@ -1,16 +1,13 @@
 // src/context/ProductContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
-import { fetchData } from '../hooks/useProduct';
+import { fetchData, searchProduct } from '../hooks/useProduct';
 
-// 1. إنشاء السياق
 const ProductContext = createContext();
 
-// 2. إنشاء الـ Provider (الذي سيُغلف التطبيق)
 export function ProductProvider({ children }) {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // جلب البيانات من الخادم (مرة واحدة)
     const fetchProducts = async () => {
         setLoading(true);
         const data = await fetchData('products');
@@ -22,7 +19,7 @@ export function ProductProvider({ children }) {
         fetchProducts();
     }, []);
 
-    // دوال التحديث المحلية (لن نضطر لإعادة الجلب بعد الحذف أو الإضافة)
+    // ✅ دوال CRUD
     const addProduct = (newProduct) => {
         setProducts((prev) => [...prev, newProduct]);
     };
@@ -37,14 +34,26 @@ export function ProductProvider({ children }) {
         setProducts((prev) => prev.filter((p) => p.id !== productId));
     };
 
-    // القيم التي ستُمرر للمكونات
+    // ✅ دالة البحث
+    const searchProducts = async (term) => {
+        setLoading(true);
+        const data = await searchProduct(term);
+        setProducts(data);
+        setLoading(false);
+    };
+
+    // ✅ دالة إعادة التحميل
+    const refreshProducts = fetchProducts;
+
     const value = {
         products,
         loading,
+        setProducts,
         addProduct,
         updateProduct,
         deleteProduct,
-        refreshProducts: fetchProducts, // لإعادة الجلب يدوياً عند الحاجة
+        refreshProducts,
+        searchProducts,
     };
 
     return (
@@ -54,7 +63,6 @@ export function ProductProvider({ children }) {
     );
 }
 
-// 3. الـ Hook المخصص لتسهيل الاستخدام (بدون الحاجة لاستدعاء useContext مباشرة)
 export function useProducts() {
     const context = useContext(ProductContext);
     if (!context) {
