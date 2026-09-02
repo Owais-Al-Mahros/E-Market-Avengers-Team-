@@ -4,9 +4,9 @@
 
 :root {
   /* Branding Palette */
-  --primary-color: #468432;
+  --primary-color: #3b931f;
   --secondary-color: #fefefec8;
-  --accent-color:#f7f9f5;
+  --accent-color: #f7f9f5;
   --bg-color: #E8F0E3;
   --danger-color: #ef4444;
 
@@ -18,7 +18,7 @@
   --dark-green: #2D4A00;
   --mid-green: #5A8C00;
   --light-bg: #D4E8B0;
-  
+
   /* Utilities */
   --shadow-color: rgba(98, 207, 25, 0.989);
   --border-color: rgba(207, 241, 144, 0.933);
@@ -91,6 +91,7 @@ input {
   background-color: var(--dark-green);
   color: #ffffff;
 }
+
 .btn-primary:hover {
   background-color: var(--mid-green);
 }
@@ -101,6 +102,7 @@ input {
   border: 2px solid var(--lime-mid);
   font-weight: 700;
 }
+
 .btn-neon:hover {
   background-color: var(--lime-light);
   transform: scale(1.04);
@@ -115,6 +117,7 @@ input {
   border-radius: 50%;
   transition: var(--transition-fast);
 }
+
 .btn-icon:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }

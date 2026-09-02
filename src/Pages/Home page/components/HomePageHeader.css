@@ -1,103 +1,295 @@
 /* ==========================================
-   HEADER / NAVBAR
+   HEADER MODERN – مع زر طلباتي
    ========================================== */
 
 .header {
-  color: var(--secondary-color);
-  background-color: var(--primary-color);
-  padding: 0.5rem 1rem;
-  margin-bottom: 3rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 2rem;
+  background-color: var(--primary-color);
+  color: var(--cream);
   position: sticky;
   top: 0;
-  width: 100%;
   z-index: 1000;
-  border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-bottom: 3px solid var(--neon-green);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ===== الشعار ===== */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: none;
+  margin: 0;
+  padding: 0;
 }
 
 .logo {
-  height: 3rem;
+  border-radius: 50%;
+  height: 3.2rem;
+  width: auto;
+  transition: transform 0.2s ease;
 }
 
+.logo:hover {
+  transform: scale(1.03);
+}
+
+.tagline {
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: var(--cream);
+  letter-spacing: 0.5px;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .tagline {
+    display: inline-block;
+  }
+}
+
+/* ===== البحث ===== */
 .header-search {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  flex: 1;
+  max-width: 32rem;
+  min-width: 12rem;
 }
 
 .header-search input {
-  padding: 0.5rem 2.5rem 0.5rem 0.75rem;
-  border-radius: var(--radius-sm, 5px);
-  border: 1px solid transparent;
-  width: 30rem;
-  max-width: 100%;
+  width: 100%;
+  padding: 0.7rem 3rem 0.7rem 1.2rem;
+  border: 2px solid transparent;
+  border-radius: 50px;
+  background: var(--cream);
+  color: var(--dark-green);
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.header-search button {
+.header-search input::placeholder {
+  color: var(--mid-green);
+  opacity: 0.7;
+}
+
+.header-search input:focus {
+  outline: none;
+  border-color: var(--neon-green);
+  box-shadow: 0 0 0 4px rgba(182, 245, 0, 0.2), 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header-search-button {
   position: absolute;
-  right: 0.25rem;
-  padding: 0.25rem;
-  background-color: var(--secondary-color);
-  border-radius: var(--radius-sm, 5px);
+  right: 0.3rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--neon-green);
+  border: none;
+  border-radius: 50%;
+  padding: 0.4rem 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.header-search-button:hover {
+  background: var(--lime-light);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.header-search-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .search-icon {
-  height: 1.25rem;
-  width: 1.25rem;
+  height: 1.3rem;
+  width: 1.3rem;
+  filter: brightness(0) invert(0);
 }
 
-.header-links {
+/* ===== الأزرار الجانبية ===== */
+.header-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
+  flex-wrap: wrap;
 }
 
-.header-links button {
-  padding: 0.5rem 0.75rem;
-  color: var(--secondary-color);
-  background-color: transparent;
-  transition: opacity 0.2s ease;
+/* زر تسجيل الدخول */
+.header-login {
+  background: transparent;
+  color: var(--cream);
+  border: 2px solid transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
-.header-links button:hover {
-  opacity: 0.8;
+.header-login:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--neon-green);
 }
 
+/* زر طلباتي */
+.header-orders {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: var(--cream);
+  border: 2px solid transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.header-orders:hover {
+  background: rgba(182, 245, 0, 0.15);
+  border-color: var(--neon-green);
+  transform: translateY(-1px);
+}
+
+.header-orders .material-symbols-outlined {
+  font-size: 1.5rem;
+  color: var(--neon-green);
+}
+
+.orders-label {
+  display: none;
+}
+
+@media (min-width: 600px) {
+  .orders-label {
+    display: inline;
+  }
+}
+
+/* ===== السلة ===== */
 .header-cart {
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  padding: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.header-cart:hover {
+  background: rgba(182, 245, 0, 0.12);
+  border-color: var(--neon-green);
 }
 
 .cart-icon {
-  height: 2.5rem;
-  width: 2.5rem;
+  font-size: 2.2rem;
+  color: var(--cream);
+  transition: color 0.2s;
+}
+
+.header-cart:hover .cart-icon {
+  color: var(--neon-green);
 }
 
 .counter-of-items {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: -4px;
+  right: -4px;
+  background: var(--danger-color, #ef4444);
   color: #ffffff;
   font-size: 0.75rem;
-  font-weight: bold;
+  font-weight: 800;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--dark-green);
+  padding: 0 4px;
 }
 
-.counter-icon {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: var(--danger-color);
-  color: #ffffff;
-  border-radius: 50%;
-  padding: 0.15rem 0.4rem;
-  font-size: 0.75rem;
-  font-weight: bold;
+/* ===== استجابة ===== */
+@media (max-width: 768px) {
+  .header {
+    padding: 0.6rem 1rem;
+    gap: 0.6rem;
+  }
+
+  .logo {
+    height: 2.5rem;
+  }
+
+  .header-search {
+    order: 3;
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  .header-actions {
+    gap: 0.4rem;
+  }
+
+  .header-login,
+  .header-orders {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.7rem;
+  }
+
+  .header-orders .orders-label {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0.4rem 0.6rem;
+  }
+
+  .logo {
+    height: 2rem;
+  }
+
+  .header-login {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .header-orders {
+    padding: 0.2rem 0.5rem;
+  }
+
+  .header-orders .material-symbols-outlined {
+    font-size: 1.4rem;
+  }
+
+  .cart-icon {
+    font-size: 1.8rem;
+  }
+
+  .counter-of-items {
+    font-size: 0.65rem;
+    min-width: 18px;
+    height: 18px;
+  }
 }

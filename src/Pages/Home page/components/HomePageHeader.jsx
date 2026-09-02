@@ -4,11 +4,14 @@ import { useState, useEffect } from "react";
 import Cart from "../modals/Cart.jsx";
 import { fetchData, searchProduct } from "../../../hooks/useProduct.js";
 import { useDebounce } from "../../../hooks/useDebounce.js";
+import Logo from "../../../assets/Logo.jpg";
+import { Link, useNavigate } from "react-router-dom";
 
-function HomePageHeader({ setProducts, setIsSearching, isSearching }) { // ✅ استقبل setIsSearching
+function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
   const { totalItems } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
 
@@ -41,42 +44,65 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) { // ✅ �
     performSearch(searchTerm);
   };
 
+  // زر تتبع الطلبات – نستخدم useNavigate للتوجيه
+  const goToOrders = () => {
+    navigate("/orders"); // سيتم إنشاء هذه الصفحة لاحقاً
+  };
+
   return (
     <>
-      <div className="header">
+      <header className="header">
         <div className="logo-container">
-          <img src="/logo.png" alt="Logo" className="logo" />
+          <Link to="/">
+            <img src={Logo} alt="GreenCart Logo" className="logo" />
+          </Link>
+          <span className="tagline">Shopora</span>
         </div>
 
+        {/* نموذج البحث */}
         <form onSubmit={handleSubmit} className="header-search">
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search Products ..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            aria-label="Search products"
           />
-          <button type="submit" className="header-search-button" disabled={isSearching}>
+          <button
+            type="submit"
+            className="header-search-button"
+            disabled={isSearching}
+            aria-label="Search"
+          >
             <img src="/Search.png" alt="Search" className="search-icon" />
           </button>
         </form>
 
-        <div className="header-links">
+        {/* الأزرار الجانبية */}
+        <div className="header-actions">
+          {/* زر تسجيل الدخول / الحساب */}
           <button className="header-login">Login</button>
-          <div className="header-cart" onClick={openCart} style={{ cursor: "pointer" }}>
-            <button className="header-cart-button">
-              <img src="/cart.png" alt="Cart" className="header-cart-icon" />
-            </button>
+
+          {/* زر طلباتي – جديد */}
+          <button className="header-orders" onClick={goToOrders} aria-label="My Orders">
+            <span className="material-symbols-outlined">receipt_long</span>
+            <span className="orders-label">My Orders</span>
+          </button>
+
+          {/* زر السلة مع العداد */}
+          <div className="header-cart" onClick={openCart} role="button" tabIndex={0} aria-label="Open cart">
+            <span className="material-symbols-outlined cart-icon">shopping_cart</span>
             {totalItems > 0 && (
               <span className="counter-of-items">{totalItems}</span>
             )}
           </div>
         </div>
-      </div>
+      </header>
 
+      {/* مودال السلة */}
       {isCartOpen && <Cart closeModal={closeCart} />}
     </>
   );
 }
 
 export default HomePageHeader;
-
