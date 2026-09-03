@@ -171,13 +171,37 @@ export default function CheckoutPage() {
       }
 
       // 5. نجاح العملية
-      toast.success(`✅ Order ${order.order_number} submitted successfully!`);
-      console.log(
-        "📦 Order Data being sent:",
-        JSON.stringify(orderData, null, 2),
-      );
-      clearCart();
-      navigate(`/Cart&Payments/order-confirmation/${order.id}`);
+      // 5. نجاح العملية - حفظ في localStorage + الانتقال
+      if (order) {
+        // ✅ 1. حفظ آخر طلب للمستخدم (لتسهيل الوصول السريع)
+        localStorage.setItem("lastOrder", JSON.stringify({
+          id: order.id,
+          order_number: order.order_number,
+          status: order.status,
+          created_at: order.created_at,
+        }));
+
+        // ✅ 2. إضافة الطلب إلى قائمة الطلبات السابقة (للزوار)
+        const orderHistory = JSON.parse(localStorage.getItem("orderHistory") || "[]");
+        // منع التكرار (في حال إعادة تحميل الصفحة أو إعادة الإرسال)
+        const exists = orderHistory.some(o => o.id === order.id);
+        if (!exists) {
+          orderHistory.push({
+            id: order.id,
+            order_number: order.order_number,
+            status: order.status,
+            created_at: order.created_at,
+          });
+          localStorage.setItem("orderHistory", JSON.stringify(orderHistory));
+        }
+
+        // ✅ 3. رسالة نجاح وإفراغ السلة
+        toast.success(`✅ Order ${order.order_number} submitted successfully!`);
+        clearCart();
+
+        // ✅ 4. الانتقال إلى صفحة التأكيد
+        navigate(`/Cart&Payments/order-confirmation/${order.id}`);
+      }
     } catch (error) {
       console.error("❌ Order submission failed:", error);
       toast.error(`Failed to submit order: ${error.message}`);
@@ -189,7 +213,7 @@ export default function CheckoutPage() {
   return (
     <div className="chk-container">
       {/* ===== NAVBAR ===== */}
-        <CheckoutPageHeader />
+      <CheckoutPageHeader />
 
       {/* ===== MAIN ===== */}
       <main className="chk-main">

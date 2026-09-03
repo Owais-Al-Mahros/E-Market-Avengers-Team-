@@ -1,0 +1,415 @@
+/* ==========================================
+   HERO SECTION – مع حاوية يسرى وبطاقة زجاجية
+   ========================================== */
+
+.hero-section {
+    width: 100%;
+    min-height: 90vh;
+    background: linear-gradient(135deg, #0a141e 0%, #1a2a3a 60%, #1f3345 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    /* padding: 1rem 4rem; */
+    position: relative;
+    overflow: hidden;
+}
+
+/* ===== شبكة التقسيم (الصورة تأخذ مساحة أكبر) ===== */
+.hero-grid {
+    max-width: 1400px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 42% 58%;
+    /* ✅ الصورة تأخذ 58% */
+    gap: 1.5rem;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+/* ===== العمود الأيسر (النص داخل حاوية) ===== */
+.hero-text-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-text-card {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 28px;
+    padding: 2.8rem 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 460px;
+    transition: transform 0.4s ease;
+}
+
+.hero-text-card:hover {
+    transform: translateY(-4px);
+}
+
+/* ===== البادج ===== */
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(182, 245, 0, 0.08);
+    border: 1px solid rgba(182, 245, 0, 0.15);
+    padding: 0.3rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #b6f500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 1.8rem;
+}
+
+.badge-dot {
+    width: 8px;
+    height: 8px;
+    background: #b6f500;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.3;
+        transform: scale(0.6);
+    }
+}
+
+/* ===== العنوان (مختصر) ===== */
+.hero-title {
+    font-size: clamp(2.2rem, 3.8vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin: 0 0 0.8rem 0;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+}
+
+.brand-name {
+    display: block;
+    color: #b6f500;
+    font-size: clamp(2.6rem, 4.2vw, 4.8rem);
+    text-shadow: 0 0 60px rgba(182, 245, 0, 0.12);
+    margin-bottom: 0.3rem;
+}
+
+.title-line {
+    display: block;
+    color: #ffffff;
+}
+
+.title-highlight {
+    display: block;
+    color: #b6f500;
+    text-shadow: 0 0 40px rgba(182, 245, 0, 0.08);
+}
+
+/* ===== الوصف (مختصر) ===== */
+.hero-description {
+    font-size: clamp(0.95rem, 1rem, 1.1rem);
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+    max-width: 400px;
+    margin: 0.6rem 0 2rem 0;
+    font-weight: 400;
+}
+
+/* ===== الأزرار (متباعدة) ===== */
+.hero-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    margin-bottom: 2.2rem;
+}
+
+.hero-btn {
+    padding: 0.85rem 2.4rem;
+    border: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.hero-btn.primary {
+    background: #b6f500;
+    color: #1a2a3a;
+    box-shadow: 0 4px 25px rgba(182, 245, 0, 0.15);
+}
+
+.hero-btn.primary:hover {
+    background: #a4dd00;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 40px rgba(182, 245, 0, 0.3);
+}
+
+.hero-btn.secondary {
+    background: rgba(255, 255, 255, 0.04);
+    color: #ffffff;
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+}
+
+.hero-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #b6f500;
+    transform: translateY(-3px);
+}
+
+/* ===== الفئات السريعة ===== */
+.hero-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.category-tag {
+    padding: 0.3rem 1.2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.3px;
+    cursor: default;
+    transition: all 0.3s ease;
+}
+
+.category-tag:hover {
+    background: rgba(182, 245, 0, 0.08);
+    border-color: rgba(182, 245, 0, 0.15);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* ===== العمود الأيمن (الصورة) ===== */
+.hero-image-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1200px;
+}
+
+.hero-image {
+    width: 100%;
+    max-width: 650px;
+    height: 480px;
+    object-fit: cover;
+    border-radius: 28px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    border: 2px solid rgba(182, 245, 0, 0.06);
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: perspective(1200px) rotateY(-4deg) rotateX(2deg);
+}
+
+.hero-image:hover {
+    transform: perspective(1200px) rotateY(0deg) rotateX(0deg) scale(1.02);
+}
+
+/* ===== البطاقات العائمة ===== */
+.floating-card {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 0.8rem 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    animation: float 4s ease-in-out infinite;
+    color: #ffffff;
+}
+
+.floating-card:first-of-type {
+    top: 8%;
+    right: -4%;
+    animation-delay: 0s;
+}
+
+.floating-card.second {
+    bottom: 12%;
+    left: -6%;
+    animation-delay: 1.5s;
+}
+
+.floating-card strong {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #b6f500;
+    display: block;
+}
+
+.floating-card p {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+.floating-icon {
+    font-size: 1.8rem;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* ===== استجابة ===== */
+@media (max-width: 1024px) {
+    .hero-section {
+        padding: 2rem;
+    }
+
+    .hero-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .hero-text-card {
+        padding: 2rem 1.8rem;
+    }
+
+    .hero-image {
+        max-width: 480px;
+        height: 380px;
+    }
+
+    .floating-card:first-of-type {
+        right: 0%;
+        top: 5%;
+    }
+
+    .floating-card.second {
+        left: 0%;
+        bottom: 8%;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: auto;
+        padding: 2rem 1.2rem;
+    }
+
+    .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    .hero-text-wrapper {
+        justify-content: center;
+    }
+
+    .hero-text-card {
+        max-width: 100%;
+        padding: 2rem 1.5rem;
+        text-align: center;
+    }
+
+    .hero-description {
+        max-width: 100%;
+        margin: 0.6rem auto 1.8rem auto;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .hero-categories {
+        justify-content: center;
+    }
+
+    .hero-image-wrapper {
+        order: -1;
+    }
+
+    .hero-image {
+        max-width: 100%;
+        height: 280px;
+        transform: none;
+        border-radius: 20px;
+    }
+
+    .hero-image:hover {
+        transform: scale(1.01);
+    }
+
+    .floating-card {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-text-card {
+        padding: 1.5rem 1rem;
+    }
+
+    .hero-badge {
+        font-size: 0.6rem;
+        padding: 0.2rem 0.8rem;
+    }
+
+    .brand-name {
+        font-size: 2rem;
+    }
+
+    .hero-title {
+        font-size: 1.8rem;
+    }
+
+    .hero-description {
+        font-size: 0.85rem;
+    }
+
+    .hero-btn {
+        padding: 0.7rem 1.8rem;
+        font-size: 0.85rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .hero-image {
+        height: 200px;
+    }
+
+    .category-tag {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.7rem;
+    }
+}

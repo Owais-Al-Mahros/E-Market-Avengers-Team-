@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
 import './HomePage.css';
 import ProductCard from "./components/ProductCard.jsx";
 import HomePageFooter from "./components/HomePageFooter.jsx";
 import HomePageHeader from "./components/HomePageHeader.jsx";
+import HomePageHero from "./components/HomePageHero";
+
 import { useProducts } from "../../context/ProductContext.jsx";
 import { useState } from "react";
 
@@ -43,9 +44,10 @@ function HomePage() {
         setIsSearching={setIsSearching}
         isSearching={isSearching}
       />
+      <HomePageHero />
       <h2>Products</h2>
       <div className="Products">{renderProducts()}</div>
-      <Link to="/login">Go To DashBoard</Link>
+
       <HomePageFooter />
     </>
   );

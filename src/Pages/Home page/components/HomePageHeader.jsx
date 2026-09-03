@@ -44,9 +44,30 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
     performSearch(searchTerm);
   };
 
-  // زر تتبع الطلبات – نستخدم useNavigate للتوجيه
+  // ✅ زر تتبع الطلبات – منطق ذكي للزوار والمسجلين
   const goToOrders = () => {
-    navigate("/orders"); // سيتم إنشاء هذه الصفحة لاحقاً
+    // 1. التحقق من وجود آخر طلب في localStorage
+    const lastOrder = JSON.parse(localStorage.getItem("lastOrder"));
+
+    // 2. إذا لم يكن هناك طلب نهائياً → انتقل إلى صفحة "لا توجد طلبات"
+    if (!lastOrder) {
+      navigate("/no-orders");
+      return;
+    }
+
+    // 3. إذا كان هناك طلب، تحقق من حالته
+    const activeStatuses = ["pending", "confirmed", "shipped"];
+    if (activeStatuses.includes(lastOrder.status)) {
+      // ✅ طلب نشط → اعرض تفاصيله
+      navigate(`/Cart&Payments/order-confirmation/${lastOrder.id}`);
+    } else {
+      // ❌ الطلب منتهي (delivered أو cancelled) → انتقل إلى صفحة "لا توجد طلبات نشطة"
+      navigate("/no-orders", {
+        state: {
+          message: `طلبك السابق (${lastOrder.order_number}) تم ${lastOrder.status === 'delivered' ? 'توصيله' : 'إلغاؤه'}. يمكنك طلب جديد الآن!`
+        }
+      });
+    }
   };
 
   return (
@@ -82,8 +103,9 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
         <div className="header-actions">
           {/* زر تسجيل الدخول / الحساب */}
           <button className="header-login">Login</button>
+          <Link to="/login">Go To DashBoard</Link>
 
-          {/* زر طلباتي – جديد */}
+          {/* زر طلباتي */}
           <button className="header-orders" onClick={goToOrders} aria-label="My Orders">
             <span className="material-symbols-outlined">receipt_long</span>
             <span className="orders-label">My Orders</span>

@@ -11,6 +11,7 @@ function CartAndPayments() {
                 <Route path='/Checkout' element={<CheckoutPage />} />
                 <Route path='/order-confirmation' element={<OrderConfirmation />} />
                 <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+
             </Routes>
         </>
     )
