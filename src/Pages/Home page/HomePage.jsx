@@ -3,31 +3,19 @@ import './HomePage.css';
 import ProductCard from "./components/ProductCard.jsx";
 import HomePageFooter from "./components/HomePageFooter.jsx";
 import HomePageHeader from "./components/HomePageHeader.jsx";
-import { useProducts } from "../../context/ProductContext.jsx"
-import { useState , useEffect } from "react";
-import { fetchData } from "../../hooks/useProduct.js";
+import { useProducts } from "../../context/ProductContext.jsx";
+import { useState } from "react";
+
 function HomePage() {
-  // const storedAdmin = localStorage.getItem("isAdmin")
+  const { products, loading, setProducts } = useProducts();
+  const [isSearching, setIsSearching] = useState(false);
 
-  const [ loading, setLoading ] = useState(true);
-  const [products, setProducts] = useState([]); // المصفوفة التي تُعرض في الواجهة
-
-  // جلب كافة المنتجات عند تحميل الصفحة لأول مرة
-  useEffect(() => {
-    async function loadProducts() {
-      setLoading(true)
-      const data = await fetchData('products');
-      setProducts(data);
-      setLoading(false)
-    }
-    loadProducts();
-  }, []);
 
   const renderProducts = () => {
-    if (loading) {
-      return (<h1>...loading products</h1>);
+    if (loading || isSearching) {
+      return <h1>...loading products</h1>;
     }
-    return products.map((product, index) => (
+    return products.map((product) => (
       <ProductCard
         key={product.id}
         id={product.id}
@@ -40,8 +28,8 @@ function HomePage() {
         weight_unit={product.weight_unit}
         total_price={product.total_price}
         description={product.description}
-        nutritionObject={product.nutrition_facts}  // 🔥 الكائن الجديد
-        storageObject={product.storage_notes}       // 🔥 الكائن الجديد
+        nutritionObject={product.nutrition_facts}
+        storageObject={product.storage_notes}
         ingredients={product.ingredients}
       />
     ));
@@ -49,12 +37,16 @@ function HomePage() {
 
   return (
     <>
-      <HomePageHeader setProducts={setProducts}/>
+      {/* ✅ تمرير setProducts من السياق مباشرة */}
+      <HomePageHeader
+        setProducts={setProducts}
+        setIsSearching={setIsSearching}
+        isSearching={isSearching}
+      />
       <h2>Products</h2>
       <div className="Products">{renderProducts()}</div>
       <Link to="/login">Go To DashBoard</Link>
       <HomePageFooter />
-      {/* <Link to={storedAdmin == "true" ? "/dashboard" : "/login"}>Go To DashBoard</Link> */}
     </>
   );
 }

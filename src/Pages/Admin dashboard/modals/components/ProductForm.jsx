@@ -143,7 +143,7 @@ export default function ProductForm({
             </div>
           </div>
 
-          <div className="info-item category-item">
+          <div className="info-item category-item-weight-add">
             <div className="vertical-group weghit-category">
               <div className="field-group">
                 <span className="info-label">Category</span>
