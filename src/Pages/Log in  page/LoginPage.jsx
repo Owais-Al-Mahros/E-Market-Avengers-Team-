@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from 'react-hot-toast';
-
+import { toast } from "react-hot-toast";
 import "./LoginPage.css";
 import { supabase } from "../../lib/supabase.js";
 
@@ -60,7 +59,6 @@ function LoginPage({ setIsAdmin }) {
       setIsAdmin(true);
       setIsLoading(false);
       navigate("/dashboard");
-
     } else {
       toast.error("Access denied. You are not an admin.");
       await supabase.auth.signOut();
@@ -72,10 +70,10 @@ function LoginPage({ setIsAdmin }) {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2>Login Page</h2>
+        <h2>Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="input-group">
-            <label htmlFor="name">Enter your Name: </label>
+            <label htmlFor="name">👤 Enter your Name: </label>
             <input
               id="name"
               type="text"
@@ -86,8 +84,8 @@ function LoginPage({ setIsAdmin }) {
             />
           </div>
           <div className="input-group">
-            <label htmlFor="password">Enter your password</label>
-            <div className="password-fileds">
+            <label htmlFor="password">🔒 Enter your password</label>
+            <div className="password-fields">
               <input
                 id="password"
                 type={showpassword ? "text" : "password"}
@@ -96,21 +94,36 @@ function LoginPage({ setIsAdmin }) {
                 placeholder="Enter your password"
                 disabled={isLoading}
               />
-              <button
-                className="password-filed"
-                type="button"
-                onMouseLeave={() => setShowpassword(false)}
-                onMouseDown={() => setShowpassword(true)}
-                onMouseUp={() => setShowpassword(false)}
-              >
-                {showpassword ? "✋" : "✍"}
-              </button>
+              {adminInfo.password.length > 0 && (
+                <button
+                  className="password-field-btn"
+                  type="button"
+                  onMouseLeave={() => setShowpassword(false)}
+                  onMouseDown={() => setShowpassword(true)}
+                  onMouseUp={() => setShowpassword(false)}
+                >
+                  {showpassword ? "✋" : "✍"}
+                </button>
+              )}
             </div>
           </div>
           <button type="submit" className="login-btn">
-            {isLoading ? "Loding.." : "Enter"}
+            {isLoading ? "Loading.." : "Enter"}
           </button>
         </form>
+        <div className="login-footer">
+          <div className="forgot-password">
+            <span>Forgot your password? </span>
+            <a href="mailto:support@namecompany.com">Contact Support</a>
+          </div>
+          <div className="signup-link">
+            <span>Don't have an account? </span>
+            <a href="/signup">Sign Up</a>
+          </div>
+          <div className="copyright">
+            <span>© 2024 E-Market. All rights reserved.</span>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -5,20 +5,23 @@
   align-items: center;
   min-height: 100vh;
   margin: 0;
-  background-color: beige;
+  background-color: var(--cream);
   padding: 20px;
 }
 
 /* البطاقة الرئيسية للفورم */
 .login-card {
-  background-color: var(--card-bg);
+  background-color: var(--light-cream);
   padding: 40px 35px;
   border-radius: 20px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 400px;
   border: 1px solid var(--border-color);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+    position: relative;
 }
 
 .login-card:hover {
@@ -81,7 +84,9 @@
   background-color: #ffffff;
   color: var(--primary-color);
   box-sizing: border-box;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .password-fields input {
@@ -105,7 +110,10 @@
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+  transition:
+    background-color 0.3s,
+    transform 0.1s,
+    box-shadow 0.3s;
   margin-top: 10px;
 }
 
@@ -116,4 +124,26 @@
 
 .login-btn:active {
   transform: scale(0.98);
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+
+  a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    font-weight: 600;
+  }
+
+  .copyright {
+    margin-top: 10px;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--primary-color);
+  }
 }

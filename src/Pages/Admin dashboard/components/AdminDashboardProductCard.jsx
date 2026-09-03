@@ -11,8 +11,8 @@ export default function AdminDashboardProductCar(props) {
   return (
     <>
       <div className="card-container-admin" onClick={openEditCardModel}>
-        <div className="image-container-admin">
-          <img src={props.image} alt="product" className="image-admin" />
+        <div className="image-container-admin-dashboard">
+          <img src={props.image} alt="product" className="image-admin-dashboard" />
         </div>
         <div className="title-admin">
           <span>{props.name}</span>
