@@ -1,18 +1,19 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import AdminDashboard from "./Pages/Admin dashboard/AdminDashboard";
-import HomePage from "./Pages/Home page/HomePage";
-import LoginPage from "./Pages/Log in  page/LoginPage";
-import CartAndPayments from "./Pages/Cart and payments/CartAndPayments";
-import { useEffect, useState, useRef } from "react";
-import { Navigate } from "react-router-dom";
+import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { ProductProvider } from "./context/ProductContext";
 import { supabase } from "./lib/supabase";
+
+// 🚀 تطبيق Lazy Loading على جميع الصفحات
+const AdminDashboard = lazy(() => import("./Pages/Admin dashboard/AdminDashboard"));
+const HomePage = lazy(() => import("./Pages/Home page/HomePage"));
+const LoginPage = lazy(() => import("./Pages/Log in  page/LoginPage"));
+const CartAndPayments = lazy(() => import("./Pages/Cart and payments/CartAndPayments"));
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const isInitialMount = useRef(true); // ✅ لتتبع التحميل الأول
+  const isInitialMount = useRef(true);
 
   // دالة التحقق (تُستخدم في الخلفية بدون تغيير حالة التحميل)
   const checkAdminStatus = async (session) => {
@@ -39,7 +40,9 @@ function App() {
     const initializeAuth = async () => {
       setIsLoading(true);
 
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       await checkAdminStatus(session);
 
       setIsLoading(false);
@@ -51,12 +54,10 @@ function App() {
     // 2. الاستماع لتغيرات المصادقة (تسجيل الدخول/الخروج)
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        // ✅ نحدّث الحالة بدون تغيير `isLoading` (بدون شاشة تحميل)
         await checkAdminStatus(session);
 
-        // إذا كان تسجيل خروج، أعد التوجيه للصفحة الرئيسية
         if (event === "SIGNED_OUT") {
-          window.location.href = "/"; // أو استخدم navigate إذا كان في سياق راوتر
+          window.location.href = "/";
         }
       }
     );
@@ -64,7 +65,7 @@ function App() {
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, []); // ✅ المصفوفة الفارغة تضمن تنفيذ التأثير مرة واحدة فقط
+  }, []);
 
   if (isLoading) {
     return <h1>... wait a minute</h1>;
@@ -72,21 +73,31 @@ function App() {
 
   return (
     <>
-      <Toaster position="top-center" reverseOrder={false} containerStyle={{
-        zIndex: 99999, // ✅ بدلاً من 5
-      }} />
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        containerStyle={{
+          zIndex: 99999,
+        }}
+      />
       <ProductProvider>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/Cart&Payments/*" element={<CartAndPayments />} />
-          <Route
-            path="/dashboard"
-            element={
-              isAdmin ? <AdminDashboard /> : <Navigate to="/login" replace />
-            }
-          />
-          <Route path="/login" element={<LoginPage setIsAdmin={setIsAdmin} />} />
-        </Routes>
+        {/* ⏳ تغليف الـ Routes بـ Suspense لعرض شاشة تحميل خفيفة أثناء جلب الصفحة المطلوب فتحها فقط */}
+        <Suspense fallback={<h1>Loading page...</h1>}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/Cart&Payments/*" element={<CartAndPayments />} />
+            <Route
+              path="/dashboard"
+              element={
+                isAdmin ? <AdminDashboard /> : <Navigate to="/login" replace />
+              }
+            />
+            <Route
+              path="/login"
+              element={<LoginPage setIsAdmin={setIsAdmin} />}
+            />
+          </Routes>
+        </Suspense>
       </ProductProvider>
     </>
   );
