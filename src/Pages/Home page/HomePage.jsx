@@ -1,4 +1,4 @@
-import './HomePage.css';
+import "./HomePage.css";
 import ProductCard from "./components/ProductCard.jsx";
 import HomePageFooter from "./components/HomePageFooter.jsx";
 import HomePageHeader from "./components/HomePageHeader.jsx";
@@ -10,7 +10,6 @@ import { useState } from "react";
 function HomePage() {
   const { products, loading, setProducts } = useProducts();
   const [isSearching, setIsSearching] = useState(false);
-
 
   const renderProducts = () => {
     if (loading || isSearching) {
