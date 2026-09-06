@@ -9,6 +9,7 @@ export default function ProductCard(props) {
   const { addToCart } = useCart();
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [counter, setCounter] = useState(1);
+  const [isImageLoaded, setIsImageLoaded] = useState(false); // 👈 حالة تتبع تحميل الصورة
 
   const openDetails = () => setIsDetailsOpen(true);
   const closeDetails = () => setIsDetailsOpen(false);
@@ -23,11 +24,8 @@ export default function ProductCard(props) {
     setCounter((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
-  // ✅ دالة إضافة المنتج للسلة
   const handleAddToCart = (e) => {
-    e.stopPropagation(); // منع فتح تفاصيل المنتج
-
-    // إضافة المنتج مع الكمية المحددة
+    e.stopPropagation();
     addToCart(
       {
         id: props.id,
@@ -36,12 +34,10 @@ export default function ProductCard(props) {
         image: props.image,
         weight: props.weight,
         weight_unit: props.weight_unit,
-        // يمكن إضافة أي بيانات أخرى تحتاجها
       },
       counter,
-    ); // الكمية المحددة من العداد
+    );
 
-    // رسالة تأكيد (اختياري)
     toast.success(`Added ${counter} × ${props.name} to cart!`, {
       duration: 2000,
     });
@@ -50,8 +46,24 @@ export default function ProductCard(props) {
   return (
     <>
       <div className="card-container" onClick={openDetails}>
-        <div className="image-container">
-          <img src={props.image} alt="product" className="image" />
+        <div
+          className="image-container"
+          style={{
+            backgroundColor: isImageLoaded ? "transparent" : "#f0f0f0", // خلفية رمادية خفيفة أثناء التحميل
+            minHeight: "150px",
+          }}
+        >
+          <img
+            src={props.image}
+            alt={props.name || "product"}
+            className="image"
+            loading="lazy"
+            onLoad={() => setIsImageLoaded(true)} // 👈 عند اكتمال التحميل
+            style={{
+              opacity: isImageLoaded ? 1 : 0,
+              transition: "opacity 0.4s ease-in-out", // تأثير ظهوري ناعم
+            }}
+          />
         </div>
         <div className="title">
           <span>{props.name}</span>
@@ -74,10 +86,14 @@ export default function ProductCard(props) {
           <div className="price">
             <span>{(props.price * counter).toFixed(2)}€</span>
           </div>
-          {/* ✅ زر الإضافة للسلة */}
           <div className="add-btn-container">
             <button className="add-button" onClick={handleAddToCart}>
-              <img src="/cart.png" className="add-icon" alt="cart" />
+              <img
+                src="/cart.png"
+                className="add-icon"
+                alt="cart"
+                loading="lazy"
+              />
               <span>Add to cart</span>
             </button>
           </div>
