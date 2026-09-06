@@ -3,13 +3,27 @@ import ProductCard from "./components/ProductCard.jsx";
 import HomePageFooter from "./components/HomePageFooter.jsx";
 import HomePageHeader from "./components/HomePageHeader.jsx";
 import HomePageHero from "./components/HomePageHero";
+import CategorySection from "./components/CategorySection.jsx";
 
 import { useProducts } from "../../context/ProductContext.jsx";
+import { useCategories } from "../../context/CategoryContext.jsx";
 import { useState } from "react";
 
 function HomePage() {
   const { products, loading, setProducts } = useProducts();
+  const { categories, loading: categoriesLoading } = useCategories();
   const [isSearching, setIsSearching] = useState(false);
+
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const selectedCategory = categories.find(
+    (cat) => cat.id === selectedCategoryId,
+  );
+
+  const handleCategorySelect = (categoryId) => {
+    setSelectedCategoryId((prevId) =>
+      prevId === categoryId ? null : categoryId,
+    );
+  };
 
   const renderProducts = () => {
     if (loading || isSearching) {
@@ -44,12 +58,44 @@ function HomePage() {
         isSearching={isSearching}
       />
       <HomePageHero />
-      <h2>Products</h2>
-      <div className="Products">{renderProducts()}</div>
-
+      {/* <div className="Products" id="products">
+        {renderProducts()}
+      </div> */}
+      <div className="category-sections" id="category-sections">
+        <h2>Categories</h2>
+        <div className="categories-grid">
+          {categoriesLoading ? (
+            <p>Loading categories...</p>
+          ) : (
+            categories.map((cat) => (
+              <div
+                key={cat.id}
+                className={`category-card ${
+                  selectedCategoryId === cat.id ? "active" : ""
+                }`}
+                onClick={() => handleCategorySelect(cat.id)}
+              >
+                <img
+                  src={cat.image}
+                  className="category-image"
+                  alt={cat.name}
+                />
+                <h2>{cat.name}</h2>
+              </div>
+            ))
+          )}
+        </div>
+        {selectedCategory && (
+          <div className="selected-category-section">
+            <CategorySection
+              categoryId={selectedCategory.id}
+              categoryName={selectedCategory.name}
+            />
+          </div>
+        )}
+      </div>
       <HomePageFooter />
     </>
   );
 }
-
 export default HomePage;

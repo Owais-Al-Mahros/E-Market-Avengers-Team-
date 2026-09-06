@@ -7,8 +7,11 @@ import { deleteProduct as deleteProductAPI } from "../../../hooks/useProduct.js"
 import { updateProduct as updateProductAPI } from "../../../hooks/useProduct.js";
 import AdminDashboardProductCard from "./AdminDashboardProductCard.jsx";
 import toast from "react-hot-toast";
+import { useCategories } from "../../../context/CategoryContext.jsx";
 
 function ProductsSection() {
+  const { categories, loading: categoriesLoading } = useCategories();
+
   const { products, loading, deleteProduct, updateProduct, refreshProducts } =
     useProducts();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,7 +65,7 @@ function ProductsSection() {
         id: "delete-confirm-toast",
         duration: Infinity,
         position: "top-center",
-        className: "custom-delete-toast-wrapper"
+        className: "custom-delete-toast-wrapper",
       },
     );
   };
@@ -79,7 +82,7 @@ function ProductsSection() {
 
   const filteredProducts = products.filter((p) => {
     const matchName = p.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchCategory = categoryFilter ? p.category === categoryFilter : true;
+    const matchCategory = categoryFilter ? Number(p.category_id) === Number(categoryFilter) : true;
     return matchName && matchCategory;
   });
 
@@ -90,7 +93,7 @@ function ProductsSection() {
         key={product.id}
         id={product.id}
         name={product.name}
-        category_id={product.category_id}      // ✅
+        category_id={product.category_id} // ✅
         subcategory_id={product.subcategory_id} // ✅
         price={product.price}
         image={product.image}
@@ -142,9 +145,14 @@ function ProductsSection() {
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
             >
-              <option value="">All Categories</option>
-              <option value="vegetables">vegetables</option>
-              <option value="fruit">fruit</option>
+              <option value={""}>All categories</option>
+              {categoriesLoading ? (
+                <option value={""}>Categories are loading</option>
+              ) : (
+                categories.map((cat) =>(
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))
+              )}
             </select>
             <span className="material-symbols-outlined">arrow_drop_down</span>
           </div>
@@ -164,7 +172,12 @@ function ProductsSection() {
           onProductAdded={refreshProducts}
         />
       )}
-      {CategoryModal && <AddCataeory closeModel={closeCategoryModal} onCategoryAdded={refreshProducts} />}
+      {CategoryModal && (
+        <AddCataeory
+          closeModel={closeCategoryModal}
+          onCategoryAdded={refreshProducts}
+        />
+      )}
     </div>
   );
 }

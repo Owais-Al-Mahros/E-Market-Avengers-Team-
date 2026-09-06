@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { ProductProvider } from "./context/ProductContext";
+import { CategoryProvider } from "./context/CategoryContext";
 import { supabase } from "./lib/supabase";
 
 // 🚀 تطبيق Lazy Loading على جميع الصفحات

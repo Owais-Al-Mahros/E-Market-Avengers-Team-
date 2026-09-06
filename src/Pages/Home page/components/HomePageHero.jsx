@@ -3,7 +3,7 @@ import heroImage from "../../../assets/hero-image.jpg"; // يمكنك استبد
 
 export default function HomePageHero() {
   const handleShopNowClick = () => {
-    const productsSection = document.getElementById("products");
+    const productsSection = document.getElementById("category-sections");
     if (productsSection) {
       productsSection.scrollIntoView({ behavior: "smooth" });
     }
@@ -32,7 +32,7 @@ export default function HomePageHero() {
 
             <div className="hero-buttons">
               <button className="hero-btn primary">Shop Now →</button>
-              <button className="hero-btn secondary" onClick={handleShopNowClick}><a href="#products">Explore</a></button>
+              <button className="hero-btn secondary" onClick={handleShopNowClick}><a href="#category-sections">Explore</a></button>
             </div>
 
             <div className="hero-categories">

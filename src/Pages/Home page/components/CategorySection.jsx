@@ -3,7 +3,7 @@ import { supabase } from "../../../lib/supabase";
 import ProductCard from "./ProductCard.jsx";
 import "./CategorySection.css";
 
-function CategorySection({ categoryName }) {
+function CategorySection({ categoryId, categoryName }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -13,11 +13,9 @@ function CategorySection({ categoryName }) {
       const { data, error } = await supabase
         .from("products")
         .select("*")
-        .ilike("category", categoryName);
+        .eq("category_id", categoryId);
 
-      console.log(`الفئة المطلوبة: "${categoryName}"`);
-      console.log("البيانات القادمة من Supabase:", data);
-      if (error) console.error("حدث خطأ:", error);
+      if (error) console.error(error.message, error.hint);
       if (!error) {
         setProducts(data || []);
       }
@@ -25,17 +23,17 @@ function CategorySection({ categoryName }) {
     };
 
     fetchProductsForCategory();
-  }, [categoryName]);
+  }, [categoryId]);
 
   return (
     <div className="category-section">
-      <h2>{categoryName}</h2>
+      <h2 className="category-name">{categoryName}</h2>
       {loading ? (
         <p>Loading...</p>
       ) : (
         <div className="products">
           {products.map((product) => (
-            <div key={product.id} className="product">
+            <div key={product.id} className="product-in-home-page">
               <ProductCard
                 key={product.id}
                 id={product.id}
