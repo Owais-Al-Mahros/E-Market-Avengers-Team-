@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Cart from "../modals/Cart.jsx";
 import { fetchData, searchProduct } from "../../../hooks/useProduct.js";
 import { useDebounce } from "../../../hooks/useDebounce.js";
-import Logo from "../../../assets/Logo.jpg";
 import { Link, useNavigate } from "react-router-dom";
 
 function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
@@ -75,7 +74,7 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
       <header className="header">
         <div className="logo-container">
           <Link to="/">
-            <img src={Logo} alt="GreenCart Logo" className="logo" />
+            <img src="/Logo.jpg" alt="GreenCart Logo" className="logo" />
           </Link>
           <span className="tagline">Shopora</span>
         </div>

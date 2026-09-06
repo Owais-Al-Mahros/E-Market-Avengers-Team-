@@ -1,0 +1,30 @@
+/* From Uiverse.io by AbanoubMagdy1 */
+.contener {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+}
+
+.loader {
+    --dim: 5rem;
+    width: var(--dim);
+    height: var(--dim);
+    border: 7px solid var(--primary-color);
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    animation: spin_51 1.5s infinite linear;
+}
+
+
+@keyframes spin_51 {
+    from {
+        transform: rotate(0)
+    }
+
+    to {
+        transform: rotate(360deg)
+    }
+}

@@ -5,8 +5,8 @@
 /* ---------- متغيرات الألوان المحلية (مرتبطة بالثيم العام) ---------- */
 :root {
   --color-primary-dark: var(--dark-green);
-  --color-primary: var(--dark-green);
-  --color-primary-light: var(--neon-green);
+  --color-primary: var(--primary-color);
+  --color-primary-light: var(--dark-green);
   --color-text: var(--cream);
   --color-text-muted: rgba(245, 241, 232, 0.7);
   --color-border: rgba(255, 255, 255, 0.12);
@@ -21,7 +21,7 @@
   left: 0;
   height: 100vh;
   width: var(--sidebar-width);
-  background: var(--dark-green);
+  background: var(--primary-color);
   color: var(--color-text);
   display: flex;
   flex-direction: column;
@@ -95,8 +95,9 @@
 /* قائمة التنقل */
 .menu-list {
   list-style: none;
-  padding: 0;
+  padding: 5px;
   margin: 0;
+  margin-top: 45px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -124,9 +125,9 @@
 }
 
 .menu-item.active {
-  color: var(--neon-green);
+  color: var(--dark-green);
   background: var(--color-active-bg);
-  border-left: 4px solid var(--neon-green);
+  border-left: 4px solid var(--dark-green);
   font-weight: 800;
 }
 
@@ -137,7 +138,7 @@
 }
 
 .menu-item.active .material-symbols-outlined {
-  color: var(--neon-green);
+  color: var(--dark-green);
 }
 
 .menu-item:hover .material-symbols-outlined {

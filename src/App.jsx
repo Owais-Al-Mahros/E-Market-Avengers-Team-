@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { ProductProvider } from "./context/ProductContext";
 import { CategoryProvider } from "./context/CategoryContext";
 import { supabase } from "./lib/supabase";
+import LoadingPage from "./Components/LoadingPage"
 
 // 🚀 تطبيق Lazy Loading على جميع الصفحات
 const AdminDashboard = lazy(() => import("./Pages/Admin dashboard/AdminDashboard"));
@@ -69,7 +70,8 @@ function App() {
   }, []);
 
   if (isLoading) {
-    return <h1>... wait a minute</h1>;
+    return <div className="Loading"><LoadingPage />
+    </div>;
   }
 
   return (

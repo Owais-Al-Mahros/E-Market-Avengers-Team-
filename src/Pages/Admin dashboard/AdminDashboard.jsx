@@ -3,7 +3,7 @@ import './AdminDashboard.css';
 import AdminSideNavbar from "./components/AdminSideNavbar.jsx";
 import ProductsSection from "./components/ProductsSection.jsx";
 import OrderManagementSection from "./components/OrderManagementSection.jsx";
-
+import ShippingSection from "./components/ShippingSection.jsx";
 import { Toaster } from "react-hot-toast";
 function AdminDashboard() {
   const [activeSection, setActiveSection] = useState("products");
@@ -17,7 +17,7 @@ function AdminDashboard() {
       case "orders":
         return <OrderManagementSection />;
       case "shipping":
-        return <div>Shipping Section (coming soon)</div>;
+        return <ShippingSection />;
       case "admins":
         return <div>Admins Section (coming soon)</div>;
       case "analytics":
