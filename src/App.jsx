@@ -8,6 +8,7 @@ import { useEffect, useState, useRef } from "react";
 import { Navigate } from "react-router-dom";
 import { ProductProvider } from "./context/ProductContext";
 import { supabase } from "./lib/supabase";
+import LoadingPage from "./Components/LoadingPage"
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -67,7 +68,8 @@ function App() {
   }, []); // ✅ المصفوفة الفارغة تضمن تنفيذ التأثير مرة واحدة فقط
 
   if (isLoading) {
-    return <h1>... wait a minute</h1>;
+    return <div className="Loading"><LoadingPage />
+    </div>;
   }
 
   return (

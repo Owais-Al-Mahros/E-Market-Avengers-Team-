@@ -15,7 +15,6 @@ export default function HomePageHero() {
 
                         <h1 className="hero-title">
                             <span className="brand-name">Shopora</span>
-                            <span className="title-line">Fresh Grocery</span>
                             <span className="title-highlight">Market</span>
                         </h1>
 

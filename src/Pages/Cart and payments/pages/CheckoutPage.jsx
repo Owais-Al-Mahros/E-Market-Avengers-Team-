@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import "./CheckoutPage.css";
 import CheckoutPageFooter from "./components/CheckoutPageFooter";
 import CheckoutPageHeader from "./components/CheckoutPageHeader";
+import DeliveryTime from "./modals/DeliveryTime";
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -401,42 +402,22 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
-
-            {/* --- Delivery Time --- */}
             <div className="chk-section">
               <h3>🕒 Delivery Time</h3>
-              <div className="chk-row">
-                <div className="chk-field">
-                  <label>Delivery Date *</label>
-                  <input
-                    type="date"
-                    name="deliveryDate"
-                    value={customer.deliveryDate}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="chk-field">
-                  <label>Delivery Time *</label>
-                  <input
-                    type="time"
-                    name="deliveryTime"
-                    value={customer.deliveryTime}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-              <div className="chk-field chk-full">
-                <label>Delivery Notes (optional)</label>
-                <textarea
-                  name="deliveryNotes"
-                  value={customer.deliveryNotes}
-                  onChange={handleChange}
-                  rows="2"
-                  placeholder="Eingang befindet sich hinter dem Gebäude. Bitte bei Müller klingeln."
-                ></textarea>
-              </div>
+              <DeliveryTime
+                onSelect={(time) => {
+                  setCustomer((prev) => ({
+                    ...prev,
+                    deliveryDate: time.day,
+                    deliveryTime: `${time.start} - ${time.end}`,
+                  }));
+                }}
+              />
+              {customer.deliveryDate && customer.deliveryTime && (
+                <p className="chk-hint" style={{ marginTop: "8px", color: "#3b931f" }}>
+                  ✅ Selected: {customer.deliveryDate} · {customer.deliveryTime}
+                </p>
+              )}
             </div>
 
             {/* --- Action Buttons --- */}

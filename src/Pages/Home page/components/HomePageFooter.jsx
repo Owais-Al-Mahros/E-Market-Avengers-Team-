@@ -7,8 +7,8 @@ export default function HomePageFooter() {
         <div className="sub-container-footer">
           <div className="information">
             <div className="logo">
-              <img src="/logo.png" className="logo-icon"></img>
-              <h1 className="logo-name">E-Market</h1>
+              <img src="/Logo.jpg" className="logo-icon"></img>
+              <h1 className="logo-name">Shopora</h1>
             </div>
             <div className="description">
               Your first store for electronics and smart tools.
