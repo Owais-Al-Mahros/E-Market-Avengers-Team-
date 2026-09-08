@@ -2,27 +2,63 @@
 import "./TimeSlotChoosing.css";
 
 export default function TimeSlotChoosing({
-    enabledHours,
+    selectedDay,
+    defaultHours,
+    dayOverrides,
     onToggleHour,
-    minAdvanceHours,
-    onMinAdvanceChange,
+    onResetDay,
+    onBackToDefault, // ✅ دالة جديدة للعودة إلى الوضع الافتراضي
     minDurationHours,
     onMinDurationChange,
-    maxDurationHours,
-    onMaxDurationChange,
+    minAdvanceHours,
+    onMinAdvanceChange,
 }) {
     const allHours = [];
-    for (let i = 9; i <= 18; i++) {
+    for (let i = 6; i <= 23; i++) {
         allHours.push(`${String(i).padStart(2, "0")}:00`);
     }
+
+    const activeHours = selectedDay
+        ? (dayOverrides[selectedDay] || defaultHours)
+        : defaultHours;
+
+    const morningHours = allHours.filter(h => parseInt(h.split(":")[0], 10) < 12);
+    const afternoonHours = allHours.filter(h => parseInt(h.split(":")[0], 10) >= 12);
+
+    const formatHourDisplay = (hourStr) => {
+        const hour = parseInt(hourStr.split(":")[0], 10);
+        const ampm = hour >= 12 ? "pm" : "am";
+        const hour12 = hour % 12 || 12;
+        return `${hour12}${ampm}`;
+    };
 
     return (
         <div className="time-slot-choosing">
             <div className="hours-section">
-                <h3>🕒 Available Hours</h3>
+                <h3>
+                    {selectedDay ? `🕒 Hours for ${selectedDay}` : "🕒 Default Hours (All Days)"}
+                    {selectedDay && (
+                        <div className="day-actions">
+                            <button
+                                className="reset-day-btn"
+                                onClick={onResetDay}
+                                title="Reset this day to default"
+                            >
+                                ↺ Reset to default
+                            </button>
+                            <button
+                                className="back-default-btn"
+                                onClick={onBackToDefault}
+                                title="Switch back to default view"
+                            >
+                                ◀ Back to Default
+                            </button>
+                        </div>
+                    )}
+                </h3>
                 <div className="hours-grid">
-                    {allHours.map((hour) => {
-                        const isActive = enabledHours.includes(hour);
+                    {morningHours.map((hour) => {
+                        const isActive = activeHours.includes(hour);
                         return (
                             <button
                                 key={hour}
@@ -30,12 +66,32 @@ export default function TimeSlotChoosing({
                                 onClick={() => onToggleHour(hour)}
                                 title={isActive ? "Click to disable" : "Click to enable"}
                             >
-                                {hour}
+                                <span className="hour-label">{formatHourDisplay(hour)}</span>
+                                <span className="toggle-indicator">{isActive ? "✅" : "⛔"}</span>
+                            </button>
+                        );
+                    })}
+                    <div className="hour-divider"></div>
+                    {afternoonHours.map((hour) => {
+                        const isActive = activeHours.includes(hour);
+                        return (
+                            <button
+                                key={hour}
+                                className={`hour-toggle ${isActive ? "active" : ""}`}
+                                onClick={() => onToggleHour(hour)}
+                                title={isActive ? "Click to disable" : "Click to enable"}
+                            >
+                                <span className="hour-label">{formatHourDisplay(hour)}</span>
                                 <span className="toggle-indicator">{isActive ? "✅" : "⛔"}</span>
                             </button>
                         );
                     })}
                 </div>
+                <small className="hours-note">
+                    {selectedDay
+                        ? "These are the hours for the selected day."
+                        : "These hours apply to all days unless overridden."}
+                </small>
             </div>
 
             <div className="rules-section">
@@ -52,7 +108,6 @@ export default function TimeSlotChoosing({
                         />
                         <small>Hours before delivery (e.g., 1 = can't order within 1 hour)</small>
                     </div>
-
                     <div className="rule-field">
                         <label>Min Duration (Hours)</label>
                         <input
@@ -62,19 +117,7 @@ export default function TimeSlotChoosing({
                             value={minDurationHours}
                             onChange={(e) => onMinDurationChange(Number(e.target.value))}
                         />
-                        <small>Minimum delivery window</small>
-                    </div>
-
-                    <div className="rule-field">
-                        <label>Max Duration (Hours)</label>
-                        <input
-                            type="number"
-                            min="2"
-                            max="12"
-                            value={maxDurationHours}
-                            onChange={(e) => onMaxDurationChange(Number(e.target.value))}
-                        />
-                        <small>Maximum delivery window</small>
+                        <small>Minimum delivery window (e.g., 2 hours)</small>
                     </div>
                 </div>
             </div>

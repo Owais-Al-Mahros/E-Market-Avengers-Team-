@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { ProductProvider } from "./context/ProductContext";
-import { CategoryProvider } from "./context/CategoryContext";
 import { supabase } from "./lib/supabase";
 import LoadingPage from "./Components/LoadingPage"
 
@@ -11,6 +10,7 @@ const AdminDashboard = lazy(() => import("./Pages/Admin dashboard/AdminDashboard
 const HomePage = lazy(() => import("./Pages/Home page/HomePage"));
 const LoginPage = lazy(() => import("./Pages/Log in  page/LoginPage"));
 const CartAndPayments = lazy(() => import("./Pages/Cart and payments/CartAndPayments"));
+const DisplayProducts = lazy(() => import("./Pages/DisplayProducts/DisplayProducts"));
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -89,6 +89,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/Cart&Payments/*" element={<CartAndPayments />} />
+            <Route path="/DisplayProducts" element={<DisplayProducts />} />
             <Route
               path="/dashboard"
               element={

@@ -1,6 +1,7 @@
+// src/Pages/DisplayProducts/components/ProductCard.jsx
 import "./ProductCard.css";
 import { useState } from "react";
-import ProductCardDetails from "../modals/ProductCardDetails.jsx";
+import ProductCardDetails from "../../Home page/modals/ProductCardDetails.jsx";
 import { createPortal } from "react-dom";
 import { useCart } from "../../../context/CartContext.jsx";
 import toast from "react-hot-toast";
@@ -9,7 +10,7 @@ export default function ProductCard(props) {
   const { addToCart } = useCart();
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [counter, setCounter] = useState(1);
-  const [isImageLoaded, setIsImageLoaded] = useState(false); // 👈 حالة تتبع تحميل الصورة
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const openDetails = () => setIsDetailsOpen(true);
   const closeDetails = () => setIsDetailsOpen(false);
@@ -43,26 +44,22 @@ export default function ProductCard(props) {
     });
   };
 
+  // ✅ حماية من البيانات المفقودة
+  const nutritionObject = props.nutritionObject || null;
+  const storageObject = props.storageObject || null;
+  const ingredients = props.ingredients || null;
+
   return (
     <>
       <div className="card-container" onClick={openDetails}>
-        <div
-          className="image-container"
-          style={{
-            backgroundColor: isImageLoaded ? "transparent" : "#f0f0f0", // خلفية رمادية خفيفة أثناء التحميل
-            minHeight: "150px",
-          }}
-        >
+        <div className="image-container" style={{ backgroundColor: isImageLoaded ? "transparent" : "#f0f0f0", minHeight: "150px" }}>
           <img
             src={props.image}
             alt={props.name || "product"}
             className="image"
             loading="lazy"
-            onLoad={() => setIsImageLoaded(true)} // 👈 عند اكتمال التحميل
-            style={{
-              opacity: isImageLoaded ? 1 : 0,
-              transition: "opacity 0.4s ease-in-out", // تأثير ظهوري ناعم
-            }}
+            onLoad={() => setIsImageLoaded(true)}
+            style={{ opacity: isImageLoaded ? 1 : 0, transition: "opacity 0.4s ease-in-out" }}
           />
         </div>
         <div className="title">
@@ -73,13 +70,9 @@ export default function ProductCard(props) {
             Weight: {props.weight} {props.weight_unit}
           </span>
           <div className="increase-decrease-button">
-            <button className="increase-button" onClick={increaseCounter}>
-              +
-            </button>
+            <button className="increase-button" onClick={increaseCounter}>+</button>
             <span className="counter-of-products">{counter}</span>
-            <button className="decrease-button" onClick={decreaseCounter}>
-              -
-            </button>
+            <button className="decrease-button" onClick={decreaseCounter}>-</button>
           </div>
         </div>
         <div className="action">
@@ -88,12 +81,7 @@ export default function ProductCard(props) {
           </div>
           <div className="add-btn-container">
             <button className="add-button" onClick={handleAddToCart}>
-              <img
-                src="/cart.png"
-                className="add-icon"
-                alt="cart"
-                loading="lazy"
-              />
+              <img src="/cart.png" className="add-icon" alt="cart" loading="lazy" />
               <span>Add to cart</span>
             </button>
           </div>
@@ -114,9 +102,9 @@ export default function ProductCard(props) {
             total_price={props.total_price}
             description={props.description}
             closeModal={closeDetails}
-            nutritionObject={props.nutritionObject}
-            storageObject={props.storageObject}
-            ingredients={props.ingredients}
+            nutritionObject={nutritionObject}
+            storageObject={storageObject}
+            ingredients={ingredients}
           />,
           document.body,
         )}

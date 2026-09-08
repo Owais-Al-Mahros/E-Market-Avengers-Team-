@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import ShoppingCart from "./pages/ShoppingCart.jsx"
-import CheckoutPage from "./pages/CheckoutPage.jsx";
-import OrderConfirmation from "./pages/OrderConfirmation.jsx";
+import ShoppingCart from "./pages/ShoppingCart/ShoppingCart.jsx"
+import CheckoutPage from "./pages/Checkout/CheckoutPage.jsx";
+import OrderConfirmation from "./pages/OrderConfirmation/OrderConfirmation.jsx";
 
 function CartAndPayments() {
     return (
