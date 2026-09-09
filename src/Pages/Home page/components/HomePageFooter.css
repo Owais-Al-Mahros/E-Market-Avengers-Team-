@@ -30,14 +30,14 @@
   gap: 0.75rem;
 }
 
-.social-media {
+.social-media-footer {
   display: flex;
   /* إضافة Flexbox ليعمل الـ gap بشكل صحيح */
   align-items: center;
   gap: 0.75rem;
 }
 
-.social-media img,
+.social-media-footer img,
 .contact-us img {
   width: 1.8rem;
   height: 1.8rem;
@@ -45,7 +45,7 @@
   transition: transform 0.2s ease;
 }
 
-.social-media img:hover,
+.social-media-footer img:hover,
 .contact-us img:hover {
   transform: scale(1.1);
 }
@@ -75,11 +75,16 @@
   line-height: 2rem;
 }
 
-.logo-icon {
+.logo-icon-footer {
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.logo-footer{
+  display: flex;
+  
 }
 
 .contact-us {

@@ -1,58 +1,151 @@
 /* src/Pages/DisplayProducts/DisplayProducts.css */
 .display-products-page {
-    max-width: 1200px;
-    margin: 100px auto 40px;
-    padding: 0 20px;
+  max-width: 1200px;
+  margin: 100px auto 40px;
+  padding: 0 20px;
 }
 
 .display-products-page h1 {
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: var(--dark-green);
-    border-bottom: 3px solid var(--neon-green);
-    padding-bottom: 10px;
-    display: inline-block;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--dark-green);
+  border-bottom: 3px solid var(--neon-green);
+  padding-bottom: 10px;
+  display: inline-block;
 }
 
 .loading,
 .empty {
-    text-align: center;
-    padding: 40px;
-    font-size: 18px;
-    color: var(--mid-green);
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: var(--mid-green);
 }
 
 .products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
 }
 
 /* استجابة للجوال */
 @media (max-width: 768px) {
-    .display-products-page {
-        margin-top: 80px;
-        padding: 0 15px;
-    }
+  .display-products-page {
+    margin-top: 80px;
+    padding: 0 15px;
+  }
 
-    .display-products-page h1 {
-        font-size: 24px;
-    }
+  .display-products-page h1 {
+    font-size: 24px;
+  }
 
-    .products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 14px;
-    }
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+  }
 }
 
 @media (max-width: 480px) {
-    .display-products-page h1 {
-        font-size: 22px;
-    }
+  .display-products-page h1 {
+    font-size: 22px;
+  }
 
-    .products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 10px;
-    }
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+}
+
+.categories-section-display {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  width: 100%;
+  
+}
+
+.categories-grid-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.category-card-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 16px;
+  background: var(--cream, #f4efd9);
+  border: 2px solid rgba(45, 74, 0, 0.06);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-align: center;
+  min-height: 140px;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-card-display:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.category-card-display::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(182, 245, 0, 0.05), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.category-card-display:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+  border-color: var(--lime-mid, #61b927);
+}
+
+.category-card-display:hover::before {
+  opacity: 1;
+}
+
+.category-card-display.active {
+  border-color: var(--neon-green, #b6f500);
+  background: rgba(182, 245, 0, 0.06);
+  box-shadow:
+    0 0 0 3px rgba(182, 245, 0, 0.15),
+    0 8px 30px rgba(182, 245, 0, 0.08);
+  transform: translateY(-4px);
+}
+
+.category-image-display {
+  width: 110px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 16px;
+  background: var(--light-bg, #d4e8b0);
+  padding: 6px;
+  transition: transform 0.3s ease;
+}
+
+.category-card-display h3 {
+  font-size: 0.95rem;
+  color: #2d3748;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.category-card-display:hover .category-image-display {
+  transform: scale(1.06) rotate(-2deg);
+}
+
+.category-card-display.active .category-image-display {
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(182, 245, 0, 0.15);
 }
