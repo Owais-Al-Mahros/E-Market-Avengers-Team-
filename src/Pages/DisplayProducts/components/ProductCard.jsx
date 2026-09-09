@@ -1,7 +1,7 @@
 // src/Pages/DisplayProducts/components/ProductCard.jsx
 import "./ProductCard.css";
 import { useState } from "react";
-import ProductCardDetails from "../../Home page/modals/ProductCardDetails.jsx";
+import ProductCardDetails from "../modals/ProductCardDetails.jsx";
 import { createPortal } from "react-dom";
 import { useCart } from "../../../context/CartContext.jsx";
 import toast from "react-hot-toast";

@@ -175,17 +175,22 @@ export default function CheckoutPage() {
       // 5. نجاح العملية - حفظ في localStorage + الانتقال
       if (order) {
         // ✅ 1. حفظ آخر طلب للمستخدم (لتسهيل الوصول السريع)
-        localStorage.setItem("lastOrder", JSON.stringify({
-          id: order.id,
-          order_number: order.order_number,
-          status: order.status,
-          created_at: order.created_at,
-        }));
+        localStorage.setItem(
+          "lastOrder",
+          JSON.stringify({
+            id: order.id,
+            order_number: order.order_number,
+            status: order.status,
+            created_at: order.created_at,
+          }),
+        );
 
         // ✅ 2. إضافة الطلب إلى قائمة الطلبات السابقة (للزوار)
-        const orderHistory = JSON.parse(localStorage.getItem("orderHistory") || "[]");
+        const orderHistory = JSON.parse(
+          localStorage.getItem("orderHistory") || "[]",
+        );
         // منع التكرار (في حال إعادة تحميل الصفحة أو إعادة الإرسال)
-        const exists = orderHistory.some(o => o.id === order.id);
+        const exists = orderHistory.some((o) => o.id === order.id);
         if (!exists) {
           orderHistory.push({
             id: order.id,
@@ -408,13 +413,16 @@ export default function CheckoutPage() {
                 onSelect={(time) => {
                   setCustomer((prev) => ({
                     ...prev,
-                    deliveryDate: time.day,
-                    deliveryTime: `${time.start} - ${time.end}`,
+                    deliveryDate: time.date,
+                    deliveryTime: time.start, // ✅ استخدم time.start فقط بدلاً من النطاق
                   }));
                 }}
               />
               {customer.deliveryDate && customer.deliveryTime && (
-                <p className="chk-hint" style={{ marginTop: "8px", color: "#3b931f" }}>
+                <p
+                  className="chk-hint"
+                  style={{ marginTop: "8px", color: "#3b931f" }}
+                >
                   ✅ Selected: {customer.deliveryDate} · {customer.deliveryTime}
                 </p>
               )}
