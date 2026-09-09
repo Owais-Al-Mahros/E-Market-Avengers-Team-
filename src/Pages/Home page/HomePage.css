@@ -1,3 +1,8 @@
+/* ==========================================
+   HOME PAGE – الفئات والمنتجات
+   ========================================== */
+
+/* ===== شبكة المنتجات ===== */
 .Products {
   display: flex;
   flex-wrap: wrap;
@@ -7,45 +12,181 @@
   color: var(--primary-color);
   margin-bottom: 10rem;
 }
-.categories-grid {
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
-  margin: 20px 0;
+
+/* ===== قسم الفئات ===== */
+.category-sections {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  width: 100%;
+  /* ✅ تأكد من أنها تأخذ العرض الكامل */
 }
 
+.category-sections h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--dark-green, #2D4A00);
+  margin-bottom: 24px;
+  text-align: left;
+  position: relative;
+}
+
+.category-sections h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: var(--neon-green, #B6F500);
+  margin: 8px auto 0;
+  border-radius: 4px;
+}
+
+/* ===== شبكة الفئات ===== */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+/* ===== بطاقة الفئة ===== */
 .category-card {
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 15px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 16px;
+  background: var(--cream, #F4EFD9);
+  border: 2px solid rgba(45, 74, 0, 0.06);
+  border-radius: 20px;
   cursor: pointer;
-  background-color: #ffffff;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-align: center;
+  min-height: 140px;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(182, 245, 0, 0.05), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .category-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #4caf50;
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+  border-color: var(--lime-mid, #61b927);
+}
+
+.category-card:hover::before {
+  opacity: 1;
 }
 
 .category-card.active {
-  border-color: #2e7d32;
-  background-color: #f0fdf4;
-  box-shadow: 0 0 10px rgba(46, 125, 50, 0.2);
+  border-color: var(--neon-green, #B6F500);
+  background: rgba(182, 245, 0, 0.06);
+  box-shadow: 0 0 0 3px rgba(182, 245, 0, 0.15), 0 8px 30px rgba(182, 245, 0, 0.08);
+  transform: translateY(-4px);
+}
+
+.category-card.active .category-name {
+  color: var(--dark-green, #2D4A00);
 }
 
 .category-image {
-  width: 100%;
-  height: 6rem;
+  width: 110px;
+  height: 90px;
   object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  border-radius: 16px;
+  background: var(--light-bg, #D4E8B0);
+  padding: 6px;
+  transition: transform 0.3s ease;
 }
 
+.category-card:hover .category-image {
+  transform: scale(1.06) rotate(-2deg);
+}
+
+.category-card.active .category-image {
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(182, 245, 0, 0.15);
+}
+
+.category-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--dark-green, #2D4A00);
+  margin: 0;
+  transition: color 0.2s ease;
+}
+
+.category-count {
+  font-size: 12px;
+  color: var(--mid-green, #5A8C00);
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.4);
+  padding: 2px 12px;
+  border-radius: 30px;
+}
+
+/* ===== الفئة المختارة ===== */
 .selected-category-section {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 2px dashed #e0e0e0;
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 2px dashed rgba(45, 74, 0, 0.08);
+  width: 100%;
+}
+
+/* ===== استجابة ===== */
+@media (max-width: 768px) {
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 14px;
+  }
+
+  .category-card {
+    padding: 16px 12px;
+    min-height: 120px;
+  }
+
+  .category-image {
+    width: 50px;
+    height: 50px;
+  }
+
+  .category-name {
+    font-size: 13px;
+  }
+
+  .category-sections h2 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+  }
+
+  .category-card {
+    padding: 12px 8px;
+    min-height: 100px;
+    border-radius: 14px;
+  }
+
+  .category-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .category-name {
+    font-size: 12px;
+  }
 }

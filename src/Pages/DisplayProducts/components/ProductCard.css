@@ -18,12 +18,17 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 1rem;
-  width: 14rem;
+  width: 100%;
+  /* ✅ تأخذ عرض الخلية بالكامل */
+  max-width: 300px;
+  /* ✅ منع التمدد الزائد */
   background: var(--cream);
   border-radius: 1rem;
   transition: var(--transition-normal, all 0.3s ease);
   border: 2px solid var(--border-color);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  margin: 0 auto;
+  /* توسيط في الخلية */
 }
 
 .card-container:hover {
@@ -99,13 +104,13 @@
   color: var(--mid-green);
   font-size: 0.85rem;
   font-weight: 500;
-  
-  .num-weight{
+
+  .num-weight {
     white-space: nowrap;
   }
 }
 
-.increase-decrease-button{
+.increase-decrease-button {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;

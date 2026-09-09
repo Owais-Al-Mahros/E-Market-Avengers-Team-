@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "../../../../context/CartContext.jsx";
-import { searchProduct } from "../../../../hooks/useProduct.js";
-import ProductCard from "../../../Home page/components/ProductCard";
-import Logo from "../../../../assets/Logo.jpg";
-import "./CheckoutPageHeader.css";
+import { useCart } from "../../../../../context/CartContext.jsx";
+import { searchProduct } from "../../../../../hooks/useProduct.js";
+import ProductCard from "../../../../DisplayProducts/components/ProductCard.jsx";
+import "./CartHeader.css";
 
-function CheckoutPageHeader() {
+function CartHeader() {
   const { cartItems, updateQuantity, removeFromCart } = useCart();
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -76,9 +75,8 @@ function CheckoutPageHeader() {
     } else {
       navigate("/no-orders", {
         state: {
-          message: `Your last order (${lastOrder.order_number}) Done ${
-            lastOrder.status === "delivered" ? "Order it" : "Cancelled"
-          }. you can place a new order now!`,
+          message: `Your last order (${lastOrder.order_number}) Done ${lastOrder.status === "delivered" ? "Order it" : "Cancelled"
+            }. you can place a new order now!`,
         },
       });
     }
@@ -88,7 +86,7 @@ function CheckoutPageHeader() {
     <header className="header">
       <div className="logo-container">
         <Link to="/">
-          <img src={Logo} alt="Shopora Logo" className="logo" />
+          <img src="./Logo.jpg" alt="Shopora Logo" className="logo" />
         </Link>
         <span className="tagline">Shopora</span>
       </div>
@@ -165,4 +163,13 @@ function CheckoutPageHeader() {
   );
 }
 
-export default CheckoutPageHeader;
+export default CartHeader;
+
+//           <button
+//   type="button"
+//   className="header-search-button"
+//   disabled={isSearching}
+//   aria-label="Search"
+// >
+//   <img src="/Search.png" alt="Search" className="search-icon" />
+// </button>

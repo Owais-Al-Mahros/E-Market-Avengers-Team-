@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { supabase } from "../../../lib/supabase";
-import OrderStatusTracker from "./theComponents/OrderStatusTracker";
+import { supabase } from "../../../../lib/supabase";
+import OrderStatusTracker from "../../components/OrderStatusTracker/OrderStatusTracker";
 import "./OrderConfirmation.css";
 
 export default function OrderConfirmation() {

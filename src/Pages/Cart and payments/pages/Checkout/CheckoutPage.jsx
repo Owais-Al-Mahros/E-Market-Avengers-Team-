@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "../../../context/CartContext";
-import { supabase } from "../../../lib/supabase";
+import { useCart } from "../../../../context/CartContext";
+import { supabase } from "../../../../lib/supabase";
 import toast from "react-hot-toast";
 import "./CheckoutPage.css";
-import CheckoutPageFooter from "./components/CheckoutPageFooter";
-import CheckoutPageHeader from "./components/CheckoutPageHeader";
-import DeliveryTime from "./modals/DeliveryTime";
+import CheckoutPageFooter from "../../components/CheckoutPageFooter/CheckoutPageFooter";
+import CheckoutPageHeader from "../../components/CheckoutPageHeader/CheckoutPageHeader";
+import DeliveryTime from "../../modals/DeliveryTime";
 
 export default function CheckoutPage() {
   const navigate = useNavigate();

@@ -1,0 +1,58 @@
+/* src/Pages/DisplayProducts/DisplayProducts.css */
+.display-products-page {
+    max-width: 1200px;
+    margin: 100px auto 40px;
+    padding: 0 20px;
+}
+
+.display-products-page h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--dark-green);
+    border-bottom: 3px solid var(--neon-green);
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+.loading,
+.empty {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: var(--mid-green);
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* استجابة للجوال */
+@media (max-width: 768px) {
+    .display-products-page {
+        margin-top: 80px;
+        padding: 0 15px;
+    }
+
+    .display-products-page h1 {
+        font-size: 24px;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .display-products-page h1 {
+        font-size: 22px;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+    }
+}

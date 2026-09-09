@@ -105,3 +105,28 @@
         grid-template-columns: 1fr;
     }
 }
+
+.day-actions {
+    display: inline-flex;
+    gap: 8px;
+    margin-left: 12px;
+}
+
+.reset-day-btn,
+.back-default-btn {
+    background: rgba(182, 245, 0, 0.15);
+    border: 1px solid var(--lime-mid, #61b927);
+    border-radius: 30px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--dark-green, #2D4A00);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reset-day-btn:hover,
+.back-default-btn:hover {
+    background: var(--neon-green, #B6F500);
+    transform: translateY(-1px);
+}
