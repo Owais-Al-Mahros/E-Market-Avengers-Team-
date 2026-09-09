@@ -4,11 +4,14 @@
 
 :root {
   /* Branding Palette */
-  --primary-color: #3b931f;
-  --secondary-color: #fefefec8;
-  --accent-color: #f7f9f5;
-  --bg-color: #E8F0E3;
-  --danger-color: #ef4444;
+  --primary-color: #145c4a;
+  --secondary-color: #DDF4EA;
+  --accent-color: #B9E769;
+  --bg-color: #F7FAF8;
+  --text: #15312B;
+  --danger-color: #D94F4F;
+  --success: #238B65;
+
 
   /* Product & Theme Colors */
   --cream: #F4EFD9;
