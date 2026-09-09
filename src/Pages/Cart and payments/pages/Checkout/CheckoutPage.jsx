@@ -408,8 +408,8 @@ export default function CheckoutPage() {
                 onSelect={(time) => {
                   setCustomer((prev) => ({
                     ...prev,
-                    deliveryDate: time.day,
-                    deliveryTime: `${time.start} - ${time.end}`,
+                    deliveryDate: time.date,
+                    deliveryTime: time.start,   // ✅ استخدم time.start فقط بدلاً من النطاق
                   }));
                 }}
               />
