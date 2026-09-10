@@ -6,31 +6,43 @@ export default function HomePageFooter() {
       <div className="container-footer">
         <div className="sub-container-footer">
           <div className="information">
-            <div className="logo">
-              <img src="/Logo.jpg" className="logo-icon"></img>
+            <div className="logo-footer">
+              <img src="/logo.png" className="logo-icon-footer"></img>
               <h1 className="logo-name">Shopora</h1>
             </div>
             <div className="description">
-              Your first store for electronics and smart tools.
+              Your first store for what you want.
             </div>
-            <div className="social-media">
+            <div className="social-media-footer">
               <a
                 href="https://www.instagram.com/mohamad_rslan_/"
                 className="social-link"
               >
-                <img className="social-media-logo" src="/iconInstagram.png" alt="Instagram"></img>
+                <img
+                  className="social-media-logo"
+                  src="/iconInstagram.png"
+                  alt="Instagram"
+                ></img>
                 <span className="platForms">instagram</span>
               </a>
               <a
                 href="https://www.facebook.com/Rslan.Nwelaty/"
                 className="social-link"
               >
-                <img className="social-media-logo" src="/iconFacebook.png" alt="facebook"></img>
-                <span className="platForms" >Facebook</span>
+                <img
+                  className="social-media-logo"
+                  src="/iconFacebook.png"
+                  alt="facebook"
+                ></img>
+                <span className="platForms">Facebook</span>
               </a>
               <a href="https://x.com/MohamadRslan5" className="social-link">
-                <img className="social-media-logo" src="/twitter-x-.webp" alt="X"></img>
-                <span className="platForms" >X</span>
+                <img
+                  className="social-media-logo"
+                  src="/twitter-x-.webp"
+                  alt="X"
+                ></img>
+                <span className="platForms">X</span>
               </a>
             </div>
           </div>
@@ -38,16 +50,16 @@ export default function HomePageFooter() {
             <h3 className="subTitles">Prominent categories</h3>
             <ul className="category-list">
               <a href="#" className="category-link">
-                <li>Phone</li>
+                <li>fruit&vegetables</li>
               </a>
               <a href="#" className="category-link">
-                <li>IPad</li>
+                <li>juices</li>
               </a>
               <a href="#" className="category-link">
-                <li>Smart Watch</li>
+                <li>cooking materials</li>
               </a>
               <a href="#" className="category-link">
-                <li>Laptops</li>
+                <li>foods</li>
               </a>
             </ul>
           </div>

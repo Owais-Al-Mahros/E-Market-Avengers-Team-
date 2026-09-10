@@ -25,18 +25,18 @@
 .category-sections h2 {
   font-size: 28px;
   font-weight: 800;
-  color: var(--dark-green, #2D4A00);
+  color: var(--dark-green, #2d4a00);
   margin-bottom: 24px;
   text-align: left;
   position: relative;
 }
 
 .category-sections h2::after {
-  content: '';
+  content: "";
   display: block;
   width: 60px;
   height: 4px;
-  background: var(--neon-green, #B6F500);
+  background: var(--neon-green, #b6f500);
   margin: 8px auto 0;
   border-radius: 4px;
 }
@@ -57,7 +57,7 @@
   justify-content: center;
   gap: 10px;
   padding: 20px 16px;
-  background: var(--cream, #F4EFD9);
+  background: var(--cream, #f4efd9);
   border: 2px solid rgba(45, 74, 0, 0.06);
   border-radius: 20px;
   cursor: pointer;
@@ -69,7 +69,7 @@
 }
 
 .category-card::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(135deg, rgba(182, 245, 0, 0.05), transparent);
@@ -88,14 +88,16 @@
 }
 
 .category-card.active {
-  border-color: var(--neon-green, #B6F500);
+  border-color: var(--neon-green, #b6f500);
   background: rgba(182, 245, 0, 0.06);
-  box-shadow: 0 0 0 3px rgba(182, 245, 0, 0.15), 0 8px 30px rgba(182, 245, 0, 0.08);
+  box-shadow:
+    0 0 0 3px rgba(182, 245, 0, 0.15),
+    0 8px 30px rgba(182, 245, 0, 0.08);
   transform: translateY(-4px);
 }
 
 .category-card.active .category-name {
-  color: var(--dark-green, #2D4A00);
+  color: var(--dark-green, #2d4a00);
 }
 
 .category-image {
@@ -103,7 +105,7 @@
   height: 90px;
   object-fit: cover;
   border-radius: 16px;
-  background: var(--light-bg, #D4E8B0);
+  background: var(--light-bg, #d4e8b0);
   padding: 6px;
   transition: transform 0.3s ease;
 }
@@ -120,14 +122,14 @@
 .category-name {
   font-size: 15px;
   font-weight: 700;
-  color: var(--dark-green, #2D4A00);
+  color: var(--dark-green, #2d4a00);
   margin: 0;
   transition: color 0.2s ease;
 }
 
 .category-count {
   font-size: 12px;
-  color: var(--mid-green, #5A8C00);
+  color: var(--mid-green, #5a8c00);
   font-weight: 500;
   background: rgba(255, 255, 255, 0.4);
   padding: 2px 12px;
@@ -141,6 +143,7 @@
   border-top: 2px dashed rgba(45, 74, 0, 0.08);
   width: 100%;
 }
+
 
 /* ===== استجابة ===== */
 @media (max-width: 768px) {

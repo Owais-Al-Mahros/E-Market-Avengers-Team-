@@ -1,415 +1,280 @@
-/* ==========================================
-   HERO SECTION – تدرج كريمي مع لمسات خضراء
-   الألوان: #F4EFD9, #3b931f, #61b927
-   ========================================== */
-
+/* Container الرئيسي */
 .hero-section {
-    width: 100%;
-    min-height: 90vh;
-    background: linear-gradient(145deg, #F4EFD9 0%, #b8d9a0 40%, #61b927 70%, #3b931f 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem 2rem;
-    position: relative;
-    overflow: hidden;
+  background: linear-gradient(135deg, #093820 0%, #114c2c 50%, #072917 100%);
+  border-radius: 24px;
+  padding: 48px 40px;
+  color: #ffffff;
+  margin: 20px auto;
+  max-width: 1400px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
-/* ===== شبكة التقسيم ===== */
+/* توزيع عناصر Grid */
 .hero-grid {
-    max-width: 1400px;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 42% 58%;
-    gap: 1.5rem;
-    align-items: center;
-    position: relative;
-    z-index: 2;
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr 0.8fr;
+  align-items: center;
+  gap: 32px;
 }
 
-/* ===== العمود الأيسر (النص داخل حاوية) ===== */
-.hero-text-wrapper {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-}
-
+/* ----- العمود الأيسر ----- */
 .hero-text-card {
-    background-color: #F4EFD9;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 28px;
-    padding: 2.8rem 2.5rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
-    width: 100%;
-    max-width: 460px;
-    transition: transform 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.hero-text-card:hover {
-    transform: translateY(-4px);
-}
-
-/* ===== البادج ===== */
 .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 0.3rem 1.2rem;
-    border-radius: 50px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: #2D4A00;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 1.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #8bc34a;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: fit-content;
+  letter-spacing: 0.5px;
 }
 
 .badge-dot {
-    width: 8px;
-    height: 8px;
-    background: #61b927;
-    border-radius: 50%;
-    display: inline-block;
-    animation: pulse-dot 2s ease-in-out infinite;
+  width: 6px;
+  height: 6px;
+  background-color: #8bc34a;
+  border-radius: 50%;
 }
 
-@keyframes pulse-dot {
-
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.3;
-        transform: scale(0.6);
-    }
-}
-
-/* ===== العنوان ===== */
 .hero-title {
-    font-size: clamp(2.2rem, 3.8vw, 4.2rem);
-    font-weight: 900;
-    line-height: 1.1;
-    margin: 0 0 0.8rem 0;
-    color: #1a2a3a;
-    letter-spacing: -0.02em;
+  display: flex;
+  flex-direction: column;
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
 }
 
 .brand-name {
-    display: block;
-    color: #3b931f;
-    font-size: clamp(2.6rem, 4.2vw, 4.8rem);
-    text-shadow: 0 0 40px rgba(59, 147, 31, 0.08);
-    margin-bottom: 0.3rem;
+  color: #8bc34a;
 }
 
 .title-line {
-    display: block;
-    color: #1a2a3a;
+  color: #ffffff;
 }
 
 .title-highlight {
-    display: block;
-    color: #3b931f;
-    text-shadow: 0 0 30px rgba(59, 147, 31, 0.05);
+  color: #8bc34a;
 }
 
-/* ===== الوصف ===== */
 .hero-description {
-    font-size: clamp(0.95rem, 1rem, 1.1rem);
-    color: #1a2a3a;
-    line-height: 1.7;
-    max-width: 400px;
-    margin: 0.6rem 0 2rem 0;
-    font-weight: 400;
+  color: #b0bec5;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  max-width: 360px;
 }
 
-/* ===== الأزرار ===== */
 .hero-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.2rem;
-    margin-bottom: 2.2rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .hero-btn {
-    padding: 0.85rem 2.4rem;
-    border: none;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .hero-btn.primary {
-    background: #61b927;
-    color: #ffffff;
-    box-shadow: 0 4px 25px rgba(97, 185, 39, 0.2);
+  background-color: #8bc34a;
+  color: #072917;
+  border: none;
 }
 
 .hero-btn.primary:hover {
-    background: #3b931f;
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 40px rgba(97, 185, 39, 0.3);
+  background-color: #7cb33d;
+  transform: translateY(-2px);
 }
 
 .hero-btn.secondary {
-    background: rgba(255, 255, 255, 0.15);
-    color: #1a2a3a;
-    border: 1.5px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(4px);
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .hero-btn.secondary:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: #61b927;
-    transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
 }
 
-/* ===== الفئات السريعة ===== */
-.hero-categories {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.7rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #3b931f;
+/* تقييم وصور المستخدمين */
+.hero-social-proof {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.category-tag {
-    padding: 0.3rem 1.2rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 50px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #1a2a3a;
-    letter-spacing: 0.3px;
-    cursor: default;
-    transition: all 0.3s ease;
+.avatar-group {
+  display: flex;
 }
 
-.category-tag:hover {
-    background: rgba(97, 185, 39, 0.1);
-    border-color: #61b927;
-    color: #1a2a3a;
-    transform: translateY(-2px);
+.avatar-group img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #093820;
+  margin-left: -8px;
 }
 
-/* ===== العمود الأيمن (الصورة) ===== */
+.avatar-group img:first-child {
+  margin-left: 0;
+}
+
+.social-proof-text {
+  font-size: 0.78rem;
+  color: #b0bec5;
+  line-height: 1.3;
+}
+
+.social-proof-text strong {
+  color: #ffffff;
+}
+
+/* ----- العمود الأوسط ----- */
 .hero-image-wrapper {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    perspective: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero-image {
-    width: 100%;
-    max-width: 650px;
-    height: 480px;
-    object-fit: cover;
-    border-radius: 28px;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.08);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    transform: perspective(1200px) rotateY(-4deg) rotateX(2deg);
+  width: 100%;
+  max-width: 80rem;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.4));
+  transition: transform 0.3s ease;
+  background-color: transparent;
 }
 
 .hero-image:hover {
-    transform: perspective(1200px) rotateY(0deg) rotateX(0deg) scale(1.02);
+  transform: scale(1.03);
 }
 
-/* ===== البطاقات العائمة ===== */
+.carousel-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  width: 22px;
+  background-color: #8bc34a;
+}
+
+/* ----- العمود الأيمن ----- */
+.hero-features-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .floating-card {
-    position: absolute;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 0.8rem 1.4rem;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
-    animation: float 4s ease-in-out infinite;
-    color: #1a2a3a;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.floating-card:first-of-type {
-    top: 8%;
-    right: -4%;
-    animation-delay: 0s;
-}
-
-.floating-card.second {
-    bottom: 12%;
-    left: -6%;
-    animation-delay: 1.5s;
-}
-
-.floating-card strong {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #3b931f;
-    display: block;
-}
-
-.floating-card p {
-    font-size: 0.75rem;
-    color: rgba(26, 42, 58, 0.6);
-    margin: 0;
+.floating-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
 }
 
 .floating-icon {
-    font-size: 1.8rem;
+  font-size: 1.2rem;
+  background: rgba(255, 255, 255, 0.1);
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
 }
 
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0px);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
+.floating-card strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #ffffff;
 }
 
-/* ===== استجابة ===== */
+.floating-card p {
+  font-size: 0.75rem;
+  color: #a5d6a7;
+  margin: 2px 0 0 0;
+}
+
+.hero-image.fade-effect {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0.4;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ----- Responsiveness للتجاوب مع الشاشات الصغرى ----- */
 @media (max-width: 1024px) {
-    .hero-section {
-        padding: 2rem;
-    }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .hero-text-card {
+    align-items: center;
+    text-align: center;
+  }
 
-    .hero-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-    }
+  .hero-description {
+    max-width: 100%;
+  }
 
-    .hero-text-card {
-        padding: 2rem 1.8rem;
-    }
+  .hero-features-wrapper {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 
-    .hero-image {
-        max-width: 480px;
-        height: 380px;
-    }
-
-    .floating-card:first-of-type {
-        right: 0%;
-        top: 5%;
-    }
-
-    .floating-card.second {
-        left: 0%;
-        bottom: 8%;
-    }
-}
-
-@media (max-width: 768px) {
-    .hero-section {
-        min-height: auto;
-        padding: 2rem 1.2rem;
-    }
-
-    .hero-grid {
-        grid-template-columns: 1fr;
-        gap: 2.5rem;
-    }
-
-    .hero-text-wrapper {
-        justify-content: center;
-    }
-
-    .hero-text-card {
-        max-width: 100%;
-        padding: 2rem 1.5rem;
-        text-align: center;
-    }
-
-    .hero-description {
-        max-width: 100%;
-        margin: 0.6rem auto 1.8rem auto;
-    }
-
-    .hero-buttons {
-        justify-content: center;
-    }
-
-    .hero-categories {
-        justify-content: center;
-    }
-
-    .hero-image-wrapper {
-        order: -1;
-    }
-
-    .hero-image {
-        max-width: 100%;
-        height: 280px;
-        transform: none;
-        border-radius: 20px;
-    }
-
-    .hero-image:hover {
-        transform: scale(1.01);
-    }
-
-    .floating-card {
-        display: none;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero-text-card {
-        padding: 1.5rem 1rem;
-    }
-
-    .hero-badge {
-        font-size: 0.6rem;
-        padding: 0.2rem 0.8rem;
-    }
-
-    .brand-name {
-        font-size: 2rem;
-    }
-
-    .hero-title {
-        font-size: 1.8rem;
-    }
-
-    .hero-description {
-        font-size: 0.85rem;
-    }
-
-    .hero-btn {
-        padding: 0.7rem 1.8rem;
-        font-size: 0.85rem;
-        width: 100%;
-        justify-content: center;
-    }
-
-    .hero-buttons {
-        flex-direction: column;
-        gap: 0.8rem;
-    }
-
-    .hero-image {
-        height: 200px;
-    }
-
-    .category-tag {
-        font-size: 0.65rem;
-        padding: 0.2rem 0.7rem;
-    }
+  .floating-card {
+    flex: 1 1 200px;
+  }
 }

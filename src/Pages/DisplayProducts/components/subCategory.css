@@ -1,0 +1,91 @@
+.subcategories-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  width: 100%;}
+
+  .subcategories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+.subcategory-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 16px;
+  background: var(--cream, #F4EFD9);
+  border: 2px solid rgba(45, 74, 0, 0.06);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-align: center;
+  min-height: 140px;
+  position: relative;
+  overflow: hidden;
+}
+
+.subcategory-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.subcategory-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(182, 245, 0, 0.05), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.subcategory-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+  border-color: var(--lime-mid, #61b927);
+}
+
+.subcategory-card:hover::before {
+  opacity: 1;
+}
+
+.subcategory-card.active {
+  border-color: var(--neon-green, #B6F500);
+  background: rgba(182, 245, 0, 0.06);
+  box-shadow: 0 0 0 3px rgba(182, 245, 0, 0.15), 0 8px 30px rgba(182, 245, 0, 0.08);
+  transform: translateY(-4px);
+}
+/* الكرت المحدد/النشط */
+.subcategory-card.active {
+  border-color: #2e7d32;
+  background-color: #f0f7f1;
+}
+
+.subCategory-image {
+  width: 110px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 16px;
+  background: var(--light-bg, #D4E8B0);
+  padding: 6px;
+  transition: transform 0.3s ease;
+}
+
+.subcategory-card h3 {
+  font-size: 0.95rem;
+  color: #2d3748;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.subcategory-card:hover .category-image {
+  transform: scale(1.06) rotate(-2deg);
+}
+
+.subcategory-card.active .category-image {
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(182, 245, 0, 0.15);
+}

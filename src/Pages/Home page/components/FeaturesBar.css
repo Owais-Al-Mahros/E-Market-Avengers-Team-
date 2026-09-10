@@ -1,0 +1,76 @@
+.features-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 24px 30px;
+  margin: 30px auto;
+  max-width: 1280px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f1f5f9;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 180px;
+}
+
+/* خلفية الأيقونة الدائرية الخفيفة */
+.icon-wrapper {
+  width: 48px;
+  height: 48px;
+  background-color: #f0fdf4;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-wrapper .material-symbols-outlined {
+  color: #16a34a;
+  font-size: 24px;
+}
+
+/* النصوص */
+.feature-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-info h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 3px 0;
+  white-space: nowrap;
+}
+
+.feature-info p {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* التجاوب مع الشاشات الصغيرة */
+@media (max-width: 992px) {
+  .features-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .features-container {
+    grid-template-columns: repeat(1, 1fr);
+    padding: 20px;
+  }
+}
