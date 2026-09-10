@@ -405,14 +405,14 @@ export default function CheckoutPage() {
             <div className="chk-section">
               <h3>🕒 Delivery Time</h3>
               <DeliveryTime
-                onSelect={(time) => {
-                  setCustomer((prev) => ({
-                    ...prev,
-                    deliveryDate: time.day,
-                    deliveryTime: `${time.start} - ${time.end}`,
-                  }));
-                }}
-              />
+                onSelect={(time) => {
+                  setCustomer((prev) => ({
+                    ...prev,
+                    deliveryDate: time.date,
+                    deliveryTime: time.start,   // ✅ استخدم time.start فقط بدلاً من النطاق
+                  }));
+                }}
+              />
               {customer.deliveryDate && customer.deliveryTime && (
                 <p className="chk-hint" style={{ marginTop: "8px", color: "#3b931f" }}>
                   ✅ Selected: {customer.deliveryDate} · {customer.deliveryTime}
