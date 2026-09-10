@@ -83,26 +83,24 @@ function App() {
           zIndex: 99999,
         }}
       />
-      <ProductProvider>
-        {/* ⏳ تغليف الـ Routes بـ Suspense لعرض شاشة تحميل خفيفة أثناء جلب الصفحة المطلوب فتحها فقط */}
-        <Suspense fallback={<h1>Loading page...</h1>}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/Cart&Payments/*" element={<CartAndPayments />} />
-            <Route path="/DisplayProducts" element={<DisplayProducts />} />
-            <Route
-              path="/dashboard"
-              element={
-                isAdmin ? <AdminDashboard /> : <Navigate to="/login" replace />
-              }
-            />
-            <Route
-              path="/login"
-              element={<LoginPage setIsAdmin={setIsAdmin} />}
-            />
-          </Routes>
-        </Suspense>
-      </ProductProvider>
+      {/* ⏳ تغليف الـ Routes بـ Suspense لعرض شاشة تحميل خفيفة أثناء جلب الصفحة المطلوب فتحها فقط */}
+      <Suspense fallback={<h1>Loading page...</h1>}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/Cart&Payments/*" element={<CartAndPayments />} />
+          <Route path="/DisplayProducts" element={<DisplayProducts />} />
+          <Route
+            path="/dashboard"
+            element={
+              isAdmin ? <AdminDashboard /> : <Navigate to="/login" replace />
+            }
+          />
+          <Route
+            path="/login"
+            element={<LoginPage setIsAdmin={setIsAdmin} />}
+          />
+        </Routes>
+      </Suspense>
     </>
   );
 }
