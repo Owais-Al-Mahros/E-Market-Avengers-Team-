@@ -73,11 +73,12 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
   return (
     <>
       <header className="header">
-        <div className="logo-container">
-          <Link to="/">
+        <div >
+          <Link to="/" className="logo-container">
             <img src="/logo.png" alt="GreenCart Logo" className="logo-header" />
+            <span className="tagline">Shopora</span>
           </Link>
-          <span className="tagline">Shopora</span>
+
         </div>
 
         {/* نموذج البحث */}
@@ -139,22 +140,11 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
                   to="/account"
                   onClick={() => setMenuOpen(false)}
                 ><span className="material-symbols-outlined">person</span>
-                  <span className="orders-label"> 
+                  <span className="orders-label">
                     My Account
-                    </span>
+                  </span>
                 </Link>
 
-                {/* زر طلباتي */}
-                <button
-                  className="header-orders"
-                  onClick={goToOrders}
-                  aria-label="My Orders"
-                >
-                  <span className="material-symbols-outlined">
-                    receipt_long
-                  </span>
-                  <span className="orders-label">My Orders</span>
-                </button>
               </div>
             )}
           </div>

@@ -54,7 +54,22 @@ export function PricingProvider({ children }) {
     const savePricing = async (newPricing) => {
         setSaving(true);
         try {
-            // نتحقق أولاً إذا كان هناك صف موجود
+            // ✅ 1. تحويل من camelCase (React) إلى snake_case (Database)
+            const dbPayload = {
+                base_address: newPricing.baseAddress,
+                base_latitude: newPricing.baseLatitude,
+                base_longitude: newPricing.baseLongitude,
+                price_per_km: newPricing.pricePerKm,
+                free_weight_threshold_kg: newPricing.freeWeightThresholdKg,
+                price_per_extra_kg: newPricing.pricePerExtraKg,
+                max_delivery_distance_km: newPricing.maxDeliveryDistanceKm,
+                free_delivery_threshold_amount: newPricing.freeDeliveryThresholdAmount,
+                price_per_floor_with_elevator: newPricing.pricePerFloorWithElevator,
+                price_per_floor_without_elevator: newPricing.pricePerFloorWithoutElevator,
+                updated_at: new Date().toISOString(),
+            };
+
+            // 2. التحقق من وجود صف سابق
             const { data: existing, error: selectError } = await supabase
                 .from("pricing_settings")
                 .select("id")
@@ -62,26 +77,26 @@ export function PricingProvider({ children }) {
 
             if (selectError) throw selectError;
 
-            const payload = { ...newPricing, updated_at: new Date().toISOString() };
             let error;
 
             if (existing && existing.length > 0) {
-                // تحديث
+                // تحديث الصف الموجود
                 const { error: updateError } = await supabase
                     .from("pricing_settings")
-                    .update(payload)
+                    .update(dbPayload)
                     .eq("id", existing[0].id);
                 error = updateError;
             } else {
-                // إدراج جديد
+                // إدراج صف جديد
                 const { error: insertError } = await supabase
                     .from("pricing_settings")
-                    .insert([payload]);
+                    .insert([dbPayload]);
                 error = insertError;
             }
 
             if (error) throw error;
 
+            // 3. تحديث الحالة المحلية (camelCase كما هي)
             setPricing(prev => ({ ...prev, ...newPricing }));
             return { success: true };
         } catch (error) {

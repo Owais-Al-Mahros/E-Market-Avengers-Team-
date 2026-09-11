@@ -8,7 +8,7 @@ export default function CartFooter() {
           <div className="information">
             <div className="logo">
               <img src="/logo.png" className="logo-icon"></img>
-              <h1 className="logo-name">E-Market</h1>
+              <h1 className="logo-name">Shopora</h1>
             </div>
             <div className="description">
               Your best store where you found anything you want

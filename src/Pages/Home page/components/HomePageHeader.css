@@ -23,7 +23,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  /* gap: 0.3rem; */
+  flex-direction: row;
   border: none;
   margin: 0;
   padding: 0;
@@ -31,10 +31,10 @@
 
 .logo-header {
   position: absolute;
-  height: 4rem;
+  height: 4.2rem;
   width: auto;
   transition: transform 0.2s ease;
-  top: -28px;
+  top: -35px;
 }
 
 .logo:hover {
@@ -204,7 +204,8 @@
   min-height: 48px;
 }
 
-.header-cart:hover , .profile-menu-container:hover {
+.header-cart:hover,
+.profile-menu-container:hover {
   background: rgba(182, 245, 0, 0.12);
   border-color: var(--neon-green);
 }

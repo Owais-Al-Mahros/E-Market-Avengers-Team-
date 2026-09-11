@@ -1,195 +1,243 @@
 /* ==========================================
-   HOME PAGE – الفئات والمنتجات
+   🏠 HOME PAGE — Categories (Elegant Design)
    ========================================== */
 
-/* ===== شبكة المنتجات ===== */
-.Products {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  color: var(--primary-color);
-  margin-bottom: 10rem;
-}
-
-/* ===== قسم الفئات ===== */
+/* ============================================
+   Category Sections Wrapper
+   ============================================ */
 .category-sections {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 60px 24px 40px;
   width: 100%;
-  /* ✅ تأكد من أنها تأخذ العرض الكامل */
+  box-sizing: border-box;
 }
 
 .category-sections h2 {
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 800;
-  color: var(--dark-green, #2d4a00);
-  margin-bottom: 24px;
+  color: var(--text);
+  margin: 0 0 8px;
   text-align: left;
-  position: relative;
+  letter-spacing: -0.6px;
+  display: inline-block;
 }
 
 .category-sections h2::after {
   content: "";
   display: block;
-  width: 60px;
+  width: 70px;
   height: 4px;
-  background: var(--neon-green, #b6f500);
-  margin: 8px auto 0;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  margin: 10px 0 0;
   border-radius: 4px;
 }
 
-/* ===== شبكة الفئات ===== */
+/* ============================================
+   ✅ Categories Grid (Flexbox)
+   ============================================ */
 .categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 20px;
-  width: 100%;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  gap: 20px !important;
+  width: 100% !important;
+  margin-top: 32px;
+  justify-content: flex-start;
+  align-items: stretch;
+  box-sizing: border-box;
 }
 
-/* ===== بطاقة الفئة ===== */
+/* ============================================
+   🌿 Category Card — تصميم جديد أنيق
+   ============================================ */
 .category-card {
+  flex: 0 0 220px;
+  width: 220px;
+  max-width: 220px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 20px 16px;
-  background: var(--cream, #f4efd9);
-  border: 2px solid rgba(45, 74, 0, 0.06);
-  border-radius: 20px;
+  gap: 16px;
+  padding: 24px 18px;
+  background: #fff;
+  border: 1px solid rgba(20, 92, 74, 0.08);
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   text-align: center;
-  min-height: 140px;
   position: relative;
   overflow: hidden;
-}
-
-.category-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(182, 245, 0, 0.05), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.category-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
-  border-color: var(--lime-mid, #61b927);
-}
-
-.category-card:hover::before {
-  opacity: 1;
-}
-
-.category-card.active {
-  border-color: var(--neon-green, #b6f500);
-  background: rgba(182, 245, 0, 0.06);
   box-shadow:
-    0 0 0 3px rgba(182, 245, 0, 0.15),
-    0 8px 30px rgba(182, 245, 0, 0.08);
+    0 1px 3px rgba(20, 92, 74, 0.04),
+    0 6px 20px rgba(20, 92, 74, 0.05);
+  /* ✅ أنيميشن خفيف جداً — 0.35s فقط */
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+  box-sizing: border-box;
+}
+
+/* ✅ Hover راقي — فقط رفع خفيف + ظل أعمق */
+.category-card:hover {
   transform: translateY(-4px);
+  border-color: rgba(20, 92, 74, 0.18);
+  box-shadow:
+    0 2px 6px rgba(20, 92, 74, 0.06),
+    0 14px 32px rgba(20, 92, 74, 0.1);
 }
 
-.category-card.active .category-name {
-  color: var(--dark-green, #2d4a00);
-}
-
+/* ===== Category Image ===== */
 .category-image {
-  width: 110px;
-  height: 90px;
+  width: 130px;
+  height: 130px;
   object-fit: cover;
-  border-radius: 16px;
-  background: var(--light-bg, #d4e8b0);
-  padding: 6px;
-  transition: transform 0.3s ease;
+  border-radius: 50%;
+  background: var(--secondary-color);
+  padding: 4px;
+  border: 3px solid var(--bg-color);
+  transition: transform 0.35s ease;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .category-card:hover .category-image {
-  transform: scale(1.06) rotate(-2deg);
+  transform: scale(1.04);
+  /* ✅ حركة خفيفة جداً */
 }
 
-.category-card.active .category-image {
-  transform: scale(1.08);
-  box-shadow: 0 4px 16px rgba(182, 245, 0, 0.15);
-}
-
+/* ===== Category Name (كامل، بدون قص) ===== */
+.category-card h2,
 .category-name {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
-  color: var(--dark-green, #2d4a00);
+  color: var(--text);
   margin: 0;
-  transition: color 0.2s ease;
+  text-transform: capitalize;
+  letter-spacing: -0.2px;
+  line-height: 1.4;
+  transition: color 0.25s ease;
+  /* ✅ لا يوجد قص — النص كامل */
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  max-width: 100%;
 }
 
-.category-count {
-  font-size: 12px;
-  color: var(--mid-green, #5a8c00);
-  font-weight: 500;
-  background: rgba(255, 255, 255, 0.4);
-  padding: 2px 12px;
-  border-radius: 30px;
+.category-card:hover .category-name,
+.category-card:hover h2 {
+  color: var(--primary-color);
 }
 
-/* ===== الفئة المختارة ===== */
+/* ============================================
+   Selected Category Section
+   ============================================ */
 .selected-category-section {
-  margin-top: 40px;
-  padding-top: 30px;
-  border-top: 2px dashed rgba(45, 74, 0, 0.08);
+  margin-top: 48px;
+  padding-top: 40px;
+  border-top: 2px dashed rgba(20, 92, 74, 0.1);
   width: 100%;
 }
 
+/* ============================================
+   📱 Responsive
+   ============================================ */
+@media (max-width: 1024px) {
+  .category-sections {
+    padding: 50px 20px 30px;
+  }
 
-/* ===== استجابة ===== */
-@media (max-width: 768px) {
+  .category-sections h2 {
+    font-size: 30px;
+  }
+
   .categories-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 14px;
+    gap: 16px !important;
   }
 
   .category-card {
-    padding: 16px 12px;
-    min-height: 120px;
+    flex: 0 0 190px;
+    width: 190px;
+    max-width: 190px;
+    padding: 22px 16px;
   }
 
   .category-image {
-    width: 50px;
-    height: 50px;
+    width: 115px;
+    height: 115px;
   }
+}
 
-  .category-name {
-    font-size: 13px;
+@media (max-width: 768px) {
+  .category-sections {
+    padding: 40px 16px 24px;
   }
 
   .category-sections h2 {
     font-size: 24px;
   }
-}
 
-@media (max-width: 480px) {
+  .category-sections h2::after {
+    width: 50px;
+    height: 3px;
+  }
+
   .categories-grid {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
+    gap: 14px !important;
+    margin-top: 24px;
+    justify-content: center;
   }
 
   .category-card {
-    padding: 12px 8px;
-    min-height: 100px;
+    flex: 0 0 160px;
+    width: 160px;
+    max-width: 160px;
+    padding: 18px 12px;
+    gap: 12px;
     border-radius: 14px;
   }
 
   .category-image {
-    width: 40px;
-    height: 40px;
+    width: 96px;
+    height: 96px;
+  }
+
+  .category-card h2,
+  .category-name {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-sections {
+    padding: 32px 12px 20px;
+  }
+
+  .category-sections h2 {
+    font-size: 20px;
+  }
+
+  .categories-grid {
+    gap: 12px !important;
+    justify-content: space-between;
+  }
+
+  .category-card {
+    flex: 0 0 calc(50% - 6px);
+    width: calc(50% - 6px);
+    max-width: calc(50% - 6px);
+    padding: 16px 10px;
+    gap: 10px;
     border-radius: 12px;
   }
 
+  .category-image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .category-card h2,
   .category-name {
-    font-size: 12px;
+    font-size: 13px;
   }
 }

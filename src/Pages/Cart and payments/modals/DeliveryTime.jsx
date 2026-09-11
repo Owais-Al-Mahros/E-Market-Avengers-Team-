@@ -198,6 +198,7 @@ export default function DeliveryTime({ onSelect, initialValue }) {
 
                                         return (
                                             <button
+                                                type="button"
                                                 key={dateStr}
                                                 className={`day-btn 
                                                     ${selectedDate === dateStr ? "active" : ""} 
@@ -286,8 +287,8 @@ export default function DeliveryTime({ onSelect, initialValue }) {
                         </div>
 
                         <div className="modal-footer">
-                            <button className="btn-cancel" onClick={resetSelection}>Cancel</button>
-                            <button className="btn-confirm" onClick={handleConfirm}>Confirm</button>
+                            <button type="button" className="btn-cancel" onClick={resetSelection}>Cancel</button>
+                            <button type="button" className="btn-confirm" onClick={handleConfirm}>Confirm</button>
                         </div>
                     </div>
                 </div>

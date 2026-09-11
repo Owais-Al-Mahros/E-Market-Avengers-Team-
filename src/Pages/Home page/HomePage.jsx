@@ -9,6 +9,7 @@ import { useState } from "react";
 import Subscribe from "../../Components/Subscribe.jsx";
 import SubHomeHeader from "./components/SubHomeHeader.jsx";
 import FeaturesBar from "./components/FeaturesBar.jsx";
+import HowItWorks from "./components/HowItWorks.jsx";
 function HomePage() {
   const { categories, loading: categoriesLoading } = useCategories();
   const navigate = useNavigate();
@@ -55,6 +56,7 @@ function HomePage() {
         </div>
       </div>
       <Subscribe />
+      <HowItWorks />
       <HomePageFooter />
     </>
   );

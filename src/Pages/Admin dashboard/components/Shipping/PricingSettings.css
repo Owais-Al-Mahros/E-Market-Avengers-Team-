@@ -1,0 +1,171 @@
+.pricing-container {
+    background: var(--bg-color);
+    padding: 24px;
+    border-radius: 16px;
+    margin-top: 24px;
+}
+
+.pricing-header h3 {
+    color: var(--primary-color);
+    margin-bottom: 6px;
+}
+
+.pricing-header p {
+    color: #6b7a77;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.pricing-card {
+    background: #fff;
+    padding: 18px;
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+    box-shadow: 0 2px 8px rgba(20, 92, 74, 0.06);
+    transition: 0.2s;
+}
+
+.pricing-card:hover {
+    box-shadow: 0 4px 14px rgba(20, 92, 74, 0.12);
+}
+
+.pricing-card h4 {
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    font-size: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.pricing-card label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 10px;
+    margin-bottom: 4px;
+}
+
+.pricing-card input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--secondary-color);
+    border-radius: 8px;
+    background: var(--bg-color);
+    color: var(--text);
+    font-weight: 500;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.pricing-card input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(20, 92, 74, 0.12);
+}
+
+.address-row {
+    display: flex;
+    gap: 8px;
+}
+
+.address-row input {
+    flex: 1;
+}
+
+.geo-btn {
+    padding: 9px 14px;
+    background: var(--accent-color);
+    color: var(--text);
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.2s;
+}
+
+.geo-btn:hover:not(:disabled) {
+    background: var(--success);
+    color: #fff;
+}
+
+.geo-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.coord-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.coord-row>div {
+    flex: 1;
+}
+
+.coord-row label {
+    font-size: 11px !important;
+    color: #6b7a77 !important;
+    margin: 0 0 2px 0 !important;
+}
+
+.pricing-card small {
+    display: block;
+    color: #6b7a77;
+    font-size: 11px;
+    margin-top: 6px;
+    font-style: italic;
+}
+
+.badge {
+    background: var(--accent-color);
+    color: var(--text);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+    margin-left: 4px;
+}
+
+.pricing-footer {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.save-pricing-btn {
+    padding: 12px 32px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 12px rgba(20, 92, 74, 0.25);
+}
+
+.save-pricing-btn:hover:not(:disabled) {
+    background: var(--success);
+    transform: translateY(-1px);
+}
+
+.save-pricing-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.pricing-loading {
+    padding: 40px;
+    text-align: center;
+    color: var(--primary-color);
+}

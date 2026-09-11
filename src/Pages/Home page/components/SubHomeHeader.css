@@ -1,81 +1,408 @@
-.sub-Header-container {
+/* ============================================
+   🌿 Sub Header — Compact Left Layout
+   ============================================ */
+
+.sub-header {
+  width: 100%;
+  background: #fff;
+  border-bottom: 1px solid var(--secondary-color);
+  padding: 10px 40px;
+  position: relative;
+  z-index: 90;
+  box-shadow: 0 1px 3px rgba(20, 92, 74, 0.03);
+}
+
+.sub-header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
   display: flex;
-  justify-content: flex-start;
   align-items: center;
-  margin: 10px 10px;
+  gap: 24px;
+  /* ✅ فراغ بين زر الفئات وباقي الروابط */
+}
+
+/* ============================================
+   Left Group (All Categories + Nav Items)
+   ============================================ */
+.sub-header-left {
   position: relative;
-  gap: 1rem;
-  padding: 10px 0;
+  flex-shrink: 0;
 }
 
-.categories-list {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: #ffffff;
-  width: 30rem;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  padding: 8px 10px;
-  z-index: 1000;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  transition: transform 0.3s ease;
-}
-.list-icon {
-  font-size: 0.7rem;
-  color: var(--cream);
-  transition: color 0.2s;
-  border: none;
-  padding: 8px;
-  background-color: #61b927;
-  width: 12rem;
-}
-
-
-.icon-in-sub-header{
-  position: absolute;
-  /* right: 10px; */
-  left: -2px;
-  /* top: -2px; */
-}
-
-.nav-item{
-  position: relative;
-  text-decoration: none;
-  color: #4b5563;
-  font-weight: 500;
-  padding-bottom: 6px;
-  transition: color 0.2s ease;
-  width: 6rem;
-  margin-left: 30px;
-  /* border : #15803d 2px solid; */
+.sub-header-nav {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 6px;
 }
 
-.nav-item:hover{
-  color:#5a8c00;
+/* ============================================
+   Categories Trigger Button
+   ============================================ */
+.categories-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 18px;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(20, 92, 74, 0.2);
+  letter-spacing: 0.2px;
+  white-space: nowrap;
 }
 
-.nav-item.active::after {
-content: "";
+.categories-trigger:hover,
+.categories-trigger.open {
+  background: var(--success);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(20, 92, 74, 0.3);
+}
+
+.categories-trigger .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.categories-trigger .chevron {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.25s ease;
+}
+
+.categories-trigger .chevron.rotated {
+  transform: rotate(180deg);
+}
+
+.categories-trigger .chevron .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* ============================================
+   Categories Dropdown — Multi-Column Grid
+   ============================================ */
+.categories-dropdown {
   position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6px;
+  top: calc(100% + 10px);
+  left: 0;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow:
+    0 1px 3px rgba(20, 92, 74, 0.06),
+    0 20px 50px rgba(20, 92, 74, 0.15);
+  border: 1px solid rgba(20, 92, 74, 0.08);
+  overflow: hidden;
+  animation: dropdownFade 0.2s ease;
+  z-index: 1000;
+  min-width: 320px;
+  max-width: 1100px;
+  /* ✅ حد أقصى عند كثرة الأعمدة */
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.categories-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(20, 92, 74, 0.08);
+}
+
+.categories-dropdown-header .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.categories-loading,
+.categories-empty {
+  padding: 32px 20px;
+  text-align: center;
+  color: #6b7a77;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ============================================
+   ✅ Grid — أعمدة ديناميكية حسب عدد الفئات
+   ============================================ */
+.categories-grid {
+  display: grid;
+  grid-auto-flow: column;
+  /* ✅ يملأ الأعمدة أولاً */
+  grid-template-rows: repeat(10, auto);
+  /* ✅ 10 صفوف (10 فئات لكل عمود) */
+  gap: 4px 8px;
+  padding: 12px;
+  max-height: 520px;
+  overflow-x: auto;
+  /* ✅ scroll أفقي عند كثرة الأعمدة */
+  overflow-y: hidden;
+}
+
+/* شريط التمرير الأفقي */
+.categories-grid::-webkit-scrollbar {
   height: 6px;
-  background-color: #15803d;
-  border-radius: 50%;
+}
+
+.categories-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.categories-grid::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 6px;
+}
+
+.categories-grid::-webkit-scrollbar-thumb:hover {
+  background: #C2D9D0;
+}
+
+/* ============================================
+   Category Item (صورة صغيرة + اسم)
+   ============================================ */
+.category-item {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: center;
+  gap: 10px;
+  width: 180px;
+  /* ✅ عرض ثابت لكل عنصر */
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  text-align: left;
+}
+
+.category-item:hover {
+  background: var(--bg-color);
+  transform: translateX(2px);
+}
+
+.category-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--secondary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.category-item:hover .category-thumb {
+  transform: scale(1.08);
+}
+
+.category-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.category-thumb .material-symbols-outlined {
+  font-size: 18px;
+  color: var(--primary-color);
+}
+
+.category-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================
+   Nav Items (بجانب All Categories)
+   ============================================ */
+.nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #6b7a77;
+  font-weight: 600;
+  font-size: 15px;
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+}
+
+.nav-item .material-symbols-outlined {
+  font-size: 20px;
+  transition: transform 0.25s ease;
+}
+
+.nav-item:hover {
+  color: var(--primary-color);
+  background: var(--bg-color);
+}
+
+.nav-item:hover .material-symbols-outlined {
+  transform: scale(1.1);
 }
 
 .nav-item.active {
-  color: #15803d;
-  font-weight: 700;
+  color: var(--primary-color);
+  background: var(--secondary-color);
+  font-weight: 800;
 }
-.icon-in-sub-header-truck{
+
+.nav-item.active::after {
+  content: "";
   position: absolute;
-  left: -25px;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 3px;
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1024px) {
+  .sub-header {
+    padding: 10px 20px;
+  }
+
+  .sub-header-inner {
+    gap: 16px;
+  }
+
+  .categories-trigger span:not(.material-symbols-outlined):not(.chevron) {
+    display: none;
+  }
+
+  .categories-trigger {
+    padding: 11px 14px;
+  }
+
+  /* ✅ أعمدة أقل على التابلت */
+  .categories-grid {
+    grid-template-rows: repeat(8, auto);
+  }
+
+  .category-item {
+    width: 160px;
+  }
+
+  .nav-item {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sub-header {
+    padding: 10px 16px;
+  }
+
+  .sub-header-inner {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .sub-header-left {
+    width: 100%;
+  }
+
+  .categories-trigger {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .categories-trigger span:not(.material-symbols-outlined):not(.chevron) {
+    display: inline;
+  }
+
+  .categories-dropdown {
+    width: calc(100vw - 32px);
+    max-width: 100%;
+    left: -10px;
+  }
+
+  /* ✅ عدد أقل من الصفوف على الجوال */
+  .categories-grid {
+    grid-template-rows: repeat(6, auto);
+    gap: 3px 6px;
+    padding: 10px;
+  }
+
+  .category-item {
+    width: 140px;
+    padding: 6px 8px;
+    gap: 8px;
+  }
+
+  .category-thumb {
+    width: 32px;
+    height: 32px;
+  }
+
+  .category-name {
+    font-size: 13px;
+  }
+
+  .sub-header-nav {
+    width: 100%;
+    justify-content: space-between;
+    gap: 4px;
+    border-top: 1px solid var(--secondary-color);
+    padding-top: 10px;
+  }
+
+  .nav-item {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 6px;
+    font-size: 13px;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .nav-item .material-symbols-outlined {
+    font-size: 22px;
+  }
+
+  .nav-item.active::after {
+    display: none;
+  }
 }
