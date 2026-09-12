@@ -116,7 +116,7 @@
 }
 
 button {
-  padding: 0.1rem 0.6rem;
+  padding: 0.1rem 0.4rem;
   margin: 0 0.3rem;
   border-radius: 0.5rem;
   border: 2px solid var(--lime-mid);
@@ -147,12 +147,10 @@ button {
   border: 1px solid var(--lime-light);
 }
 
-/* تم تفعيل Flexbox للحاوية البرمجية للأزرار */
 .action {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* gap: 0.5rem; */
   width: 100%;
 }
 
@@ -180,17 +178,10 @@ button {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--mid-green);
-  /* استخدام نفس لون درجة الأخضر الموجودة لديك */
   margin-top: 2px;
   white-space: nowrap;
 }
 
-/* .price span {
-  background: linear-gradient(135deg, var(--neon-green), var(--lime-mid));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-} */
 
 /* تم إضافة Flexbox ومسافات صحيحة لزر الإضافة */
 .add-button {

@@ -140,7 +140,7 @@ export async function searchProduct(searchItem) {
     }
 }
 
-export async function calculatePriceByKg(price, weight, unit) {
+export function calculatePriceByKg(price, weight, unit) {
     if(!price || !weight || weight <= 0 ) return 0 ;
 
     const normalizedUnit = String(unit).trim().toLocaleLowerCase()

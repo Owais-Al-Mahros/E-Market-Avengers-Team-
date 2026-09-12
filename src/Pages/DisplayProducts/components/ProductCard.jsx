@@ -84,7 +84,7 @@ export default function ProductCard(props) {
         <div className="action">
           <div className="price">
             <span className="main-price">{(props.price * counter).toFixed(2)}€</span>
-            {pricePerKg && (
+            {pricePerKg > 0 && (
               <span className="price-per-kg">({pricePerKg}€ / kg)</span>
             )}
           </div>

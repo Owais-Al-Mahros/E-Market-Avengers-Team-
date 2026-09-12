@@ -3,12 +3,9 @@
    ========================================== */
 
 .container-footer {
-  /* position: absolute;
-  top: 100%; */
   margin-top: auto;
   width: 100%;
   min-height: 16rem;
-  /* استخدام min-height بدل height ثابت حتى لا يقطع المحتوى */
   background-color: var(--primary-color) !important;
   color: var(--secondary-color);
   padding: 2rem;
@@ -20,7 +17,6 @@
   justify-content: space-between;
   align-items: flex-start;
   flex-wrap: wrap;
-  /* للتجاوب على الشاشات الصغيرة */
   gap: 2rem;
 }
 
@@ -30,13 +26,24 @@
   gap: 0.75rem;
 }
 
+/* تنسيق قسم منصات التواصل الاجتماعي بحيث يصبح الأيقونة والاسم بكتلة واحدة متناسقة */
 .social-media-footer {
   display: flex;
-  /* إضافة Flexbox ليعمل الـ gap بشكل صحيح */
   align-items: center;
-  gap: 0.75rem;
+  gap: 1.2rem;
+  flex-wrap: wrap;
 }
 
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--secondary-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.social-media-logo,
 .social-media-footer img,
 .contact-us img {
   width: 1.8rem;
@@ -45,12 +52,22 @@
   transition: transform 0.2s ease;
 }
 
+.social-link:hover .social-media-logo,
 .social-media-footer img:hover,
 .contact-us img:hover {
   transform: scale(1.1);
 }
 
-.social-link,
+.social-link:hover,
+.platForms:hover,
+.category-link:hover,
+.service-link:hover,
+.phone-number:hover,
+.email:hover,
+.location-link:hover {
+  color: var(--accent-color);
+}
+
 .category-link,
 .service-link,
 .phone-number,
@@ -58,21 +75,14 @@
 .location-link {
   color: var(--secondary-color);
   transition: color 0.2s ease;
-}
-
-.category-link:hover,
-.service-link:hover,
-.phone-number:hover,
-.email:hover,
-.location-link:hover,
-.platForms:hover {
-  color: var(--accent-color);
+  text-decoration: none;
 }
 
 .category-list,
 .service-list {
   list-style: none;
   line-height: 2rem;
+  padding: 0;
 }
 
 .logo-icon-footer {
@@ -84,6 +94,8 @@
 
 .logo-footer {
   display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .contact-us {
@@ -105,6 +117,7 @@
   background-color: var(--border-color, rgba(255, 255, 255, 0.15));
   margin-top: 1.5rem;
   width: 100%;
+  border: none;
 }
 
 .subTitles {
@@ -113,6 +126,7 @@
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
+
 /* ==========================================
    FOOTER RESPONSIVE (MOBILE)
    ========================================== */
@@ -123,14 +137,12 @@
     min-height: auto;
   }
 
-  /* جعل أقسام الفوتر تترتب عمودياً فوق بعضها بشكل مرتب */
   .sub-container-footer {
     flex-direction: column;
     align-items: flex-start;
     gap: 2rem;
   }
 
-  /* إعطاء كل قسم عرضاً كاملاً ليأخذ حريته بالترتيب العمودي */
   .information,
   .category,
   .customer-service,
@@ -138,9 +150,7 @@
     width: 100%;
   }
 
-  /* السماح لأيقونات التواصل الاجتماعي بالنزول لسطر جديد إذا ضاقت الشاشة جداً */
   .social-media-footer {
-    flex-wrap: wrap;
     gap: 1rem;
   }
 }

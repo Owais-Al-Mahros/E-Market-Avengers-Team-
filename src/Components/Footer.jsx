@@ -1,7 +1,17 @@
 import "./Footer.css";
-
+import { useCategories } from "../context/CategoryContext";
+import { useNavigate } from "react-router-dom";
 function Footer() {
   console.count("🦶 Footer");
+
+  const { categories } = useCategories();
+  const navigate = useNavigate();
+
+  const handelCategorySelect = (catId) => {
+    navigate(`/DisplayProducts?categoryId=${catId}`)
+    window.scrollTo(0,0)
+    
+  };
 
   return (
     <>
@@ -51,18 +61,24 @@ function Footer() {
           <div className="category">
             <h3 className="subTitles">Prominent categories</h3>
             <ul className="category-list">
-              <a href="#" className="category-link">
-                <li>fruit&vegetables</li>
-              </a>
-              <a href="#" className="category-link">
-                <li>juices</li>
-              </a>
-              <a href="#" className="category-link">
-                <li>cooking materials</li>
-              </a>
-              <a href="#" className="category-link">
-                <li>foods</li>
-              </a>
+              {categories && categories.length > 0 ? (
+                categories
+                  .slice(0, 4)
+                  .map((cat) => (
+                    <li
+                      key={cat.id}
+                      className="category-link"
+                      onClick={() => handelCategorySelect(cat.id)}
+                      style={{ cursor: "pointer"}}
+                    >
+                      {cat.name}
+                    </li>
+                  ))
+              ) : (
+                <li className="category-link" style={{ opacity: 0.7 }}>
+                  Loading categories...
+                </li>
+              )}
             </ul>
           </div>
           <div className="customer-service">
