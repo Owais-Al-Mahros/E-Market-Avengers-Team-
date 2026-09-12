@@ -1,6 +1,8 @@
 import "./Footer.css";
 
 function Footer() {
+  console.count("🦶 Footer");
+
   return (
     <>
       <div className="container-footer">

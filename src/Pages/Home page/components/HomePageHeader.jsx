@@ -7,6 +7,8 @@ import { useDebounce } from "../../../hooks/useDebounce.js";
 import { Link, useNavigate } from "react-router-dom";
 
 function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
+  console.count("📌 HomePageHeader");
+
   const { totalItems } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");

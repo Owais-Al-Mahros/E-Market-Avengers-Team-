@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import { calculatePriceByKg } from "../../../hooks/useProduct.js";
 
 export default function ProductCard(props) {
+  console.count(`🃏 ProductCard #${props.id}`);
+
   const { addToCart } = useCart();
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [counter, setCounter] = useState(1);
@@ -45,7 +47,7 @@ export default function ProductCard(props) {
     });
   };
 
-  const pricePerKg = calculatePriceByKg (props.price , props.weight, props.weight_unit)
+  const pricePerKg = calculatePriceByKg(props.price, props.weight, props.weight_unit)
 
   // ✅ حماية من البيانات المفقودة
   const nutritionObject = props.nutritionObject || null;
@@ -82,7 +84,7 @@ export default function ProductCard(props) {
         <div className="action">
           <div className="price">
             <span className="main-price">{(props.price * counter).toFixed(2)}€</span>
-            {pricePerKg  &&(
+            {pricePerKg && (
               <span className="price-per-kg">({pricePerKg}€ / kg)</span>
             )}
           </div>

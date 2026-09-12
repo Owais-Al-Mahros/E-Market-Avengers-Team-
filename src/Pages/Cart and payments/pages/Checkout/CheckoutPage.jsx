@@ -326,7 +326,7 @@ export default function CheckoutPage() {
 
       if (itemsError) throw new Error(itemsError.message);
 
-      // 3. الحفظ في localStorage والانتقال
+      // 3. حفظ آخر طلب + الانتقال إلى صفحة الفاتورة والدفع
       if (order) {
         localStorage.setItem(
           "lastOrder",
@@ -338,7 +338,9 @@ export default function CheckoutPage() {
           })
         );
 
-        const orderHistory = JSON.parse(localStorage.getItem("orderHistory") || "[]");
+        const orderHistory = JSON.parse(
+          localStorage.getItem("orderHistory") || "[]"
+        );
         const exists = orderHistory.some((o) => o.id === order.id);
         if (!exists) {
           orderHistory.push({
@@ -350,9 +352,12 @@ export default function CheckoutPage() {
           localStorage.setItem("orderHistory", JSON.stringify(orderHistory));
         }
 
-        toast.success(`✅ Order ${order.order_number} submitted successfully!`);
-        clearCart();
-        navigate(`/Cart&Payments/order-confirmation/${order.id}`);
+        toast.success(`✅ Order ${order.order_number} created!`);
+
+        // ⚠️ لا نُفرّغ السلة هنا — سنُفرّغها في صفحة BillAndPayment
+
+        // ✅ الانتقال إلى صفحة الفاتورة والدفع
+        navigate(`/Cart&Payments/BillAndPayment/${order.id}`);
       }
     } catch (error) {
       console.error("❌ Order submission failed:", error);

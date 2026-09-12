@@ -1,175 +1,62 @@
-.subCategories-section {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
-  width: 100%;
-}
-
-.subCategories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 20px;
-  width: 100%;
-}
-.subCategory-card {
+.subcategory-bar {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 10px;
-  padding: 20px 16px;
-  background: var(--cream, #f4efd9);
-  border: 2px solid rgba(45, 74, 0, 0.06);
-  border-radius: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  padding: 4px 0;
+}
+
+.subcat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #fff;
+  border: 1.5px solid var(--secondary-color);
+  border-radius: 30px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  text-align: center;
-  min-height: 140px;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.subCategory-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+.subcat-chip:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(20, 92, 74, 0.08);
 }
 
-.subCategory-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(182, 245, 0, 0.05), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+.subcat-chip.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(20, 92, 74, 0.25);
 }
 
-.subCategory-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
-  border-color: var(--lime-mid, #61b927);
-}
-
-.subCategory-card:hover::before {
-  opacity: 1;
-}
-
-.subCategory-card.active {
-  border-color: var(--neon-green, #b6f500);
-  background: rgba(182, 245, 0, 0.06);
-  box-shadow:
-    0 0 0 3px rgba(182, 245, 0, 0.15),
-    0 8px 30px rgba(182, 245, 0, 0.08);
-  transform: translateY(-4px);
-}
-/* الكرت المحدد/النشط */
-.subCategory-card.active {
-  border-color: #2e7d32;
-  background-color: #f0f7f1;
-}
-
-.subCategory-image {
-  width: 110px;
-  height: 90px;
+.subcat-chip-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
   object-fit: cover;
-  border-radius: 16px;
-  background: var(--light-bg, #d4e8b0);
-  padding: 6px;
-  transition: transform 0.3s ease;
 }
 
-.subCategory-card h3 {
-  font-size: 0.95rem;
-  color: #2d3748;
-  margin: 0;
-  text-transform: capitalize;
-}
-
-.subCategory-card:hover .subCategory-image {
-  transform: scale(1.06) rotate(-2deg);
-}
-
-.subCategory-card.active .subCategory-image {
-  transform: scale(1.08);
-  box-shadow: 0 4px 16px rgba(182, 245, 0, 0.15);
-}
-
-/* ==========================================
-   التجاوب مع الشاشات المتوسطة والصغيرة (Responsive Design)
-   ========================================== */
-
-@media (max-width: 768px) {
-  .subcategories-section {
-    padding: 25px 15px;
+@media (max-width: 640px) {
+  .subcategory-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .subcategories-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 12px;
+  .subcategory-bar::-webkit-scrollbar {
+    display: none;
   }
 
-  .subcategory-card {
-    padding: 16px 12px;
-    min-height: 120px;
-    border-radius: 16px;
-  }
-
-  .subCategory-image {
-    width: 85px;
-    height: 70px;
-    border-radius: 12px;
-  }
-
-  .subcategory-card h3 {
-    font-size: 0.85rem;
-  }
-}
-
-/* للشاشات الضيقة جداً (الهواتف المحمولة الصغيرة) */
-@media (max-width: 480px) {
-  .subcategories-section {
-    padding: 20px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  /* جعل كرت "الكل" يأخذ مساحة مريحة وعرض كامل أو متناسق في الأعلى */
-  .subcategories-section > .subcategory-card {
-    width: 100%;
-    min-height: 70px;
-    flex-direction: row;
-    justify-content: flex-start;
-    padding: 12px 20px;
-    gap: 15px;
-  }
-
-  .subcategories-section > .subcategory-card .subCategory-image {
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* الشبكة لتصبح عمودين متساوين تماماً */
-  .subcategories-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .subcategory-card {
-    padding: 12px 8px;
-    min-height: 110px;
-  }
-
-  .subCategory-image {
-    width: 70px;
-    height: 60px;
-  }
-
-  .subcategory-card h3 {
-    font-size: 0.8rem;
+  .subcat-chip {
+    flex-shrink: 0;
   }
 }

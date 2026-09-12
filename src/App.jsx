@@ -6,7 +6,9 @@ import { ProductProvider } from "./context/ProductContext";
 import { supabase } from "./lib/supabase";
 import LoadingPage from "./Components/LoadingPage";
 
-// 🚀 تطبيق Lazy Loading على جميع الصفحات
+import DisplayProducts from "./Pages/DisplayProducts/DisplayProducts";
+
+// 🚀 تطبيق Lazy Loading على باقي الصفحات (بدون DisplayProducts)
 const AdminDashboard = lazy(
   () => import("./Pages/Admin dashboard/AdminDashboard"),
 );
@@ -14,9 +16,6 @@ const HomePage = lazy(() => import("./Pages/Home page/HomePage"));
 const LoginPage = lazy(() => import("./Pages/Log in  page/LoginPage"));
 const CartAndPayments = lazy(
   () => import("./Pages/Cart and payments/CartAndPayments"),
-);
-const DisplayProducts = lazy(
-  () => import("./Pages/DisplayProducts/DisplayProducts"),
 );
 
 function ScrollToTop() {
@@ -28,12 +27,12 @@ function ScrollToTop() {
 
   return null;
 }
+
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const isInitialMount = useRef(true);
 
-  // دالة التحقق (تُستخدم في الخلفية بدون تغيير حالة التحميل)
   const checkAdminStatus = async (session) => {
     if (!session) {
       setIsAdmin(false);
@@ -54,7 +53,6 @@ function App() {
   };
 
   useEffect(() => {
-    // 1. التحقق الأولي عند تحميل التطبيق (مرة واحدة فقط)
     const initializeAuth = async () => {
       setIsLoading(true);
 
@@ -69,7 +67,6 @@ function App() {
 
     initializeAuth();
 
-    // 2. الاستماع لتغيرات المصادقة (تسجيل الدخول/الخروج)
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         await checkAdminStatus(session);
@@ -103,11 +100,12 @@ function App() {
           zIndex: 99999,
         }}
       />
-      {/* ⏳ تغليف الـ Routes بـ Suspense لعرض شاشة تحميل خفيفة أثناء جلب الصفحة المطلوب فتحها فقط */}
+      {/* ⏳ Suspense لباقي الصفحات (بدون DisplayProducts) */}
       <Suspense fallback={<h1>Loading page...</h1>}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/Cart&Payments/*" element={<CartAndPayments />} />
+          {/* ✅ DisplayProducts مباشر — لا Suspense fallback له */}
           <Route path="/DisplayProducts" element={<DisplayProducts />} />
           <Route
             path="/dashboard"

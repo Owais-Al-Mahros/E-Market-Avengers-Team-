@@ -1,133 +1,124 @@
-// src/Pages/DisplayProducts/DisplayProducts.jsx
-import { useEffect, useState } from "react";
+import { useState, useMemo, useEffect, memo, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import { supabase } from "../../lib/supabase";
 import ProductCard from "../DisplayProducts/components/ProductCard";
 import HomePageHeader from "../Home page/components/HomePageHeader";
-import Footer from "./../../Components/Footer"
+import Footer from "./../../Components/Footer";
 import SubCategory from "./components/subCategory";
 import Subscribe from "../../Components/Subscribe";
 import { useCategories } from "../../context/CategoryContext";
-import { useNavigate } from "react-router-dom";
-
+import { useProducts } from "../../context/ProductContext";
+import { useSubcategories } from "../../context/SubcategoryContext";
 import "./DisplayProducts.css";
 
+const StaticHeader = memo(HomePageHeader);
+const StaticFooter = memo(Footer);
+const StaticSubscribe = memo(Subscribe);
+
 function DisplayProducts() {
-  const navigate = useNavigate();
-  const { categories, loading: categoriesLoading } = useCategories();
+  console.count("🎯 DisplayProducts");
 
+  // ✅ نقرأ categoryId من URL مرة واحدة فقط عند أول فتح
   const [searchParams] = useSearchParams();
-  const categoryId = searchParams.get("categoryId");
+  const initialCategoryId = searchParams.get("categoryId");
 
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [categoryName, setCategoryName] = useState("");
+  const { categories, loading: categoriesLoading } = useCategories();
+  const { products, loading: productsLoading } = useProducts();
+  const { subcategories, loading: subcategoriesLoading } = useSubcategories();
 
-  const [subcategories, setSubcategories] = useState([]);
+  // ✅ كل الفلترة في state محلي — لا URL، لا navigate
+  const [activeCategoryId, setActiveCategoryId] = useState(initialCategoryId);
   const [selectSubCat, setSelectSubCat] = useState(null);
 
-  const handleCategorySelect = (categoryId) => {
-    navigate(`/DisplayProducts?categoryId=${categoryId}`);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!categoryId) {
-        setLoading(false);
-        setProducts([]);
-        setCategoryName("Products");
-        return;
-      }
+  // ✅ الفئة الحالية
+  const currentCategory = useMemo(() => {
+    if (!activeCategoryId) return null;
+    return categories.find((c) => Number(c.id) === Number(activeCategoryId));
+  }, [categories, activeCategoryId]);
 
-      const numCategoryID = Number(categoryId);
+  // ✅ الفئات الفرعية للفئة النشطة
+  const currentSubcategories = useMemo(() => {
+    if (!activeCategoryId) return [];
+    return subcategories.filter(
+      (sub) => Number(sub.category_id) === Number(activeCategoryId)
+    );
+  }, [subcategories, activeCategoryId]);
 
-      setLoading(true);
-      setSelectSubCat(null);
-      try {
-        // 1. جلب اسم الفئة
-        const { data: categoryData, error: catErr } = await supabase
-          .from("categories")
-          .select("name")
-          .eq("id", numCategoryID)
-          .single();
+  // ✅ فلترة المنتجات — تماماً مثل filteredProducts في Dashboard
+  const filteredProducts = useMemo(() => {
+    if (!activeCategoryId) return [];
 
-        if (catErr) console.error("Category error:", catErr);
-        setCategoryName(categoryData?.name || "Products");
-
-        // 2. جلب الفئات الفرعية
-        const { data: subCatData } = await supabase
-          .from("subcategories")
-          .select("*")
-          .eq("category_id", numCategoryID);
-        setSubcategories(subCatData || []);
-
-        // 3. جلب المنتجات الخاصة بهذه الفئة
-        const { data: prodData } = await supabase
-          .from("products")
-          .select("*")
-          .eq("category_id", numCategoryID)
-          .order("name");
-
-        setProducts(prodData || []);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [categoryId]);
-
-  // فلترة المنتجات بناءً على الفئة الفرعية
-  const filterProducts = selectSubCat
-    ? products.filter(
-        (pro) => Number(pro.subcategory_id) === Number(selectSubCat),
+    return products
+      .filter((p) => Number(p.category_id) === Number(activeCategoryId))
+      .filter((p) =>
+        selectSubCat ? Number(p.subcategory_id) === Number(selectSubCat) : true
       )
-    : products;
+      .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  }, [products, activeCategoryId, selectSubCat]);
+
+  // ✅ تغيير الفئة الرئيسية — state فقط
+  const handleCategorySelect = useCallback((id) => {
+    setActiveCategoryId(id);
+    setSelectSubCat(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  // ✅ تغيير الفئة الفرعية — state فقط
+  const handleSubCategorySelect = useCallback((subId) => {
+    setSelectSubCat((prev) =>
+      Number(prev) === Number(subId) ? null : subId
+    );
+  }, []);
+
+  const isLoadingContexts =
+    categoriesLoading || productsLoading || subcategoriesLoading;
+
+  const categoryName = currentCategory?.name || "Products";
 
   return (
     <>
-      <HomePageHeader />
+      <StaticHeader />
+
       <div className="display-products-page">
         <h1>{categoryName}</h1>
 
         <SubCategory
-          subcategories={subcategories}
+          subcategories={currentSubcategories}
           selectSubCat={selectSubCat}
-          setSelectSubCat={setSelectSubCat}
+          onSelect={handleSubCategorySelect}
         />
 
-        {loading ? (
-          <div className="loading">Loading products...</div>
-        ) : filterProducts.length === 0 ? (
-          <div className="empty">No products found.</div>
-        ) : (
-          <div className="products-grid">
-            {filterProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                image={product.image}
-                category={product.category}
-                price={product.price}
-                weight={product.weight}
-                tax_rate={product.tax_rate}
-                weight_unit={product.weight_unit}
-                total_price={product.total_price}
-                description={product.description}
-                nutritionObject={product.nutrition_facts}
-                storageObject={product.storage_notes}
-                ingredients={product.ingredients}
-              />
-            ))}
-          </div>
-        )}
+        <div className="products-area">
+          {isLoadingContexts ? (
+            <div className="loading">Loading products...</div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="empty">No products found.</div>
+          ) : (
+            <div className="products-grid">
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  image={product.image}
+                  category={product.category}
+                  price={product.price}
+                  weight={product.weight}
+                  tax_rate={product.tax_rate}
+                  weight_unit={product.weight_unit}
+                  total_price={product.total_price}
+                  description={product.description}
+                  nutritionObject={product.nutrition_facts}
+                  storageObject={product.storage_notes}
+                  ingredients={product.ingredients}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-      <Subscribe />
-      {/* { Category Section} */}
+
+      <StaticSubscribe />
+
       <div className="category-sections-display">
         <h2>Categories</h2>
         <div className="categories-grid-display">
@@ -137,7 +128,8 @@ function DisplayProducts() {
             categories.map((cat) => (
               <div
                 key={cat.id}
-                className="category-card-display"
+                className={`category-card-display ${Number(cat.id) === Number(activeCategoryId) ? "active" : ""
+                  }`}
                 onClick={() => handleCategorySelect(cat.id)}
               >
                 <img
@@ -151,7 +143,8 @@ function DisplayProducts() {
           )}
         </div>
       </div>
-      <Footer />
+
+      <StaticFooter />
     </>
   );
 }

@@ -25,9 +25,10 @@
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
 }
+
 /* ==========================================
    CATEGORIES SECTION DISPLAY
    ========================================== */
@@ -50,7 +51,8 @@
   display: flex;
   justify-content: center;
   align-items: stretch;
-  flex-wrap: wrap; /* 🌟 السماح للبطاقات بالانتقال لسطر جديد تلقائياً عند عدم وجود مساحة */
+  flex-wrap: wrap;
+  /* 🌟 السماح للبطاقات بالانتقال لسطر جديد تلقائياً عند عدم وجود مساحة */
   gap: 15px;
   margin-bottom: 2rem;
 }
@@ -69,7 +71,8 @@
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   text-align: center;
   min-height: 130px;
-  width: 150px; /* 🌟 تحديد عرض أساسي متناسق للبطاقة */
+  width: 150px;
+  /* 🌟 تحديد عرض أساسي متناسق للبطاقة */
   position: relative;
   overflow: hidden;
 }
@@ -145,7 +148,8 @@
   }
 
   .category-card-display {
-    width: 46%; /* 🌟 جعل كل بطاقتين تقريباً تصطفان بجانب بعضهما بشكل مريح على الشاشات الضيقة */
+    width: 46%;
+    /* 🌟 جعل كل بطاقتين تقريباً تصطفان بجانب بعضهما بشكل مريح على الشاشات الضيقة */
     min-height: 115px;
     padding: 12px 8px;
     border-radius: 16px;
@@ -158,5 +162,129 @@
 
   .category-name-display {
     font-size: 0.85rem;
+  }
+}
+
+/* ============================================
+   ✅ منطقة المنتجات (فقط هذه تتأثر بالفلترة)
+   ============================================ */
+.products-area {
+  min-height: 300px;
+  /* ✅ يمنع القفز عند التبديل */
+  position: relative;
+}
+
+/* ============================================
+   Loading صغير وأنيق (يظهر 120ms فقط)
+   ============================================ */
+.loading-small {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 20px;
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 14px;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--secondary-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ✅ الفئة الرئيسية المختارة */
+.category-card-display.active {
+  border: 2px solid var(--primary-color);
+  box-shadow:
+    0 0 0 4px rgba(20, 92, 74, 0.1),
+    0 12px 32px rgba(20, 92, 74, 0.15);
+}
+
+/* ============================================
+   Subcategory Bar
+   ============================================ */
+.subcategory-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  padding: 4px 0;
+}
+
+.subcat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #fff;
+  border: 1.5px solid var(--secondary-color);
+  border-radius: 30px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.subcat-chip:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(20, 92, 74, 0.08);
+}
+
+.subcat-chip.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(20, 92, 74, 0.25);
+}
+
+.subcat-chip-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+@media (max-width: 640px) {
+  .subcategory-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .subcategory-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .subcat-chip {
+    flex-shrink: 0;
   }
 }

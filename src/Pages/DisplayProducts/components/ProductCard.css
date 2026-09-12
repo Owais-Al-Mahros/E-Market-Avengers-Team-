@@ -20,7 +20,7 @@
   padding: 1rem;
   width: 100%;
   /* ✅ تأخذ عرض الخلية بالكامل */
-  max-width: 300px;
+  max-width: 14rem;
   /* ✅ منع التمدد الزائد */
   background: var(--cream);
   border-radius: 1rem;
@@ -166,7 +166,7 @@ button {
   color: var(--dark-green);
 }
 
-.main-price{
+.main-price {
   font-size: 1.3rem;
   font-weight: 700;
   background: linear-gradient(135deg, var(--neon-green), var(--lime-mid));
@@ -176,10 +176,11 @@ button {
   line-height: 1.1;
 }
 
-.price-per-kg{
+.price-per-kg {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--mid-green); /* استخدام نفس لون درجة الأخضر الموجودة لديك */
+  color: var(--mid-green);
+  /* استخدام نفس لون درجة الأخضر الموجودة لديك */
   margin-top: 2px;
   white-space: nowrap;
 }
@@ -280,7 +281,7 @@ button {
   color: var(--dark-green);
 }
 
-@@media (max-width: 480px) {
+@media (max-width: 480px) {
   .card-container {
     max-width: 100%;
     padding: 0.75rem;
@@ -288,7 +289,8 @@ button {
   }
 
   .image-container {
-    height: 7.5rem; /* تقليص بسيط لارتفاع الصورة ليتناسب مع الموبايل */
+    height: 7.5rem;
+    /* تقليص بسيط لارتفاع الصورة ليتناسب مع الموبايل */
   }
 
   .title {
@@ -335,7 +337,8 @@ button {
   }
 
   .add-button {
-    width: 100%; /* زر الإضافة يأخذ عرض البطاقة كاملاً ليصبح واضحاً وسهل النقر */
+    width: 100%;
+    /* زر الإضافة يأخذ عرض البطاقة كاملاً ليصبح واضحاً وسهل النقر */
     padding: 0.55rem;
     font-size: 0.8rem;
     justify-content: center;

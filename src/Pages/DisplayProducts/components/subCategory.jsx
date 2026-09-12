@@ -1,40 +1,53 @@
+// src/Pages/DisplayProducts/components/subCategory.jsx
 import "./subCategory.css";
 
-function SubCategory({ subcategories, selectSubCat, setSelectSubCat }) {
+export default function SubCategory({ subcategories, selectSubCat, onSelect }) {
   if (!subcategories || subcategories.length === 0) return null;
 
   return (
-    <div className="subCategories-section">
-      <div className="subCategories-grid">
-        <div
-          className={`subCategory-card ${selectSubCat === null ? "active" : ""}`}
-          onClick={() => setSelectSubCat(null)}
-        >
-          <div className="subCategory-image">All</div>
-          <h3>All Products</h3>
-        </div>
-
-        {subcategories.map((subCat) => (
-          <div
-            key={subCat.id}
-            className={`subCategory-card ${selectSubCat === subCat.id ? "active" : ""}`}
-            onClick={() => setSelectSubCat(subCat.id)}
-          >
-            {subCat.image ? (
-              <img
-                src={subCat.image}
-                alt={subCat.name}
-                className="subCategory-image"
-              />
-            ) : (
-              <div className="subCategory-image">{subCat.name[0]}</div>
-            )}
-            <h3>{subCat.name}</h3>
-          </div>
-        ))}
+    <div className="subcategory-bar">
+      {/* زر "الكل" */}
+      <div
+        role="button"
+        tabIndex={0}
+        className={`subcat-chip ${!selectSubCat ? "active" : ""}`}
+        onClick={() => onSelect(null)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onSelect(null);
+          }
+        }}
+      >
+        All
       </div>
+
+      {/* الفئات الفرعية */}
+      {subcategories.map((sub) => (
+        <div
+          key={sub.id}
+          role="button"
+          tabIndex={0}
+          className={`subcat-chip ${Number(sub.id) === Number(selectSubCat) ? "active" : ""
+            }`}
+          onClick={() => onSelect(sub.id)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onSelect(sub.id);
+            }
+          }}
+        >
+          {sub.image && (
+            <img
+              src={sub.image}
+              alt={sub.name}
+              className="subcat-chip-img"
+            />
+          )}
+          <span>{sub.name}</span>
+        </div>
+      ))}
     </div>
   );
 }
-
-export default SubCategory;
