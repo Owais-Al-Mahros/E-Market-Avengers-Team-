@@ -26,8 +26,9 @@ function SubHomeHeader() {
     } else {
       navigate("/no-orders", {
         state: {
-          message: `Your previous order (${lastOrder.order_number}) was ${lastOrder.status === "delivered" ? "delivered" : "cancelled"
-            }. You can place a new order now!`,
+          message: `Your previous order (${lastOrder.order_number}) was ${
+            lastOrder.status === "delivered" ? "delivered" : "cancelled"
+          }. You can place a new order now!`,
         },
       });
     }

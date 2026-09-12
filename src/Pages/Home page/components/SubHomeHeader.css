@@ -44,7 +44,7 @@
   gap: 10px;
   padding: 11px 18px;
   background: var(--primary-color);
-  color: #fff;
+  color: var(--bg-color);
   border: none;
   border-radius: 12px;
   font-family: inherit;
@@ -89,7 +89,7 @@
   position: absolute;
   top: calc(100% + 10px);
   left: 0;
-  background: #fff;
+  background: var(--bg-color);
   border-radius: 16px;
   box-shadow:
     0 1px 3px rgba(20, 92, 74, 0.06),
@@ -174,7 +174,7 @@
 }
 
 .categories-grid::-webkit-scrollbar-thumb:hover {
-  background: #C2D9D0;
+  background: #c2d9d0;
 }
 
 /* ============================================

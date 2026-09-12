@@ -5,6 +5,7 @@ import ProductCardDetails from "../modals/ProductCardDetails.jsx";
 import { createPortal } from "react-dom";
 import { useCart } from "../../../context/CartContext.jsx";
 import toast from "react-hot-toast";
+import { calculatePriceByKg } from "../../../hooks/useProduct.js";
 
 export default function ProductCard(props) {
   const { addToCart } = useCart();
@@ -44,11 +45,14 @@ export default function ProductCard(props) {
     });
   };
 
+  const pricePerKg = calculatePriceByKg (props.price , props.weight, props.weight_unit)
+
   // ✅ حماية من البيانات المفقودة
   const nutritionObject = props.nutritionObject || null;
   const storageObject = props.storageObject || null;
   const ingredients = props.ingredients || null;
 
+  console.log(props.name, "Price:", props.price, "Weight:", props.weight, "Unit:", props.weight_unit, "PerKg:", pricePerKg);
   return (
     <>
       <div className="card-container" onClick={openDetails}>
@@ -77,7 +81,10 @@ export default function ProductCard(props) {
         </div>
         <div className="action">
           <div className="price">
-            <span>{(props.price * counter).toFixed(2)}€</span>
+            <span className="main-price">{(props.price * counter).toFixed(2)}€</span>
+            {pricePerKg  &&(
+              <span className="price-per-kg">({pricePerKg}€ / kg)</span>
+            )}
           </div>
           <div className="add-btn-container">
             <button className="add-button" onClick={handleAddToCart}>

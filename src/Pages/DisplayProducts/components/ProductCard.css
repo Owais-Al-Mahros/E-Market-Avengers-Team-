@@ -38,7 +38,7 @@
 }
 
 .card-container::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -77,7 +77,9 @@
   object-position: center;
   background-color: var(--cream);
   background: none;
-  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s ease;
+  transition:
+    transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    filter 0.4s ease;
 }
 
 .title {
@@ -114,7 +116,7 @@
 }
 
 button {
-  padding: 0.10rem 0.6rem;
+  padding: 0.1rem 0.6rem;
   margin: 0 0.3rem;
   border-radius: 0.5rem;
   border: 2px solid var(--lime-mid);
@@ -155,17 +157,39 @@ button {
 }
 
 .price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--dark-green);
 }
 
-.price span {
+.main-price{
+  font-size: 1.3rem;
+  font-weight: 700;
   background: linear-gradient(135deg, var(--neon-green), var(--lime-mid));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  line-height: 1.1;
 }
+
+.price-per-kg{
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--mid-green); /* استخدام نفس لون درجة الأخضر الموجودة لديك */
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* .price span {
+  background: linear-gradient(135deg, var(--neon-green), var(--lime-mid));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+} */
 
 /* تم إضافة Flexbox ومسافات صحيحة لزر الإضافة */
 .add-button {
@@ -219,7 +243,7 @@ button {
 
 /* ✅ خط سفلي عند hover */
 .card-container::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -254,4 +278,66 @@ button {
 /* ✅ تأثير إضافي عند التمرير على البطاقة */
 .card-container:hover .title {
   color: var(--dark-green);
+}
+
+@@media (max-width: 480px) {
+  .card-container {
+    max-width: 100%;
+    padding: 0.75rem;
+    gap: 0.6rem;
+  }
+
+  .image-container {
+    height: 7.5rem; /* تقليص بسيط لارتفاع الصورة ليتناسب مع الموبايل */
+  }
+
+  .title {
+    font-size: 0.95rem;
+  }
+
+  .weight {
+    font-size: 0.78rem;
+  }
+
+  .weight button {
+    padding: 0.05rem 0.4rem;
+    font-size: 13px;
+    margin: 0 0.15rem;
+  }
+
+  .counter-of-products {
+    font-size: 1rem;
+    min-width: 24px;
+    padding: 0 4px;
+  }
+
+  /* 🌟 التعديل الجوهري: جعل قسم السعر وزر الإضافة يترتبان عمودياً على الموبايل */
+  .action {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    margin-top: 4px;
+  }
+
+  .price {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .main-price {
+    font-size: 1.2rem;
+  }
+
+  .price-per-kg {
+    font-size: 0.7rem;
+  }
+
+  .add-button {
+    width: 100%; /* زر الإضافة يأخذ عرض البطاقة كاملاً ليصبح واضحاً وسهل النقر */
+    padding: 0.55rem;
+    font-size: 0.8rem;
+    justify-content: center;
+  }
 }

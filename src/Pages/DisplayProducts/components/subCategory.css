@@ -1,23 +1,24 @@
-.subcategories-section {
+.subCategories-section {
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
-  width: 100%;}
+  width: 100%;
+}
 
-  .subcategories-grid {
+.subCategories-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 20px;
   width: 100%;
 }
-.subcategory-card {
+.subCategory-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 10px;
   padding: 20px 16px;
-  background: var(--cream, #F4EFD9);
+  background: var(--cream, #f4efd9);
   border: 2px solid rgba(45, 74, 0, 0.06);
   border-radius: 20px;
   cursor: pointer;
@@ -28,13 +29,13 @@
   overflow: hidden;
 }
 
-.subcategory-card:hover {
+.subCategory-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
-.subcategory-card::before {
-  content: '';
+.subCategory-card::before {
+  content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(135deg, rgba(182, 245, 0, 0.05), transparent);
@@ -42,24 +43,26 @@
   transition: opacity 0.3s ease;
 }
 
-.subcategory-card:hover {
+.subCategory-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
   border-color: var(--lime-mid, #61b927);
 }
 
-.subcategory-card:hover::before {
+.subCategory-card:hover::before {
   opacity: 1;
 }
 
-.subcategory-card.active {
-  border-color: var(--neon-green, #B6F500);
+.subCategory-card.active {
+  border-color: var(--neon-green, #b6f500);
   background: rgba(182, 245, 0, 0.06);
-  box-shadow: 0 0 0 3px rgba(182, 245, 0, 0.15), 0 8px 30px rgba(182, 245, 0, 0.08);
+  box-shadow:
+    0 0 0 3px rgba(182, 245, 0, 0.15),
+    0 8px 30px rgba(182, 245, 0, 0.08);
   transform: translateY(-4px);
 }
 /* الكرت المحدد/النشط */
-.subcategory-card.active {
+.subCategory-card.active {
   border-color: #2e7d32;
   background-color: #f0f7f1;
 }
@@ -69,23 +72,104 @@
   height: 90px;
   object-fit: cover;
   border-radius: 16px;
-  background: var(--light-bg, #D4E8B0);
+  background: var(--light-bg, #d4e8b0);
   padding: 6px;
   transition: transform 0.3s ease;
 }
 
-.subcategory-card h3 {
+.subCategory-card h3 {
   font-size: 0.95rem;
   color: #2d3748;
   margin: 0;
   text-transform: capitalize;
 }
 
-.subcategory-card:hover .category-image {
+.subCategory-card:hover .subCategory-image {
   transform: scale(1.06) rotate(-2deg);
 }
 
-.subcategory-card.active .category-image {
+.subCategory-card.active .subCategory-image {
   transform: scale(1.08);
   box-shadow: 0 4px 16px rgba(182, 245, 0, 0.15);
+}
+
+/* ==========================================
+   التجاوب مع الشاشات المتوسطة والصغيرة (Responsive Design)
+   ========================================== */
+
+@media (max-width: 768px) {
+  .subcategories-section {
+    padding: 25px 15px;
+  }
+
+  .subcategories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
+  }
+
+  .subcategory-card {
+    padding: 16px 12px;
+    min-height: 120px;
+    border-radius: 16px;
+  }
+
+  .subCategory-image {
+    width: 85px;
+    height: 70px;
+    border-radius: 12px;
+  }
+
+  .subcategory-card h3 {
+    font-size: 0.85rem;
+  }
+}
+
+/* للشاشات الضيقة جداً (الهواتف المحمولة الصغيرة) */
+@media (max-width: 480px) {
+  .subcategories-section {
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* جعل كرت "الكل" يأخذ مساحة مريحة وعرض كامل أو متناسق في الأعلى */
+  .subcategories-section > .subcategory-card {
+    width: 100%;
+    min-height: 70px;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 12px 20px;
+    gap: 15px;
+  }
+
+  .subcategories-section > .subcategory-card .subCategory-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* الشبكة لتصبح عمودين متساوين تماماً */
+  .subcategories-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .subcategory-card {
+    padding: 12px 8px;
+    min-height: 110px;
+  }
+
+  .subCategory-image {
+    width: 70px;
+    height: 60px;
+  }
+
+  .subcategory-card h3 {
+    font-size: 0.8rem;
+  }
 }

@@ -30,12 +30,12 @@
 
 .ps-header p {
   font-size: 14px;
-  color: #41493c;
+  color: var(--secondary-text);
   margin: 4px 0 0;
 }
 
 .ps-add-btn {
-  background: #468432;
+  background: var(--neon-green);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -50,7 +50,7 @@
 }
 
 .ps-add-btn:hover {
-  background: #2e6b1c;
+  background: var(--hover-btn);
 }
 
 .ps-add-btn .material-symbols-outlined {
@@ -60,7 +60,7 @@
 /* ===== شريط الأدوات ===== */
 .ps-toolbar {
   background: #fff;
-  border: 1px solid #c1c9b8;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 12px 16px;
   display: flex;
@@ -88,15 +88,15 @@
 .ps-search .material-symbols-outlined {
   position: absolute;
   left: 10px;
-  color: #717a6b;
+  color: var(--secondary-text);
   font-size: 18px;
 }
 
 .ps-search input {
   padding: 8px 8px 8px 34px;
-  border: 1px solid #c1c9b8;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: #f8f9fa;
+  background: var(--bg-color);
   font-size: 14px;
   width: 200px;
   outline: none;
@@ -104,13 +104,13 @@
 }
 
 .ps-search input:focus {
-  border-color: #468432;
+  border-color: var(--mid-green);
   box-shadow: 0 0 0 2px rgba(70, 132, 50, 0.2);
 }
 
 .ps-filter select {
   padding: 8px 30px 8px 12px;
-  border: 1px solid #c1c9b8;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   background: #f8f9fa;
   font-size: 14px;
@@ -124,7 +124,7 @@
   position: absolute;
   right: 8px;
   pointer-events: none;
-  color: #717a6b;
+  color: var(--secondary-text);
 }
 
 .ps-tools {
@@ -134,11 +134,11 @@
 
 .ps-icon-btn {
   background: transparent;
-  border: 1px solid #c1c9b8;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 6px;
   cursor: pointer;
-  color: #41493c;
+  color: var(--secondary-text);
   transition: 0.2s;
   display: flex;
   align-items: center;
@@ -170,6 +170,18 @@
     align-items: stretch;
   }
 
+  .add-buttons {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .ps-add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
   .ps-search input,
   .ps-filter select {
     width: 100%;
@@ -191,7 +203,7 @@
 }
 /* الكارت الرئيسي وتغيير خلفيته البيضاء */
 .delete-confirm-toast {
-  background-color: #fff !important;
+  background-color: var(--bg-color) !important;
   border: 1px solid #334155 !important;
   color: black !important;
   border-radius: 12px !important;
@@ -210,7 +222,7 @@
 }
 
 .delete-confirm-toast .delete-confirm-message strong {
-  color: rgb(191, 6, 6) !important;
+  color: var(--danger-color) !important;
   font-size: medium;
 }
 
@@ -234,8 +246,8 @@
 
 /* زر الحذف */
 .delete-confirm-toast .delete-btn-danger {
-  background-color: #dc2626;
-  color: #ffffff;
+  background-color: var(--danger-color);
+  color: var(--bg-color);
 }
 
 .delete-confirm-toast .delete-btn-danger:hover {
@@ -245,10 +257,10 @@
 
 /* زر الإلغاء */
 .delete-confirm-toast .delete-btn-cancel {
-  background-color: #25a814 !important;
+  background-color: var(--neon-green) !important;
 }
 
 .delete-confirm-toast .delete-btn-cancel:hover {
-  background-color: #1a760d !important;
+  background-color: var(--mid-green) !important;
   transform: scale(1.1) !important;
 }

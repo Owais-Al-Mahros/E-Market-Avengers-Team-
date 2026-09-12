@@ -25,7 +25,10 @@
   border: 1px solid var(--border-color);
   border-radius: 1.25rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  transition:
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out,
+    border-color 0.2s ease-in-out;
 }
 
 .card-container-admin:hover {
@@ -44,7 +47,6 @@
   height: 8rem;
   background: var(--light-bg);
   border-radius: 0.5rem;
-  /* border: 2px solid var(--mid-green); */
 }
 
 .image-container-admin-dashboard .image-admin-dashboard {
@@ -56,7 +58,10 @@
   height: 100%;
   object-fit: contain;
   background-color: var(--cream);
-  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s ease;}
+  transition:
+    transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    filter 0.4s ease;
+}
 
 .title-admin {
   overflow: hidden;
@@ -67,7 +72,6 @@
   text-transform: capitalize;
   white-space: nowrap;
   text-overflow: ellipsis;
-  
 }
 
 .weight-admin {
@@ -97,16 +101,19 @@
   white-space: nowrap;
   border: none;
   border-radius: 50px;
-  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition:
+    transform 0.2s ease-in-out,
+    background-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
 }
-/* زر الحذف */
+
 .delete-button {
   background-color: var(--bg-delete-card);
   color: #ffffff;
 }
 
 .delete-button:hover {
-  background-color: #dc2626;
+  background-color: var(--danger-color);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
 }
 
@@ -118,3 +125,30 @@
   transform: scale(0.95);
 }
 
+/* ==========================================
+   MOBILE RESPONSIVE RULES (Max-width: 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  .card-container-admin {
+    max-width: 100%;
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+
+  .image-container-admin-dashboard {
+    height: 7rem;
+  }
+
+  .title-admin {
+    font-size: 0.95rem;
+  }
+
+  .weight-admin {
+    font-size: 0.75rem;
+  }
+
+  .action-admin button {
+    width: 100%;
+    padding: 0.75rem 0.5rem;
+  }
+}

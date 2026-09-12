@@ -5,9 +5,9 @@ import { useCart } from "../../../../context/CartContext";
 import { useProducts } from "../../../../context/ProductContext";
 import { useCategories } from "../../../../context/CategoryContext";
 import "./ShoppingCart.css";
-import CartFooter from "./components/CartFooter";
 import CartHeader from "./components/CartHeader";
 import OrderSummary from "../../components/OrderSummary/OrderSummary";
+import Footer from "../../../../Components/Footer"
 
 const STEPS = [
   { id: 1, label: "Cart" },
@@ -151,7 +151,8 @@ export default function ShoppingCart() {
         </div>
       </main>
 
-      <CartFooter />
+      {/* <CartFooter /> */}
+      <Footer />
     </div>
   );
 }

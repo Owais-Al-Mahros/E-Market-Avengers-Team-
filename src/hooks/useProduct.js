@@ -139,3 +139,21 @@ export async function searchProduct(searchItem) {
         return []
     }
 }
+
+export async function calculatePriceByKg(price, weight, unit) {
+    if(!price || !weight || weight <= 0 ) return 0 ;
+
+    const normalizedUnit = String(unit).trim().toLocaleLowerCase()
+    let pricePerKg 
+
+    if(normalizedUnit === "kg"){
+        pricePerKg = price / weight 
+    }else if (normalizedUnit === "g"){
+        pricePerKg = (price * 1000) / weight
+    }else {
+        return 0
+    }
+
+    return pricePerKg.toFixed(2)
+    
+}

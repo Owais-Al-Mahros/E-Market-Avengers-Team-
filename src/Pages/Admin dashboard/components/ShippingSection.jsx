@@ -31,7 +31,7 @@ export default function ShippingSection() {
         }
     };
 
-    if (loading) return <div className="shipping-section loading">Loading...</div>;
+    if (loading) return <div className="shipping-section loading"><div className="spinner"></div></div>;
 
     return (
         <div className="shipping-section">

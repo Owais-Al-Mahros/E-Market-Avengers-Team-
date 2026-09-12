@@ -15,8 +15,8 @@ export default function ProductForm({
     name: "",
     price: "",
     image: "",
-    category_id: "",      // ✅ بدلاً من category (النص)
-    subcategory_id: "",   // ✅ للفئة الفرعية
+    category_id: "", // ✅ بدلاً من category (النص)
+    subcategory_id: "", // ✅ للفئة الفرعية
     weight: "",
     weight_unit: "kg",
     tax_rate: 0,
@@ -53,20 +53,20 @@ export default function ProductForm({
   const { subcategories } = useSubcategories();
 
   const filteredSubcategories = subcategories.filter(
-    (sub) => sub.category_id === parseInt(productInfo.category_id)
+    (sub) => sub.category_id === parseInt(productInfo.category_id),
   );
   const initialNutrition = initialProductInfo.nutrition_facts
     ? Object.entries(initialProductInfo.nutrition_facts).map(([k, v]) => ({
-      key: k,
-      value: v,
-    }))
+        key: k,
+        value: v,
+      }))
     : [];
 
   const initialStorage = initialProductInfo.storage_notes
     ? Object.entries(initialProductInfo.storage_notes).map(([k, v]) => ({
-      key: k,
-      value: v,
-    }))
+        key: k,
+        value: v,
+      }))
     : [];
 
   const nutrition = useDynamicFields(initialNutrition);
@@ -173,7 +173,10 @@ export default function ProductForm({
                   className="edit-input box-input unit-select"
                   value={productInfo.subcategory_id}
                   onChange={(e) =>
-                    setProductInfo({ ...productInfo, subcategory_id: e.target.value })
+                    setProductInfo({
+                      ...productInfo,
+                      subcategory_id: e.target.value,
+                    })
                   }
                   disabled={!productInfo.category_id} // تعطيل إذا لم يتم اختيار فئة
                 >

@@ -18,17 +18,21 @@ export default function ProductModal({ closeModel, onProductAdded }) {
         if (!uploadRes.success) throw new Error(uploadRes.error);
         imageUrl = uploadRes.publicUrl; // ✅;
       }
-      const { error } = await supabase.from("products").insert([{ ...data, image: imageUrl }]);
+      const { error } = await supabase
+        .from("products")
+        .insert([{ ...data, image: imageUrl }]);
       if (error) throw error;
       if (onProductAdded) await onProductAdded();
       closeModel();
     })();
 
-    toast.promise(addPromise, {
-      loading: "Uploading image and saving product...",
-      success: "Product added successfully! ✨",
-      error: (err) => `Failed: ${err.message}`,
-    }).finally(() => setLoading(false));
+    toast
+      .promise(addPromise, {
+        loading: "Uploading image and saving product...",
+        success: "Product added successfully! ✨",
+        error: (err) => `Failed: ${err.message}`,
+      })
+      .finally(() => setLoading(false));
   };
 
   return (

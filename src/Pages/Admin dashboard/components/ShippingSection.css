@@ -3,110 +3,126 @@
    ========================================== */
 
 .shipping-section {
-    background: var(--cream, #F4EFD9);
-    border-radius: 24px;
-    padding: 32px;
-    border: 2px solid var(--border-color, rgba(207, 241, 144, 0.5));
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-    max-width: 1100px;
-    margin: 0 auto;
+  background: var(--cream, var(--light-cream));
+  border-radius: 24px;
+  padding: 32px;
+  border: 2px solid var(--border-color, var(--accent-color));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .section-header {
-    margin-bottom: 28px;
+  margin-bottom: 28px;
 }
 
 .section-header h2 {
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--dark-green, #2D4A00);
-    margin: 0 0 4px 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--dark-green, #2d4a00);
+  margin: 0 0 4px 0;
 }
 
-.section-header p {
-    font-size: 16px;
-    color: var(--mid-green, #5A8C00);
-    margin: 0;
-}
 
 .section-body {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
 .section-footer {
-    margin-top: 32px;
-    padding-top: 20px;
-    border-top: 2px solid var(--border-color, rgba(207, 241, 144, 0.3));
-    display: flex;
-    justify-content: flex-end;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 2px solid var(--border-color, rgba(207, 241, 144, 0.3));
+  display: flex;
+  justify-content: flex-end;
 }
 
 .save-btn {
-    padding: 12px 36px;
-    background: var(--neon-green, #B6F500);
-    border: 2px solid var(--lime-mid, #61b927);
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 16px;
-    color: var(--dark-green, #2D4A00);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 16px rgba(182, 245, 0, 0.15);
+  padding: 12px 36px;
+  background: var(--neon-green, #b6f500);
+  border: 2px solid var(--lime-mid, #61b927);
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--dark-green, #2d4a00);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(182, 245, 0, 0.15);
 }
 
 .save-btn:hover:not(:disabled) {
-    background: var(--lime-light, #A4DD00);
-    transform: scale(1.02);
-    box-shadow: 0 8px 24px rgba(182, 245, 0, 0.25);
+  background: var(--lime-light, #a4dd00);
+  transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(182, 245, 0, 0.25);
 }
 
 .save-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* ===== حالة التحميل ===== */
 .shipping-section.loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 300px;
-    gap: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 16px;
 }
 
 .shipping-section.loading .spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--border-color, rgba(207, 241, 144, 0.5));
-    border-top-color: var(--neon-green, #B6F500);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border-color, rgba(207, 241, 144, 0.5));
+  border-top-color: var(--neon-green, #b6f500);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
-
-/* ===== استجابة ===== */
+/* ==========================================
+   MOBILE RESPONSIVE RULES (Max-width: 768px)
+   ========================================== */
 @media (max-width: 768px) {
-    .shipping-section {
-        padding: 20px;
-    }
+  .shipping-section {
+    padding: 20px;
+  }
 
-    .section-header h2 {
-        font-size: 24px;
-    }
+  .section-header {
+    margin-bottom: 20px;
+    text-align: center; /* توسيط العنوان في الجوال */
+  }
+
+  .section-header h2 {
+    font-size: 24px;
+  }
+
+  .section-body {
+    gap: 20px;
+  }
+
+  .section-footer {
+    justify-content: stretch;
+    margin-top: 24px;
+    padding-top: 16px;
+  }
+
+  .save-btn {
+    width: 100%;
+    padding: 14px;
+  }
 }
 
 @media (max-width: 480px) {
-    .shipping-section {
-        padding: 16px;
-        border-radius: 16px;
-    }
+  .shipping-section {
+    padding: 16px;
+    border-radius: 16px;
+  }
 }

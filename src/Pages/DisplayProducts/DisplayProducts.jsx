@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import ProductCard from "../DisplayProducts/components/ProductCard";
 import HomePageHeader from "../Home page/components/HomePageHeader";
-import HomePageFooter from "../Home page/components/HomePageFooter";
+import Footer from "./../../Components/Footer"
 import SubCategory from "./components/subCategory";
 import Subscribe from "../../Components/Subscribe";
 import { useCategories } from "../../context/CategoryContext";
@@ -151,7 +151,7 @@ function DisplayProducts() {
           )}
         </div>
       </div>
-      <HomePageFooter />
+      <Footer />
     </>
   );
 }

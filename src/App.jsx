@@ -1,17 +1,33 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useEffect, useState, useRef, lazy, Suspense } from "react";
+import { useLocation } from "react-router-dom";
 import { ProductProvider } from "./context/ProductContext";
 import { supabase } from "./lib/supabase";
-import LoadingPage from "./Components/LoadingPage"
+import LoadingPage from "./Components/LoadingPage";
 
 // 🚀 تطبيق Lazy Loading على جميع الصفحات
-const AdminDashboard = lazy(() => import("./Pages/Admin dashboard/AdminDashboard"));
+const AdminDashboard = lazy(
+  () => import("./Pages/Admin dashboard/AdminDashboard"),
+);
 const HomePage = lazy(() => import("./Pages/Home page/HomePage"));
 const LoginPage = lazy(() => import("./Pages/Log in  page/LoginPage"));
-const CartAndPayments = lazy(() => import("./Pages/Cart and payments/CartAndPayments"));
-const DisplayProducts = lazy(() => import("./Pages/DisplayProducts/DisplayProducts"));
+const CartAndPayments = lazy(
+  () => import("./Pages/Cart and payments/CartAndPayments"),
+);
+const DisplayProducts = lazy(
+  () => import("./Pages/DisplayProducts/DisplayProducts"),
+);
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,7 +77,7 @@ function App() {
         if (event === "SIGNED_OUT") {
           window.location.href = "/";
         }
-      }
+      },
     );
 
     return () => {
@@ -70,12 +86,16 @@ function App() {
   }, []);
 
   if (isLoading) {
-    return <div className="Loading"><LoadingPage />
-    </div>;
+    return (
+      <div className="Loading">
+        <LoadingPage />
+      </div>
+    );
   }
 
   return (
     <>
+      <ScrollToTop />
       <Toaster
         position="top-center"
         reverseOrder={false}

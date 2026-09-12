@@ -2,7 +2,6 @@
 import "./HomePage.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useCategories } from "../../context/CategoryContext.jsx";
-import HomePageFooter from "./components/HomePageFooter.jsx";
 import HomePageHeader from "./components/HomePageHeader.jsx";
 import HomePageHero from "./components/HomePageHero";
 import { useState } from "react";
@@ -10,6 +9,7 @@ import Subscribe from "../../Components/Subscribe.jsx";
 import SubHomeHeader from "./components/SubHomeHeader.jsx";
 import FeaturesBar from "./components/FeaturesBar.jsx";
 import HowItWorks from "./components/HowItWorks.jsx";
+import Footer from "./../../Components/Footer"
 function HomePage() {
   const { categories, loading: categoriesLoading } = useCategories();
   const navigate = useNavigate();
@@ -57,7 +57,7 @@ function HomePage() {
       </div>
       <Subscribe />
       <HowItWorks />
-      <HomePageFooter />
+      <Footer />
     </>
   );
 }

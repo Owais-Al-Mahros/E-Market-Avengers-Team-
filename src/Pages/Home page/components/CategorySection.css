@@ -40,7 +40,7 @@
 
 .cat-count {
     background: var(--primary-color);
-    color: #fff;
+    color: var(--bg-color);
     font-size: 12px;
     font-weight: 800;
     padding: 4px 10px;
@@ -60,7 +60,7 @@
     height: 42px;
     border-radius: 50%;
     border: 1.5px solid var(--secondary-color);
-    background: #fff;
+    background: var(--bg-color);
     color: var(--primary-color);
     cursor: pointer;
     display: flex;
@@ -71,7 +71,7 @@
 
 .cat-nav-btn:hover {
     background: var(--primary-color);
-    color: #fff;
+    color: var(--bg-color);
     border-color: var(--primary-color);
 }
 
@@ -148,7 +148,7 @@
 }
 
 .cat-empty {
-    color: #6b7a77;
+    color: var(--secondary-text);
 }
 
 .cat-empty .material-symbols-outlined {

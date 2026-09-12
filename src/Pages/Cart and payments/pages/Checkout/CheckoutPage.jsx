@@ -4,7 +4,7 @@ import { useCart } from "../../../../context/CartContext";
 import { supabase } from "../../../../lib/supabase";
 import toast from "react-hot-toast";
 import "./CheckoutPage.css";
-import CheckoutPageFooter from "../../components/CheckoutPageFooter/CheckoutPageFooter";
+import Footer from "./../../../../Components/Footer"
 import CartHeader from "../ShoppingCart/components/CartHeader";
 import DeliveryTime from "../../modals/DeliveryTime";
 
@@ -655,7 +655,7 @@ export default function CheckoutPage() {
         </form>
       </main>
 
-      <CheckoutPageFooter />
+      <Footer />
     </div>
   );
 }
