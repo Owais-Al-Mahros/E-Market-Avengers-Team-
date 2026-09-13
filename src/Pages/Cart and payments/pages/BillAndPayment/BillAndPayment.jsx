@@ -33,47 +33,87 @@ const PAYMENT_METHODS = [
 ];
 
 /* ============================================
-   ✅ مكوّن فرعي — نموذج Stripe
+   ✅ مكوّن فرعي — نموذج Stripe (مُصحّح)
 ============================================ */
-function CheckoutForm({ orderId, onSuccess }) {
+function CheckoutForm({ orderId, clientSecret, onSuccess }) {
     const stripe = useStripe();
     const elements = useElements();
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentError, setPaymentError] = useState(null);
+    const [isReady, setIsReady] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!stripe || !elements) return;
+        if (!stripe || !elements || !isReady) {
+            toast.error("Payment form is still loading, please wait...");
+            return;
+        }
 
         setIsProcessing(true);
         setPaymentError(null);
 
-        const { error, paymentIntent } = await stripe.confirmPayment({
-            elements,
-            confirmParams: {
-                return_url: `${window.location.origin}/Cart&Payments/order-confirmation/${orderId}`,
-            },
-            redirect: "if_required",
-        });
+        try {
+            // ✅ الخطوة 1: استدعاء submit() أولاً (وهذا ما يطلبه Stripe)
+            const { error: submitError } = await elements.submit();
+            if (submitError) {
+                console.error("Submit error:", submitError);
+                setPaymentError(submitError.message);
+                toast.error(submitError.message);
+                setIsProcessing(false);
+                return;
+            }
 
-        if (error) {
-            setPaymentError(error.message);
-            toast.error(error.message);
+            // ✅ الخطوة 2: الآن يمكن استدعاء confirmPayment() بأمان
+            const { error, paymentIntent } = await stripe.confirmPayment({
+                elements,
+                clientSecret: clientSecret, // تمرير clientSecret
+                confirmParams: {
+                    return_url: `${window.location.origin}/Cart&Payments/order-confirmation/${orderId}`,
+                },
+                redirect: "if_required",
+            });
+
+            if (error) {
+                console.error("Confirm error:", error);
+                setPaymentError(error.message);
+                toast.error(error.message);
+                setIsProcessing(false);
+                return;
+            }
+
+            // ✅ الخطوة 3: فحص حالة الدفع
+            if (
+                paymentIntent &&
+                (paymentIntent.status === "succeeded" ||
+                    paymentIntent.status === "requires_capture")
+            ) {
+                if (paymentIntent.status === "requires_capture") {
+                    toast.success("Payment authorized! ✅");
+                } else {
+                    toast.success("Payment successful! 🎉");
+                }
+                onSuccess();
+            } else {
+                setPaymentError("Unexpected payment status: " + (paymentIntent?.status || "unknown"));
+                setIsProcessing(false);
+            }
+        } catch (err) {
+            console.error("Payment exception:", err);
+            setPaymentError(err.message || "Something went wrong");
+            toast.error(err.message || "Payment failed");
             setIsProcessing(false);
-        } else if (paymentIntent && paymentIntent.status === "succeeded") {
-            toast.success("Payment successful! 🎉");
-            onSuccess();
-        } else if (paymentIntent && paymentIntent.status === "requires_capture") {
-            // ✅ الحالة المتوقعة: الحجز نجح، في انتظار التحصيل
-            toast.success("Payment authorized! ✅");
-            onSuccess();
         }
     };
 
     return (
         <form onSubmit={handleSubmit} className="stripe-form">
-            <PaymentElement />
+            <PaymentElement
+                onReady={() => {
+                    console.log("✅ PaymentElement ready");
+                    setIsReady(true);
+                }}
+            />
 
             {paymentError && (
                 <div className="stripe-error">
@@ -85,10 +125,14 @@ function CheckoutForm({ orderId, onSuccess }) {
             <button
                 type="submit"
                 className="bill-confirm-btn"
-                disabled={!stripe || isProcessing}
+                disabled={!stripe || !elements || !isReady || isProcessing}
             >
                 <span className="material-symbols-outlined">lock</span>
-                {isProcessing ? "Processing..." : "Authorize Payment"}
+                {isProcessing
+                    ? "Processing..."
+                    : !isReady
+                        ? "Loading..."
+                        : "Authorize Payment"}
             </button>
 
             <p className="stripe-note">
@@ -190,7 +234,28 @@ export default function BillAndPayment() {
     }, [paymentMethod, orderId, clientSecret]);
 
     // ===== 3. عند نجاح الدفع =====
-    const handlePaymentSuccess = () => {
+    const handlePaymentSuccess = async () => {
+        try {
+            // ✅ تحديث payment_method في DB قبل الانتقال
+            const { error } = await supabase
+                .from("orders")
+                .update({
+                    payment_method: "card",
+                    payment_status: "authorized",
+                    price_adjustment: PRICE_ADJUSTMENT,
+                    updated_at: new Date().toISOString(),
+                })
+                .eq("id", orderId);
+
+            if (error) {
+                console.error("Failed to update payment_method:", error);
+            } else {
+                console.log("✅ payment_method updated to 'card'");
+            }
+        } catch (err) {
+            console.error("Update error:", err);
+        }
+
         clearCart();
         navigate(`/Cart&Payments/order-confirmation/${orderId}`);
     };
@@ -406,6 +471,7 @@ export default function BillAndPayment() {
                                     >
                                         <CheckoutForm
                                             orderId={order.id}
+                                            clientSecret={clientSecret}
                                             onSuccess={handlePaymentSuccess}
                                         />
                                     </Elements>

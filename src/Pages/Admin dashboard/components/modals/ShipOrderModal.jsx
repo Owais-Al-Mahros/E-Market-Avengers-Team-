@@ -10,26 +10,35 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
     const [submitting, setSubmitting] = useState(false);
     const [editingId, setEditingId] = useState(null);
 
-    // ===== جلب المنتجات =====
+    // ✅ الحقول تُقرأ بأمان مع دعم كلا التسميتين
+    const paymentMethod = order.payment_method || "cod";
+    const isCOD = paymentMethod === "cod";
+    const hasStripe = !!order.payment_intent_id;
+
+    // ============================================
+    // جلب المنتجات
+    // ============================================
     useEffect(() => {
         const loadItems = async () => {
+            setLoading(true);
             const { data, error } = await supabase
                 .from("order_items")
                 .select("*")
                 .eq("order_id", order.id);
 
             if (error) {
+                console.error("Load items error:", error);
                 toast.error("Failed to load items");
+                setLoading(false);
                 return;
             }
 
             const normalized = (data || []).map((item) => ({
                 ...item,
                 status: item.status || "pending",
-                actual_weight: item.actual_weight || "",
-                actual_quantity: item.actual_quantity || "",
-                actual_unit_price:
-                    item.actual_unit_price || item.unit_price || "",
+                actual_weight: item.actual_weight ?? "",
+                actual_quantity: item.actual_quantity ?? "",
+                actual_unit_price: item.actual_unit_price ?? item.unit_price ?? "",
             }));
 
             setItems(normalized);
@@ -39,36 +48,39 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
         loadItems();
     }, [order.id]);
 
-    // ===== حساب الإجمالي =====
+    // ============================================
+    // حساب إجمالي منتج واحد
+    // ============================================
     const calculateTotal = (item) => {
         const isKg = !item.weight_unit || item.weight_unit === "kg";
         const weight = parseFloat(item.actual_weight) || 0;
         const qty = parseFloat(item.actual_quantity) || 0;
-        const price =
-            parseFloat(item.actual_unit_price) ||
-            parseFloat(item.unit_price) ||
-            0;
+        const price = parseFloat(item.actual_unit_price) || 0;
 
         if (isKg && weight > 0) return weight * price;
         if (!isKg && qty > 0) return qty * price;
-        return (item.quantity || 0) * price;
+        return 0;
     };
 
-    // ===== تحديث حقل =====
+    // ============================================
+    // تحديث حقل
+    // ============================================
     const updateField = (id, field, value) => {
         setItems((prev) =>
             prev.map((i) => (i.id === id ? { ...i, [field]: value } : i))
         );
     };
 
-    // ===== تغيير الحالة =====
+    // ============================================
+    // تغيير حالة منتج
+    // ============================================
     const changeStatus = (item, newStatus) => {
         setItems((prev) =>
             prev.map((i) => {
                 if (i.id !== item.id) return i;
 
                 if (newStatus === "scanned") {
-                    const total = calculateTotal(item);
+                    const total = calculateTotal(i);
                     return {
                         ...i,
                         status: "scanned",
@@ -103,104 +115,161 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
         setEditingId(null);
     };
 
-    // ===== الإجماليات =====
-    const estimatedTotal = items.reduce(
+    // ============================================
+    // الإجماليات
+    // ============================================
+    const estimatedProductsTotal = items.reduce(
         (sum, i) => sum + parseFloat(i.total_price || 0),
         0
     );
-    const actualTotal = items.reduce((sum, i) => {
+
+    const actualProductsTotal = items.reduce((sum, i) => {
         if (i.status === "scanned") return sum + (i.actual_total || 0);
         if (i.status === "removed") return sum + 0;
-        return sum + calculateTotal(i);
+        return sum;
     }, 0);
+
+    const shippingCost = parseFloat(order.shipping_cost || 0);
+    const TAX_RATE = 0.07;
+    const actualTax = actualProductsTotal * TAX_RATE;
+    const finalTotal = actualProductsTotal + shippingCost + actualTax;
+
     const authorizedMax = parseFloat(order.authorized_amount || 0);
-    const remainingBuffer = authorizedMax - actualTotal;
-    const allScannedAndValid = items.every(
+    const remainingBuffer = authorizedMax - finalTotal;
+
+    const allHandled = items.every(
         (i) => i.status === "scanned" || i.status === "removed"
     );
-    const isCOD = order.payment_method === "cod";
-    const hasStripe = !!order.payment_intent_id;
+    const pendingCount = items.filter((i) => i.status === "pending").length;
 
-    // ===== تأكيد الشحن =====
+    // ============================================
+    // تأكيد الشحن
+    // ============================================
     const handleConfirmShip = async () => {
-        if (!allScannedAndValid) {
-            toast.error("Please handle all items first");
+        // ===== التحقق =====
+        if (!allHandled) {
+            toast.error(`Please handle all items (${pendingCount} remaining)`);
             return;
         }
-        if (!isCOD && remainingBuffer < 0) {
+
+        if (!isCOD && hasStripe && remainingBuffer < 0) {
             toast.error(
-                `Amount exceeds authorized limit by €${Math.abs(
-                    remainingBuffer
-                ).toFixed(2)}`
+                `Amount exceeds authorized limit by €${Math.abs(remainingBuffer).toFixed(2)}. Please contact support.`
             );
             return;
         }
-        if (
-            !window.confirm(
-                `Confirm: charge €${actualTotal.toFixed(2)} and ship order?`
-            )
-        )
-            return;
+
+        // ===== رسالة التأكيد =====
+        const confirmMsg = isCOD
+            ? `Confirm shipment?\n\nProducts: €${actualProductsTotal.toFixed(2)}\nShipping: €${shippingCost.toFixed(2)}\nTax: €${actualTax.toFixed(2)}\nTotal to collect: €${finalTotal.toFixed(2)}`
+            : `Confirm shipment and charge €${finalTotal.toFixed(2)}?\n\nProducts: €${actualProductsTotal.toFixed(2)}\nShipping: €${shippingCost.toFixed(2)}\nTax: €${actualTax.toFixed(2)}\nTotal: €${finalTotal.toFixed(2)}`;
+
+        if (!window.confirm(confirmMsg)) return;
 
         setSubmitting(true);
+
         try {
-            // 1. تحديث كل المنتجات
+            // ============================================
+            // 1. تحديث كل منتج في order_items
+            // ============================================
             for (const item of items) {
-                await supabase
+                const { error: itemError } = await supabase
                     .from("order_items")
                     .update({
                         actual_weight: parseFloat(item.actual_weight) || null,
                         actual_quantity: parseFloat(item.actual_quantity) || null,
-                        actual_unit_price:
-                            parseFloat(item.actual_unit_price) || null,
+                        actual_unit_price: parseFloat(item.actual_unit_price) || null,
                         actual_total: item.actual_total,
                         price_difference: item.price_difference,
                         status: item.status,
                         scanned_at: new Date().toISOString(),
                     })
                     .eq("id", item.id);
+
+                if (itemError) {
+                    console.error(`Item ${item.product_name} update failed:`, itemError);
+                    throw new Error(
+                        `Failed to update ${item.product_name}: ${itemError.message}`
+                    );
+                }
             }
 
-            // 2. تحديث الطلب
-            await supabase
+            // ============================================
+            // 2. تحديث الطلب الرئيسي
+            // ============================================
+            const { error: orderError } = await supabase
                 .from("orders")
                 .update({
-                    total_price: actualTotal,
+                    total_price: finalTotal,
+                    subtotal: actualProductsTotal,
+                    shipping_cost: shippingCost,
+                    tax: actualTax,
+                    price_adjustment: 0,
                     status: "shipped",
                     updated_at: new Date().toISOString(),
                 })
                 .eq("id", order.id);
 
-            // 3. تحصيل Stripe (إن وُجد)
-            if (!isCOD && hasStripe) {
-                const response = await fetch(
-                    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/capture-payment`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-                        },
-                        body: JSON.stringify({ orderId: order.id }),
-                    }
-                );
-
-                const result = await response.json();
-                if (!result.success) {
-                    toast.error(result.error || "Payment capture failed");
-                    setSubmitting(false);
-                    return;
-                }
+            if (orderError) {
+                console.error("Order update failed:", orderError);
+                throw new Error(`Failed to update order: ${orderError.message}`);
             }
 
-            toast.success(
-                `✅ Order shipped! €${actualTotal.toFixed(2)} ${isCOD ? "to collect" : "charged"
-                }`
+            // ============================================
+            // 3. معالجة الدفع (لكل الطرق)
+            // ============================================
+            console.log("🎯 Processing payment for method:", order.payment_method);
+
+            const response = await fetch(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/capture-payment`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+                    },
+                    body: JSON.stringify({ orderId: order.id }),
+                }
             );
+
+            const result = await response.json();
+            console.log("📦 Capture result:", result);
+
+            if (!result.success) {
+                toast.error(result.error || "Payment processing failed");
+                setSubmitting(false);
+                return;
+            }
+
+            // ============================================
+            // 4. رسائل النجاح حسب نوع الدفع
+            // ============================================
+            if (result.type === "cod") {
+                toast.success(
+                    `✅ Order shipped! €${result.amountToCollect.toFixed(2)} to collect on delivery`,
+                    { duration: 5000 }
+                );
+            } else if (result.type === "bank_transfer") {
+                toast.success(
+                    `✅ Order shipped! Awaiting bank transfer of €${result.amountToCollect.toFixed(2)}`,
+                    { duration: 5000 }
+                );
+            } else if (result.alreadyCaptured) {
+                toast.success(
+                    `✅ Order shipped! Payment was already captured (€${result.finalAmount.toFixed(2)})`,
+                    { duration: 5000 }
+                );
+            } else {
+                toast.success(
+                    `✅ Order shipped & €${result.finalAmount.toFixed(2)} charged!`,
+                    { duration: 5000 }
+                );
+            }
+
             onSuccess();
         } catch (error) {
-            console.error(error);
-            toast.error("Failed to ship order");
+            console.error("❌ Ship failed:", error);
+            toast.error(error.message || "Failed to ship order");
         } finally {
             setSubmitting(false);
         }
@@ -209,6 +278,9 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
     const customer = order.customer_info || {};
     const address = order.shipping_address || {};
 
+    // ============================================
+    // عرض الواجهة
+    // ============================================
     return createPortal(
         <div className="ship-modal-overlay" onClick={onClose}>
             <div className="ship-modal" onClick={(e) => e.stopPropagation()}>
@@ -218,7 +290,9 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                         <h2>📦 Prepare Shipment</h2>
                         <p>
                             Order <strong>#{order.order_number}</strong>
-                            {isCOD && <span className="ship-modal-cod"> · Cash on Delivery</span>}
+                            {isCOD && (
+                                <span className="ship-modal-cod"> · Cash on Delivery</span>
+                            )}
                         </p>
                     </div>
                     <button className="ship-modal-close" onClick={onClose}>
@@ -255,12 +329,13 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                 <div className="ship-modal-instructions">
                     <span className="material-symbols-outlined">info</span>
                     <p>
-                        Enter the <strong>actual weight</strong> of each item from the store
-                        scale. The final total will be calculated automatically.
+                        Enter the <strong>actual weight</strong> and{" "}
+                        <strong>actual price</strong> for each item from the store. Total
+                        is calculated automatically.
                     </p>
                 </div>
 
-                {/* ===== Items ===== */}
+                {/* ===== Body ===== */}
                 <div className="ship-modal-body">
                     {loading ? (
                         <div className="ship-loading">
@@ -270,7 +345,8 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                     ) : (
                         <div className="ship-items">
                             {items.map((item, idx) => {
-                                const isKg = !item.weight_unit || item.weight_unit === "kg";
+                                const isKg =
+                                    !item.weight_unit || item.weight_unit === "kg";
                                 const calc = calculateTotal(item);
                                 const isPending = item.status === "pending";
                                 const isScanned = item.status === "scanned";
@@ -288,8 +364,12 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                                         <div className="ship-item-head">
                                             <span className="ship-item-num">{idx + 1}</span>
                                             <div className="ship-item-name">{item.product_name}</div>
-                                            {isScanned && <span className="ship-badge ok">✓</span>}
-                                            {isRemoved && <span className="ship-badge no">✕</span>}
+                                            {isScanned && (
+                                                <span className="ship-badge ok">✓</span>
+                                            )}
+                                            {isRemoved && (
+                                                <span className="ship-badge no">✕</span>
+                                            )}
                                             {isPending && (
                                                 <span className="ship-badge pending">•</span>
                                             )}
@@ -302,7 +382,7 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                                                 {isKg && item.weight ? ` × ${item.weight} kg` : ""}
                                             </span>
                                             <span>
-                                                €
+                                                Est. €
                                                 <strong>
                                                     {parseFloat(item.unit_price).toFixed(2)}
                                                 </strong>
@@ -314,34 +394,67 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                                         {showInput && (
                                             <div className="ship-item-edit">
                                                 <div className="ship-input-row">
-                                                    <div className="ship-input-wrap">
-                                                        <input
-                                                            type="number"
-                                                            step="0.001"
-                                                            inputMode="decimal"
-                                                            placeholder="0.000"
-                                                            value={
-                                                                isKg
-                                                                    ? item.actual_weight || ""
-                                                                    : item.actual_quantity || ""
-                                                            }
-                                                            onChange={(e) =>
-                                                                updateField(
-                                                                    item.id,
-                                                                    isKg ? "actual_weight" : "actual_quantity",
-                                                                    e.target.value
-                                                                )
-                                                            }
-                                                            autoFocus={idx === 0}
-                                                        />
-                                                        <span className="ship-unit">
-                                                            {isKg ? "kg" : "pcs"}
-                                                        </span>
+                                                    <div className="ship-field">
+                                                        <label>
+                                                            {isKg
+                                                                ? "Actual Weight (kg)"
+                                                                : "Actual Quantity"}
+                                                        </label>
+                                                        <div className="ship-input-wrap">
+                                                            <input
+                                                                type="number"
+                                                                step="0.001"
+                                                                inputMode="decimal"
+                                                                placeholder={isKg ? `${item.weight}` : "1"}
+                                                                value={
+                                                                    isKg
+                                                                        ? item.actual_weight
+                                                                        : item.actual_quantity
+                                                                }
+                                                                onChange={(e) =>
+                                                                    updateField(
+                                                                        item.id,
+                                                                        isKg
+                                                                            ? "actual_weight"
+                                                                            : "actual_quantity",
+                                                                        e.target.value
+                                                                    )
+                                                                }
+                                                                autoFocus={idx === 0}
+                                                            />
+                                                            <span className="ship-unit">
+                                                                {isKg ? "kg" : "pcs"}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                    <div className="ship-calc">
-                                                        <span>Total</span>
-                                                        <strong>€{calc.toFixed(2)}</strong>
+
+                                                    <div className="ship-field">
+                                                        <label>Actual Price (€)</label>
+                                                        <div className="ship-input-wrap">
+                                                            <input
+                                                                type="number"
+                                                                step="0.01"
+                                                                inputMode="decimal"
+                                                                placeholder="0.00"
+                                                                value={item.actual_unit_price}
+                                                                onChange={(e) =>
+                                                                    updateField(
+                                                                        item.id,
+                                                                        "actual_unit_price",
+                                                                        e.target.value
+                                                                    )
+                                                                }
+                                                            />
+                                                            <span className="ship-unit">
+                                                                /{isKg ? "kg" : "pcs"}
+                                                            </span>
+                                                        </div>
                                                     </div>
+                                                </div>
+
+                                                <div className="ship-calc-row">
+                                                    <span>Calculated Total:</span>
+                                                    <strong>€{calc.toFixed(2)}</strong>
                                                 </div>
 
                                                 <div className="ship-item-actions">
@@ -349,7 +462,11 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                                                         className="ship-btn-confirm"
                                                         onClick={() => changeStatus(item, "scanned")}
                                                         disabled={
-                                                            isKg ? !item.actual_weight : !item.actual_quantity
+                                                            isKg
+                                                                ? !item.actual_weight ||
+                                                                !item.actual_unit_price
+                                                                : !item.actual_quantity ||
+                                                                !item.actual_unit_price
                                                         }
                                                     >
                                                         <span className="material-symbols-outlined">
@@ -378,11 +495,16 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                                                         <div className="ship-item-result">
                                                             <span className="ship-item-weight">
                                                                 {isKg
-                                                                    ? `${item.actual_weight} kg`
-                                                                    : `${item.actual_quantity} pcs`}
+                                                                    ? `${item.actual_weight} kg × €${parseFloat(
+                                                                        item.actual_unit_price
+                                                                    ).toFixed(2)}`
+                                                                    : `${item.actual_quantity} pcs × €${parseFloat(
+                                                                        item.actual_unit_price
+                                                                    ).toFixed(2)}`}
                                                             </span>
                                                             <strong className="ship-item-total">
-                                                                €{parseFloat(item.actual_total).toFixed(2)}
+                                                                €
+                                                                {parseFloat(item.actual_total).toFixed(2)}
                                                             </strong>
                                                         </div>
                                                         <div className="ship-item-actions">
@@ -397,7 +519,9 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                                                             </button>
                                                             <button
                                                                 className="ship-btn-unavailable"
-                                                                onClick={() => changeStatus(item, "removed")}
+                                                                onClick={() =>
+                                                                    changeStatus(item, "removed")
+                                                                }
                                                             >
                                                                 <span className="material-symbols-outlined">
                                                                     block
@@ -421,7 +545,9 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                                                         <div className="ship-item-actions">
                                                             <button
                                                                 className="ship-btn-restore"
-                                                                onClick={() => changeStatus(item, "pending")}
+                                                                onClick={() =>
+                                                                    changeStatus(item, "pending")
+                                                                }
                                                             >
                                                                 <span className="material-symbols-outlined">
                                                                     undo
@@ -444,42 +570,55 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                 <div className="ship-modal-footer">
                     <div className="ship-totals">
                         <div className="ship-total-row">
-                            <span>Estimated</span>
-                            <span>€{estimatedTotal.toFixed(2)}</span>
+                            <span>Products (estimated)</span>
+                            <span>€{estimatedProductsTotal.toFixed(2)}</span>
+                        </div>
+                        <div className="ship-total-row">
+                            <span>Products (actual)</span>
+                            <span className="actual-products">
+                                €{actualProductsTotal.toFixed(2)}
+                            </span>
+                        </div>
+                        <div className="ship-total-row">
+                            <span>Shipping</span>
+                            <span>€{shippingCost.toFixed(2)}</span>
+                        </div>
+                        <div className="ship-total-row">
+                            <span>Tax (7%)</span>
+                            <span>€{actualTax.toFixed(2)}</span>
                         </div>
                         <div className="ship-total-row actual">
                             <span>
-                                Actual {isCOD ? "(to collect)" : "(to charge)"}
+                                Final Total {isCOD ? "(to collect)" : "(to charge)"}
                             </span>
-                            <span>€{actualTotal.toFixed(2)}</span>
+                            <span>€{finalTotal.toFixed(2)}</span>
                         </div>
                         {!isCOD && hasStripe && (
                             <div className="ship-total-row">
-                                <span>Buffer Remaining</span>
-                                <span
-                                    className={remainingBuffer >= 0 ? "ok" : "bad"}
-                                >
-                                    €{remainingBuffer.toFixed(2)}
-                                </span>
+                                <span>Authorized Max</span>
+                                <span>€{authorizedMax.toFixed(2)}</span>
                             </div>
                         )}
                     </div>
 
                     <div className="ship-footer-actions">
-                        <button className="ship-btn-cancel" onClick={onClose}>
-                            Cancel
-                        </button>
                         <button
                             className="ship-btn-ship"
                             onClick={handleConfirmShip}
-                            disabled={!allScannedAndValid || submitting}
+                            disabled={
+                                !allHandled || submitting || (!isCOD && remainingBuffer < 0)
+                            }
                         >
-                            <span className="material-symbols-outlined">local_shipping</span>
+                            <span className="material-symbols-outlined">
+                                local_shipping
+                            </span>
                             {submitting
                                 ? "Processing..."
-                                : allScannedAndValid
-                                    ? `Confirm & Ship · €${actualTotal.toFixed(2)}`
-                                    : `${items.filter((i) => i.status === "pending").length} items remaining`}
+                                : !allHandled
+                                    ? `${pendingCount} items remaining`
+                                    : !isCOD && remainingBuffer < 0
+                                        ? "Amount exceeds limit"
+                                        : `Confirm & Ship · €${finalTotal.toFixed(2)}`}
                         </button>
                     </div>
                 </div>

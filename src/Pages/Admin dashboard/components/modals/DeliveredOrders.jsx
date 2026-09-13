@@ -1,4 +1,3 @@
-import "./DeliveredOrders.css"
 import { useEffect } from "react";
 import { useOrders } from "../../../../context/OrdersContext";
 import OrdersTable from "./OrdersTable";
