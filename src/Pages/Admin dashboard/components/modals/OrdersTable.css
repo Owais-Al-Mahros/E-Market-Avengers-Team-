@@ -1,7 +1,7 @@
 /* أزرار إضافية */
 .btn-undo {
-    background: #f59e0b;
-    color: white;
+    background: var(--light-danger-color);
+    color: var(--bg-color);
 }
 
 .btn-undo:hover {
@@ -10,7 +10,7 @@
 }
 
 .btn-cancel {
-    background: #ef4444;
+    background: var(--danger-color);
     color: white;
 }
 

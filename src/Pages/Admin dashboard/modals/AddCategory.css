@@ -6,7 +6,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(20, 30, 25, 0.45);
+  /* background: rgba(240, 60, 15, 0.45); */
   backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
@@ -122,13 +122,13 @@
   align-self: flex-start;
   margin-top: auto;
   margin-bottom: auto;
-  box-shadow: 0 4px 12px rgba(182, 245, 0, 0.2);
+  box-shadow: 0 4px 12px var(--lime-light);
 }
 
 .add-btn:hover {
   background: var(--lime-light);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(182, 245, 0, 0.35);
+  box-shadow: 0 6px 16px var(--dark-green);
 }
 
 .add-btn:active {
@@ -306,16 +306,6 @@
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s ease;
-}
-
-.delete-confirm-btn.delete-btn-danger {
-  background: var(--danger-color, #ef4444);
-  color: #ffffff;
-}
-
-.delete-confirm-btn.delete-btn-danger:hover {
-  background: #dc2626;
-  transform: translateY(-1px);
 }
 
 .delete-confirm-btn.delete-btn-cancel {

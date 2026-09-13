@@ -5,10 +5,12 @@ import { supabase } from "../../../lib/supabase.js"; // ✅ استيراد supab
 
 export default function AdminSideNavbar({ activeSection, onSectionChange }) {
   const menuItems = [
+
     { icon: "dashboard", label: "Overview", section: "overview" },
     { icon: "inventory_2", label: "Product Management", section: "products" },
     { icon: "shopping_cart", label: "Order Management", section: "orders" },
     { icon: "local_shipping", label: "Shipping Settings", section: "shipping" },
+
     {
       icon: "admin_panel_settings",
       label: "Admin Management",

@@ -1,19 +1,31 @@
-import "./CheckoutPageFooter.css";
+import "./Footer.css";
+import { useCategories } from "../context/CategoryContext";
+import { useNavigate } from "react-router-dom";
+function Footer() {
+  console.count("🦶 Footer");
 
-export default function CartFooter() {
+  const { categories } = useCategories();
+  const navigate = useNavigate();
+
+  const handelCategorySelect = (catId) => {
+    navigate(`/DisplayProducts?categoryId=${catId}`)
+    window.scrollTo(0,0)
+    
+  };
+
   return (
     <>
       <div className="container-footer">
         <div className="sub-container-footer">
           <div className="information">
-            <div className="logo">
-              <img src="/logo.png" className="logo-icon"></img>
-              <h1 className="logo-name">E-Market</h1>
+            <div className="logo-footer">
+              <img src="/logo.png" className="logo-icon-footer"></img>
+              <h1 className="logo-name">Shopora</h1>
             </div>
             <div className="description">
-              Your best store where you found anything you want
+              Your first store for what you want.
             </div>
-            <div className="social-media">
+            <div className="social-media-footer">
               <a
                 href="https://www.instagram.com/mohamad_rslan_/"
                 className="social-link"
@@ -49,18 +61,24 @@ export default function CartFooter() {
           <div className="category">
             <h3 className="subTitles">Prominent categories</h3>
             <ul className="category-list">
-              <a href="#" className="category-link">
-                <li>Phone</li>
-              </a>
-              <a href="#" className="category-link">
-                <li>IPad</li>
-              </a>
-              <a href="#" className="category-link">
-                <li>Smart Watch</li>
-              </a>
-              <a href="#" className="category-link">
-                <li>Laptops</li>
-              </a>
+              {categories && categories.length > 0 ? (
+                categories
+                  .slice(0, 4)
+                  .map((cat) => (
+                    <li
+                      key={cat.id}
+                      className="category-link"
+                      onClick={() => handelCategorySelect(cat.id)}
+                      style={{ cursor: "pointer"}}
+                    >
+                      {cat.name}
+                    </li>
+                  ))
+              ) : (
+                <li className="category-link" style={{ opacity: 0.7 }}>
+                  Loading categories...
+                </li>
+              )}
             </ul>
           </div>
           <div className="customer-service">
@@ -107,3 +125,5 @@ export default function CartFooter() {
     </>
   );
 }
+
+export default Footer;

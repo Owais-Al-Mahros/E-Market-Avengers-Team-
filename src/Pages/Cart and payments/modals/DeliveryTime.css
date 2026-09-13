@@ -1,412 +1,412 @@
 /* ===== المحفز (الزر) ===== */
 .delivery-time-trigger {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: var(--cream);
-    border: 2px solid var(--lime-mid);
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-weight: 600;
-    color: var(--dark-green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--cream);
+  border: 2px solid var(--lime-mid);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+  color: var(--dark-green);
 }
 
 .delivery-time-trigger:hover {
-    background: var(--light-bg);
-    border-color: var(--neon-green);
+  background: var(--light-bg);
+  border-color: var(--neon-green);
 }
 
 .selected-time {
-    margin-left: 8px;
-    padding: 2px 12px;
-    background: var(--neon-green);
-    border-radius: 20px;
-    font-size: 0.8rem;
-    color: var(--dark-green);
+  margin-left: 8px;
+  padding: 2px 12px;
+  background: var(--neon-green);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--dark-green);
 }
 
 /* ===== المودال ===== */
 .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(26, 42, 58, 0.6);
-    backdrop-filter: blur(4px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    padding: 20px;
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 42, 58, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
 }
 
 .modal-card {
-    background: var(--cream);
-    border-radius: 24px;
-    max-width: 520px;
-    width: 100%;
-    padding: 24px 28px;
-    border: 2px solid var(--lime-mid);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-    max-height: 90vh;
-    overflow-y: auto;
+  background: var(--cream);
+  border-radius: 24px;
+  max-width: 520px;
+  width: 100%;
+  padding: 24px 28px;
+  border: 2px solid var(--lime-mid);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 12px;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
 }
 
 .modal-header h3 {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--dark-green);
-    margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--dark-green);
+  margin: 0;
 }
 
 .close-btn {
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: var(--mid-green);
-    cursor: pointer;
-    transition: 0.2s;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--mid-green);
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .close-btn:hover {
-    color: var(--danger-color);
-    transform: rotate(90deg);
+  color: var(--danger-color);
+  transform: rotate(90deg);
 }
 
 /* ===== الجسم ===== */
 .modal-body {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 /* ===== اختيار التاريخ ===== */
 .date-selection {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .date-selection label {
-    font-weight: 700;
-    color: var(--dark-green);
+  font-weight: 700;
+  color: var(--dark-green);
 }
 
 .date-input {
-    padding: 10px 14px;
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    font-size: 16px;
-    background: var(--light-bg);
-    color: var(--dark-green);
-    outline: none;
-    transition: 0.2s;
-    width: 100%;
+  padding: 10px 14px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 16px;
+  background: var(--light-bg);
+  color: var(--dark-green);
+  outline: none;
+  transition: 0.2s;
+  width: 100%;
 }
 
 .date-input:focus {
-    border-color: var(--neon-green);
-    box-shadow: 0 0 0 3px rgba(182, 245, 0, 0.15);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 0 3px rgba(182, 245, 0, 0.15);
 }
 
 .day-display {
-    display: flex;
-    flex-direction: column;
-    margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
 }
 
 .day-name {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--dark-green);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--dark-green);
 }
 
 .day-date {
-    font-size: 14px;
-    color: var(--mid-green);
+  font-size: 14px;
+  color: var(--mid-green);
 }
 
 .day-disabled-msg {
-    color: var(--danger-color);
-    font-weight: 600;
-    font-size: 14px;
-    margin-top: 4px;
+  color: var(--danger-color);
+  font-weight: 600;
+  font-size: 14px;
+  margin-top: 4px;
 }
 
 /* ===== اختيار الوقت (سبينر) ===== */
 .time-selection {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .time-range {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .time-field {
-    flex: 1;
-    min-width: 120px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .time-field label {
-    font-weight: 700;
-    color: var(--dark-green);
+  font-weight: 700;
+  color: var(--dark-green);
 }
 
 .time-select {
-    padding: 8px 12px;
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    font-size: 15px;
-    background: var(--light-bg);
-    color: var(--dark-green);
-    outline: none;
-    transition: 0.2s;
-    width: 100%;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232d4a00' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
+  padding: 8px 12px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 15px;
+  background: var(--light-bg);
+  color: var(--dark-green);
+  outline: none;
+  transition: 0.2s;
+  width: 100%;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232d4a00' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
 }
 
 .time-select:focus {
-    border-color: var(--neon-green);
-    box-shadow: 0 0 0 3px rgba(182, 245, 0, 0.15);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 0 3px rgba(182, 245, 0, 0.15);
 }
 
 /* ===== ملخص الاختيار ===== */
 .selection-summary {
-    padding: 12px 16px;
-    background: var(--light-bg);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    font-size: 15px;
-    color: var(--dark-green);
+  padding: 12px 16px;
+  background: var(--light-bg);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  font-size: 15px;
+  color: var(--dark-green);
 }
 
 .selection-summary .placeholder {
-    color: var(--mid-green);
-    font-style: italic;
+  color: var(--mid-green);
+  font-style: italic;
 }
 
 .selection-summary strong {
-    color: var(--dark-green);
+  color: var(--dark-green);
 }
 
 /* ===== الأزرار السفلية ===== */
 .modal-footer {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
 }
 
 .btn-cancel {
-    padding: 10px 24px;
-    background: transparent;
-    border: 2px solid var(--border-color);
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--dark-green);
-    cursor: pointer;
-    transition: 0.2s;
+  padding: 10px 24px;
+  background: transparent;
+  border: 2px solid var(--border-color);
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--dark-green);
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .btn-cancel:hover {
-    background: var(--light-bg);
+  background: var(--light-bg);
 }
 
 .btn-confirm {
-    padding: 10px 24px;
-    background: var(--neon-green);
-    border: 2px solid var(--lime-mid);
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--dark-green);
-    cursor: pointer;
-    transition: 0.2s;
+  padding: 10px 24px;
+  background: var(--neon-green);
+  border: 2px solid var(--lime-mid);
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--dark-green);
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .btn-confirm:hover {
-    background: var(--lime-light);
+  background: var(--lime-light);
 }
 
 /* ===== استجابة ===== */
 @media (max-width: 480px) {
-    .modal-card {
-        padding: 16px;
-    }
+  .modal-card {
+    padding: 16px;
+  }
 
-    .time-range {
-        flex-direction: column;
-        gap: 12px;
-    }
+  .time-range {
+    flex-direction: column;
+    gap: 12px;
+  }
 
-    .time-field {
-        min-width: unset;
-    }
+  .time-field {
+    min-width: unset;
+  }
 
-    .date-input {
-        font-size: 14px;
-    }
+  .date-input {
+    font-size: 14px;
+  }
 }
 
 /* ===== معلومات التحضير والمدة ===== */
 .preparation-msg {
-    font-size: 0.8rem;
-    color: var(--mid-green);
-    margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--mid-green);
+  margin-top: 4px;
 }
 
 .duration-info {
-    font-size: 0.85rem;
-    color: var(--dark-green);
-    background: var(--light-bg);
-    padding: 6px 12px;
-    border-radius: 8px;
-    text-align: center;
+  font-size: 0.85rem;
+  color: var(--dark-green);
+  background: var(--light-bg);
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-align: center;
 }
 
 .duration-info strong {
-    color: var(--neon-green);
+  color: var(--neon-green);
 }
 
 /* ===== تعطيل السبينر ===== */
 .time-select:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .time-select:disabled:hover {
-    border-color: var(--border-color);
+  border-color: var(--border-color);
 }
 
 /* ===== شبكة اختيار الأيام ===== */
 .days-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .day-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    padding: 10px 4px;
-    background: var(--light-bg, #D4E8B0);
-    border: 2px solid transparent;
-    border-radius: 14px;
-    font-weight: 600;
-    color: var(--dark-green, #2D4A00);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    min-height: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 10px 4px;
+  background: var(--light-bg, #d4e8b0);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  font-weight: 600;
+  color: var(--dark-green, #2d4a00);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 64px;
 }
 
 .day-btn .day-name-short {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    opacity: 0.8;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  opacity: 0.8;
 }
 
 .day-btn .day-number {
-    font-size: 1.2rem;
-    font-weight: 800;
+  font-size: 1.2rem;
+  font-weight: 800;
 }
 
 .day-btn.today {
-    border-color: var(--neon-green, #B6F500);
-    background: rgba(182, 245, 0, 0.12);
-    box-shadow: 0 0 0 2px rgba(182, 245, 0, 0.2);
+  border-color: var(--neon-green, #b6f500);
+  background: rgba(182, 245, 0, 0.12);
+  box-shadow: 0 0 0 2px rgba(182, 245, 0, 0.2);
 }
 
 .day-btn.today .day-number {
-    color: var(--dark-green, #2D4A00);
+  color: var(--dark-green, #2d4a00);
 }
 
 .day-btn.active {
-    border-color: var(--lime-mid, #61b927);
-    background: var(--neon-green, #B6F500);
-    color: var(--dark-green, #2D4A00);
-    transform: scale(1.04);
-    box-shadow: 0 4px 16px rgba(182, 245, 0, 0.25);
+  border-color: var(--lime-mid, #61b927);
+  background: var(--neon-green, #b6f500);
+  color: var(--dark-green, #2d4a00);
+  transform: scale(1.04);
+  box-shadow: 0 4px 16px rgba(182, 245, 0, 0.25);
 }
 
 .day-btn.past {
-    background: #e5e7eb;
-    color: #9ca3af;
-    cursor: not-allowed;
-    opacity: 0.5;
+  background: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .day-btn.disabled {
-    background: rgba(255, 255, 255, 0.3);
-    color: #9ca3af;
-    cursor: not-allowed;
-    opacity: 0.6;
+  background: rgba(255, 255, 255, 0.3);
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .day-btn:hover:not(.past):not(.disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .today-badge {
-    font-size: 0.55rem;
-    background: var(--neon-green, #B6F500);
-    color: var(--dark-green, #2D4A00);
-    padding: 1px 6px;
-    border-radius: 30px;
-    font-weight: 700;
-    margin-top: 2px;
+  font-size: 0.55rem;
+  background: var(--neon-green, #b6f500);
+  color: var(--dark-green, #2d4a00);
+  padding: 1px 6px;
+  border-radius: 30px;
+  font-weight: 700;
+  margin-top: 2px;
 }
 
 .past-badge {
-    font-size: 0.7rem;
-    color: #ef4444;
+  font-size: 0.7rem;
+  color: #ef4444;
 }
 
 .unavailable-badge {
-    font-size: 0.7rem;
-    color: #9ca3af;
+  font-size: 0.7rem;
+  color: #9ca3af;
 }
 
 /* ===== استجابة ===== */
 @media (max-width: 480px) {
-    .days-grid {
-        grid-template-columns: repeat(7, 1fr);
-        gap: 4px;
-    }
+  .days-grid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
 
-    .day-btn {
-        padding: 6px 2px;
-        min-height: 54px;
-        border-radius: 10px;
-    }
+  .day-btn {
+    padding: 6px 2px;
+    min-height: 54px;
+    border-radius: 10px;
+  }
 
-    .day-btn .day-number {
-        font-size: 1rem;
-    }
+  .day-btn .day-number {
+    font-size: 1rem;
+  }
 }

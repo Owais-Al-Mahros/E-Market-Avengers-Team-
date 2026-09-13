@@ -3,6 +3,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import DayChoosing from "./Shipping/DayChoosing";
 import TimeSlotChoosing from "./Shipping/TimeSlotChoosing";
+import PricingSettings from "./Shipping/PricingSettings";
 import { useShippingSettings } from "../../../context/ShippingSettingsContext";
 import "./ShippingSection.css";
 
@@ -30,7 +31,7 @@ export default function ShippingSection() {
         }
     };
 
-    if (loading) return <div className="shipping-section loading">Loading...</div>;
+    if (loading) return <div className="shipping-section loading"><div className="spinner"></div></div>;
 
     return (
         <div className="shipping-section">
@@ -58,6 +59,8 @@ export default function ShippingSection() {
                     minDurationHours={settings.minDurationHours}
                     onMinDurationChange={updateMinDuration}
                 />
+                <PricingSettings />
+
             </div>
 
             <div className="section-footer">

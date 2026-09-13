@@ -2,10 +2,12 @@
 import { useState } from "react";
 import OrderDetailsModal from "./OrderDetailsModal";
 import "./OrdersTable.css";
+import ShipOrderModal from "./ShipOrderModal";
 
 export default function OrdersTable({ orders, status, onUpdateStatus, onRefresh }) {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [shipOrderModal, setShipOrderModal] = useState(null);
 
     const openOrderDetails = (order) => {
         setSelectedOrder(order);
@@ -137,17 +139,25 @@ export default function OrdersTable({ orders, status, onUpdateStatus, onRefresh 
                                         )}
                                         {status === "confirmed" && (
                                             <>
-                                                <button className="btn-action btn-ship" onClick={() => handleStatusUpdate(order.id, "shipped")}>
+                                                <button
+                                                    className="btn-action btn-ship"
+                                                    onClick={() => setShipOrderModal(order)}
+                                                >
                                                     📦 Ship
                                                 </button>
-                                                <button className="btn-action btn-undo" onClick={() => handleStatusUpdate(order.id, "pending")}>
+                                                <button
+                                                    className="btn-action btn-undo"
+                                                    onClick={() => handleStatusUpdate(order.id, "pending")}
+                                                >
                                                     ↩️ Undo
                                                 </button>
-                                                <button className="btn-action btn-cancel" onClick={() => handleStatusUpdate(order.id, "cancelled")}>
+                                                <button
+                                                    className="btn-action btn-cancel"
+                                                    onClick={() => handleStatusUpdate(order.id, "cancelled")}
+                                                >
                                                     ❌ Cancel
                                                 </button>
                                             </>
-
                                         )}
                                         {status === "shipped" && (
                                             <>
@@ -184,6 +194,17 @@ export default function OrdersTable({ orders, status, onUpdateStatus, onRefresh 
             {/* MODAL */}
             {showModal && selectedOrder && (
                 <OrderDetailsModal order={selectedOrder} onClose={closeModal} onUpdateStatus={handleStatusUpdate} />
+            )}
+            {/* ✅ Ship Order Modal */}
+            {shipOrderModal && (
+                <ShipOrderModal
+                    order={shipOrderModal}
+                    onClose={() => setShipOrderModal(null)}
+                    onSuccess={() => {
+                        setShipOrderModal(null);
+                        onRefresh();
+                    }}
+                />
             )}
         </div>
     );

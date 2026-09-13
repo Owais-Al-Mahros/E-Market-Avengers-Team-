@@ -1,10 +1,9 @@
 import { createContext, useContext, useMemo } from "react";
-import { useLocalStorage } from "../hooks/useLocalStorage"; // ✅ استيراد الهوك
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-    // ✅ استخدم useLocalStorage بدلاً من useState + useEffect
     const [cartItems, setCartItems, clearCartItems] = useLocalStorage("cartItems", []);
 
     const addToCart = (product, quantity = 1) => {
@@ -38,22 +37,32 @@ export function CartProvider({ children }) {
     };
 
     const clearCart = () => {
-        clearCartItems(); // ✅ حذف من localStorage مباشرة
+        clearCartItems();
     };
 
-    // الإجماليات (باستخدام useMemo)
+    // ✅ إجمالي عدد المنتجات
     const totalItems = useMemo(() => {
         return cartItems.reduce((sum, item) => sum + item.quantity, 0);
     }, [cartItems]);
 
+    // ✅ إجمالي السعر
     const totalPrice = useMemo(() => {
         return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    }, [cartItems]);
+
+    // ✅ جديد: إجمالي الوزن بالكيلوغرام
+    const totalWeight = useMemo(() => {
+        return cartItems.reduce((sum, item) => {
+            const weight = parseFloat(item.weight) || 0;
+            return sum + weight * item.quantity;
+        }, 0);
     }, [cartItems]);
 
     const value = {
         cartItems,
         totalItems,
         totalPrice,
+        totalWeight, // ✅ تصدير الوزن
         addToCart,
         removeFromCart,
         updateQuantity,

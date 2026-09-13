@@ -75,8 +75,9 @@ function CheckoutPageHeader() {
     } else {
       navigate("/no-orders", {
         state: {
-          message: `Your last order (${lastOrder.order_number}) Done ${lastOrder.status === "delivered" ? "Order it" : "Cancelled"
-            }. you can place a new order now!`,
+          message: `Your last order (${lastOrder.order_number}) Done ${
+            lastOrder.status === "delivered" ? "Order it" : "Cancelled"
+          }. you can place a new order now!`,
         },
       });
     }

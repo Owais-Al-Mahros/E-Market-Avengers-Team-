@@ -7,6 +7,8 @@ import { useDebounce } from "../../../hooks/useDebounce.js";
 import { Link, useNavigate } from "react-router-dom";
 
 function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
+  console.count("📌 HomePageHeader");
+
   const { totalItems } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,6 +19,7 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
 
+  const [isMenuOpen, setMenuOpen] = useState("");
   const performSearch = async (term) => {
     if (setIsSearching) setIsSearching(true);
     try {
@@ -63,8 +66,8 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
       // ❌ الطلب منتهي (delivered أو cancelled) → انتقل إلى صفحة "لا توجد طلبات نشطة"
       navigate("/no-orders", {
         state: {
-          message: `طلبك السابق (${lastOrder.order_number}) تم ${lastOrder.status === 'delivered' ? 'توصيله' : 'إلغاؤه'}. يمكنك طلب جديد الآن!`
-        }
+          message: `طلبك السابق (${lastOrder.order_number}) تم ${lastOrder.status === "delivered" ? "توصيله" : "إلغاؤه"}. يمكنك طلب جديد الآن!`,
+        },
       });
     }
   };
@@ -72,11 +75,12 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
   return (
     <>
       <header className="header">
-        <div className="logo-container">
-          <Link to="/">
-            <img src="/Logo.jpg" alt="GreenCart Logo" className="logo" />
+        <div >
+          <Link to="/" className="logo-container">
+            <img src="/logo.png" alt="GreenCart Logo" className="logo-header" />
+            <span className="tagline">Shopora</span>
           </Link>
-          <span className="tagline">Shopora</span>
+
         </div>
 
         {/* نموذج البحث */}
@@ -104,24 +108,52 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
           <button className="header-login">Login</button>
           <Link to="/login">Go To DashBoard</Link>
 
-          {/* زر طلباتي */}
-          <button className="header-orders" onClick={goToOrders} aria-label="My Orders">
-            <span className="material-symbols-outlined">receipt_long</span>
-            <span className="orders-label">My Orders</span>
-          </button>
-
           {/* زر السلة مع العداد */}
-          <div className="header-cart" onClick={openCart} role="button" tabIndex={0} aria-label="Open cart">
-            <span className="material-symbols-outlined cart-icon">shopping_cart</span>
+          <div
+            className="header-cart"
+            onClick={openCart}
+            role="button"
+            tabIndex={0}
+            aria-label="Open cart"
+          >
+            <span className="material-symbols-outlined cart-icon">
+              shopping_cart
+            </span>
             {totalItems > 0 && (
               <span className="counter-of-items">{totalItems}</span>
             )}
           </div>
-        </div>
-      </header>
 
-      {/* مودال السلة */}
-      {isCartOpen && <Cart closeModal={closeCart} />}
+          <div
+            className="profile-menu-container"
+            onMouseEnter={() => setMenuOpen(true)}
+            onMouseLeave={() => setMenuOpen(false)}
+          >
+            <button
+              className="material-symbols-outlined person-icon"
+              onClick={() => setMenuOpen((prev) => !prev)}
+            >
+              person
+            </button>
+            {isMenuOpen && (
+              <div className="profile-dropdown">
+                <Link
+                  className="header-orders"
+                  to="/account"
+                  onClick={() => setMenuOpen(false)}
+                ><span className="material-symbols-outlined">person</span>
+                  <span className="orders-label">
+                    My Account
+                  </span>
+                </Link>
+
+              </div>
+            )}
+          </div>
+        </div>
+        {/* مودال السلة */}
+        {isCartOpen && <Cart closeModal={closeCart} />}
+      </header>
     </>
   );
 }
