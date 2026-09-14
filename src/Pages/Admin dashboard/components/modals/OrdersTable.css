@@ -18,3 +18,37 @@
     background: #dc2626;
     transform: scale(1.02);
 }
+
+/* ===== Row Processing Indicator ===== */
+.row-processing {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    font-size: 16px;
+    animation: rowPulse 1s ease-in-out infinite;
+}
+
+@keyframes rowPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* ===== Disabled Buttons ===== */
+.btn-action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn-refresh:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

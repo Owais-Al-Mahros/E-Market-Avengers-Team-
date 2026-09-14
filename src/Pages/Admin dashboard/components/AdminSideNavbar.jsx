@@ -1,43 +1,26 @@
 import "./AdminSideNavbar.css";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { supabase } from "../../../lib/supabase.js"; // ✅ استيراد supabase
+import { supabase } from "../../../lib/supabase.js";
 
 export default function AdminSideNavbar({ activeSection, onSectionChange }) {
-  const menuItems = [
-
-    { icon: "dashboard", label: "Overview", section: "overview" },
-    { icon: "inventory_2", label: "Product Management", section: "products" },
-    { icon: "shopping_cart", label: "Order Management", section: "orders" },
-    { icon: "local_shipping", label: "Shipping Settings", section: "shipping" },
-
-    {
-      icon: "admin_panel_settings",
-      label: "Admin Management",
-      section: "admins",
-    },
-    { icon: "analytics", label: "Analytics", section: "analytics" },
-    { icon: "home", label: "Go to Home Page", section: "home", isLink: true },
-  ];
-
   const [adminData, setAdminData] = useState({
     name: "",
     email: "",
     image: "",
+    is_super_admin: false,
   });
-  const [loadingAdmin, setLoadingAdmin] = useState(true); // ✅ تعريف المتغير المفقود
+  const [loadingAdmin, setLoadingAdmin] = useState(true);
 
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
         const { data: profile, error } = await supabase
           .from("profiles")
-          .select("name, email, image")
+          .select("name, email, image, is_super_admin")
           .eq("id", user.id)
           .single();
 
@@ -46,6 +29,7 @@ export default function AdminSideNavbar({ activeSection, onSectionChange }) {
             name: profile.name || "Admin",
             email: profile.email || "",
             image: profile.image || "",
+            is_super_admin: profile.is_super_admin === true,
           });
         }
       } catch (err) {
@@ -58,22 +42,46 @@ export default function AdminSideNavbar({ activeSection, onSectionChange }) {
     fetchAdminData();
   }, []);
 
+  // ✅ قائمة البنود الأساسية
+  const menuItems = [
+    { icon: "dashboard", label: "Overview", section: "overview" },
+    { icon: "inventory_2", label: "Product Management", section: "products" },
+    { icon: "shopping_cart", label: "Order Management", section: "orders" },
+    { icon: "local_shipping", label: "Shipping Settings", section: "shipping" },
+    { icon: "mail", label: "Messages", section: "messages" },
+  ];
+
+  // ✅ "Admin Management" يظهر فقط للسوبر آدمن
+  if (adminData.is_super_admin) {
+    menuItems.push({
+      icon: "admin_panel_settings",
+      label: "Admin Management",
+      section: "admins",
+    });
+  }
+
+  // ✅ "Analytics" في النهاية
+  menuItems.push(
+    { icon: "analytics", label: "Analytics", section: "analytics" },
+    { icon: "home", label: "Go to Home Page", section: "home", isLink: true }
+  );
+
   return (
     <nav className="sidebar">
-      {/* ✅ الشعار مع صورة الأدمن واسمه وبريده */}
       <div className="logo-container">
         <div className="logo-icon">
           {adminData.image ? (
             <img src={adminData.image} alt="Admin" className="admin-avatar" />
           ) : (
-            <span className="material-symbols-outlined fill">
-              local_florist
-            </span>
+            <span className="material-symbols-outlined fill">local_florist</span>
           )}
         </div>
         <div>
-          <h1>{adminData.name || "GreenCart Admin"}</h1>
-          <p>{adminData.email || "E-commerce Solutions"}</p>
+          <h1>{adminData.name || "Admin"}</h1>
+          <p>
+            {adminData.email || "E-commerce Solutions"}
+            {adminData.is_super_admin && " ⭐"}
+          </p>
         </div>
       </div>
 
@@ -85,9 +93,7 @@ export default function AdminSideNavbar({ activeSection, onSectionChange }) {
                 to="/"
                 className={`menu-item ${activeSection === item.section ? "active" : ""}`}
                 onClick={(e) => {
-                  if (activeSection === item.section) {
-                    e.preventDefault();
-                  }
+                  if (activeSection === item.section) e.preventDefault();
                 }}
               >
                 <span className="material-symbols-outlined">{item.icon}</span>

@@ -1,6 +1,6 @@
 // src/context/ProductContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
-import { fetchData, searchProduct } from '../hooks/useProduct';
+import { fetchData, searchProduct, fetchBestSellers } from '../hooks/useProduct';
 
 const ProductContext = createContext();
 
@@ -54,6 +54,7 @@ export function ProductProvider({ children }) {
         deleteProduct,
         refreshProducts,
         searchProducts,
+        fetchBestSellers,   // ✅ جديد
     };
 
     return (

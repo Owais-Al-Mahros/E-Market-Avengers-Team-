@@ -125,35 +125,56 @@ export async function countSubCategory(categoryId) {
 }
 
 export async function searchProduct(searchItem) {
-    try{
-        const { data , error } = await supabase 
+    try {
+        const { data, error } = await supabase
             .from("products")
             .select("*")
-            .ilike("name" , `%${searchItem}%`)
-            .order(`id` , { ascending: true})
+            .ilike("name", `%${searchItem}%`)
+            .order(`id`, { ascending: true })
 
         if (error) throw error
         return data || []
-    }catch(error){
-        console.error("error in search " , error.message)
+    } catch (error) {
+        console.error("error in search ", error.message)
         return []
     }
 }
 
 export function calculatePriceByKg(price, weight, unit) {
-    if(!price || !weight || weight <= 0 ) return 0 ;
+    if (!price || !weight || weight <= 0) return 0;
 
     const normalizedUnit = String(unit).trim().toLocaleLowerCase()
-    let pricePerKg 
+    let pricePerKg
 
-    if(normalizedUnit === "kg"){
-        pricePerKg = price / weight 
-    }else if (normalizedUnit === "g"){
+    if (normalizedUnit === "kg") {
+        pricePerKg = price / weight
+    } else if (normalizedUnit === "g") {
         pricePerKg = (price * 1000) / weight
-    }else {
+    } else {
         return 0
     }
 
     return pricePerKg.toFixed(2)
-    
+
+}
+
+// src/hooks/useProduct.js
+export async function fetchBestSellers(limit = 8) {
+    try {
+        const { data, error } = await supabase
+            .from("products")
+            .select("*")
+            .gt("total_sold", 0)
+            .order("total_sold", { ascending: false })
+            .limit(limit);
+
+        if (error) {
+            console.error("Failed to fetch best sellers:", error);
+            return [];
+        }
+        return data || [];
+    } catch (error) {
+        console.error("Best sellers fetch error:", error);
+        return [];
+    }
 }

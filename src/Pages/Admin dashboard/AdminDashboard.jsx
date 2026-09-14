@@ -5,6 +5,7 @@ import ProductsSection from "./components/ProductsSection.jsx";
 import OrderManagementSection from "./components/OrderManagementSection.jsx";
 import ShippingSection from "./components/ShippingSection.jsx";
 import OverViewSection from "./components/OverViewSection.jsx";
+import AdminManagement from "./components/AdminManagement";
 
 import { Toaster } from "react-hot-toast";
 function AdminDashboard() {
@@ -21,7 +22,7 @@ function AdminDashboard() {
       case "shipping":
         return <ShippingSection />;
       case "admins":
-        return <div>Admins Section (coming soon)</div>;
+        return <AdminManagement />;
       case "analytics":
         return <div>Analytics Section (coming soon)</div>;
       default:
