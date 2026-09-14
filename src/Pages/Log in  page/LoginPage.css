@@ -1,42 +1,118 @@
-/* حاوية الصفحة بالكامل */
+/* حاوية الصفحة بالكامل مع الصورة الخلفية */
 .login-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between; /* توزيع العناصر بين اليسار واليمين */
+  align-items: flex-start; /* رفع المحتوى للأعلى بدل المنتصف */
   min-height: 100vh;
   margin: 0;
-  background-color: var(--cream);
-  padding: 20px;
+  padding: 60px 8% 0 8%; /* إضافة مسافة من الأعلى والجانبين */
+  background-image: url("../../assets/Login-page.png");
+  background-size: 85% auto;
+  background-position: left 20%;
+  background-repeat: no-repeat;
+  background-color: #E2F9D3;
+  box-sizing: border-box;
+  position: relative;
 }
 
-/* البطاقة الرئيسية للفورم */
+/* 
+   تنسيقات قسم النصوص الترحيبية والميزات
+  */
+
+/* كلاس الحاوية للنصوص على اليسار (أعلى اليسار) */
+.login-info {
+  max-width: 360px;
+  color: #1e2e28;
+  margin-top: 10px; /* ضبط المسافة من الأعلى */
+  z-index: 2; /* ضمان ظهور النصوص فوق خلفية الصورة */
+}
+
+/* العنوان الرئيسي */
+.welcome-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #1b4332;
+  margin-bottom: 10px;
+}
+
+/* الوصف السفلي للعنوان */
+.welcome-desc {
+  font-size: 15px;
+  color: #4a5568;
+  line-height: 1.5;
+  margin-bottom: 30px;
+}
+
+/* قائمة الميزات (الأيقونات مع النصوص) */
+.features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* دائرية الأيقونة */
+.feature-icon {
+  font-size: 20px;
+  background: #ffffff;
+  padding: 8px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.feature-item h3 {
+  margin: 0;
+  font-size: 15px;
+  color: #2d3748;
+}
+
+.feature-item p {
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  color: #718096;
+}
+
+
+.login-card-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 420px;
+  width: 100%;
+}
+
+/* البطاقة الرئيسية للفورم (على اليمين) */
 .login-card {
-  background-color: var(--light-cream);
+  background-color: #ffffff;
   padding: 40px 35px;
   border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   width: 100%;
-  max-width: 400px;
-  border: 1px solid var(--border-color);
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-    position: relative;
+  box-sizing: border-box;
+  border: 1px solid var(--border-color, #e2e8f0);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  margin-top: 20px; /* محاذاة ارتفاع الكارت بشكل ممتاز */
 }
 
 .login-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.12);
 }
 
 /* عنوان تسجيل الدخول */
 .login-card h2 {
   text-align: center;
-  color: var(--primary-color);
+  color: var(--primary-color, #2d3748);
   margin-bottom: 25px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  border-bottom: 2px solid var(--neon-green);
+  border-bottom: 2px solid var(--neon-green, #48bb78);
   padding-bottom: 10px;
 }
 
@@ -48,7 +124,7 @@
 .input-group label {
   display: block;
   margin-bottom: 6px;
-  color: var(--primary-color);
+  color: var(--primary-color, #2d3748);
   font-weight: 600;
   font-size: 14px;
 }
@@ -67,7 +143,7 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--mid-green);
+  color: var(--mid-green, #38a169);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,15 +154,13 @@
 .input-group input {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color, #cbd5e0);
   border-radius: 10px;
   font-size: 15px;
   background-color: #ffffff;
-  color: var(--primary-color);
+  color: var(--primary-color, #2d3748);
   box-sizing: border-box;
-  transition:
-    border-color 0.3s,
-    box-shadow 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .password-fields input {
@@ -95,55 +169,115 @@
 
 .input-group input:focus {
   outline: none;
-  border-color: var(--dark-green);
-  box-shadow: 0 0 0 3px rgba(30, 46, 40, 0.15);
+  border-color: var(--dark-green, #2f855a);
+  box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.15);
 }
 
 /* زر تسجيل الدخول */
 .login-btn {
   width: 100%;
   padding: 14px;
-  background-color: var(--neon-green);
-  color: var(--dark-green);
+  background-color: var(--neon-green, #48bb78);
+  color: #ffffff;
   border: none;
   border-radius: 50px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition:
-    background-color 0.3s,
-    transform 0.1s,
-    box-shadow 0.3s;
+  transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
   margin-top: 10px;
 }
 
 .login-btn:hover {
-  background-color: var(--lime-light);
-  box-shadow: 0 8px 20px rgba(182, 245, 0, 0.3);
+  background-color: var(--lime-light, #38a169);
+  box-shadow: 0 8px 20px rgba(56, 161, 105, 0.3);
 }
 
 .login-btn:active {
   transform: scale(0.98);
 }
 
+/* الجزء السفلي للـ Footer */
 .login-footer {
   text-align: center;
   margin-top: 20px;
   font-size: 13px;
+}
 
-  a {
-    color: var(--primary-color);
-    text-decoration: underline;
-    font-weight: 600;
+.login-footer a {
+  color: var(--primary-color, #2f855a);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.login-footer .forgot-password,
+.login-footer .signup-link {
+  margin-bottom: 8px;
+}
+
+.login-footer .copyright {
+  margin-top: 18px;
+  font-size: 12px;
+  color: #a0aec0;
+}
+
+
+ /*  تنسيق شريط الضمانات أسفل الكارت
+ */
+
+.trust-badges {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  font-size: 13px;
+  color: #2d6a4f;
+  font-weight: 600;
+  width: 100%;
+}
+
+.badge-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.badge-icon {
+  font-size: 14px;
+}
+
+.badge-divider {
+  color: #a3b18a;
+  font-weight: 300;
+  font-size: 14px;
+}
+
+
+@media (max-width: 850px) {
+  .login-info {
+    display: none;
   }
+  .login-container {
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-image: none;
+    background-color: #E2F9D3;
+  }
+  .login-card {
+    margin-top: 0;
+  }
+}
 
-  .copyright {
-    margin-top: 10px;
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 12px;
-    color: var(--primary-color);
+@media (max-width: 480px) {
+  .trust-badges {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .badge-divider {
+    display: none;
   }
 }
