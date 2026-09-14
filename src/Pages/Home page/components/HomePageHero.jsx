@@ -2,10 +2,20 @@ import "./HomePageHero.css";
 import heroImage from "../../../assets/hero-image-1.png";
 import heroImage2 from "../../../assets/hero-image-2.png";
 import heroImage3 from "../../../assets/hero-image-3.png";
+import heroImage4 from "../../../assets/hero-image-4.png";
+import heroImage5 from "../../../assets/hero-image-5.png";
+import heroImage6 from "../../../assets/hero-image-6.png";
 import { useEffect, useState } from "react";
 
 export default function HomePageHero() {
-  const heroImages = [heroImage, heroImage2, heroImage3];
+  const heroImages = [
+    heroImage,
+    heroImage4,
+    heroImage2,
+    heroImage5,
+    heroImage3,
+    heroImage6
+  ];
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -20,6 +30,13 @@ export default function HomePageHero() {
     const productsSection = document.getElementById("category-sections");
     if (productsSection) {
       productsSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleHowItWork = () => {
+    const howItWorkSection = document.getElementById("how-it-works");
+    if (howItWorkSection) {
+      howItWorkSection.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -48,10 +65,7 @@ export default function HomePageHero() {
               <button className="hero-btn primary" onClick={handleShopNowClick}>
                 Shop Now →
               </button>
-              <button
-                className="hero-btn secondary"
-                onClick={handleShopNowClick}
-              >
+              <button className="hero-btn secondary" onClick={handleHowItWork}>
                 Explore Deals
               </button>
             </div>

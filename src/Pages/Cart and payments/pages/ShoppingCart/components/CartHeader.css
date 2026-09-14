@@ -122,6 +122,12 @@
 .cart-header-step.past-step .cart-header-step-line {
   background: var(--success);
 }
+.cart-header-left-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  gap: 1rem;
+}
 
 /* ===== Right: Secure ===== */
 .cart-header-secure {

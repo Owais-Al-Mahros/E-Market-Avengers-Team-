@@ -1,6 +1,7 @@
 // src/Pages/Cart and payments/pages/ShoppingCart/components/CartHeader.jsx
 import { Link } from "react-router-dom";
 import "./CartHeader.css";
+import BackButton from "../../../../../Components/BackButton";
 
 const STEPS = [
   { id: 1, label: "Shopping cart" },
@@ -28,8 +29,9 @@ export default function CartHeader({ currentStep }) {
             return (
               <div key={step.id} className="cart-header-step">
                 <div
-                  className={`cart-header-circle ${isActive ? "active" : ""} ${isPast ? "past" : ""
-                    }`}
+                  className={`cart-header-circle ${isActive ? "active" : ""} ${
+                    isPast ? "past" : ""
+                  }`}
                 >
                   {isPast ? "✓" : step.id}
                 </div>
@@ -49,16 +51,19 @@ export default function CartHeader({ currentStep }) {
         </div>
 
         {/* ===== Right: Secure ===== */}
-        <div className="cart-header-secure">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-            />
-          </svg>
-          <span>Secure Order</span>
+        <div className="cart-header-left-container">
+          <div className="cart-header-secure">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+            </svg>
+            <span>Secure Order</span>
+          </div>
+          <BackButton label={"Back"} />
         </div>
       </div>
     </header>

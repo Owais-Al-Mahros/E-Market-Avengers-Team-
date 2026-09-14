@@ -2,29 +2,31 @@
    1. GLOBAL VARIABLES & RESET
    ========================================== */
 
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500&family=Readex+Pro:wght@500;700&display=swap");
+
 :root {
   /* Branding Palette */
   --primary-color: #145c4a;
-  --secondary-color: #DDF4EA;
-  --accent-color: #B9E769;
-  --hover-btn :#A4DD00;
-  --bg-color: #F7FAF8;
-  --text: #15312B;
-  --secondary-text : #4a4a4a;
-  --danger-color: #D94F4F;
-  --light-danger-color : #FFA02E;
-  --success: #238B65;
-
+  --secondary-color: #ddf4ea;
+  --accent-color: #b9e769;
+  --hover-btn: #a4dd00;
+  --bg-color: #f7faf8;
+  --text: #15312b;
+  --secondary-text: #4a4a4a;
+  --danger-color: #d94f4f;
+  --light-danger-color: #ffa02e;
+  --success: #238b65;
 
   /* Product & Theme Colors */
-  --cream: #F4EFD9;
-  --light-cream: #FDF8F0;
+  --cream: #f4efd9;
+  --light-cream: #fdf8f0;
   --neon-green: #4bb429;
   --lime-light: #61b927;
   --lime-mid: #61b927;
-  --dark-green: #2D4A00;
-  --mid-green: #5A8C00;
-  --light-bg: #D4E8B0;
+  --dark-green: #2d4a00;
+  --mid-green: #5a8c00;
+  --light-bg: #d4e8b0;
+  --back : #f9ecec;
 
   /* Utilities */
   --shadow-color: rgba(98, 207, 25, 0.989);
@@ -43,11 +45,32 @@
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  /* font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; */
+  /* font-family: "Cairo", "Inter", sans-serif; */
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+
   color: var(--primary-color);
   background-color: var(--bg-color) !important;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Readex Pro", sans-serif;
+  font-weight: 700;
+}
+
+p,
+span,
+a,
+button,
+input {
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-weight: 400;
+}
 a {
   text-decoration: none;
   color: inherit;

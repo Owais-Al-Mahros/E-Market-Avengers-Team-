@@ -8,15 +8,22 @@ import { updateProduct as updateProductAPI } from "../../../hooks/useProduct.js"
 import AdminDashboardProductCard from "./AdminDashboardProductCard.jsx";
 import toast from "react-hot-toast";
 import { useCategories } from "../../../context/CategoryContext.jsx";
+import { useSubcategories } from "../../../context/SubcategoryContext.jsx";
+import BackButton from "../../../Components/BackButton.jsx";
 
 function ProductsSection() {
   const { categories, loading: categoriesLoading } = useCategories();
-
+  const {
+    subcategories,
+    loading: subCategoriesLoading,
+    getSubcategoriesByCategory,
+  } = useSubcategories();
   const { products, loading, deleteProduct, updateProduct, refreshProducts } =
     useProducts();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [subCategoriesFilter, setSubCategoriesFilter] = useState("");
   const [CategoryModal, setCategoryModal] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
@@ -82,8 +89,13 @@ function ProductsSection() {
 
   const filteredProducts = products.filter((p) => {
     const matchName = p.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchCategory = categoryFilter ? Number(p.category_id) === Number(categoryFilter) : true;
-    return matchName && matchCategory;
+    const matchCategory = categoryFilter
+      ? Number(p.category_id) === Number(categoryFilter)
+      : true;
+    const matchSunCategory = subCategoriesFilter
+      ? Number(p.subcategory_id) === Number(subCategoriesFilter)
+      : true;
+    return matchName && matchCategory && matchSunCategory;
   });
 
   const renderProducts = () => {
@@ -110,6 +122,9 @@ function ProductsSection() {
     ));
   };
 
+  const availableSubcategories = categoryFilter
+    ? getSubcategoriesByCategory(Number(categoryFilter))
+    : subcategories;
   return (
     <div className="psection">
       <div className="ps-header">
@@ -126,6 +141,7 @@ function ProductsSection() {
             <span className="material-symbols-outlined">add</span>
             Add Product
           </button>
+          <BackButton label={"Back"} />
         </div>
       </div>
 
@@ -143,14 +159,38 @@ function ProductsSection() {
           <div className="ps-filter">
             <select
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
+              onChange={(e) => {
+                setCategoryFilter(e.target.value);
+                setSubCategoriesFilter("");
+              }}
             >
               <option value={""}>All categories</option>
               {categoriesLoading ? (
                 <option value={""}>Categories are loading</option>
               ) : (
-                categories.map((cat) =>(
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))
+              )}
+            </select>
+            <span className="material-symbols-outlined">arrow_drop_down</span>
+          </div>
+          <div className="ps-filter">
+            <select
+              value={subCategoriesFilter}
+              onChange={(e) => setSubCategoriesFilter(e.target.value)}
+              disabled={!categoryFilter || availableSubcategories.length === 0}
+            >
+              <option value={""}>All SubCategories</option>
+              {subCategoriesLoading ? (
+                <option>SubCategories are Loading</option>
+              ) : (
+                availableSubcategories.map((subCat) => (
+                  <option key={subCat.id} value={subCat.id}>
+                    {subCat.name}
+                  </option>
                 ))
               )}
             </select>

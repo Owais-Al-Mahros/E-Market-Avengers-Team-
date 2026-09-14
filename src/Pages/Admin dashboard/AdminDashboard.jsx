@@ -4,6 +4,7 @@ import AdminSideNavbar from "./components/AdminSideNavbar.jsx";
 import ProductsSection from "./components/ProductsSection.jsx";
 import OrderManagementSection from "./components/OrderManagementSection.jsx";
 import ShippingSection from "./components/ShippingSection.jsx";
+import OverViewSection from "./components/OverViewSection.jsx";
 
 import { Toaster } from "react-hot-toast";
 function AdminDashboard() {
@@ -12,7 +13,7 @@ function AdminDashboard() {
   const renderContent = () => {
     switch (activeSection) {
       case "overview":
-        return <div>Overview Section (coming soon)</div>;
+        return <OverViewSection />;
       case "products":
         return <ProductsSection />;
       case "orders":

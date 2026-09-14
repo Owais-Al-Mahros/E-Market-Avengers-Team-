@@ -1,0 +1,150 @@
+.overview-section {
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--bg-color) 0%, var(--back) 100%);
+  border-radius: 1.25rem;
+  box-shadow: 0 0.75rem 1.75rem rgba(15, 23, 42, 0.08);
+  color: var(--text);
+}
+
+.overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.overview-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.overview-subtitle {
+  margin: 0.5rem 0 0;
+  color: var(--secondary-text);
+  font-size: 0.95rem;
+}
+
+.overview-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.125rem;
+  margin-bottom: 1.625rem;
+}
+
+.overview-card {
+  background: #ffffff;
+  border-radius: 1.125rem;
+  padding: 1.25rem;
+  border: 0.0625rem solid rgba(148, 163, 184, 0.15);
+  flex: 1 1 12.5rem;
+  min-width: 12.5rem;
+}
+
+.overview-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.overview-icon {
+  width: 2.625rem;
+  height: 2.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-color);
+  border-radius: 0.75rem;
+  font-size: 1.3rem;
+}
+
+.overview-change {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.375rem 0.625rem;
+  border-radius: 62.4375rem;
+  display: inline-block;
+}
+
+.overview-metric {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.overview-label {
+  margin: 0.5rem 0 0;
+  color: var(--secondary-text);
+  font-size: 0.9rem;
+}
+
+.overview-content {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.overview-panel {
+  background: #fff;
+  border-radius: 1.125rem;
+  padding: 1.25rem;
+  border: 0.0625rem solid rgba(148, 163, 184, 0.15);
+  flex: 1 1 18.75rem;
+
+  p {
+    color: var(--secondary-text);
+    text-align: center;
+    margin: 1.25rem 0;
+    font-size: 0.9rem;
+  }
+}
+
+.overview-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.125rem;
+}
+
+.overview-panel-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.overview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 0.0625rem solid var(--back);
+}
+
+.overview-order-id {
+  font-weight: 700;
+  margin: 0;
+}
+
+.overview-customer {
+  margin: 0.25rem 0 0;
+  color: var(--secondary-text);
+  font-size: 0.82rem;
+}
+
+.overview-status {
+  display: inline-block;
+  padding: 0.375rem 0.625rem;
+  border-radius: 62.4375rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #dcfce7;
+  color: #166534;
+}
+
+.overview-total {
+  font-weight: 700;
+  color: var(--text);
+}

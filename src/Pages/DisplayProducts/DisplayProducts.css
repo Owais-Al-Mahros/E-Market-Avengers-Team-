@@ -64,7 +64,7 @@
   justify-content: center;
   gap: 10px;
   padding: 16px 12px;
-  background: var(--cream, #f4efd9);
+  background: linear-gradient(135deg, var(--bg-color) 0% , var(--back) 100%);
   border: 2px solid rgba(45, 74, 0, 0.06);
   border-radius: 20px;
   cursor: pointer;

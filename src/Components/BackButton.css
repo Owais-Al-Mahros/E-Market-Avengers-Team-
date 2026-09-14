@@ -1,0 +1,17 @@
+.back-btn {
+  background: var(--neon-green);
+  color: #fff;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.back-btn:hover {
+  background: var(--hover-btn);
+}

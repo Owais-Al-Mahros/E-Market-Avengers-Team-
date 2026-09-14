@@ -22,7 +22,7 @@
   /* ✅ تأخذ عرض الخلية بالكامل */
   max-width: 14rem;
   /* ✅ منع التمدد الزائد */
-  background: var(--cream);
+  background: linear-gradient(135deg, var(--bg-color) 0% , var(--back) 100%);
   border-radius: 1rem;
   transition: var(--transition-normal, all 0.3s ease);
   border: 2px solid var(--border-color);
@@ -119,8 +119,7 @@ button {
   padding: 0.1rem 0.4rem;
   margin: 0 0.3rem;
   border-radius: 0.5rem;
-  border: 2px solid var(--lime-mid);
-  background-color: transparent;
+  border: 2px solid var(--dark-green);
   color: var(--dark-green);
   cursor: pointer;
   transition: all 0.25s ease;
@@ -167,17 +166,19 @@ button {
 .main-price {
   font-size: 1.3rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--neon-green), var(--lime-mid));
+  /* background: linear-gradient(135deg, var(--neon-green), var(--lime-mid)); */
+  background : var(--primary-color);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1.1;
+  color : var(--primary-)
 }
 
 .price-per-kg {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--mid-green);
+  color: var(--primary-color);
   margin-top: 2px;
   white-space: nowrap;
 }
@@ -191,12 +192,12 @@ button {
   gap: 0.35rem;
   padding: 0.5rem 0.75rem;
   width: 100%;
-  background: var(--neon-green);
+  background: var(--primary-color);
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--dark-green);
+  color: var(--bg-color);
   white-space: nowrap;
-  border: 2px solid var(--lime-mid);
+  border: 2px solid var(--secondary-color);
   border-radius: 0.5rem;
   box-shadow: 0 2px 8px rgba(182, 245, 0, 0.2);
   transition: var(--transition-normal, all 0.3s ease);
