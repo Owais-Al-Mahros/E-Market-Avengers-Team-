@@ -7,6 +7,7 @@ import { supabase } from "./lib/supabase";
 import LoadingPage from "./Components/LoadingPage";
 
 import DisplayProducts from "./Pages/DisplayProducts/DisplayProducts";
+import ProductCardDetails from "./Pages/DisplayProducts/modals/ProductCardDetails";
 
 // 🚀 تطبيق Lazy Loading على باقي الصفحات (بدون DisplayProducts)
 const AdminDashboard = lazy(
@@ -107,6 +108,7 @@ function App() {
           <Route path="/Cart&Payments/*" element={<CartAndPayments />} />
           {/* ✅ DisplayProducts مباشر — لا Suspense fallback له */}
           <Route path="/DisplayProducts" element={<DisplayProducts />} />
+          <Route path="/DisplayProducts/ProductCardDetails" element={<ProductCardDetails />}/>
           <Route
             path="/dashboard"
             element={

@@ -1,22 +1,24 @@
 // src/Pages/DisplayProducts/components/ProductCard.jsx
 import "./ProductCard.css";
 import { useState } from "react";
-import ProductCardDetails from "../modals/ProductCardDetails.jsx";
 import { createPortal } from "react-dom";
 import { useCart } from "../../../context/CartContext.jsx";
 import toast from "react-hot-toast";
 import { calculatePriceByKg } from "../../../hooks/useProduct.js";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductCard(props) {
   console.count(`🃏 ProductCard #${props.id}`);
+  const navigate = useNavigate();
 
   const { addToCart } = useCart();
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [counter, setCounter] = useState(1);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
-  const openDetails = () => setIsDetailsOpen(true);
-  const closeDetails = () => setIsDetailsOpen(false);
+  const openDetails = (propsId) => {
+    navigate(`/DisplayProducts/ProductCardDetails?ProductId=${propsId}`);
+    window.scrollTo(0,0)
+  };
 
   const increaseCounter = (e) => {
     e.stopPropagation();
@@ -47,25 +49,48 @@ export default function ProductCard(props) {
     });
   };
 
-  const pricePerKg = calculatePriceByKg(props.price, props.weight, props.weight_unit)
+  const pricePerKg = calculatePriceByKg(
+    props.price,
+    props.weight,
+    props.weight_unit,
+  );
 
-  // ✅ حماية من البيانات المفقودة
-  const nutritionObject = props.nutritionObject || null;
-  const storageObject = props.storageObject || null;
-  const ingredients = props.ingredients || null;
-
-  console.log(props.name, "Price:", props.price, "Weight:", props.weight, "Unit:", props.weight_unit, "PerKg:", pricePerKg);
+  console.log(
+    props.name,
+    "Price:",
+    props.price,
+    "Weight:",
+    props.weight,
+    "Unit:",
+    props.weight_unit,
+    "PerKg:",
+    pricePerKg,
+  );
   return (
     <>
-      <div className="card-container" onClick={openDetails}>
-        <div className="image-container" style={{ backgroundColor: isImageLoaded ? "transparent" : "#f0f0f0", minHeight: "150px" }}>
+      <div
+        className="card-container"
+        onClick={() => {
+          openDetails(props.id);
+        }}
+      >
+        <div
+          className="image-container"
+          style={{
+            backgroundColor: isImageLoaded ? "transparent" : "#f0f0f0",
+            minHeight: "150px",
+          }}
+        >
           <img
             src={props.image}
             alt={props.name || "product"}
             className="image"
             loading="lazy"
             onLoad={() => setIsImageLoaded(true)}
-            style={{ opacity: isImageLoaded ? 1 : 0, transition: "opacity 0.4s ease-in-out" }}
+            style={{
+              opacity: isImageLoaded ? 1 : 0,
+              transition: "opacity 0.4s ease-in-out",
+            }}
           />
         </div>
         <div className="title">
@@ -76,47 +101,37 @@ export default function ProductCard(props) {
             Weight: {props.weight} {props.weight_unit}
           </span>
           <div className="increase-decrease-button">
-            <button className="increase-button" onClick={increaseCounter}>+</button>
+            <button className="increase-button" onClick={increaseCounter}>
+              +
+            </button>
             <span className="counter-of-products">{counter}</span>
-            <button className="decrease-button" onClick={decreaseCounter}>-</button>
+            <button className="decrease-button" onClick={decreaseCounter}>
+              -
+            </button>
           </div>
         </div>
         <div className="action">
           <div className="price">
-            <span className="main-price">{(props.price * counter).toFixed(2)}€</span>
+            <span className="main-price">
+              {(props.price * counter).toFixed(2)}€
+            </span>
             {pricePerKg > 0 && (
               <span className="price-per-kg">({pricePerKg}€ / kg)</span>
             )}
           </div>
           <div className="add-btn-container">
             <button className="add-button" onClick={handleAddToCart}>
-              <img src="/cart.png" className="add-icon" alt="cart" loading="lazy" />
+              <img
+                src="/cart.png"
+                className="add-icon"
+                alt="cart"
+                loading="lazy"
+              />
               <span>Add to cart</span>
             </button>
           </div>
         </div>
       </div>
-
-      {isDetailsOpen &&
-        createPortal(
-          <ProductCardDetails
-            id={props.id}
-            name={props.name}
-            image={props.image}
-            category={props.category}
-            price={props.price}
-            weight={props.weight}
-            tax_rate={props.tax_rate}
-            weight_unit={props.weight_unit}
-            total_price={props.total_price}
-            description={props.description}
-            closeModal={closeDetails}
-            nutritionObject={nutritionObject}
-            storageObject={storageObject}
-            ingredients={ingredients}
-          />,
-          document.body,
-        )}
     </>
   );
 }

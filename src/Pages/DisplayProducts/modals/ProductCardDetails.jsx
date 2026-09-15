@@ -1,24 +1,76 @@
-import { useState, useEffect } from "react";
 import "./ProductCardDetails.css";
-import { useCart } from "../../../context/CartContext.jsx"; // ✅ استيراد السياق
 import toast from "react-hot-toast"; // ✅ اختياري
+import { useState, useEffect } from "react";
+import { useCart } from "../../../context/CartContext.jsx"; // ✅ استيراد السياق
+import {
+  getProductById,
+  getProductsByCategory,
+} from "../../../hooks/useProduct.js";
+import { useSearchParams } from "react-router-dom";
+import HomePageHeader from "../../Home page/components/HomePageHeader.jsx";
+import Footer from "../../../Components/Footer.jsx";
+import BackButton from "../../../Components/BackButton.jsx";
+import Subscribe from "../../../Components/Subscribe.jsx";
+import ProductCard from "../components/ProductCard.jsx";
+export default function ProductCardDetails() {
+  const [searchParams] = useSearchParams();
+  const productId =
+    searchParams.get("ProductId") ||
+    searchParams.get("productId") ||
+    searchParams.get("id");
 
-export default function ProductCardDetails({
-  id,
-  name,
-  image,
-  category,
-  price,
-  weight,
-  tax_rate,
-  weight_unit,
-  total_price,
-  description,
-  closeModal,
-  nutritionObject,
-  storageObject,
-  ingredients,
-}) {
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [product, setProduct] = useState(null);
+  const [loadingProduct, setLoadingProduct] = useState(true);
+
+  useEffect(() => {
+    const loadProduct = async () => {
+      if (!productId) {
+        setLoadingProduct(false);
+        return;
+      }
+      setLoadingProduct(true);
+      const result = await getProductById(productId);
+      if (result && result.success) {
+        setProduct(result.data);
+      }
+      setLoadingProduct(false);
+    };
+    loadProduct();
+  }, [productId]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (product && product.category_id) {
+        const res = await getProductsByCategory(
+          product.category_id,
+          product.id,
+        );
+        if (res.success) {
+          setRelatedProducts(res.data);
+        }
+      }
+    };
+    fetchProducts();
+  }, [product]);
+
+  const finalCategory = product?.categories?.name;
+
+  const {
+    id = "",
+    name = "",
+    image = "",
+    price = "",
+    weight = "",
+    tax_rate = "",
+    weight_unit = "",
+    total_price = "",
+    description = "",
+    nutrition_facts: nutritionObject = {},
+    storage_notes: storageObject = {},
+    ingredients = "",
+  } = product || {};
+
   const { addToCart } = useCart(); // ✅ جلب دالة الإضافة
   const [quantity, setQuantity] = useState(1); // ✅ كمية المنتج داخل المودال
 
@@ -45,7 +97,7 @@ export default function ProductCardDetails({
         weight,
         weight_unit,
       },
-      quantity
+      quantity,
     );
 
     toast.success(`Added ${quantity} × ${name} to cart!`, {
@@ -53,156 +105,142 @@ export default function ProductCardDetails({
     });
   };
 
-  // ... تعريف الأقسام (مثل السابق)
-  const renderBasicInfo = () => (
-    <>
-      <div className="section-title">📋 Basic Information</div>
-      <div className="product-title">{name}</div>
-      <div className="product-price">{price} $</div>
-      <div className="details-grid">
-        {category && (
-          <div>
-            <span>Category</span> <span className="body-text">{category}</span>
-          </div>
-        )}
-        {weight && (
-          <div>
-            <span>Weight</span>{" "}
-            <span className="body-text">
-              {weight} {weight_unit}
-            </span>
-          </div>
-        )}
-        {tax_rate != null && (
-          <div>
-            <span>Tax</span> <span className="body-text">{tax_rate}%</span>
-          </div>
-        )}
-        {total_price && (
-          <div>
-            <span>Price includes Tax</span>{" "}
-            <span className="body-text">{total_price} $</span>
-          </div>
-        )}
+  if (!product) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        Product not found.
       </div>
-      {description && <div className="product-desc">{description}</div>}
-    </>
-  );
-
-  const renderNutrition = () => (
-    <>
-      <div className="section-title">🥗 Nutritional Values</div>
-      <div className="nutrition-grid">
-        {nutritionObject && Object.keys(nutritionObject).length > 0 ? (
-          <div className="nutrition-items">
-            <table className="nutrition-table">
-              <thead>
-                <tr>
-                  <th className="items">Nutritional Value</th>
-                  <th className="quantity">per 100 ml</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(nutritionObject).map(([key, value]) => (
-                  <tr key={key}>
-                    <td className="name-of-item">{key}</td>
-                    <td className="value-of-item">{value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {ingredients && (
-              <div className="ingredients-section">
-                <h4>Ingredients : </h4>
-                <span>{ingredients}</span>
-              </div>
-            )}
-          </div>
-        ) : (
-          <p className="empty-message">
-            There are no registered nutritional values.
-          </p>
-        )}
-      </div>
-    </>
-  );
-
-  const renderStorage = () => (
-    <>
-      <div className="section-title">Storage and Notes 📦</div>
-      <div className="storage-content">
-        <ul>
-          {storageObject &&
-            Object.keys(storageObject).length > 0 &&
-            Object.entries(storageObject).map(([key, value]) => (
-              <div key={key}>
-                <li>
-                  <span className="body-text">{key}:</span> {value}
-                </li>
-              </div>
-            ))}
-        </ul>
-      </div>
-    </>
-  );
-
-  // تحديد الأقسام النشطة
+    );
+  }
   const hasNutrition =
     ingredients || (nutritionObject && Object.keys(nutritionObject).length > 0);
   const hasStorage = storageObject && Object.keys(storageObject).length > 0;
 
-  const activeSections = [{ id: 0, render: renderBasicInfo }];
-  if (hasNutrition) activeSections.push({ id: 1, render: renderNutrition });
-  if (hasStorage) activeSections.push({ id: 2, render: renderStorage });
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    if (currentIndex >= activeSections.length) setCurrentIndex(0);
-  }, [activeSections.length, currentIndex]);
-
-  const goToSection = (index) => setCurrentIndex(index);
-  const currentSection = activeSections[currentIndex];
-
   return (
-    <div className="modal-overlay" onClick={closeModal}>
-      <div className="product-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="close-btn" onClick={closeModal}>✕</button>
-
-        <div className="product-image-section">
-          <img src={image} alt={name} />
+    <>
+      <HomePageHeader />
+      <div className="product-page-container">
+        <div className="btn-group">
+          <BackButton label={"Back"} />
+          <BackButton label={"Go Home"} />
         </div>
-
-        <div className="product-details-section">
-          <div className="content-area">
-            {currentSection && currentSection.render()}
+        <div className="product-main-layout">
+          <div className="product-img-box">
+            <img src={image} alt={name} />
           </div>
 
-          {activeSections.length > 1 && (
-            <div className="nav-dots">
-              {activeSections.map((section, index) => (
-                <button
-                  key={section.id}
-                  className={`dot ${index === currentIndex ? "active" : ""}`}
-                  onClick={() => goToSection(index)}
-                />
-              ))}
+          <div className="product-info-box">
+            <h1 className="main-product-title">{name}</h1>
+
+            <div className="main-product-price">
+              {price} $
+              {weight && (
+                <span className="unit-label">
+                  {" "}
+                  / {weight} {weight_unit}
+                </span>
+              )}
+            </div>
+
+            {finalCategory && (
+              <p className="meta-info">
+                <strong>Category:</strong> {finalCategory}
+              </p>
+            )}
+            {tax_rate != null && (
+              <p className="meta-info">
+                <strong>Tax:</strong> {tax_rate}% (Total: {total_price} $)
+              </p>
+            )}
+
+            {description && <p className="main-description">{description}</p>}
+
+            <div className="purchase-section">
+              <div className="quantity-picker">
+                <button onClick={decreaseQty}>−</button>
+                <span>{quantity}</span>
+                <button onClick={increaseQty}>+</button>
+              </div>
+
+              <button className="checkout-add-btn" onClick={handleAddToCart}>
+                🛒 Add To Cart ({(price * quantity).toFixed(2)} $)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="product-extra-details-stack">
+          {hasNutrition && (
+            <div className="detail-section-card">
+              <h3>🥗 Nutritional Values & Ingredients</h3>
+              {nutritionObject && Object.keys(nutritionObject).length > 0 && (
+                <table className="page-nutrition-table">
+                  <thead>
+                    <tr>
+                      <th>Nutritional Value</th>
+                      <th>per 100 ml</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(nutritionObject).map(([key, value]) => (
+                      <tr key={key}>
+                        <td>{key}</td>
+                        <td>{value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              {ingredients && (
+                <div className="page-ingredients">
+                  <h4>Ingredients:</h4>
+                  <p>{ingredients}</p>
+                </div>
+              )}
             </div>
           )}
 
-          {/* ✅ تحسين زر الإضافة مع عداد الكمية */}
-          <div className="cart-controls">
-            <div className="quantity-controls">
-              <button onClick={decreaseQty} className="qty-btn">−</button>
-              <span className="qty-value">{quantity}</span>
-              <button onClick={increaseQty} className="qty-btn">+</button>
+          {hasStorage && (
+            <div className="detail-section-card">
+              <h3>📦 Storage and Notes</h3>
+              <ul className="storage-list-page">
+                {Object.entries(storageObject).map(([key, value]) => (
+                  <li key={key}>
+                    <strong>{key}:</strong> {value}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <button className="add-to-cart-btn" onClick={handleAddToCart}>
-              🛒 Add To Cart ({(price * quantity).toFixed(2)} $)
-            </button>
-          </div>
+          )}
         </div>
       </div>
-    </div>
+      <Subscribe />
+      {relatedProducts.length > 0 && (
+        <div className="related-products-section">
+          <h3>🛒 Products in the same category</h3>
+          <div className="related-products">
+            {relatedProducts.map((item) => (
+              <ProductCard
+                key={item.id}
+                id={item.id}
+                name={item.name}
+                image={item.image}
+                category={item.category}
+                price={item.price}
+                weight={item.weight}
+                tax_rate={item.tax_rate}
+                weight_unit={item.weight_unit}
+                total_price={item.total_price}
+                description={item.description}
+                nutritionObject={item.nutrition_facts}
+                storageObject={item.storage_notes}
+                ingredients={item.ingredients}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      <Footer />
+    </>
   );
 }

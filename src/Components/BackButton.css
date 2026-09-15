@@ -1,5 +1,5 @@
 .back-btn {
-  background: var(--neon-green);
+  background: var(--primary-color);
   color: #fff;
   border: none;
   border-radius: 0.4rem;
@@ -11,6 +11,7 @@
   gap: 6px;
   cursor: pointer;
   transition: background 0.2s;
+  margin-bottom: 1rem;
 }
 .back-btn:hover {
   background: var(--hover-btn);

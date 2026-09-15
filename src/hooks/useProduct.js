@@ -1,180 +1,201 @@
 import { supabase } from "../lib/supabase";
 
 export async function fetchData(tableName) {
-    const { data, error } = await supabase
-        .from(tableName)
-        .select("*")
-        .order('id', { ascending: true });
-    if (error) {
-        alert(error.message);
-        return [];
-    } else {
-        return data || [];
-    }
-
+  const { data, error } = await supabase
+    .from(tableName)
+    .select("*")
+    .order("id", { ascending: true });
+  if (error) {
+    alert(error.message);
+    return [];
+  } else {
+    return data || [];
+  }
 }
 
 export async function deleteProduct(id) {
-    const { error } = await supabase
-        .from("products")
-        .delete()
-        .eq("id", id)
+  const { error } = await supabase.from("products").delete().eq("id", id);
 
-    if (error) {
-        alert(error.message);
-        return false;
-    } else {
-        return true;
-    }
+  if (error) {
+    alert(error.message);
+    return false;
+  } else {
+    return true;
+  }
 }
 export async function deleteCategory(id) {
-    const { error } = await supabase
-        .from("categories")
-        .delete()
-        .eq("id", id)
+  const { error } = await supabase.from("categories").delete().eq("id", id);
 
-    if (error) {
-        alert(error.message);
-        return false;
-    } else {
-        return true;
-    }
+  if (error) {
+    alert(error.message);
+    return false;
+  } else {
+    return true;
+  }
 }
 
 export async function updateProduct(id, updatedData) {
-    try {
-        const { data, error } = await supabase
-            .from("products")
-            .update(updatedData)
-            .eq("id", id)
-            .select();
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .update(updatedData)
+      .eq("id", id)
+      .select();
 
-        if (error) throw error;
+    if (error) throw error;
 
-        return { success: true, data: data[0] }; // ✅ كائن success: true
-    } catch (error) {
-        console.error("❌ فشل التحديث:", error.message);
-        return { success: false, error: error.message }; // ✅ كائن success: false
-    }
+    return { success: true, data: data[0] }; // ✅ كائن success: true
+  } catch (error) {
+    console.error("❌ فشل التحديث:", error.message);
+    return { success: false, error: error.message }; // ✅ كائن success: false
+  }
 }
 
 export async function updateCategory(id, updatedData) {
-    try {
-        const { data, error } = await supabase
-            .from("categories")
-            .update(updatedData)
-            .eq("id", id)
-            .select();
+  try {
+    const { data, error } = await supabase
+      .from("categories")
+      .update(updatedData)
+      .eq("id", id)
+      .select();
 
-        if (error) throw error;
+    if (error) throw error;
 
-        return { success: true, data: data[0] }; // ✅ كائن success: true
-    } catch (error) {
-        console.error("❌ فشل التحديث:", error.message);
-        return { success: false, error: error.message }; // ✅ كائن success: false
-    }
+    return { success: true, data: data[0] }; // ✅ كائن success: true
+  } catch (error) {
+    console.error("❌ فشل التحديث:", error.message);
+    return { success: false, error: error.message }; // ✅ كائن success: false
+  }
 }
 
 export async function uploadProductImage(file) {
-    try {
-        const fileName = `${Date.now()}_${file.name}`;
-        const { data, error } = await supabase.storage
-            .from("upload-image")
-            .upload(fileName, file);
+  try {
+    const fileName = `${Date.now()}_${file.name}`;
+    const { data, error } = await supabase.storage
+      .from("upload-image")
+      .upload(fileName, file);
 
-        if (error) throw error;
-        const { data: publicUrlData } = supabase.storage
-            .from("upload-image")
-            .getPublicUrl(fileName);
-        return { success: true, publicUrl: publicUrlData.publicUrl }; // ✅ كائن success: true
-
-    } catch (error) {
-        console.error("❌ فشل رفع الصورة:", error.message);
-        return { success: false, error: error.message }; // ✅ كائن success: false
-    }
+    if (error) throw error;
+    const { data: publicUrlData } = supabase.storage
+      .from("upload-image")
+      .getPublicUrl(fileName);
+    return { success: true, publicUrl: publicUrlData.publicUrl }; // ✅ كائن success: true
+  } catch (error) {
+    console.error("❌ فشل رفع الصورة:", error.message);
+    return { success: false, error: error.message }; // ✅ كائن success: false
+  }
 }
 export async function addProduct(productData) {
-    try {
-        const { data, error } = await supabase
-            .from("products")
-            .insert([productData])
-            .select()
-        if (error) throw error
-        return { success: true, data: data[0] }
-
-    } catch (error) {
-        console.error("فشل تحميل المنتج ", error.message)
-        return { success: false, error: error.message }
-    }
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .insert([productData])
+      .select();
+    if (error) throw error;
+    return { success: true, data: data[0] };
+  } catch (error) {
+    console.error("فشل تحميل المنتج ", error.message);
+    return { success: false, error: error.message };
+  }
 }
 
 export async function countSubCategory(categoryId) {
-    try {
-        // إذا كان لديك category_id بدلاً من الاسم، استخدم هذا:
-        const { count, error } = await supabase
-            .from("subcategories")
-            .select("*", { count: "exact", head: true })
-            .eq("category_id", categoryId); // تأكد من اسم العمود في جدولك
+  try {
+    // إذا كان لديك category_id بدلاً من الاسم، استخدم هذا:
+    const { count, error } = await supabase
+      .from("subcategories")
+      .select("*", { count: "exact", head: true })
+      .eq("category_id", categoryId); // تأكد من اسم العمود في جدولك
 
-        if (error) throw error;
-        return { success: true, count };
-    } catch (error) {
-        console.error("Error counting subcategories:", error.message);
-        return { success: false, error: error.message };
-    }
+    if (error) throw error;
+    return { success: true, count };
+  } catch (error) {
+    console.error("Error counting subcategories:", error.message);
+    return { success: false, error: error.message };
+  }
 }
 
 export async function searchProduct(searchItem) {
-    try {
-        const { data, error } = await supabase
-            .from("products")
-            .select("*")
-            .ilike("name", `%${searchItem}%`)
-            .order(`id`, { ascending: true })
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .ilike("name", `%${searchItem}%`)
+      .order(`id`, { ascending: true });
 
-        if (error) throw error
-        return data || []
-    } catch (error) {
-        console.error("error in search ", error.message)
-        return []
-    }
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error("error in search ", error.message);
+    return [];
+  }
+}
+
+export async function getProductById(productId) {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*, categories(name)")
+      .eq("id", productId)
+      .single();
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error) {
+    console.log("error in search : ", error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function getProductsByCategory(categoryId, currentProductId) {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("category_id", categoryId)
+      .neq("id", currentProductId)
+
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error) {
+    console.log("error in search", error.message);
+    return { success: false, error: error.message };
+  }
 }
 
 export function calculatePriceByKg(price, weight, unit) {
-    if (!price || !weight || weight <= 0) return 0;
+  if (!price || !weight || weight <= 0) return 0;
 
-    const normalizedUnit = String(unit).trim().toLocaleLowerCase()
-    let pricePerKg
+  const normalizedUnit = String(unit).trim().toLocaleLowerCase();
+  let pricePerKg;
 
-    if (normalizedUnit === "kg") {
-        pricePerKg = price / weight
-    } else if (normalizedUnit === "g") {
-        pricePerKg = (price * 1000) / weight
-    } else {
-        return 0
-    }
+  if (normalizedUnit === "kg") {
+    pricePerKg = price / weight;
+  } else if (normalizedUnit === "g") {
+    pricePerKg = (price * 1000) / weight;
+  } else {
+    return 0;
+  }
 
-    return pricePerKg.toFixed(2)
-
+  return pricePerKg.toFixed(2);
 }
 
 // src/hooks/useProduct.js
 export async function fetchBestSellers(limit = 8) {
-    try {
-        const { data, error } = await supabase
-            .from("products")
-            .select("*")
-            .gt("total_sold", 0)
-            .order("total_sold", { ascending: false })
-            .limit(limit);
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .gt("total_sold", 0)
+      .order("total_sold", { ascending: false })
+      .limit(limit);
 
-        if (error) {
-            console.error("Failed to fetch best sellers:", error);
-            return [];
-        }
-        return data || [];
-    } catch (error) {
-        console.error("Best sellers fetch error:", error);
-        return [];
+    if (error) {
+      console.error("Failed to fetch best sellers:", error);
+      return [];
     }
+    return data || [];
+  } catch (error) {
+    console.error("Best sellers fetch error:", error);
+    return [];
+  }
 }

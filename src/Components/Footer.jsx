@@ -10,7 +10,6 @@ function Footer() {
   const handelCategorySelect = (catId) => {
     navigate(`/DisplayProducts?categoryId=${catId}`)
     window.scrollTo(0,0)
-    
   };
 
   return (

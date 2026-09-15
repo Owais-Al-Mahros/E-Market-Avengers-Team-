@@ -1,20 +1,61 @@
 import "./HomePageHeader.css";
 import { useCart } from "../../../context/CartContext.jsx";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Cart from "../modals/Cart.jsx";
 import { fetchData, searchProduct } from "../../../hooks/useProduct.js";
 import { useDebounce } from "../../../hooks/useDebounce.js";
 import { Link, useNavigate } from "react-router-dom";
-
+import ProductCard from "../../DisplayProducts/components/ProductCard.jsx";
 function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
   console.count("📌 HomePageHeader");
+  const navigate = useNavigate();
 
   const { totalItems } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate();
 
+  // { Search Variables}
+  const [searchResult, setSearchResult] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const serRef = useRef(null);
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (!debouncedSearchTerm.trim()) {
+        setSearchResult([]);
+        setShowDropdown(false);
+        setLoadingProducts(false);
+        return;
+      }
+      try {
+        const result = await searchProduct(debouncedSearchTerm);
+        if (result) {
+          setSearchResult(result);
+          setShowDropdown(true);
+          setLoadingProducts(true);
+        }
+      } catch (error) {
+        console.log(error.message);
+        setSearchResult([]);
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+    fetchSuggestions();
+  }, [debouncedSearchTerm]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (serRef.current && !serRef.current.contains(event.target)) {
+        setShowDropdown(false);
+        setSearchTerm("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
@@ -75,32 +116,83 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
   return (
     <>
       <header className="header">
-        <div >
+        <div>
           <Link to="/" className="logo-container">
             <img src="/logo.png" alt="GreenCart Logo" className="logo-header" />
             <span className="tagline">Shopora</span>
           </Link>
-
         </div>
 
         {/* نموذج البحث */}
-        <form onSubmit={handleSubmit} className="header-search">
-          <input
-            type="text"
-            placeholder="Search Products ..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            aria-label="Search products"
-          />
-          <button
-            type="submit"
-            className="header-search-button"
-            disabled={isSearching}
-            aria-label="Search"
-          >
-            <img src="/Search.png" alt="Search" className="search-icon" />
-          </button>
-        </form>
+        <div
+          className="search-container-wrapper"
+          ref={serRef}
+          style={{ position: "relative" }}
+        >
+          <form onSubmit={handleSubmit} className="header-search">
+            <input
+              type="text"
+              placeholder="Search Products ..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                if (!showDropdown) setShowDropdown(true);
+              }}
+              aria-label="Search products"
+            />
+            <button
+              type="submit"
+              className="header-search-button"
+              disabled={isSearching}
+              aria-label="Search"
+            >
+              <img src="/Search.png" alt="Search" className="search-icon" />
+            </button>
+          </form>
+
+          {/* {Drop Down List } */}
+          {/* القائمة المنسدلة */}
+          {showDropdown && (
+            <div className="search-dropdown-list">
+              {loadingProducts ? (
+                <div className="search-loading-state">
+                  <span>ٍSearching  🔍</span>
+                </div>
+              ) : searchResult.length > 0 ? (
+                searchResult.map((item) => (
+                  <div
+                    key={item.id}
+                    className="dropdown-card-wrapper"
+                    onClick={() => {
+                      setShowDropdown(false);
+                      setSearchTerm("");
+                    }}
+                  >
+                    <ProductCard
+                      id={item.id}
+                      name={item.name}
+                      image={item.image}
+                      category={item.category}
+                      price={item.price}
+                      weight={item.weight}
+                      tax_rate={item.tax_rate}
+                      weight_unit={item.weight_unit}
+                      total_price={item.total_price}
+                      description={item.description}
+                      nutritionObject={item.nutrition_facts}
+                      storageObject={item.storage_notes}
+                      ingredients={item.ingredients}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="search-loading-state">
+                  <span>No Product Found ❌</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* الأزرار الجانبية */}
         <div className="header-actions">
@@ -141,12 +233,10 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
                   className="header-orders"
                   to="/account"
                   onClick={() => setMenuOpen(false)}
-                ><span className="material-symbols-outlined">person</span>
-                  <span className="orders-label">
-                    My Account
-                  </span>
+                >
+                  <span className="material-symbols-outlined">person</span>
+                  <span className="orders-label">My Account</span>
                 </Link>
-
               </div>
             )}
           </div>

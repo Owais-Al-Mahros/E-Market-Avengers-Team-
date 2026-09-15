@@ -1,14 +1,20 @@
-import "./BackButton.css"
-const BackButton = ({label}) => {
+import "./BackButton.css";
+import { useNavigate } from "react-router-dom";
+const BackButton = ({ label }) => {
+  const navigate = useNavigate();
   const handleClickBack = () => {
-    if (typeof window !== "undefined" && window.history) {
-      window.history.back();
+    if (label === "Go Home") {
+      navigate("/");
+    } else {
+      if (typeof window !== "undefined" && window.history) {
+        navigate(-1);
+      }
     }
   };
 
   return (
     <button onClick={handleClickBack} className="back-btn">
-        <span className="material-symbols-outlined">arrow_back</span> 
+      <span className="material-symbols-outlined">arrow_back</span>
       <span>{label}</span>
     </button>
   );
