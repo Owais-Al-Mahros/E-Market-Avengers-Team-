@@ -246,6 +246,7 @@
     opacity: 0.4;
     transform: scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -258,7 +259,7 @@
     grid-template-columns: 1fr;
     gap: 40px;
   }
-  
+
   .hero-text-card {
     align-items: center;
     text-align: center;
