@@ -154,3 +154,109 @@
     top: auto;
   }
 }
+
+/* ===== Substitution Checkbox ===== */
+.order-substitution-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  background: #fff;
+  border: 2px solid var(--secondary-color);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.order-substitution-box:hover {
+  border-color: var(--primary-color);
+  background: var(--bg-color);
+}
+
+.order-substitution-box:has(input:checked) {
+  border-color: var(--success);
+  background: linear-gradient(135deg, rgba(35, 139, 101, 0.06), #fff);
+}
+
+.order-substitution-box input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.order-substitution-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.order-substitution-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+
+.order-substitution-desc {
+  font-size: 12.5px;
+  color: #6b7a77;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* ===== Substitution Checkbox ===== */
+.order-substitution-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  background: #fff;
+  border: 2px solid var(--secondary-color);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.order-substitution-box:hover {
+  border-color: var(--primary-color);
+  background: var(--bg-color);
+}
+
+.order-substitution-box.checked {
+  border-color: var(--success);
+  background: linear-gradient(135deg, rgba(35, 139, 101, 0.06), #fff);
+}
+
+.order-substitution-box input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.order-substitution-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.order-substitution-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.order-substitution-desc {
+  font-size: 12.5px;
+  color: #6b7a77;
+  line-height: 1.5;
+  font-weight: 500;
+}

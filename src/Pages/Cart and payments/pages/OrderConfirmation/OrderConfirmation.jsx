@@ -176,7 +176,52 @@ export default function OrderConfirmation() {
                         </p>
                     </div>
 
-                    {/* ===== Actions ===== */}
+
+                    {/* ===== ✅ Substitutions Notice ===== */}
+                    {order.substitutions && order.substitutions.length > 0 && (
+                        <div className="confirmation-substitutions">
+                            <div className="subs-header">
+                                <span className="material-symbols-outlined">swap_horiz</span>
+                                <div>
+                                    <h3>Product Substitutions</h3>
+                                    <p>
+                                        We replaced {order.substitutions.length}{" "}
+                                        {order.substitutions.length === 1 ? "product" : "products"} in your
+                                        order. Review the changes below.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="subs-list">
+                                {order.substitutions.map((sub, idx) => (
+                                    <div key={idx} className="subs-item">
+                                        <div className="subs-item-original">
+                                            <span className="subs-label">Original</span>
+                                            <span className="subs-name">{sub.original_product_name}</span>
+                                            <span className="subs-price">
+                                                €{sub.original_price.toFixed(2)}
+                                            </span>
+                                        </div>
+
+                                        <div className="subs-arrow">
+                                            <span className="material-symbols-outlined">arrow_forward</span>
+                                        </div>
+
+                                        <div className="subs-item-substitute">
+                                            <span className="subs-label">Replaced with</span>
+                                            {sub.substitute_image && (
+                                                <img src={sub.substitute_image} alt={sub.substitute_product_name} />
+                                            )}
+                                            <span className="subs-name">{sub.substitute_product_name}</span>
+                                            <span className="subs-price">
+                                                €{sub.substitute_price.toFixed(2)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     <div className="tracker-actions">
                         <button
                             className="tracker-btn-secondary"

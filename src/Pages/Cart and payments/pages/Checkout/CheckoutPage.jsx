@@ -256,8 +256,18 @@ export default function CheckoutPage() {
       const orderData = {
         customer_id: null,
         order_number: generateOrderNumber(),
-        status: "pending",
+        status: "awaiting_payment",
         order_date: new Date().toISOString(),
+
+        // ✅ السطر الناقص — قراءة موافقة الاستبدال من localStorage
+        allow_substitution: (() => {
+          try {
+            const saved = localStorage.getItem("allowSubstitution");
+            return saved === null ? true : JSON.parse(saved);
+          } catch {
+            return true;
+          }
+        })(),
 
         customer_info: {
           first_name: customer.firstName,
@@ -298,6 +308,7 @@ export default function CheckoutPage() {
         discount_value: null,
         discount_amount: 0,
       };
+
 
       // 1. إدراج الطلب
       const { data: order, error: orderError } = await supabase

@@ -11,29 +11,8 @@ import "./BillAndPayment.css";
 
 const PRICE_ADJUSTMENT = 2.0;
 
-const PAYMENT_METHODS = [
-    {
-        id: "card",
-        icon: "💳",
-        title: "Credit / Debit Card",
-        desc: "Secure payment via Stripe",
-    },
-    {
-        id: "cod",
-        icon: "💵",
-        title: "Cash on Delivery",
-        desc: "Pay in cash when your order arrives",
-    },
-    {
-        id: "bank",
-        icon: "🏦",
-        title: "Bank Transfer",
-        desc: "Transfer to our bank account",
-    },
-];
-
 /* ============================================
-   ✅ مكوّن فرعي — نموذج Stripe (مُصحّح)
+   نموذج Stripe
 ============================================ */
 function CheckoutForm({ orderId, clientSecret, onSuccess }) {
     const stripe = useStripe();
@@ -54,20 +33,17 @@ function CheckoutForm({ orderId, clientSecret, onSuccess }) {
         setPaymentError(null);
 
         try {
-            // ✅ الخطوة 1: استدعاء submit() أولاً (وهذا ما يطلبه Stripe)
             const { error: submitError } = await elements.submit();
             if (submitError) {
-                console.error("Submit error:", submitError);
                 setPaymentError(submitError.message);
                 toast.error(submitError.message);
                 setIsProcessing(false);
                 return;
             }
 
-            // ✅ الخطوة 2: الآن يمكن استدعاء confirmPayment() بأمان
             const { error, paymentIntent } = await stripe.confirmPayment({
                 elements,
-                clientSecret: clientSecret, // تمرير clientSecret
+                clientSecret,
                 confirmParams: {
                     return_url: `${window.location.origin}/Cart&Payments/order-confirmation/${orderId}`,
                 },
@@ -75,14 +51,12 @@ function CheckoutForm({ orderId, clientSecret, onSuccess }) {
             });
 
             if (error) {
-                console.error("Confirm error:", error);
                 setPaymentError(error.message);
                 toast.error(error.message);
                 setIsProcessing(false);
                 return;
             }
 
-            // ✅ الخطوة 3: فحص حالة الدفع
             if (
                 paymentIntent &&
                 (paymentIntent.status === "succeeded" ||
@@ -95,11 +69,12 @@ function CheckoutForm({ orderId, clientSecret, onSuccess }) {
                 }
                 onSuccess();
             } else {
-                setPaymentError("Unexpected payment status: " + (paymentIntent?.status || "unknown"));
+                setPaymentError(
+                    "Unexpected payment status: " + (paymentIntent?.status || "unknown")
+                );
                 setIsProcessing(false);
             }
         } catch (err) {
-            console.error("Payment exception:", err);
             setPaymentError(err.message || "Something went wrong");
             toast.error(err.message || "Payment failed");
             setIsProcessing(false);
@@ -136,15 +111,15 @@ function CheckoutForm({ orderId, clientSecret, onSuccess }) {
             </button>
 
             <p className="stripe-note">
-                🔒 Your payment is secured by Stripe. You will only be charged
-                after we confirm the final weight and price.
+                🔒 Your payment is secured by Stripe. You will only be charged after
+                we confirm the final weight and price.
             </p>
         </form>
     );
 }
 
 /* ============================================
-   ✅ المكوّن الرئيسي
+   المكوّن الرئيسي
 ============================================ */
 export default function BillAndPayment() {
     const { orderId } = useParams();
@@ -154,9 +129,6 @@ export default function BillAndPayment() {
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [clientSecret, setClientSecret] = useState("");
-    const [paymentMethod, setPaymentMethod] = useState("card");
-    const [submitting, setSubmitting] = useState(false);
-    const [bankConfirmed, setBankConfirmed] = useState(false);
 
     // ===== 1. جلب الطلب =====
     useEffect(() => {
@@ -199,10 +171,10 @@ export default function BillAndPayment() {
         fetchOrder();
     }, [orderId, navigate]);
 
-    // ===== 2. إنشاء Payment Intent عند اختيار البطاقة =====
+    // ===== 2. إنشاء PaymentIntent =====
     useEffect(() => {
         const createPaymentIntent = async () => {
-            if (paymentMethod !== "card" || !orderId || clientSecret) return;
+            if (!orderId || clientSecret) return;
 
             try {
                 const response = await fetch(
@@ -231,15 +203,16 @@ export default function BillAndPayment() {
         };
 
         createPaymentIntent();
-    }, [paymentMethod, orderId, clientSecret]);
+    }, [orderId, clientSecret]);
 
-    // ===== 3. عند نجاح الدفع =====
+    // ===== 3. عند نجاح الدفع → تحويل الطلب إلى "pending" =====
     const handlePaymentSuccess = async () => {
         try {
-            // ✅ تحديث payment_method في DB قبل الانتقال
+            // ✅ الآن يظهر في الداشبورد
             const { error } = await supabase
                 .from("orders")
                 .update({
+                    status: "pending",                        // ← يظهر للأدمن
                     payment_method: "card",
                     payment_status: "authorized",
                     price_adjustment: PRICE_ADJUSTMENT,
@@ -248,9 +221,10 @@ export default function BillAndPayment() {
                 .eq("id", orderId);
 
             if (error) {
-                console.error("Failed to update payment_method:", error);
+                console.error("Failed to update order status:", error);
+                toast.error("Payment succeeded but order update failed. Contact support.");
             } else {
-                console.log("✅ payment_method updated to 'card'");
+                console.log("✅ Order status → pending");
             }
         } catch (err) {
             console.error("Update error:", err);
@@ -258,40 +232,6 @@ export default function BillAndPayment() {
 
         clearCart();
         navigate(`/Cart&Payments/order-confirmation/${orderId}`);
-    };
-
-    // ===== 4. تأكيد الدفع عند الاستلام / التحويل البنكي =====
-    const handleManualConfirm = async () => {
-        if (!order) return;
-
-        if (paymentMethod === "bank" && !bankConfirmed) {
-            toast.error("Please confirm the bank transfer first");
-            return;
-        }
-
-        setSubmitting(true);
-        try {
-            const { error } = await supabase
-                .from("orders")
-                .update({
-                    payment_method: paymentMethod,
-                    price_adjustment: PRICE_ADJUSTMENT,
-                    payment_status: paymentMethod === "cod" ? "pending" : "awaiting_transfer",
-                    updated_at: new Date().toISOString(),
-                })
-                .eq("id", order.id);
-
-            if (error) throw error;
-
-            toast.success("✅ Order confirmed!");
-            clearCart();
-            navigate(`/Cart&Payments/order-confirmation/${order.id}`);
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to confirm order");
-        } finally {
-            setSubmitting(false);
-        }
     };
 
     // ===== حالات التحميل =====
@@ -329,8 +269,8 @@ export default function BillAndPayment() {
                     <span className="bill-badge">🧾 Final Step</span>
                     <h1>Review & Pay</h1>
                     <p>
-                        Order <strong>#{order.order_number}</strong> — Complete your
-                        payment to finalize.
+                        Order <strong>#{order.order_number}</strong> — Complete your payment
+                        to finalize.
                     </p>
                 </div>
 
@@ -415,157 +355,55 @@ export default function BillAndPayment() {
                     </div>
 
                     {/* ============================================
-              RIGHT: Payment
+              RIGHT: Stripe Payment Only
           ============================================ */}
                     <div className="bill-payment">
                         <div className="bill-payment-section">
-                            <h2>💳 Payment Method</h2>
-                            <p className="bill-payment-sub">Choose how you'd like to pay</p>
+                            <h2>🔐 Secure Payment</h2>
+                            <p className="bill-payment-sub">
+                                Your payment will be authorized now and charged after we confirm
+                                the weight.
+                            </p>
 
-                            <div className="bill-methods">
-                                {PAYMENT_METHODS.map((method) => (
-                                    <div
-                                        key={method.id}
-                                        className={`bill-method ${paymentMethod === method.id ? "active" : ""
-                                            }`}
-                                        onClick={() => setPaymentMethod(method.id)}
-                                    >
-                                        <div className="bill-method-radio">
-                                            <div className="bill-method-dot" />
-                                        </div>
-                                        <div className="bill-method-icon">{method.icon}</div>
-                                        <div className="bill-method-info">
-                                            <span className="bill-method-title">{method.title}</span>
-                                            <span className="bill-method-desc">{method.desc}</span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                            {clientSecret ? (
+                                <Elements
+                                    stripe={stripePromise}
+                                    options={{
+                                        clientSecret,
+                                        appearance: {
+                                            theme: "stripe",
+                                            variables: {
+                                                colorPrimary: "#145c4a",
+                                                colorBackground: "#ffffff",
+                                                colorText: "#15312B",
+                                                borderRadius: "12px",
+                                                fontFamily: "inherit",
+                                            },
+                                        },
+                                    }}
+                                >
+                                    <CheckoutForm
+                                        orderId={order.id}
+                                        clientSecret={clientSecret}
+                                        onSuccess={handlePaymentSuccess}
+                                    />
+                                </Elements>
+                            ) : (
+                                <div className="bill-loading-inline">
+                                    <div className="bill-spinner-small" />
+                                    <span>Preparing payment...</span>
+                                </div>
+                            )}
                         </div>
 
-                        {/* ===== Stripe Payment Form ===== */}
-                        {paymentMethod === "card" && (
-                            <div className="bill-payment-section">
-                                <h2>🔐 Card Details</h2>
-                                <p className="bill-payment-sub">
-                                    Your payment will be authorized now and charged after we
-                                    confirm the weight.
-                                </p>
-
-                                {clientSecret ? (
-                                    <Elements
-                                        stripe={stripePromise}
-                                        options={{
-                                            clientSecret,
-                                            appearance: {
-                                                theme: "stripe",
-                                                variables: {
-                                                    colorPrimary: "#145c4a",
-                                                    colorBackground: "#ffffff",
-                                                    colorText: "#15312B",
-                                                    borderRadius: "12px",
-                                                    fontFamily: "inherit",
-                                                },
-                                            },
-                                        }}
-                                    >
-                                        <CheckoutForm
-                                            orderId={order.id}
-                                            clientSecret={clientSecret}
-                                            onSuccess={handlePaymentSuccess}
-                                        />
-                                    </Elements>
-                                ) : (
-                                    <div className="bill-loading-inline">
-                                        <div className="bill-spinner-small" />
-                                        <span>Preparing payment...</span>
-                                    </div>
-                                )}
+                        {/* Security Badge */}
+                        <div className="bill-security-badge">
+                            <span className="material-symbols-outlined">verified_user</span>
+                            <div>
+                                <strong>Powered by Stripe</strong>
+                                <small>PCI-DSS Level 1 Certified</small>
                             </div>
-                        )}
-
-                        {/* ===== Bank Transfer Details ===== */}
-                        {paymentMethod === "bank" && (
-                            <div className="bill-payment-section bill-bank-details">
-                                <h2>🏦 Bank Transfer</h2>
-                                <p className="bill-payment-sub">
-                                    Transfer the amount to our account
-                                </p>
-
-                                <div className="bill-bank-row">
-                                    <span>Account Holder</span>
-                                    <strong>Shopora GmbH</strong>
-                                </div>
-                                <div className="bill-bank-row">
-                                    <span>IBAN</span>
-                                    <strong className="bill-mono">
-                                        DE89 3704 0044 0532 0130 00
-                                    </strong>
-                                </div>
-                                <div className="bill-bank-row">
-                                    <span>BIC</span>
-                                    <strong className="bill-mono">COBADEFFXXX</strong>
-                                </div>
-                                <div className="bill-bank-row">
-                                    <span>Amount</span>
-                                    <strong>€{grandTotal.toFixed(2)}</strong>
-                                </div>
-                                <div className="bill-bank-row">
-                                    <span>Reference</span>
-                                    <strong className="bill-mono">{order.order_number}</strong>
-                                </div>
-
-                                <p className="bill-bank-note">
-                                    ⚠️ Include the reference number in your transfer.
-                                </p>
-
-                                <label className="bill-checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        checked={bankConfirmed}
-                                        onChange={(e) => setBankConfirmed(e.target.checked)}
-                                    />
-                                    <span>I have sent the bank transfer</span>
-                                </label>
-
-                                <button
-                                    className="bill-confirm-btn"
-                                    onClick={handleManualConfirm}
-                                    disabled={submitting || !bankConfirmed}
-                                >
-                                    {submitting ? "Confirming..." : "Confirm Order"}
-                                </button>
-                            </div>
-                        )}
-
-                        {/* ===== Cash on Delivery ===== */}
-                        {paymentMethod === "cod" && (
-                            <div className="bill-payment-section">
-                                <h2>💵 Cash on Delivery</h2>
-                                <p className="bill-payment-sub">
-                                    Pay in cash when your order arrives
-                                </p>
-
-                                <div className="bill-cod-info">
-                                    <div className="bill-cod-row">
-                                        <span>Amount to Prepare</span>
-                                        <strong>€{grandTotal.toFixed(2)}</strong>
-                                    </div>
-                                    <p className="bill-cod-note">
-                                        Please have the exact amount ready to help our driver.
-                                        The final amount may vary slightly based on product weights.
-                                    </p>
-                                </div>
-
-                                <button
-                                    className="bill-confirm-btn"
-                                    onClick={handleManualConfirm}
-                                    disabled={submitting}
-                                >
-                                    {submitting ? "Confirming..." : "Confirm Order"}
-                                </button>
-                            </div>
-                        )}
+                        </div>
                     </div>
                 </div>
             </main>
