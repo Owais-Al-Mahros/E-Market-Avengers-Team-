@@ -1,6 +1,7 @@
 // src/context/CategoryContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
+import toast from "react-hot-toast";
 
 const CategoryContext = createContext();
 
@@ -24,15 +25,32 @@ export function CategoryProvider({ children }) {
   }, []);
 
   // ✅ دالة الإضافة المثالية (تحديث محلي + إرسال إلى Supabase)
-  const addCategory = async (newCategory) => {
+  const addCategory = async (newCategory, imageFile) => {
     try {
+      let imageUrl = newCategory.image ? newCategory.image.trim() : null;
+
+      if (imageFile) {
+        const fileName = `${Date.now()}_${newCategory.name}`;
+        const { error: upLoadError } = await supabase.storage
+          .from("upload-image")
+          .upload(fileName, imageFile);
+
+        if (upLoadError) throw upLoadError;
+
+        const { data: publicUrlData } = supabase.storage
+          .from("upload-image")
+          .getPublicUrl(fileName);
+
+        imageUrl = publicUrlData.publicUrl;
+      }
+
       // 1. إرسال إلى Supabase
       const { data, error } = await supabase
         .from("categories")
         .insert([
           {
             name: newCategory.name.trim(),
-            image: newCategory.image?.trim() || null,
+            image: imageUrl,
           },
         ])
         .select(); // ✅ نستخدم select() للحصول على الكائن المُضاف مع الـ id
@@ -47,20 +65,37 @@ export function CategoryProvider({ children }) {
       return { success: true, data: data[0] };
     } catch (error) {
       console.error("Error adding category:", error);
-      alert("Failed to add category: " + error.message);
+      toast("Failed to add category: " + error.message);
       return { success: false, error: error.message };
     }
   };
 
   // دوال التحديث والحذف (بنفس النمط)
-  const updateCategory = async (id, updatedData) => {
+  const updateCategory = async (id, updatedData, fileImage) => {
     try {
+      let imageUrl = updatedData.image ? updatedData.image.trim() : null;
+
+      if (fileImage) {
+        const fileName = `${Date.now()}_${updatedData.name}`;
+        const { error: upLoadError } = await supabase.storage
+          .from("upload-image")
+          .upload(fileName, fileImage);
+
+        if (upLoadError) throw upLoadError;
+
+        const { data: publicUrlData } = supabase.storage
+          .from("upload-image")
+          .getPublicUrl(fileName);
+
+        imageUrl = publicUrlData.publicUrl;
+      }
+
       const { data, error } = await supabase
         .from("categories")
-        .update(updatedData)
+        .update({ name: updatedData.name, image: imageUrl })
         .eq("id", id)
         .select();
-
+        
       if (error) throw error;
 
       if (data && data.length > 0) {

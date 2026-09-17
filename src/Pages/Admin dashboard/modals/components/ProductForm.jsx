@@ -22,6 +22,7 @@ export default function ProductForm({
     tax_rate: 0,
     ingredients: "",
     ...initialProductInfo,
+    product_number: initialProductInfo?.product_number ?? "",
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -140,6 +141,22 @@ export default function ProductForm({
                   {totalPrice.toFixed(2)} €
                 </span>
               </div>
+              <div className="field-group">
+                <span className="info-label">Product Number</span>
+                <input
+                  type="number"
+                  className="edit-input box-input"
+                  value={productInfo.product_number}
+                  onChange={(e) =>
+                    setProductInfo({
+                      ...productInfo,
+                      product_number:
+                        e.target.value === "" ? "" : Number(e.target.value),
+                    })
+                  }
+                  placeholder="Product Number"
+                />
+              </div>
             </div>
           </div>
 
@@ -213,6 +230,7 @@ export default function ProductForm({
                     }
                   >
                     <option value="kg">kg</option>
+                    <option value="g">g</option>
                     <option value="L">L</option>
                   </select>
                 </div>

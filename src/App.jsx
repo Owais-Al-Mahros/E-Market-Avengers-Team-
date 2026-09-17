@@ -2,12 +2,13 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
-import { ProductProvider } from "./context/ProductContext";
 import { supabase } from "./lib/supabase";
 import LoadingPage from "./Components/LoadingPage";
 
 import DisplayProducts from "./Pages/DisplayProducts/DisplayProducts";
 import ProductCardDetails from "./Pages/DisplayProducts/modals/ProductCardDetails";
+
+import FavoriteList from "./Pages/Home page/modals/FavoriteList";
 
 // 🚀 تطبيق Lazy Loading على باقي الصفحات (بدون DisplayProducts)
 const AdminDashboard = lazy(
@@ -108,7 +109,11 @@ function App() {
           <Route path="/Cart&Payments/*" element={<CartAndPayments />} />
           {/* ✅ DisplayProducts مباشر — لا Suspense fallback له */}
           <Route path="/DisplayProducts" element={<DisplayProducts />} />
-          <Route path="/DisplayProducts/ProductCardDetails" element={<ProductCardDetails />}/>
+          <Route
+            path="/DisplayProducts/ProductCardDetails"
+            element={<ProductCardDetails />}
+          />
+          <Route path="/HomePage/FavoriteList" element={<FavoriteList />}/>
           <Route
             path="/dashboard"
             element={

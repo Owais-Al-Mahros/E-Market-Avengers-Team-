@@ -117,12 +117,19 @@ export async function countSubCategory(categoryId) {
 
 export async function searchProduct(searchItem) {
   try {
-    const { data, error } = await supabase
-      .from("products")
-      .select("*")
-      .ilike("name", `%${searchItem}%`)
-      .order(`id`, { ascending: true });
+    let query = supabase.from("products").select("*");
 
+    if (searchItem && searchItem.trim() !== "") {
+      const isNumbric = /^\d+$/.test(searchItem.trim());
+
+      if (isNumbric) {
+        query = query.eq("product_number", Number(searchItem));
+      }
+    } else {
+      query = query.ilike("name", `${searchItem}`);
+    }
+
+    const { data, error } = await query.order("id", { ascending: true });
     if (error) throw error;
     return data || [];
   } catch (error) {
@@ -152,7 +159,7 @@ export async function getProductsByCategory(categoryId, currentProductId) {
       .from("products")
       .select("*")
       .eq("category_id", categoryId)
-      .neq("id", currentProductId)
+      .neq("id", currentProductId);
 
     if (error) throw error;
     return { success: true, data };

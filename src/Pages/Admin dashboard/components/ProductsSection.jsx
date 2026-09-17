@@ -115,6 +115,7 @@ function ProductsSection() {
         total_price={product.total_price}
         nutritionObject={product.nutrition_facts}
         storageObject={product.storage_notes}
+        product_number = {product.product_number}
         ingredients={product.ingredients}
         onDelete={handleDelete}
         onUpdate={handleUpdate}

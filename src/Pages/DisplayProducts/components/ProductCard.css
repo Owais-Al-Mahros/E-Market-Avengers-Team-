@@ -22,7 +22,7 @@
   /* ✅ تأخذ عرض الخلية بالكامل */
   max-width: 14rem;
   /* ✅ منع التمدد الزائد */
-  background: linear-gradient(135deg, var(--bg-color) 0% , var(--back) 100%);
+  background: linear-gradient(135deg, var(--bg-color) 0%, var(--back) 100%);
   border-radius: 1rem;
   transition: var(--transition-normal, all 0.3s ease);
   border: 2px solid var(--border-color);
@@ -64,6 +64,7 @@
   background: var(--light-bg);
   /* border-radius: 0.5rem; */
   /* border: 2px solid var(--mid-green); */
+  min-height: 10rem;
 }
 
 .image-container .image {
@@ -80,6 +81,7 @@
   transition:
     transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
     filter 0.4s ease;
+  transition: opacity 0.4s ease-in-out;
 }
 
 .title {
@@ -167,12 +169,12 @@ button {
   font-size: 1.3rem;
   font-weight: 700;
   /* background: linear-gradient(135deg, var(--neon-green), var(--lime-mid)); */
-  background : var(--primary-color);
+  background: var(--primary-color);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1.1;
-  color : var(--primary-)
+  color: var(--primary-);
 }
 
 .price-per-kg {
@@ -182,7 +184,6 @@ button {
   margin-top: 2px;
   white-space: nowrap;
 }
-
 
 /* تم إضافة Flexbox ومسافات صحيحة لزر الإضافة */
 .add-button {
@@ -273,6 +274,53 @@ button {
   color: var(--dark-green);
 }
 
+/* ============================================
+      Favorite Btn 
+   ============================================ */
+.favorite-heart-btn {
+  position: absolute;
+  top: -0.3rem;
+  left: 9rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--bg-color) 0%, var(--back) 100%);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 10;
+}
+
+.favorite-heart-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.12);
+}
+
+.favorite-heart-btn.active span {
+  color: #ff4b4b;
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  animation: heartPulse 0.4s ease-in-out;
+}
+
+@keyframes heartPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 @media (max-width: 480px) {
   .card-container {
     max-width: 100%;
@@ -282,7 +330,6 @@ button {
 
   .image-container {
     height: 7.5rem;
-    /* تقليص بسيط لارتفاع الصورة ليتناسب مع الموبايل */
   }
 
   .title {
@@ -305,7 +352,6 @@ button {
     padding: 0 4px;
   }
 
-  /* 🌟 التعديل الجوهري: جعل قسم السعر وزر الإضافة يترتبان عمودياً على الموبايل */
   .action {
     flex-direction: column;
     align-items: stretch;
@@ -330,9 +376,19 @@ button {
 
   .add-button {
     width: 100%;
-    /* زر الإضافة يأخذ عرض البطاقة كاملاً ليصبح واضحاً وسهل النقر */
     padding: 0.55rem;
     font-size: 0.8rem;
     justify-content: center;
+  }
+
+  .favorite-heart-btn {
+    width: 2rem;
+    height: 2rem;
+    top: 0.4rem;
+    right: 0.4rem;
+  }
+
+  .favorite-heart-btn span {
+    font-size: 1.1rem;
   }
 }

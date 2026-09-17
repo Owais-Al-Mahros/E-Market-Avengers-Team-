@@ -1,5 +1,5 @@
 import { useCategories } from "../../../context/CategoryContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../../../lib/supabase"; // ✅ استيراد supabase
 import AddSubCategory from "./components/AddSubCategory";
 import "./AddCategory.css";
@@ -10,8 +10,33 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
   const [category, setCategory] = useState({ name: "", image: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [categoryToEdit, setCategoryToEdit] = useState(null);
+  
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [showSubCategoryView, setShowSubCategoryView] = useState(false);
+
+  const [selectFile, setSelectFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const fileInputRef = useRef(null);
+
+  const handelCameraClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handelFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handelImageUrl = (e) => {
+    const url = e.target.value;
+    setCategory({ ...category, image: url });
+    setSelectFile(null);
+    setPreviewUrl(url);
+  };
 
   // ✅ حالة لتخزين أعداد الفئات الفرعية لكل فئة
   const [subCounts, setSubCounts] = useState({});
@@ -67,11 +92,16 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
     setIsSubmitting(true);
 
     try {
-      await addCategory({
-        name: category.name.trim(),
-        image: category.image.trim() || null,
-      });
+      await addCategory(
+        {
+          name: category.name.trim(),
+          image: category.image.trim() || null,
+        },
+        selectFile,
+      );
       setCategory({ name: "", image: "" });
+      setSelectFile(null);
+      setPreviewUrl("");
       toast.success("Category added successfully!");
       if (onCategoryAdded) await onCategoryAdded();
     } catch (error) {
@@ -181,14 +211,41 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
         )}
 
         <div className="modal-body-wrapper">
-          {/* الواجهة الرئيسية */}
           <div
             className={`view-container ${showSubCategoryView ? "fade-out" : "fade-in"}`}
           >
             {!showSubCategoryView && (
               <>
                 <form className="modal-body" onSubmit={handleSubmit}>
-                  <div className="add-category-form">
+                  <div className="category-image-section">
+                    <div className="container-of-product-image">
+                      {previewUrl && (
+                        <img
+                          className="image-of-product-dashboard"
+                          src={previewUrl}
+                          alt="Category Preview"
+                        />
+                      )}
+                      <button
+                        className="icon-of-image-dashboard"
+                        type="button"
+                        onClick={handelCameraClick}
+                      >
+                        <span className="material-symbols-outlined">
+                          photo_camera
+                        </span>
+                      </button>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handelFileChange}
+                        accept="image/*"
+                        style={{ display: "none" }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="add-category-form-content">
                     <div className="form-fields">
                       <input
                         type="text"
@@ -204,9 +261,7 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
                         type="text"
                         placeholder="Image URL (optional)..."
                         value={category.image}
-                        onChange={(e) =>
-                          setCategory({ ...category, image: e.target.value })
-                        }
+                        onChange={handelImageUrl}
                         disabled={isSubmitting}
                       />
                     </div>
@@ -219,6 +274,9 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
                       {isSubmitting ? "Adding..." : "Add"}
                     </button>
                   </div>
+
+                  <hr />
+                  <h2>Categories</h2>
                   <div className="categories-list">{renderCategories()}</div>
                 </form>
                 <div className="modal-footer">
@@ -233,7 +291,6 @@ export default function AddCategory({ closeModel, onCategoryAdded }) {
               </>
             )}
           </div>
-
           {/* واجهة الفئات الفرعية */}
           <div
             className={`view-container ${showSubCategoryView ? "fade-in" : "fade-out"}`}
