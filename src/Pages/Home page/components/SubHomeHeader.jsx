@@ -17,18 +17,17 @@ function SubHomeHeader() {
   const handleTrackOrder = () => {
     const lastOrder = JSON.parse(localStorage.getItem("lastOrder") || "null");
     if (!lastOrder) {
-      navigate("/no-orders");
+      navigate("/track-order");
       return;
     }
     const activeStatuses = ["pending", "confirmed", "shipped"];
     if (activeStatuses.includes(lastOrder.status)) {
       navigate(`/Cart&Payments/order-confirmation/${lastOrder.id}`);
     } else {
-      navigate("/no-orders", {
+      navigate("/track-order", {
         state: {
-          message: `Your previous order (${lastOrder.order_number}) was ${
-            lastOrder.status === "delivered" ? "delivered" : "cancelled"
-          }. You can place a new order now!`,
+          message: `Your previous order (${lastOrder.order_number}) was ${lastOrder.status === "delivered" ? "delivered" : "cancelled"
+            }. You can place a new order now!`,
         },
       });
     }

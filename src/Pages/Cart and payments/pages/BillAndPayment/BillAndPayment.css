@@ -774,3 +774,177 @@
     color: #6b7a77;
     font-weight: 500;
 }
+
+/* ===== Returned Items Section ===== */
+.bill-returned-section {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 2px dashed rgba(239, 68, 68, 0.2);
+}
+
+.bill-returned-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #dc2626;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.bill-returned-header .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.bill-item.is-returned {
+    opacity: 0.65;
+    background: rgba(239, 68, 68, 0.04);
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+.bill-item.is-returned .bill-item-name,
+.bill-item.is-returned .bill-item-total {
+    text-decoration: line-through;
+    text-decoration-color: #dc2626;
+}
+
+.bill-item-returned-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 800;
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+    border-radius: 6px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+/* ============================================
+   💰 Buffer Info Section (Weight Reserve)
+   ============================================ */
+
+.bill-buffer-info {
+    margin-top: 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.06), #fff);
+    border: 2px dashed #f59e0b;
+    border-radius: 14px;
+}
+
+.bill-buffer-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.bill-buffer-header .material-symbols-outlined {
+    font-size: 22px;
+    color: #d97706;
+}
+
+.bill-buffer-header strong {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #78350f;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.bill-buffer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text);
+    padding: 4px 0;
+    font-weight: 600;
+}
+
+.bill-buffer-row span:last-child {
+    font-family: "Courier New", monospace;
+    font-weight: 800;
+    color: #b45309;
+}
+
+.bill-buffer-divider {
+    height: 1px;
+    background: rgba(245, 158, 11, 0.3);
+    margin: 8px 0;
+}
+
+.bill-buffer-row.total {
+    padding-top: 8px;
+    font-size: 15px;
+}
+
+.bill-buffer-row.total span:first-child {
+    font-weight: 800;
+    color: #78350f;
+}
+
+.bill-buffer-row.total span:last-child {
+    font-size: 18px;
+    color: #92400e;
+}
+
+/* ===== Explanation Points ===== */
+.bill-explanation-points {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(20, 92, 74, 0.2);
+}
+
+.bill-explanation-point {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+.bill-explanation-point .material-symbols-outlined {
+    font-size: 18px;
+    color: var(--primary-color);
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.bill-explanation-point strong {
+    color: var(--primary-color);
+    font-weight: 800;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+    .bill-buffer-info {
+        padding: 14px 16px;
+    }
+
+    .bill-buffer-header strong {
+        font-size: 13px;
+    }
+
+    .bill-buffer-row {
+        font-size: 13px;
+    }
+
+    .bill-buffer-row.total span:last-child {
+        font-size: 16px;
+    }
+
+    .bill-explanation-point {
+        font-size: 12.5px;
+    }
+}

@@ -17,7 +17,7 @@ export default function ProductCard(props) {
 
   const openDetails = (propsId) => {
     navigate(`/DisplayProducts/ProductCardDetails?ProductId=${propsId}`);
-    window.scrollTo(0,0)
+    window.scrollTo(0, 0)
   };
 
   const increaseCounter = (e) => {
@@ -35,8 +35,11 @@ export default function ProductCard(props) {
     addToCart(
       {
         id: props.id,
+        product_number: props.product_number,
         name: props.name,
-        price: props.price,
+        price: props.price,                       // ✅ base price
+        total_price: props.total_price || props.price,  // ✅ with tax
+        tax_rate: props.tax_rate || 0,
         image: props.image,
         weight: props.weight,
         weight_unit: props.weight_unit,

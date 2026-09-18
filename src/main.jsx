@@ -7,6 +7,7 @@ import { CartProvider } from './context/CartContext.jsx' // ✅ استيراد C
 import { OrdersProvider } from './context/OrdersContext.jsx'
 import { ShippingSettingsProvider } from './context/ShippingSettingsContext.jsx' // ✅ جديد
 import { PricingProvider } from './context/PricingContext.jsx' // ✅ استيراد الجديد
+import { CompanyProvider } from "./context/CompanyContext.jsx";
 
 import './index.css';
 import App from './App.jsx'
@@ -20,7 +21,9 @@ createRoot(document.getElementById('root')).render(
             <OrdersProvider>
               <ShippingSettingsProvider>
                 <PricingProvider>
-                  <App />
+                  <CompanyProvider>
+                    <App />
+                  </CompanyProvider>
                 </PricingProvider>
               </ShippingSettingsProvider>
             </OrdersProvider>

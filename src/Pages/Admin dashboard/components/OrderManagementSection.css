@@ -844,6 +844,7 @@
    MOBILE RESPONSIVE RULES (Max-width: 768px)
    ========================================== */
 @media (max-width: 768px) {
+
   /* تقليل مساحة الحاوية الرئيسية */
   .orders-management-container {
     padding: 12px;
@@ -866,5 +867,99 @@
     flex: 0 0 auto;
     padding: 8px 14px;
     font-size: 14px;
+  }
+}
+
+/* ============================================
+   🔍 Search Bar
+   ============================================ */
+.oms-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background: #fff;
+  border: 2px solid var(--secondary-color);
+  border-radius: 14px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(20, 92, 74, 0.06);
+}
+
+.oms-search-input-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-color);
+  border: 2px solid var(--secondary-color);
+  border-radius: 10px;
+  padding: 0 14px;
+  transition: 0.2s;
+}
+
+.oms-search-input-wrap:focus-within {
+  border-color: var(--primary-color);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(20, 92, 74, 0.1);
+}
+
+.oms-search-input-wrap .material-symbols-outlined {
+  font-size: 20px;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.oms-search-input-wrap input {
+  flex: 1;
+  padding: 12px 10px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.oms-search-input-wrap input::placeholder {
+  color: #a0b0ac;
+  font-weight: 400;
+}
+
+.oms-search-clear {
+  background: transparent;
+  border: none;
+  color: #6b7a77;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.oms-search-clear:hover {
+  background: rgba(217, 79, 79, 0.1);
+  color: var(--danger-color);
+}
+
+.oms-search-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-color);
+  background: var(--secondary-color);
+  padding: 6px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .oms-search-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .oms-search-count {
+    text-align: center;
   }
 }

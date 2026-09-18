@@ -1,0 +1,237 @@
+.order-actions-panel {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px 28px;
+    border: 1px solid rgba(20, 92, 74, 0.08);
+    box-shadow: 0 2px 12px rgba(20, 92, 74, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.oap-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.oap-title .material-symbols-outlined {
+    color: var(--primary-color);
+    font-size: 22px;
+}
+
+/* ===== Actions ===== */
+.oap-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.oap-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: 14px;
+    border: 2px solid transparent;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    width: 100%;
+}
+
+.oap-btn .material-symbols-outlined {
+    font-size: 28px;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.oap-btn>div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+}
+
+.oap-btn strong {
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.oap-btn small {
+    font-size: 12.5px;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+/* Edit button */
+.oap-btn-edit {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), #fff);
+    border-color: rgba(59, 130, 246, 0.25);
+    color: #2563eb;
+}
+
+.oap-btn-edit .material-symbols-outlined {
+    background: rgba(59, 130, 246, 0.15);
+    color: #2563eb;
+}
+
+.oap-btn-edit:hover {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border-color: #3b82f6;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+}
+
+.oap-btn-edit:hover .material-symbols-outlined {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+/* Cancel button */
+.oap-btn-cancel {
+    background: linear-gradient(135deg, rgba(217, 79, 79, 0.06), #fff);
+    border-color: rgba(217, 79, 79, 0.25);
+    color: var(--danger-color);
+}
+
+.oap-btn-cancel .material-symbols-outlined {
+    background: rgba(217, 79, 79, 0.12);
+    color: var(--danger-color);
+}
+
+.oap-btn-cancel:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+}
+
+.oap-btn-cancel:hover .material-symbols-outlined {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+/* Return button */
+.oap-btn-return {
+    background: linear-gradient(135deg, rgba(20, 92, 74, 0.06), #fff);
+    border-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.oap-btn-return .material-symbols-outlined {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.oap-btn-return:hover {
+    background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
+    border-color: var(--primary-color);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(20, 92, 74, 0.3);
+}
+
+.oap-btn-return:hover .material-symbols-outlined {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+/* ===== Notices ===== */
+.oap-notice {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px 20px;
+    border-radius: 14px;
+    border-left: 4px solid;
+}
+
+.oap-notice .material-symbols-outlined {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.oap-notice p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.oap-notice strong {
+    font-weight: 800;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.oap-notice-info {
+    background: rgba(59, 130, 246, 0.06);
+    border-color: #3b82f6;
+}
+
+.oap-notice-info .material-symbols-outlined {
+    color: #3b82f6;
+}
+
+.oap-notice-warning {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: #f59e0b;
+}
+
+.oap-notice-warning .material-symbols-outlined {
+    color: #d97706;
+}
+
+.oap-notice-danger {
+    background: rgba(217, 79, 79, 0.06);
+    border-color: var(--danger-color);
+}
+
+.oap-notice-danger .material-symbols-outlined {
+    color: var(--danger-color);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+    .order-actions-panel {
+        padding: 20px;
+    }
+
+    .oap-btn {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .oap-btn .material-symbols-outlined {
+        width: 42px;
+        height: 42px;
+        font-size: 24px;
+    }
+
+    .oap-btn strong {
+        font-size: 14px;
+    }
+
+    .oap-btn small {
+        font-size: 12px;
+    }
+}

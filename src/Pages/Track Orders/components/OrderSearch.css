@@ -1,0 +1,441 @@
+/* ============================================
+   🔍 Order Search Form
+   ============================================ */
+
+.order-search-wrapper {
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    animation: searchFadeIn 0.4s ease;
+}
+
+@keyframes searchFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   Hero
+   ============================================ */
+.order-search-hero {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.order-search-icon {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--success));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    box-shadow:
+        0 8px 24px rgba(20, 92, 74, 0.25),
+        0 0 0 12px rgba(20, 92, 74, 0.08);
+    animation: iconPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes iconPop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.order-search-icon .material-symbols-outlined {
+    font-size: 48px;
+    color: #fff;
+    font-variation-settings: "FILL" 1, "wght" 500;
+}
+
+.order-search-title {
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 0 12px;
+    letter-spacing: -0.6px;
+    line-height: 1.15;
+}
+
+.order-search-subtitle {
+    font-size: 16px;
+    color: #6b7a77;
+    margin: 0;
+    line-height: 1.6;
+    max-width: 460px;
+    margin: 0 auto;
+}
+
+/* ============================================
+   آخر طلب محفوظ
+   ============================================ */
+.order-search-last {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(20, 92, 74, 0.06), #fff);
+    border: 2px solid var(--secondary-color);
+    border-radius: 16px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.order-search-last-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.order-search-last-info .material-symbols-outlined {
+    font-size: 28px;
+    color: var(--primary-color);
+    background: var(--secondary-color);
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.order-search-last-info>div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.order-search-last-info strong {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.order-search-last-info span {
+    font-size: 13.5px;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-family: "Courier New", monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.order-search-last-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.order-search-last-btn:hover:not(:disabled) {
+    background: var(--success);
+    transform: translateY(-1px);
+}
+
+.order-search-last-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.order-search-last-btn .material-symbols-outlined {
+    font-size: 16px;
+}
+
+/* ============================================
+   نموذج البحث
+   ============================================ */
+.order-search-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow:
+        0 1px 3px rgba(20, 92, 74, 0.04),
+        0 8px 32px rgba(20, 92, 74, 0.08);
+    border: 1px solid rgba(20, 92, 74, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.order-search-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.order-search-field label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14.5px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: 0.2px;
+}
+
+.order-search-field label .material-symbols-outlined {
+    font-size: 20px;
+    color: var(--primary-color);
+}
+
+.order-search-field input {
+    width: 100%;
+    padding: 16px 18px;
+    font-size: 16px;
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--text);
+    background: #fafcfb;
+    border: 2px solid #e1ebe7;
+    border-radius: 12px;
+    outline: none;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+}
+
+.order-search-field input:hover {
+    border-color: #c2d9d0;
+}
+
+.order-search-field input:focus {
+    border-color: var(--primary-color);
+    background: #fff;
+    box-shadow: 0 0 0 5px rgba(20, 92, 74, 0.1);
+}
+
+.order-search-field input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.order-search-field input::placeholder {
+    color: #a0b0ac;
+    font-weight: 500;
+}
+
+.order-search-hint {
+    font-size: 12.5px;
+    color: #6b7a77;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* ============================================
+   رسالة الخطأ
+   ============================================ */
+.order-search-error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: rgba(217, 79, 79, 0.08);
+    border-left: 4px solid var(--danger-color);
+    border-radius: 10px;
+    color: var(--danger-color);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.5;
+    animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-6px);
+    }
+
+    75% {
+        transform: translateX(6px);
+    }
+}
+
+.order-search-error .material-symbols-outlined {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+/* ============================================
+   زر الإرسال
+   ============================================ */
+.order-search-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 18px 28px;
+    background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 8px 24px rgba(20, 92, 74, 0.3);
+    letter-spacing: 0.3px;
+    margin-top: 4px;
+}
+
+.order-search-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(20, 92, 74, 0.45);
+    background: linear-gradient(135deg, var(--success), var(--primary-color));
+}
+
+.order-search-submit:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.order-search-submit .material-symbols-outlined {
+    font-size: 22px;
+}
+
+/* Spinner */
+.order-search-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spinSearch 0.7s linear infinite;
+}
+
+@keyframes spinSearch {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================
+   ملاحظة قانونية
+   ============================================ */
+.order-search-notice {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 16px 20px;
+    background: var(--secondary-color);
+    border-radius: 14px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.order-search-notice .material-symbols-outlined {
+    font-size: 22px;
+    color: var(--primary-color);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.order-search-notice p {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 640px) {
+    .order-search-icon {
+        width: 72px;
+        height: 72px;
+        box-shadow:
+            0 6px 18px rgba(20, 92, 74, 0.25),
+            0 0 0 8px rgba(20, 92, 74, 0.08);
+    }
+
+    .order-search-icon .material-symbols-outlined {
+        font-size: 40px;
+    }
+
+    .order-search-title {
+        font-size: 26px;
+    }
+
+    .order-search-subtitle {
+        font-size: 15px;
+    }
+
+    .order-search-card {
+        padding: 22px 20px;
+        border-radius: 18px;
+        gap: 18px;
+    }
+
+    .order-search-last {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: 12px;
+    }
+
+    .order-search-last-info {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .order-search-last-btn {
+        justify-content: center;
+    }
+
+    .order-search-submit {
+        font-size: 16px;
+        padding: 16px 20px;
+    }
+}

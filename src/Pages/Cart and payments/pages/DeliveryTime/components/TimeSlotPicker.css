@@ -1,0 +1,175 @@
+/* ============================================
+   🕒 Time Slot Picker
+   ============================================ */
+
+.tsp-container {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(20, 92, 74, 0.06);
+    border: 1px solid rgba(20, 92, 74, 0.06);
+    animation: tspFadeIn 0.35s ease;
+}
+
+@keyframes tspFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tsp-header {
+    margin-bottom: 24px;
+}
+
+.tsp-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 0 6px;
+    letter-spacing: -0.3px;
+}
+
+.tsp-header h2 .material-symbols-outlined {
+    color: var(--primary-color);
+    font-size: 26px;
+}
+
+.tsp-subtitle {
+    font-size: 14px;
+    color: #6b7a77;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* ===== Grid ===== */
+.tsp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+/* ===== Slot ===== */
+.tsp-slot {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 16px 12px;
+    background: #fafcfb;
+    border: 2px solid #e1ebe7;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.tsp-slot:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(20, 92, 74, 0.1);
+}
+
+.tsp-slot-selected {
+    background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
+    border-color: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(20, 92, 74, 0.3);
+}
+
+.tsp-slot-time {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.2px;
+}
+
+.tsp-slot-selected .tsp-slot-time {
+    color: #fff;
+}
+
+.tsp-slot-duration {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #6b7a77;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.tsp-slot-selected .tsp-slot-duration {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Checkmark */
+.tsp-slot-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tsp-slot-check .material-symbols-outlined {
+    font-size: 15px;
+    color: #fff;
+    font-weight: 800;
+}
+
+/* ===== Empty ===== */
+.tsp-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6b7a77;
+}
+
+.tsp-empty .material-symbols-outlined {
+    font-size: 56px;
+    color: var(--secondary-color);
+    display: block;
+    margin-bottom: 12px;
+}
+
+.tsp-empty p {
+    font-size: 15px;
+    margin: 0;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+    .tsp-container {
+        padding: 20px;
+    }
+
+    .tsp-header h2 {
+        font-size: 17px;
+    }
+
+    .tsp-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .tsp-slot {
+        padding: 14px 8px;
+    }
+
+    .tsp-slot-time {
+        font-size: 13.5px;
+    }
+}

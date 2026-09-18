@@ -63,7 +63,7 @@ export default function ShoppingCart() {
           <p className="cart-empty-title">Your cart is empty.</p>
           <Link to="/" className="cart-empty-btn">Start Shopping</Link>
         </div>
-        <CartFooter />
+        <Footer />
       </div>
     );
   }

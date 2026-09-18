@@ -5,11 +5,17 @@ import { supabase } from "../../../../lib/supabase";
 import toast from "react-hot-toast";
 import CartHeader from "../ShoppingCart/components/CartHeader";
 import Footer from "./../../../../Components/Footer";
-import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import {
+    Elements,
+    PaymentElement,
+    useStripe,
+    useElements,
+} from "@stripe/react-stripe-js";
 import { stripePromise } from "../../../../lib/stripe";
 import "./BillAndPayment.css";
 
-const PRICE_ADJUSTMENT = 2.0;
+// ✅ الهامش الموحّد
+const WEIGHT_BUFFER = 5.0;
 
 /* ============================================
    نموذج Stripe
@@ -45,7 +51,7 @@ function CheckoutForm({ orderId, clientSecret, onSuccess }) {
                 elements,
                 clientSecret,
                 confirmParams: {
-                    return_url: `${window.location.origin}/Cart&Payments/order-confirmation/${orderId}`,
+                    return_url: `${window.location.origin}/track-order`,
                 },
                 redirect: "if_required",
             });
@@ -151,7 +157,8 @@ export default function BillAndPayment() {
             unit_price,
             total_price,
             weight,
-            total_weight
+            total_weight,
+            is_returned
           )
         `
                 )
@@ -205,36 +212,48 @@ export default function BillAndPayment() {
         createPaymentIntent();
     }, [orderId, clientSecret]);
 
-    // ===== 3. عند نجاح الدفع → تحويل الطلب إلى "pending" =====
+    // ===== 3. عند نجاح الدفع =====
     const handlePaymentSuccess = async () => {
         try {
-            // ✅ الآن يظهر في الداشبورد
             const { error } = await supabase
                 .from("orders")
                 .update({
-                    status: "pending",                        // ← يظهر للأدمن
+                    status: "pending",
                     payment_method: "card",
                     payment_status: "authorized",
-                    price_adjustment: PRICE_ADJUSTMENT,
+                    price_adjustment: WEIGHT_BUFFER,
                     updated_at: new Date().toISOString(),
                 })
                 .eq("id", orderId);
 
             if (error) {
                 console.error("Failed to update order status:", error);
-                toast.error("Payment succeeded but order update failed. Contact support.");
-            } else {
-                console.log("✅ Order status → pending");
+                toast.error("Payment succeeded but order update failed.");
             }
         } catch (err) {
             console.error("Update error:", err);
         }
 
         clearCart();
-        navigate(`/Cart&Payments/order-confirmation/${orderId}`);
+
+        toast.success("✅ Zahlung erfolgreich! Bestellung wird verarbeitet.", {
+            duration: 4000,
+        });
+
+        navigate("/track-order", {
+            state: {
+                autoSearch: true,
+                justPaid: true,
+                prefilledOrder: {
+                    order_number: order.order_number,
+                    email: order.customer_info?.email,
+                },
+            },
+            replace: true,
+        });
     };
 
-    // ===== حالات التحميل =====
+    // ===== Loading =====
     if (loading) {
         return (
             <div className="bill-page">
@@ -249,48 +268,60 @@ export default function BillAndPayment() {
 
     if (!order) return null;
 
-    // ===== الحسابات =====
-    const subtotal = order.order_items.reduce(
+    // ============================================
+    // Calculations
+    // ============================================
+    const activeItems =
+        order.order_items?.filter((item) => !item.is_returned) || [];
+    const returnedItems =
+        order.order_items?.filter((item) => item.is_returned) || [];
+
+    const subtotal = activeItems.reduce(
         (sum, item) => sum + parseFloat(item.total_price || 0),
         0
     );
     const shippingCost = parseFloat(order.shipping_cost || 0);
-    const tax = parseFloat(order.tax || 0);
-    const adjustment = PRICE_ADJUSTMENT;
-    const grandTotal = subtotal + shippingCost + tax + adjustment;
+
+    // ✅ الإجمالي المتوقع (بدون الهامش) — هذا ما سيدفعه العميل فعلياً
+    const estimatedTotal = subtotal + shippingCost;
+
+    // ✅ المبلغ المُحجوز (مع الهامش)
+    const authorizedAmount = estimatedTotal + WEIGHT_BUFFER;
 
     return (
         <div className="bill-page">
             <CartHeader currentStep={4} />
 
             <main className="bill-main">
-                {/* ===== Hero ===== */}
+                {/* Hero */}
                 <div className="bill-hero">
                     <span className="bill-badge">🧾 Final Step</span>
                     <h1>Review & Pay</h1>
                     <p>
-                        Order <strong>#{order.order_number}</strong> — Complete your payment
-                        to finalize.
+                        Order <strong>#{order.order_number}</strong> — Complete your
+                        payment to finalize.
                     </p>
                 </div>
 
                 <div className="bill-layout">
                     {/* ============================================
-              LEFT: Invoice
-          ============================================ */}
+                        LEFT: Invoice
+                    ============================================ */}
                     <div className="bill-invoice">
                         <div className="bill-invoice-header">
                             <h2>📋 Invoice</h2>
                             <span className="bill-items-count">
-                                {order.order_items.length} items
+                                {activeItems.length} items
                             </span>
                         </div>
 
                         <div className="bill-items">
-                            {order.order_items.map((item) => (
+                            {activeItems.map((item) => (
                                 <div key={item.id} className="bill-item">
                                     <div className="bill-item-info">
-                                        <span className="bill-item-name">{item.product_name}</span>
+                                        <span className="bill-item-name">
+                                            {item.product_name}
+                                        </span>
                                         <span className="bill-item-qty">
                                             {item.quantity} × €
                                             {parseFloat(item.unit_price).toFixed(2)}
@@ -305,64 +336,146 @@ export default function BillAndPayment() {
                             ))}
                         </div>
 
+                        {/* Returned Items */}
+                        {returnedItems.length > 0 && (
+                            <div className="bill-returned-section">
+                                <div className="bill-returned-header">
+                                    <span className="material-symbols-outlined">
+                                        assignment_return
+                                    </span>
+                                    <span>Returned Items ({returnedItems.length})</span>
+                                </div>
+                                {returnedItems.map((item) => (
+                                    <div
+                                        key={item.id}
+                                        className="bill-item is-returned"
+                                    >
+                                        <div className="bill-item-info">
+                                            <span className="bill-item-name">
+                                                {item.product_name}
+                                                <span className="bill-item-returned-badge">
+                                                    ↩️ Returned
+                                                </span>
+                                            </span>
+                                            <span className="bill-item-qty">
+                                                {item.quantity} × €
+                                                {parseFloat(item.unit_price).toFixed(2)}
+                                            </span>
+                                        </div>
+                                        <span className="bill-item-total">
+                                            €{parseFloat(item.total_price).toFixed(2)}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
                         <div className="bill-divider" />
 
+                        {/* ✅ Totals — فقط سعران */}
                         <div className="bill-totals">
                             <div className="bill-row">
-                                <span>Subtotal</span>
+                                <span>Produkte (inkl. MwSt.)</span>
                                 <span>€{subtotal.toFixed(2)}</span>
                             </div>
                             <div className="bill-row">
-                                <span>Shipping</span>
+                                <span>Versand</span>
                                 <span>€{shippingCost.toFixed(2)}</span>
-                            </div>
-                            <div className="bill-row">
-                                <span>Tax (7%)</span>
-                                <span>€{tax.toFixed(2)}</span>
-                            </div>
-                            <div className="bill-row bill-adjustment">
-                                <span>
-                                    ⚖️ Weight Adjustment Margin
-                                    <small>Covers weight variations</small>
-                                </span>
-                                <span>+€{adjustment.toFixed(2)}</span>
                             </div>
                         </div>
 
                         <div className="bill-divider" />
 
+                        {/* ✅ الإجمالي المتوقع */}
                         <div className="bill-grand-total">
-                            <span>Estimated Total</span>
-                            <span>€{grandTotal.toFixed(2)}</span>
+                            <span>Zu zahlender Betrag</span>
+                            <span>€{estimatedTotal.toFixed(2)}</span>
                         </div>
 
+                        {/* ✅ قسم الهامش المنفصل */}
+                        <div className="bill-buffer-info">
+                            <div className="bill-buffer-header">
+                                <span className="material-symbols-outlined">info</span>
+                                <strong>
+                                    Sicherheitsreserve (kein Aufpreis)
+                                </strong>
+                            </div>
+                            <div className="bill-buffer-row">
+                                <span>Vorübergehend reserviert</span>
+                                <span>+€{WEIGHT_BUFFER.toFixed(2)}</span>
+                            </div>
+                            <div className="bill-buffer-divider" />
+                            <div className="bill-buffer-row total">
+                                <span>Autorisierter Gesamtbetrag</span>
+                                <span>€{authorizedAmount.toFixed(2)}</span>
+                            </div>
+                        </div>
+
+                        {/* ✅ شرح مطوّر */}
                         <div className="bill-explanation">
                             <div className="bill-explanation-icon">ℹ️</div>
                             <div>
-                                <strong>About the €{adjustment.toFixed(2)} margin</strong>
+                                <strong>
+                                    Warum reservieren wir €{WEIGHT_BUFFER.toFixed(2)}{" "}
+                                    extra?
+                                </strong>
                                 <p>
-                                    Fresh products are sold by weight. The final price may vary
-                                    slightly. This margin covers up to €{adjustment.toFixed(2)} in
-                                    differences.
-                                    <br />
-                                    <strong>
-                                        Any unused amount is automatically refunded within 3-5
-                                        business days.
-                                    </strong>
+                                    Frischeprodukte werden nach Gewicht verkauft. Daher
+                                    kann der endgültige Preis leicht vom geschätzten
+                                    Betrag abweichen. Um eine reibungslose Abwicklung zu
+                                    gewährleisten, reservieren wir vorübergehend{" "}
+                                    <strong>€{WEIGHT_BUFFER.toFixed(2)}</strong> zusätzlich
+                                    auf Ihrer Zahlungsmethode.
                                 </p>
+                                <div className="bill-explanation-points">
+                                    <div className="bill-explanation-point">
+                                        <span className="material-symbols-outlined">
+                                            check_circle
+                                        </span>
+                                        <span>
+                                            Sie werden{" "}
+                                            <strong>
+                                                nur für die tatsächlich gelieferte Menge
+                                            </strong>{" "}
+                                            belastet.
+                                        </span>
+                                    </div>
+                                    <div className="bill-explanation-point">
+                                        <span className="material-symbols-outlined">
+                                            schedule
+                                        </span>
+                                        <span>
+                                            Der nicht verwendete Betrag wird{" "}
+                                            <strong>
+                                                automatisch innerhalb von 3-5 Werktagen
+                                            </strong>{" "}
+                                            freigegeben.
+                                        </span>
+                                    </div>
+                                    <div className="bill-explanation-point">
+                                        <span className="material-symbols-outlined">
+                                            shield
+                                        </span>
+                                        <span>
+                                            <strong>Keine versteckten Gebühren.</strong>{" "}
+                                            Diese Reserve ist keine Zahlung, sondern nur
+                                            eine Sicherheit.
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {/* ============================================
-              RIGHT: Stripe Payment Only
-          ============================================ */}
+                        RIGHT: Stripe Payment
+                    ============================================ */}
                     <div className="bill-payment">
                         <div className="bill-payment-section">
                             <h2>🔐 Secure Payment</h2>
                             <p className="bill-payment-sub">
-                                Your payment will be authorized now and charged after we confirm
-                                the weight.
+                                Your payment will be authorized now and charged after
+                                we confirm the weight.
                             </p>
 
                             {clientSecret ? (
@@ -396,9 +509,10 @@ export default function BillAndPayment() {
                             )}
                         </div>
 
-                        {/* Security Badge */}
                         <div className="bill-security-badge">
-                            <span className="material-symbols-outlined">verified_user</span>
+                            <span className="material-symbols-outlined">
+                                verified_user
+                            </span>
                             <div>
                                 <strong>Powered by Stripe</strong>
                                 <small>PCI-DSS Level 1 Certified</small>

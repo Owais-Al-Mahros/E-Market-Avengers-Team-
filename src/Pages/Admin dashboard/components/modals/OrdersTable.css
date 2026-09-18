@@ -1,4 +1,7 @@
-/* أزرار إضافية */
+/* ============================================
+   OrdersTable.css — Cleaned version
+   ============================================ */
+
 .btn-undo {
     background: var(--light-danger-color);
     color: var(--bg-color);
@@ -52,3 +55,5 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* ❌ REMOVED: All .order-returned-indicator, .has-returns, .order-total.has-return styles */

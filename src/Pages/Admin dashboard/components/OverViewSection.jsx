@@ -61,8 +61,8 @@ export default function OverViewSection() {
       id: `#${order.id}`,
       customer:
         order.customer_info?.first_name +
-          " " +
-          order.customer_info?.last_name || "Unknown",
+        " " +
+        order.customer_info?.last_name || "Unknown",
       total: `$${Number(order.total_price || 0).toFixed(2)}`,
       status: order.status || "Pending",
     }));
@@ -127,12 +127,12 @@ export default function OverViewSection() {
                     style={{
                       background:
                         order.status.toLowerCase() === "delivered" ||
-                        order.status.toLowerCase() === "paid"
+                          order.status.toLowerCase() === "paid"
                           ? "#dcfce7"
                           : "#fee2e2",
                       color:
                         order.status.toLowerCase() === "delivered" ||
-                        order.status.toLowerCase() === "paid"
+                          order.status.toLowerCase() === "paid"
                           ? "#166534"
                           : "#b91c1c",
                     }}
@@ -148,7 +148,7 @@ export default function OverViewSection() {
         </ul>
       </div>
 
-      <div className="overview-panel" style={{marginTop : "1rem"}}>
+      <div className="overview-panel" style={{ marginTop: "1rem" }}>
         <div className="overview-panel-header">
           <h3 className="overview-panel-title">🔥 Top Selling Products</h3>
         </div>

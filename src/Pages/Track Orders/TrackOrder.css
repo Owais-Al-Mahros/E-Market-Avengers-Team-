@@ -1,0 +1,239 @@
+/* ============================================
+   📦 Track Order Page — Main Layout
+   ============================================ */
+
+.track-order-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f7faf8 0%, #eff5f1 100%);
+    display: flex;
+    flex-direction: column;
+}
+
+.track-order-main {
+    flex: 1;
+    width: 100%;
+    padding: 56px 40px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ============================================
+   نتيجة البحث (عرض الطلب)
+   ============================================ */
+.track-order-result {
+    width: 100%;
+    max-width: 820px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    animation: trackFadeIn 0.4s ease;
+}
+
+@keyframes trackFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* زر العودة */
+.track-order-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #fff;
+    border: 1.5px solid var(--secondary-color);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: 0.2s;
+    width: fit-content;
+    box-shadow: 0 2px 8px rgba(20, 92, 74, 0.04);
+}
+
+.track-order-back-btn:hover {
+    background: var(--secondary-color);
+    border-color: var(--primary-color);
+    transform: translateX(-2px);
+}
+
+.track-order-back-btn .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 768px) {
+    .track-order-main {
+        padding: 32px 16px 50px;
+    }
+
+    .track-order-result {
+        gap: 18px;
+    }
+
+    .track-order-back-btn {
+        font-size: 13px;
+        padding: 10px 16px;
+    }
+}
+
+/* ============================================
+   🎉 Success Banner (بعد الدفع)
+   ============================================ */
+.track-order-success-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), #fff);
+    border: 2px solid rgba(16, 185, 129, 0.3);
+    border-left: 5px solid #10b981;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
+    animation: bannerSlideDown 0.5s ease;
+}
+
+@keyframes bannerSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.track-order-success-banner .material-symbols-outlined {
+    font-size: 40px;
+    color: #10b981;
+    flex-shrink: 0;
+    font-variation-settings: "FILL" 1;
+}
+
+.track-order-success-banner>div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.track-order-success-banner strong {
+    font-size: 17px;
+    font-weight: 800;
+    color: #047857;
+    letter-spacing: -0.2px;
+}
+
+.track-order-success-banner p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.55;
+    font-weight: 500;
+}
+
+@media (max-width: 640px) {
+    .track-order-success-banner {
+        padding: 16px 18px;
+        gap: 12px;
+    }
+
+    .track-order-success-banner .material-symbols-outlined {
+        font-size: 32px;
+    }
+
+    .track-order-success-banner strong {
+        font-size: 15px;
+    }
+
+    .track-order-success-banner p {
+        font-size: 13px;
+    }
+}
+
+.track-order-success-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 8px 0 0 0 !important;
+    padding: 10px 14px;
+    background: rgba(245, 158, 11, 0.1);
+    border-left: 3px solid #f59e0b;
+    border-radius: 8px;
+    font-size: 13px !important;
+    line-height: 1.5;
+    color: #78350f !important;
+    font-weight: 500 !important;
+}
+
+.track-order-success-hint .material-symbols-outlined {
+    font-size: 18px;
+    color: #d97706;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-variation-settings: "FILL" 1;
+}
+
+.track-order-success-hint strong {
+    color: #78350f;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+.track-order-success-hint em {
+    color: #b45309;
+    font-style: normal;
+    font-weight: 700;
+}
+
+@media (max-width: 640px) {
+    .track-order-success-hint {
+        padding: 8px 12px;
+        font-size: 12.5px !important;
+    }
+
+    .track-order-success-hint strong {
+        font-size: 12.5px;
+    }
+}
+
+.track-order-number-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: #fff;
+    border: 2px dashed var(--primary-color);
+    border-radius: 12px;
+    flex-wrap: wrap;
+}
+
+.track-order-number-label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #6b7a77;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.track-order-number-value {
+    font-family: "Courier New", monospace;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--primary-color);
+    letter-spacing: 0.5px;
+}

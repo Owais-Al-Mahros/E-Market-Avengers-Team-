@@ -11,6 +11,66 @@ export function OrdersProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // ============================================
+  // ✅ بحث برقم الطلب (يستخدم نفس الحالة المشتركة)
+  // ============================================
+  const searchOrders = async (term) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const cleanTerm = String(term || "").trim();
+
+      if (!cleanTerm) {
+        // إذا كان البحث فارغاً → أرجع الطلبات الكاملة
+        await fetchOrders();
+        return { success: true, data: [] };
+      }
+
+      const { data, error } = await supabase
+        .from("orders")
+        .select(`
+        *,
+        order_items (
+          id,
+          product_id,
+          product_number,
+          product_name,
+          quantity,
+          unit_price,
+          total_price,
+          weight,
+          weight_unit,
+          total_weight,
+          actual_weight,
+          actual_quantity,
+          actual_unit_price,
+          actual_total,
+          price_difference,
+          status,
+          substitution_note,
+          scanned_at
+        )
+      `)
+        .ilike("order_number", `%${cleanTerm}%`)
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      // ✅ نُحدّث نفس الحالة المشتركة → Actions تعمل تلقائياً
+      setOrders(data || []);
+
+      return { success: true, data: data || [] };
+    } catch (err) {
+      setError(err.message || "Search failed");
+      setOrders([]);
+      return { success: false, error: err.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchOrders = async () => {
     setLoading(true);
     setError(null);
@@ -51,18 +111,53 @@ export function OrdersProvider({ children }) {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
+      // 1. تحديث الحالة في DB
       const { error } = await supabase
         .from("orders")
-        .update({ status: newStatus })
+        .update({
+          status: newStatus,
+          updated_at: new Date().toISOString(),
+        })
         .eq("id", orderId);
+
       if (error) throw error;
 
+      // ✅ 2. إعادة جلب الطلب بالكامل مع كل الحقول المحدثة
+      const { data: updatedOrder, error: fetchError } = await supabase
+        .from("orders")
+        .select(`
+        *,
+        order_items (
+          id,
+          product_id,
+          product_name,
+          quantity,
+          unit_price,
+          total_price,
+          weight,
+          weight_unit,
+          total_weight,
+          actual_weight,
+          actual_quantity,
+          actual_unit_price,
+          actual_total,
+          price_difference,
+          status,
+          substitution_note,
+          scanned_at
+        )
+      `)
+        .eq("id", orderId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // 3. تحديث الحالة المحلية بالكامل
       setOrders((prev) =>
-        prev.map((order) =>
-          order.id === orderId ? { ...order, status: newStatus } : order,
-        ),
+        prev.map((order) => (order.id === orderId ? updatedOrder : order))
       );
-      return { success: true };
+
+      return { success: true, data: updatedOrder };
     } catch (error) {
       console.error("Error updating order:", error);
       return { success: false, error: error.message };
@@ -74,21 +169,29 @@ export function OrdersProvider({ children }) {
     try {
       const { data, error } = await supabase
         .from("orders")
-        .select(
-          `
-        *,
-        order_items (
-          id,
-          product_id,
-          product_name,
-          quantity,
-          unit_price,
-          total_price,
-          weight,
-          total_weight
-        )
-      `,
-        )
+        .select(`
+  *,
+  order_items (
+    id,
+    product_id,
+    product_number,
+    product_name,
+    quantity,
+    unit_price,
+    total_price,
+    weight,
+    weight_unit,
+    total_weight,
+    actual_weight,
+    actual_quantity,
+    actual_unit_price,
+    actual_total,
+    price_difference,
+    status,
+    substitution_note,
+    scanned_at
+  )
+`)
         .eq("status", status) // ✅ هنا التصفية حسب الحالة
         .order("created_at", { ascending: true });
 
@@ -106,8 +209,10 @@ export function OrdersProvider({ children }) {
     loading,
     error,
     fetchOrders,
-    fetchOrdersByStatus, // ✅ الدالة الجديدة
+    fetchOrdersByStatus,
+    searchOrders,           // ✅ جديد
     updateOrderStatus,
+    setOrders,              // ✅ قد تحتاجها
   };
 
   return (

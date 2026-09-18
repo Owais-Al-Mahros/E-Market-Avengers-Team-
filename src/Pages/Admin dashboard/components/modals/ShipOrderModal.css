@@ -1,7 +1,8 @@
 /* ============================================
-   📦 Ship Order Modal
+   📦 Ship Order Modal — Complete Styles
    ============================================ */
 
+/* ===== Overlay ===== */
 .ship-modal-overlay {
     position: fixed;
     inset: 0;
@@ -25,11 +26,12 @@
     }
 }
 
+/* ===== Modal Container ===== */
 .ship-modal {
     background: #fff;
     border-radius: 20px;
     width: 100%;
-    max-width: 720px;
+    max-width: 780px;
     max-height: 92vh;
     display: flex;
     flex-direction: column;
@@ -50,51 +52,78 @@
     }
 }
 
-/* ===== Header ===== */
+/* ===== Sticky Header ===== */
+.ship-modal-header-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(20, 92, 74, 0.06);
+}
+
+/* Row 1 — Title */
 .ship-modal-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 24px 28px 20px;
-    border-bottom: 2px solid var(--secondary-color);
+    align-items: center;
+    gap: 12px;
+    padding: 14px 22px;
     background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
     color: #fff;
 }
 
-.ship-modal-header h2 {
+.ship-modal-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    min-width: 0;
+    flex: 1;
+}
+
+.ship-header-icon {
     font-size: 22px;
-    font-weight: 800;
-    margin: 0 0 6px;
-    color: #fff;
-    letter-spacing: -0.3px;
-}
-
-.ship-modal-header p {
-    font-size: 14px;
-    margin: 0;
-    color: rgba(255, 255, 255, 0.85);
-}
-
-.ship-modal-header strong {
     color: var(--accent-color);
-    font-weight: 800;
 }
 
-.ship-modal-cod {
-    color: #ffd166;
-    font-weight: 700;
+.ship-modal-header-left h2 {
+    font-size: 17px;
+    font-weight: 800;
+    margin: 0;
+    color: #fff;
+    letter-spacing: -0.2px;
+    white-space: nowrap;
+}
+
+.ship-order-badge {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    font-family: "Courier New", monospace;
+    white-space: nowrap;
+}
+
+.ship-cod-badge {
+    background: #ffd166;
+    color: #072917;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
 }
 
 .ship-modal-close {
-    background: rgba(255, 255, 255, 0.15);
-    border: none;
-    color: #fff;
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 10px;
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
     cursor: pointer;
-    font-size: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -103,69 +132,92 @@
 }
 
 .ship-modal-close:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.28);
+    transform: rotate(90deg);
 }
 
-/* ===== Customer Info ===== */
-.ship-modal-customer {
-    padding: 16px 28px;
+.ship-modal-close .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* Row 2 — Customer Compact */
+.ship-modal-customer-compact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 22px;
     background: var(--bg-color);
     border-bottom: 1px solid var(--secondary-color);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    font-size: 12.5px;
 }
 
-.ship-customer-row {
-    display: flex;
+.ship-info-item {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    font-size: 14px;
+    gap: 5px;
     color: var(--text);
-    font-weight: 500;
-}
-
-.ship-customer-row a {
-    color: var(--primary-color);
     text-decoration: none;
-    font-weight: 700;
+    font-weight: 600;
+    font-size: 12.5px;
+    white-space: nowrap;
 }
 
-.ship-customer-row a:hover {
+.ship-info-item .material-symbols-outlined {
+    font-size: 16px;
+    color: var(--primary-color);
+}
+
+.ship-info-item:hover {
+    color: var(--primary-color);
     text-decoration: underline;
 }
 
-/* ===== Instructions ===== */
-.ship-modal-instructions {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    padding: 14px 28px;
-    background: rgba(185, 231, 105, 0.15);
-    border-bottom: 1px solid rgba(185, 231, 105, 0.3);
+.ship-info-address {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.ship-modal-instructions .material-symbols-outlined {
-    color: var(--primary-color);
-    font-size: 20px;
+/* Substitution Badge (inline) */
+.ship-sub-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-left: auto;
     flex-shrink: 0;
-    margin-top: 2px;
 }
 
-.ship-modal-instructions p {
-    margin: 0;
-    font-size: 13.5px;
-    color: var(--text);
-    line-height: 1.55;
-    font-weight: 500;
+.ship-sub-inline .material-symbols-outlined {
+    font-size: 14px;
+}
+
+.ship-sub-inline.yes {
+    background: rgba(35, 139, 101, 0.12);
+    color: var(--success);
+    border: 1px solid rgba(35, 139, 101, 0.25);
+}
+
+.ship-sub-inline.no {
+    background: rgba(217, 79, 79, 0.12);
+    color: var(--danger-color);
+    border: 1px solid rgba(217, 79, 79, 0.25);
 }
 
 /* ===== Body ===== */
 .ship-modal-body {
     flex: 1;
     overflow-y: auto;
-    padding: 20px 28px;
-    background: #FAFCFB;
+    padding: 20px 24px;
+    background: #fafcfb;
 }
 
 .ship-loading {
@@ -178,9 +230,9 @@
 }
 
 .ship-spinner {
-    width: 36px;
-    height: 36px;
-    border: 3.5px solid var(--secondary-color);
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--secondary-color);
     border-top-color: var(--primary-color);
     border-radius: 50%;
     animation: shipSpin 0.8s linear infinite;
@@ -196,9 +248,10 @@
     color: var(--primary-color);
     font-weight: 600;
     margin: 0;
+    font-size: 14px;
 }
 
-/* ===== Items ===== */
+/* ===== Items List ===== */
 .ship-items {
     display: flex;
     flex-direction: column;
@@ -210,7 +263,7 @@
     border: 2px solid var(--secondary-color);
     border-radius: 14px;
     padding: 16px 18px;
-    transition: 0.3s;
+    transition: all 0.3s ease;
 }
 
 .ship-item.is-scanned {
@@ -222,6 +275,7 @@
     border-style: dashed;
     border-color: #ccc;
     background: #fafafa;
+    opacity: 0.85;
 }
 
 /* ===== Item Head ===== */
@@ -233,15 +287,15 @@
 }
 
 .ship-item-num {
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: var(--secondary-color);
     color: var(--primary-color);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 12.5px;
     font-weight: 800;
     flex-shrink: 0;
 }
@@ -261,11 +315,22 @@
     font-size: 15px;
     font-weight: 700;
     color: var(--text);
+    min-width: 0;
 }
 
+.ship-sub-original {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #8b5cf6;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+/* Badge */
 .ship-badge {
-    width: 22px;
-    height: 22px;
+    min-width: 24px;
+    height: 24px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -273,6 +338,7 @@
     font-size: 13px;
     font-weight: 800;
     color: #fff;
+    flex-shrink: 0;
 }
 
 .ship-badge.ok {
@@ -281,6 +347,10 @@
 
 .ship-badge.no {
     background: #999;
+}
+
+.ship-badge.sub {
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
 }
 
 .ship-badge.pending {
@@ -306,7 +376,7 @@
     gap: 18px;
     font-size: 13px;
     color: #6b7a77;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     font-weight: 500;
     flex-wrap: wrap;
 }
@@ -316,22 +386,34 @@
     font-weight: 700;
 }
 
-/* ===== Input Row ===== */
+/* ===== Input Row (for editing) ===== */
 .ship-input-row {
     display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 10px;
-    align-items: stretch;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
     margin-bottom: 12px;
 }
 
+.ship-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ship-field label {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #6b7a77;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
 .ship-input-wrap {
-    position: relative;
     display: flex;
     align-items: center;
     background: var(--bg-color);
     border: 2px solid var(--secondary-color);
-    border-radius: 12px;
+    border-radius: 11px;
     transition: 0.2s;
 }
 
@@ -343,8 +425,8 @@
 
 .ship-input-wrap input {
     flex: 1;
-    padding: 14px 16px;
-    font-size: 19px;
+    padding: 12px 14px;
+    font-size: 17px;
     font-weight: 800;
     font-family: inherit;
     color: var(--text);
@@ -352,6 +434,7 @@
     border: none;
     outline: none;
     width: 100%;
+    min-width: 0;
 }
 
 .ship-input-wrap input::placeholder {
@@ -360,34 +443,29 @@
 }
 
 .ship-unit {
-    padding: 0 16px 0 0;
-    font-size: 15px;
+    padding: 0 14px 0 0;
+    font-size: 13px;
     font-weight: 700;
     color: #6b7a77;
+    flex-shrink: 0;
 }
 
-.ship-calc {
+/* ===== Calculated Row ===== */
+.ship-calc-row {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 2px;
-    padding: 10px 16px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
     background: var(--secondary-color);
-    border-radius: 12px;
-    min-width: 105px;
-}
-
-.ship-calc span {
-    font-size: 10.5px;
-    font-weight: 700;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 13.5px;
+    font-weight: 600;
     color: #6b7a77;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
-.ship-calc strong {
-    font-size: 19px;
+.ship-calc-row strong {
+    font-size: 20px;
     font-weight: 800;
     color: var(--primary-color);
     letter-spacing: -0.5px;
@@ -437,7 +515,7 @@
 
 .ship-btn-unavailable {
     background: transparent;
-    border: 1.5px solid #E1EBE7;
+    border: 1.5px solid #e1ebe7;
     color: #6b7a77;
 }
 
@@ -484,13 +562,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 14px;
+    gap: 12px;
+    padding: 12px 14px;
     background: var(--bg-color);
     border-radius: 10px;
+    flex-wrap: wrap;
 }
 
 .ship-item-weight {
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 700;
     color: var(--text);
 }
@@ -499,6 +579,7 @@
     font-size: 18px;
     font-weight: 800;
     color: var(--success);
+    white-space: nowrap;
 }
 
 .ship-item-total-zero {
@@ -516,7 +597,7 @@
 
 /* ===== Footer ===== */
 .ship-modal-footer {
-    padding: 20px 28px 22px;
+    padding: 20px 24px 22px;
     border-top: 2px solid var(--secondary-color);
     background: #fff;
 }
@@ -531,7 +612,7 @@
 .ship-total-row {
     display: flex;
     justify-content: space-between;
-    font-size: 14px;
+    font-size: 13.5px;
     color: #6b7a77;
     font-weight: 600;
 }
@@ -540,41 +621,23 @@
     font-size: 16px;
     color: var(--text);
     font-weight: 800;
-    padding-top: 8px;
-    margin-top: 4px;
+    padding-top: 10px;
+    margin-top: 6px;
     border-top: 1.5px solid var(--secondary-color);
 }
 
-.ship-total-row .ok {
-    color: var(--success);
-    font-weight: 800;
+.ship-total-row.actual span:last-child {
+    color: var(--primary-color);
 }
 
-.ship-total-row .bad {
-    color: var(--danger-color);
+.actual-products {
+    color: var(--success) !important;
     font-weight: 800;
 }
 
 .ship-footer-actions {
     display: flex;
     gap: 10px;
-}
-
-.ship-btn-cancel {
-    padding: 16px 24px;
-    background: #fff;
-    border: 2px solid var(--secondary-color);
-    border-radius: 12px;
-    color: var(--primary-color);
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.ship-btn-cancel:hover {
-    background: var(--secondary-color);
 }
 
 .ship-btn-ship {
@@ -589,7 +652,7 @@
     border-radius: 12px;
     color: #fff;
     font-family: inherit;
-    font-size: 16px;
+    font-size: 15.5px;
     font-weight: 800;
     cursor: pointer;
     transition: 0.25s;
@@ -613,96 +676,8 @@
     font-size: 20px;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 640px) {
-    .ship-modal-overlay {
-        padding: 0;
-    }
-
-    .ship-modal {
-        max-width: 100%;
-        height: 100vh;
-        max-height: 100vh;
-        border-radius: 0;
-    }
-
-    .ship-modal-header,
-    .ship-modal-customer,
-    .ship-modal-instructions,
-    .ship-modal-body,
-    .ship-modal-footer {
-        padding-left: 18px;
-        padding-right: 18px;
-    }
-
-    .ship-footer-actions {
-        flex-direction: column-reverse;
-    }
-
-    .ship-btn-cancel,
-    .ship-btn-ship {
-        width: 100%;
-    }
-}
-
 /* ============================================
-   📌 Sticky Header
-   ============================================ */
-.ship-modal-header-sticky {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: #fff;
-    border-bottom: 1px solid var(--secondary-color);
-}
-
-/* ============================================
-   ⇄ Substitution Badge
-   ============================================ */
-.ship-sub-badge {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 28px;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.ship-sub-badge .material-symbols-outlined {
-    font-size: 20px;
-}
-
-.ship-sub-badge.yes {
-    background: linear-gradient(135deg, rgba(35, 139, 101, 0.12), rgba(35, 139, 101, 0.04));
-    color: var(--success);
-    border-bottom: 1px solid rgba(35, 139, 101, 0.15);
-}
-
-.ship-sub-badge.no {
-    background: linear-gradient(135deg, rgba(217, 79, 79, 0.12), rgba(217, 79, 79, 0.04));
-    color: var(--danger-color);
-    border-bottom: 1px solid rgba(217, 79, 79, 0.15);
-}
-
-/* ============================================
-   🏷️ Substituted badge
-   ============================================ */
-.ship-badge.sub {
-    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-    color: #fff;
-}
-
-.ship-sub-original {
-    display: block;
-    font-size: 11px;
-    font-weight: 500;
-    color: #6b7a77;
-    margin-top: 2px;
-    font-style: italic;
-}
-
-/* ============================================
-   🎯 Substitute Sub-modal
+   🔀 Substitute Sub-modal
    ============================================ */
 .substitute-overlay {
     position: fixed;
@@ -821,6 +796,7 @@
     transition: 0.2s;
     font-family: inherit;
     text-align: left;
+    width: 100%;
 }
 
 .substitute-item:hover {
@@ -907,198 +883,73 @@
     background: var(--secondary-color);
 }
 
+/* ============================================
+   📱 Responsive
+   ============================================ */
 @media (max-width: 640px) {
-    .substitute-modal {
+    .ship-modal-overlay {
+        padding: 0;
+    }
+
+    .ship-modal {
         max-width: 100%;
-        max-height: 100vh;
         height: 100vh;
+        max-height: 100vh;
         border-radius: 0;
     }
-}
 
-/* ============================================
-   📌 Sticky Header — مضغوط في صفّين
-   ============================================ */
-.ship-modal-header-sticky {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(20, 92, 74, 0.06);
-}
+    .ship-modal-header {
+        padding: 12px 16px;
+    }
 
-/* Row 1 — العنوان */
-.ship-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
-    color: #fff;
-}
-
-.ship-modal-header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    min-width: 0;
-    flex: 1;
-}
-
-.ship-header-icon {
-    font-size: 20px;
-    color: var(--accent-color);
-}
-
-.ship-modal-header-left h2 {
-    font-size: 15px;
-    font-weight: 800;
-    margin: 0;
-    color: #fff;
-    letter-spacing: -0.2px;
-    white-space: nowrap;
-}
-
-.ship-order-badge {
-    background: rgba(255, 255, 255, 0.15);
-    padding: 3px 10px;
-    border-radius: 8px;
-    font-size: 11.5px;
-    font-weight: 800;
-    letter-spacing: 0.3px;
-    white-space: nowrap;
-}
-
-.ship-cod-badge {
-    background: #ffd166;
-    color: #072917;
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-
-.ship-modal-close {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: none;
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-    flex-shrink: 0;
-}
-
-.ship-modal-close:hover {
-    background: rgba(255, 255, 255, 0.25);
-}
-
-.ship-modal-close .material-symbols-outlined {
-    font-size: 18px;
-}
-
-/* Row 2 — معلومات العميل */
-.ship-modal-customer-compact {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 14px;
-    padding: 10px 20px;
-    background: var(--bg-color);
-    border-bottom: 1px solid var(--secondary-color);
-    font-size: 12.5px;
-}
-
-.ship-info-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 12.5px;
-    white-space: nowrap;
-}
-
-.ship-info-item .material-symbols-outlined {
-    font-size: 15px;
-    color: var(--primary-color);
-}
-
-.ship-info-item:hover {
-    color: var(--primary-color);
-    text-decoration: underline;
-}
-
-.ship-info-address {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Badge موافقة الاستبدال (inline) */
-.ship-sub-inline {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    margin-left: auto;
-    flex-shrink: 0;
-}
-
-.ship-sub-inline .material-symbols-outlined {
-    font-size: 14px;
-}
-
-.ship-sub-inline.yes {
-    background: rgba(35, 139, 101, 0.12);
-    color: var(--success);
-    border: 1px solid rgba(35, 139, 101, 0.25);
-}
-
-.ship-sub-inline.no {
-    background: rgba(217, 79, 79, 0.12);
-    color: var(--danger-color);
-    border: 1px solid rgba(217, 79, 79, 0.25);
-}
-
-/* ============================================
-   Responsive
-   ============================================ */
-@media (max-width: 640px) {
     .ship-modal-header-left h2 {
-        display: none;
+        font-size: 15px;
+    }
+
+    .ship-order-badge {
+        font-size: 11px;
+    }
+
+    .ship-modal-customer-compact {
+        gap: 10px;
+        padding: 10px 16px;
+        font-size: 12px;
     }
 
     .ship-info-address {
         display: none;
     }
 
-    .ship-modal-customer-compact {
-        gap: 10px;
-        padding: 8px 14px;
-        font-size: 12px;
-    }
-
-    .ship-info-item {
-        font-size: 12px;
-    }
-
     .ship-sub-inline {
         margin-left: 0;
+    }
+
+    .ship-modal-body {
+        padding: 14px 16px;
+    }
+
+    .ship-input-row {
+        grid-template-columns: 1fr;
+    }
+
+    .ship-modal-footer {
+        padding: 16px 16px 18px;
+    }
+
+    .ship-footer-actions {
+        flex-direction: column-reverse;
+    }
+
+    .ship-btn-ship {
+        width: 100%;
+        padding: 14px 18px;
+        font-size: 14.5px;
+    }
+
+    .substitute-modal {
+        max-width: 100%;
+        max-height: 100vh;
+        height: 100vh;
+        border-radius: 0;
     }
 }

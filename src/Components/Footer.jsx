@@ -1,6 +1,7 @@
 import "./Footer.css";
 import { useCategories } from "../context/CategoryContext";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 function Footer() {
   console.count("🦶 Footer");
 
@@ -9,7 +10,7 @@ function Footer() {
 
   const handelCategorySelect = (catId) => {
     navigate(`/DisplayProducts?categoryId=${catId}`)
-    window.scrollTo(0,0)
+    window.scrollTo(0, 0)
   };
 
   return (
@@ -68,7 +69,7 @@ function Footer() {
                       key={cat.id}
                       className="category-link"
                       onClick={() => handelCategorySelect(cat.id)}
-                      style={{ cursor: "pointer"}}
+                      style={{ cursor: "pointer" }}
                     >
                       {cat.name}
                     </li>
@@ -83,15 +84,12 @@ function Footer() {
           <div className="customer-service">
             <h3 className="subTitles">Customer Service</h3>
             <ul className="service-list">
-              <a href="#" className="service-link">
-                <li>FAQ</li>
-              </a>
-              <a href="#" className="service-link">
-                <li>Terms Of Use</li>
-              </a>
-              <a href="#" className="service-link">
-                <li>Privacy Policy</li>
-              </a>
+              <li><Link to="/help" className="service-link">FAQ</Link></li>
+              <li><Link to="/lieferung-zahlung" className="service-link">Lieferung & Zahlung</Link></li>
+              <li><Link to="/widerruf" className="service-link">Widerruf</Link></li>
+              <li><Link to="/agb" className="service-link">AGB</Link></li>
+              <li><Link to="/datenschutz" className="service-link">Datenschutz</Link></li>
+              <li><Link to="/impressum" className="service-link">Impressum</Link></li>
             </ul>
           </div>
           <div className="contact-us">

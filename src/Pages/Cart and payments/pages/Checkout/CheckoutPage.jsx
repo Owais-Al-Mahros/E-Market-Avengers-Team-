@@ -1,45 +1,27 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../../../context/CartContext";
-import { supabase } from "../../../../lib/supabase";
+import { useCheckout } from "../../../../context/CheckoutContext";
 import toast from "react-hot-toast";
-import "./CheckoutPage.css";
-import Footer from "./../../../../Components/Footer"
+import Footer from "./../../../../Components/Footer";
 import CartHeader from "../ShoppingCart/components/CartHeader";
-import DeliveryTime from "../../modals/DeliveryTime";
+import "./CheckoutPage.css";
 
 const EDGE_FUNCTION_URL = import.meta.env.VITE_EDGE_FUNCTION_URL;
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
-  const { cartItems, totalPrice, totalWeight, clearCart } = useCart();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { totalPrice, totalWeight } = useCart();
+  const { checkoutData, updateField, updateFields, isAddressComplete } =
+    useCheckout();
 
-  const [shippingDetails, setShippingDetails] = useState(null);
   const [calculating, setCalculating] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  // ✅ الخطوة الحالية للهيدر
-  const [currentStep, setCurrentStep] = useState(2);
+  const currentStep = 2; // Address
 
-  const [customer, setCustomer] = useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
-    email: "",
-    street: "",
-    houseNumber: "",
-    postalCode: "",
-    city: "",
-    floor: "",
-    apartment: "",
-    doorbellName: "",
-    hasElevator: "no",
-    deliveryDate: "",
-    deliveryTime: "",
-    deliveryNotes: "",
-  });
   // ============================================
-  // ✅ التحقق من صحة المدخلات حسب نوع الحقل
+  // Input Validation
   // ============================================
   const validateInput = (name, value) => {
     switch (name) {
@@ -47,33 +29,17 @@ export default function CheckoutPage() {
       case "lastName":
       case "city":
       case "doorbellName":
-        // حروف عربية وإنجليزية ومسافات وشرطات فقط
         return value.replace(/[^a-zA-Z\u0600-\u06FF\s\-'.]/g, "");
-
       case "phone":
-        // أرقام و + و - و مسافات فقط
         return value.replace(/[^\d+\-\s()]/g, "");
-
       case "postalCode":
-        // أرقام فقط، بحد أقصى 5 خانات (ألمانيا)
         return value.replace(/\D/g, "").slice(0, 5);
-
       case "houseNumber":
-        // أرقام وحروف (مثل: 12a، 5b)
         return value.replace(/[^\d\w\-\/]/g, "").slice(0, 6);
-
       case "floor":
-        // أرقام فقط، بحد أقصى رقمين
         return value.replace(/\D/g, "").slice(0, 2);
-
       case "apartment":
-        // أرقام وحروف فقط
         return value.replace(/[^\d\w\-]/g, "").slice(0, 6);
-
-      case "email":
-        // لا قيود (سيتم التحقق عند الإرسال)
-        return value;
-
       default:
         return value;
     }
@@ -82,51 +48,27 @@ export default function CheckoutPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     const cleanValue = validateInput(name, value);
-    setCustomer((prev) => ({ ...prev, [name]: cleanValue }));
+    updateField(name, cleanValue);
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
   };
 
-
   // ============================================
-  // ✅ تحديث الخطوة تلقائياً حسب تقدم المستخدم
-  // ============================================
-  useEffect(() => {
-    const addressComplete =
-      customer.street &&
-      customer.houseNumber &&
-      customer.postalCode &&
-      customer.city;
-
-    const deliveryComplete = customer.deliveryDate && customer.deliveryTime;
-    const shippingComplete = shippingDetails !== null;
-
-    if (shippingComplete && deliveryComplete && addressComplete) {
-      setCurrentStep(4); // Payment
-    } else if (deliveryComplete && addressComplete) {
-      setCurrentStep(3); // Delivery Date
-    } else {
-      setCurrentStep(2); // Address
-    }
-  }, [
-    customer.street,
-    customer.houseNumber,
-    customer.postalCode,
-    customer.city,
-    customer.deliveryDate,
-    customer.deliveryTime,
-    shippingDetails,
-  ]);
-
-  // ============================================
-  // ✅ حساب الشحن تلقائياً عند اكتمال العنوان
+  // حساب الشحن تلقائياً
   // ============================================
   useEffect(() => {
-    if (
-      !customer.street ||
-      !customer.houseNumber ||
-      !customer.postalCode ||
-      !customer.city
-    ) {
-      setShippingDetails(null);
+    const {
+      street,
+      houseNumber,
+      postalCode,
+      city,
+      floor,
+      hasElevator,
+    } = checkoutData;
+
+    if (!street || !houseNumber || !postalCode || !city) {
+      updateField("shippingDetails", null);
       return;
     }
 
@@ -137,17 +79,20 @@ export default function CheckoutPage() {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    customer.street,
-    customer.houseNumber,
-    customer.postalCode,
-    customer.city,
-    customer.floor,
-    customer.hasElevator,
+    checkoutData.street,
+    checkoutData.houseNumber,
+    checkoutData.postalCode,
+    checkoutData.city,
+    checkoutData.floor,
+    checkoutData.hasElevator,
   ]);
 
   const calculateShipping = async () => {
     setCalculating(true);
     try {
+      const { street, houseNumber, postalCode, city, floor, hasElevator } =
+        checkoutData;
+
       const response = await fetch(EDGE_FUNCTION_URL, {
         method: "POST",
         headers: {
@@ -155,10 +100,10 @@ export default function CheckoutPage() {
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          customerAddress: `${customer.street} ${customer.houseNumber}, ${customer.postalCode} ${customer.city}, Germany`,
+          customerAddress: `${street} ${houseNumber}, ${postalCode} ${city}, Germany`,
           itemsWeight: totalWeight,
-          floor: parseInt(customer.floor) || 0,
-          hasElevator: customer.hasElevator === "yes",
+          floor: parseInt(floor) || 0,
+          hasElevator: hasElevator === "yes",
           cartSubtotal: totalPrice,
         }),
       });
@@ -166,288 +111,166 @@ export default function CheckoutPage() {
       const result = await response.json();
 
       if (result.success) {
-        setShippingDetails(result);
+        updateField("shippingDetails", result);
       } else {
-        setShippingDetails(null);
+        updateField("shippingDetails", null);
         toast.error(result.error, { id: "shipping-error" });
       }
     } catch (error) {
       console.error("Shipping calculation failed:", error);
-      setShippingDetails(null);
+      updateField("shippingDetails", null);
     } finally {
       setCalculating(false);
     }
   };
 
   // ============================================
-  // ✅ التكاليف: نستخدم القيم من السيرفر
+  // Validation before continue
   // ============================================
-  const subTotal = totalPrice;
-  const shipping = shippingDetails?.totalShipping || 0;
-  const tax = subTotal * 0.07;
-  const total = subTotal + shipping + tax;
+  const validateBeforeContinue = () => {
+    const newErrors = {};
 
-  // ============================================
-  // إنشاء رقم طلب فريد
-  // ============================================
-  const generateOrderNumber = () => {
-    const now = new Date();
-    const date = now.toISOString().slice(0, 10).replace(/-/g, "");
-    const random = Math.floor(1000 + Math.random() * 9000);
-    return `ORD-${date}-${random}`;
-  };
-
-  // ============================================
-  // تأكيد الطلب وحفظه في قاعدة البيانات
-  // ============================================
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // ===== ✅ تحقق من صيغة البريد الإلكتروني =====
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(customer.email)) {
-      toast.error("Please enter a valid email address.");
-      return;
+    if (!emailRegex.test(checkoutData.email)) {
+      newErrors.email = "Bitte geben Sie eine gültige E-Mail-Adresse ein.";
     }
 
-    // ===== ✅ تحقق من رقم الهاتف =====
-    const phoneDigits = customer.phone.replace(/\D/g, "");
+    const phoneDigits = (checkoutData.phone || "").replace(/\D/g, "");
     if (phoneDigits.length < 8 || phoneDigits.length > 15) {
-      toast.error("Please enter a valid phone number (8-15 digits).");
-      return;
+      newErrors.phone = "Telefonnummer muss zwischen 8 und 15 Ziffern haben.";
     }
 
-    // ===== ✅ تحقق من الرمز البريدي الألماني (5 أرقام) =====
-    if (!/^\d{5}$/.test(customer.postalCode)) {
-      toast.error("Postal code must be exactly 5 digits (German format).");
-      return;
+    if (!/^\d{5}$/.test(checkoutData.postalCode)) {
+      newErrors.postalCode = "Postleitzahl muss genau 5 Ziffern haben.";
     }
 
-    // ===== باقي التحققات الأصلية =====
-    if (!customer.firstName || !customer.lastName) {
-      toast.error("Please fill in your first and last name.");
-      return;
-    }
-    if (!customer.street || !customer.houseNumber) {
-      toast.error("Please fill in street and house number.");
-      return;
-    }
-    if (!customer.city) {
-      toast.error("Please fill in your city.");
-      return;
-    }
-    if (!customer.floor || !customer.doorbellName) {
-      toast.error("Please fill in access details (floor and doorbell name).");
-      return;
-    }
-    if (!customer.deliveryDate || !customer.deliveryTime) {
-      toast.error("Please select a delivery date and time.");
-      return;
-    }
-    if (!shippingDetails) {
-      toast.error("Please wait for shipping calculation or check your address.");
-      return;
+    if (!checkoutData.firstName || !checkoutData.lastName) {
+      newErrors.firstName = "Vor- und Nachname sind erforderlich.";
     }
 
-    setIsSubmitting(true);
-
-    try {
-      const orderData = {
-        customer_id: null,
-        order_number: generateOrderNumber(),
-        status: "awaiting_payment",
-        order_date: new Date().toISOString(),
-
-        // ✅ السطر الناقص — قراءة موافقة الاستبدال من localStorage
-        allow_substitution: (() => {
-          try {
-            const saved = localStorage.getItem("allowSubstitution");
-            return saved === null ? true : JSON.parse(saved);
-          } catch {
-            return true;
-          }
-        })(),
-
-        customer_info: {
-          first_name: customer.firstName,
-          last_name: customer.lastName,
-          phone: customer.phone,
-          email: customer.email,
-        },
-
-        shipping_address: {
-          street: customer.street,
-          house_number: customer.houseNumber,
-          postal_code: customer.postalCode,
-          city: customer.city,
-          floor: customer.floor,
-          apartment: customer.apartment || "",
-          doorbell_name: customer.doorbellName,
-          has_elevator: customer.hasElevator === "yes",
-          notes: customer.deliveryNotes || "",
-          distance_km: shippingDetails.distance,
-          breakdown: {
-            distance_cost: shippingDetails.breakdown.distanceCost,
-            weight_cost: shippingDetails.breakdown.weightCost,
-            floor_cost: shippingDetails.breakdown.floorCost,
-          },
-        },
-
-        shipping_cost: shippingDetails.totalShipping,
-        floor_fee: shippingDetails.breakdown.floorCost,
-        tax: tax,
-        total_price: total,
-
-        payment_method: "cod",
-        delivery_date: customer.deliveryDate,
-        delivery_time: customer.deliveryTime,
-
-        coupon_code: null,
-        discount_type: null,
-        discount_value: null,
-        discount_amount: 0,
-      };
-
-
-      // 1. إدراج الطلب
-      const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .insert([orderData])
-        .select()
-        .single();
-
-      if (orderError) throw new Error(orderError.message);
-
-      // 2. إدراج بنود الطلب
-      const orderItems = cartItems.map((item) => ({
-        order_id: order.id,
-        product_id: item.id,
-        quantity: item.quantity,
-        product_name: item.name,
-        unit_price: item.price,
-        total_price: item.price * item.quantity,
-        weight: item.weight || null,
-        total_weight: (item.weight || 0) * item.quantity,
-      }));
-
-      const { error: itemsError } = await supabase
-        .from("order_items")
-        .insert(orderItems);
-
-      if (itemsError) throw new Error(itemsError.message);
-
-      // 3. حفظ آخر طلب + الانتقال إلى صفحة الفاتورة والدفع
-      if (order) {
-        localStorage.setItem(
-          "lastOrder",
-          JSON.stringify({
-            id: order.id,
-            order_number: order.order_number,
-            status: order.status,
-            created_at: order.created_at,
-          })
-        );
-
-        const orderHistory = JSON.parse(
-          localStorage.getItem("orderHistory") || "[]"
-        );
-        const exists = orderHistory.some((o) => o.id === order.id);
-        if (!exists) {
-          orderHistory.push({
-            id: order.id,
-            order_number: order.order_number,
-            status: order.status,
-            created_at: order.created_at,
-          });
-          localStorage.setItem("orderHistory", JSON.stringify(orderHistory));
-        }
-
-        toast.success(`✅ Order ${order.order_number} created!`);
-
-        // ⚠️ لا نُفرّغ السلة هنا — سنُفرّغها في صفحة BillAndPayment
-
-        // ✅ الانتقال إلى صفحة الفاتورة والدفع
-        navigate(`/Cart&Payments/BillAndPayment/${order.id}`);
-      }
-    } catch (error) {
-      console.error("❌ Order submission failed:", error);
-      toast.error(`Failed to submit order: ${error.message}`);
-    } finally {
-      setIsSubmitting(false);
+    if (!checkoutData.street || !checkoutData.houseNumber) {
+      newErrors.street = "Straße und Hausnummer sind erforderlich.";
     }
+
+    if (!checkoutData.city) {
+      newErrors.city = "Stadt ist erforderlich.";
+    }
+
+    if (!checkoutData.floor || !checkoutData.doorbellName) {
+      newErrors.floor = "Etage und Klingelname sind erforderlich.";
+    }
+
+    if (!checkoutData.shippingDetails) {
+      newErrors.shipping =
+        "Versandkosten konnten nicht berechnet werden. Bitte prüfen Sie Ihre Adresse.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
+  // ============================================
+  // Continue to DeliveryTime
+  // ============================================
+  const handleContinue = () => {
+    if (!validateBeforeContinue()) {
+      toast.error("Bitte korrigieren Sie die markierten Felder.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    toast.success("Adresse gespeichert! Weiter zum Liefertermin...");
+    navigate("/Cart&Payments/DeliveryTime");
+  };
+
+  // ============================================
+  // Render
+  // ============================================
   return (
     <div className="chk-container">
       <CartHeader currentStep={currentStep} />
 
       <main className="chk-main">
-        {/* ===== Hero ===== */}
+        {/* Hero */}
         <div className="chk-hero">
-          <span className="chk-hero-badge">🔒 Secure Checkout</span>
-          <h1>Complete Your Order</h1>
-          <p>Fill in your details to finalize your purchase.</p>
+          <span className="chk-hero-badge">📍 Schritt 2 von 4</span>
+          <h1>Lieferadresse</h1>
+          <p>Bitte geben Sie Ihre Kontakt- und Adressdaten ein.</p>
         </div>
 
-        <form className="chk-form" onSubmit={handleSubmit}>
-          {/* ============================================
-              🎯 Grid 2x2 من البطاقات
-          ============================================ */}
+        <div className="chk-form">
+          {/* Grid 2x2 */}
           <div className="chk-grid">
             {/* --- Personal Info --- */}
             <div className="chk-section">
               <div className="chk-section-header">
                 <div className="chk-section-icon">👤</div>
                 <div>
-                  <h3>Personal Info</h3>
-                  <p className="chk-section-sub">Your contact details</p>
+                  <h3>Persönliche Daten</h3>
+                  <p className="chk-section-sub">Ihre Kontaktdaten</p>
                 </div>
               </div>
+
               <div className="chk-field">
-                <label>First Name *</label>
+                <label>Vorname *</label>
                 <input
                   type="text"
                   name="firstName"
-                  value={customer.firstName}
+                  value={checkoutData.firstName}
                   onChange={handleChange}
                   placeholder="Vorname"
-                  required
+                  className={errors.firstName ? "has-error" : ""}
                 />
+                {errors.firstName && (
+                  <span className="chk-error">{errors.firstName}</span>
+                )}
               </div>
+
               <div className="chk-field">
-                <label>Last Name *</label>
+                <label>Nachname *</label>
                 <input
                   type="text"
                   name="lastName"
-                  value={customer.lastName}
+                  value={checkoutData.lastName}
                   onChange={handleChange}
                   placeholder="Nachname"
-                  required
+                  className={errors.lastName ? "has-error" : ""}
                 />
+                {errors.lastName && (
+                  <span className="chk-error">{errors.lastName}</span>
+                )}
               </div>
+
               <div className="chk-field">
-                <label>Phone *</label>
+                <label>Telefon *</label>
                 <input
                   type="tel"
                   name="phone"
-                  value={customer.phone}
+                  value={checkoutData.phone}
                   onChange={handleChange}
                   placeholder="+49 …"
-                  required
+                  className={errors.phone ? "has-error" : ""}
                 />
-                <small className="chk-hint">📞 For delivery coordination</small>
+                {errors.phone ? (
+                  <span className="chk-error">{errors.phone}</span>
+                ) : (
+                  <small className="chk-hint">📞 Zur Lieferkoordination</small>
+                )}
               </div>
+
               <div className="chk-field">
-                <label>Email *</label>
+                <label>E-Mail *</label>
                 <input
                   type="email"
                   name="email"
-                  value={customer.email}
+                  value={checkoutData.email}
                   onChange={handleChange}
                   placeholder="E-Mail"
-                  required
+                  className={errors.email ? "has-error" : ""}
                 />
+                {errors.email && (
+                  <span className="chk-error">{errors.email}</span>
+                )}
               </div>
             </div>
 
@@ -456,55 +279,64 @@ export default function CheckoutPage() {
               <div className="chk-section-header">
                 <div className="chk-section-icon">📍</div>
                 <div>
-                  <h3>Delivery Address</h3>
-                  <p className="chk-section-sub">Where to deliver your order</p>
+                  <h3>Lieferadresse</h3>
+                  <p className="chk-section-sub">Wohin soll geliefert werden?</p>
                 </div>
               </div>
+
               <div className="chk-field">
-                <label>Street *</label>
+                <label>Straße *</label>
                 <input
                   type="text"
                   name="street"
-                  value={customer.street}
+                  value={checkoutData.street}
                   onChange={handleChange}
                   placeholder="Straße"
-                  required
+                  className={errors.street ? "has-error" : ""}
                 />
+                {errors.street && (
+                  <span className="chk-error">{errors.street}</span>
+                )}
               </div>
+
               <div className="chk-inline-row">
                 <div className="chk-field">
-                  <label>House No. *</label>
+                  <label>Hausnr. *</label>
                   <input
                     type="text"
                     name="houseNumber"
-                    value={customer.houseNumber}
+                    value={checkoutData.houseNumber}
                     onChange={handleChange}
                     placeholder="Nr."
-                    required
                   />
                 </div>
                 <div className="chk-field">
-                  <label>Postal Code *</label>
+                  <label>PLZ *</label>
                   <input
                     type="text"
                     name="postalCode"
-                    value={customer.postalCode}
+                    value={checkoutData.postalCode}
                     onChange={handleChange}
                     placeholder="PLZ"
-                    required
+                    className={errors.postalCode ? "has-error" : ""}
                   />
+                  {errors.postalCode && (
+                    <span className="chk-error">{errors.postalCode}</span>
+                  )}
                 </div>
               </div>
+
               <div className="chk-field">
-                <label>City *</label>
+                <label>Stadt *</label>
                 <input
                   type="text"
                   name="city"
-                  value={customer.city}
+                  value={checkoutData.city}
                   onChange={handleChange}
                   placeholder="Ort / Stadt"
-                  required
+                  className={errors.city ? "has-error" : ""}
                 />
+                {errors.city && <span className="chk-error">{errors.city}</span>}
               </div>
             </div>
 
@@ -513,162 +345,176 @@ export default function CheckoutPage() {
               <div className="chk-section-header">
                 <div className="chk-section-icon">🏢</div>
                 <div>
-                  <h3>Access Details</h3>
-                  <p className="chk-section-sub">Help our driver find your door</p>
+                  <h3>Zugangsdetails</h3>
+                  <p className="chk-section-sub">
+                    Helfen Sie unserem Fahrer, Sie zu finden
+                  </p>
                 </div>
               </div>
+
               <div className="chk-inline-row">
                 <div className="chk-field">
-                  <label>Floor *</label>
+                  <label>Etage *</label>
                   <input
                     type="number"
                     name="floor"
-                    value={customer.floor}
+                    value={checkoutData.floor}
                     onChange={handleChange}
                     placeholder="Etage"
-                    required
+                    className={errors.floor ? "has-error" : ""}
                   />
                 </div>
                 <div className="chk-field">
-                  <label>Apartment</label>
+                  <label>Wohnung</label>
                   <input
                     type="text"
                     name="apartment"
-                    value={customer.apartment}
+                    value={checkoutData.apartment}
                     onChange={handleChange}
                     placeholder="Wohnung"
                   />
                 </div>
               </div>
+
               <div className="chk-field">
-                <label>Doorbell Name *</label>
+                <label>Klingelname *</label>
                 <input
                   type="text"
                   name="doorbellName"
-                  value={customer.doorbellName}
+                  value={checkoutData.doorbellName}
                   onChange={handleChange}
                   placeholder="Name an der Klingel"
-                  required
+                  className={errors.doorbellName ? "has-error" : ""}
                 />
+                {errors.doorbellName && (
+                  <span className="chk-error">{errors.doorbellName}</span>
+                )}
               </div>
+
               <div className="chk-field">
-                <label>Elevator? *</label>
+                <label>Aufzug? *</label>
                 <select
                   name="hasElevator"
-                  value={customer.hasElevator}
+                  value={checkoutData.hasElevator}
                   onChange={handleChange}
-                  required
                 >
-                  <option value="no">❌ No Elevator</option>
-                  <option value="yes">✅ Has Elevator</option>
+                  <option value="no">❌ Kein Aufzug</option>
+                  <option value="yes">✅ Mit Aufzug</option>
                 </select>
-                <small className="chk-hint">💡 Affects floor fee</small>
+                <small className="chk-hint">
+                  💡 Beeinflusst die Etagengebühr
+                </small>
+              </div>
+
+              <div className="chk-field">
+                <label>Notizen (optional)</label>
+                <textarea
+                  name="deliveryNotes"
+                  value={checkoutData.deliveryNotes}
+                  onChange={handleChange}
+                  placeholder="z.B. 'Bitte leise klingeln'"
+                  rows="2"
+                />
               </div>
             </div>
 
-            {/* --- Delivery Time --- */}
-            <div className="chk-section">
+            {/* --- Shipping Summary --- */}
+            <div className="chk-section chk-shipping-section">
               <div className="chk-section-header">
-                <div className="chk-section-icon">🕒</div>
+                <div className="chk-section-icon">🚚</div>
                 <div>
-                  <h3>Delivery Time</h3>
-                  <p className="chk-section-sub">Choose your preferred slot</p>
+                  <h3>Versandkosten</h3>
+                  <p className="chk-section-sub">
+                    Basierend auf Ihrer Adresse berechnet
+                  </p>
                 </div>
               </div>
-              <DeliveryTime
-                onSelect={(time) => {
-                  setCustomer((prev) => ({
-                    ...prev,
-                    deliveryDate: time.date,
-                    deliveryTime: time.start,
-                  }));
-                }}
-              />
-              {customer.deliveryDate && customer.deliveryTime && (
-                <div className="chk-selected-time">
-                  ✅ <strong>{customer.deliveryDate}</strong> · <strong>{customer.deliveryTime}</strong>
+
+              {!checkoutData.street ? (
+                <p className="chk-hint">
+                  📍 Bitte geben Sie Ihre Adresse ein, um die Versandkosten zu
+                  berechnen.
+                </p>
+              ) : calculating ? (
+                <p className="chk-hint">⏳ Versandkosten werden berechnet...</p>
+              ) : checkoutData.shippingDetails ? (
+                <div className="shipping-breakdown">
+                  <div className="breakdown-row">
+                    <span>
+                      🚗 Entfernung (
+                      {checkoutData.shippingDetails.distance} km)
+                    </span>
+                    <span>
+                      €
+                      {checkoutData.shippingDetails.breakdown.distanceCost.toFixed(
+                        2
+                      )}
+                    </span>
+                  </div>
+                  {checkoutData.shippingDetails.breakdown.weightCost > 0 && (
+                    <div className="breakdown-row">
+                      <span>⚖️ Gewichtszuschlag</span>
+                      <span>
+                        €
+                        {checkoutData.shippingDetails.breakdown.weightCost.toFixed(
+                          2
+                        )}
+                      </span>
+                    </div>
+                  )}
+                  {checkoutData.shippingDetails.breakdown.floorCost > 0 && (
+                    <div className="breakdown-row">
+                      <span>
+                        🏢 Etagengebühr ({checkoutData.floor} Etagen)
+                      </span>
+                      <span>
+                        €
+                        {checkoutData.shippingDetails.breakdown.floorCost.toFixed(
+                          2
+                        )}
+                      </span>
+                    </div>
+                  )}
+                  <div className="breakdown-row total-breakdown">
+                    <span>Versand gesamt</span>
+                    <span>
+                      €{checkoutData.shippingDetails.totalShipping.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
+              ) : (
+                <p className="chk-hint" style={{ color: "var(--danger-color)" }}>
+                  ❌ Versand konnte nicht berechnet werden. Bitte prüfen Sie Ihre
+                  Adresse.
+                </p>
+              )}
+
+              {errors.shipping && (
+                <span className="chk-error">{errors.shipping}</span>
               )}
             </div>
           </div>
 
-          {/* ============================================
-              🚚 Shipping Summary (Full Width)
-          ============================================ */}
-          <div className="chk-section chk-shipping-section">
-            <div className="chk-section-header">
-              <div className="chk-section-icon">🚚</div>
-              <div>
-                <h3>Shipping Summary</h3>
-                <p className="chk-section-sub">Calculated based on your address</p>
-              </div>
-            </div>
-
-            {!customer.street ? (
-              <p className="chk-hint">📍 Please enter your address above to calculate shipping.</p>
-            ) : calculating ? (
-              <p className="chk-hint">⏳ Calculating shipping costs...</p>
-            ) : shippingDetails ? (
-              <div className="shipping-breakdown">
-                <div className="breakdown-row">
-                  <span>🚗 Distance ({shippingDetails.distance} km)</span>
-                  <span>€{shippingDetails.breakdown.distanceCost.toFixed(2)}</span>
-                </div>
-                {shippingDetails.breakdown.weightCost > 0 && (
-                  <div className="breakdown-row">
-                    <span>⚖️ Extra weight fee</span>
-                    <span>€{shippingDetails.breakdown.weightCost.toFixed(2)}</span>
-                  </div>
-                )}
-                {shippingDetails.breakdown.floorCost > 0 && (
-                  <div className="breakdown-row">
-                    <span>🏢 Floor fee ({customer.floor} floors)</span>
-                    <span>€{shippingDetails.breakdown.floorCost.toFixed(2)}</span>
-                  </div>
-                )}
-                <div className="breakdown-row total-breakdown">
-                  <span>Total Shipping</span>
-                  <span>€{shippingDetails.totalShipping.toFixed(2)}</span>
-                </div>
-              </div>
-            ) : (
-              <p className="chk-hint" style={{ color: "var(--danger-color)" }}>
-                ❌ Shipping could not be calculated. Please check your address.
-              </p>
-            )}
-          </div>
-
-          {/* ============================================
-              Actions (Full Width)
-          ============================================ */}
+          {/* Actions */}
           <div className="chk-actions">
             <button
               type="button"
               className="chk-btn-cancel"
               onClick={() => navigate("/Cart&Payments")}
             >
-              ← Back to Cart
+              ← Zurück zum Warenkorb
             </button>
             <button
-              type="submit"
+              type="button"
               className="chk-btn-submit"
-              disabled={isSubmitting || !shippingDetails || calculating}
+              onClick={handleContinue}
+              disabled={calculating || !checkoutData.shippingDetails}
             >
-              <span className="material-symbols-outlined">lock</span>
-              {isSubmitting
-                ? "Submitting..."
-                : calculating
-                  ? "Calculating..."
-                  : "Confirm Order"}
+              <span className="material-symbols-outlined">arrow_forward</span>
+              {calculating ? "Wird berechnet..." : "Weiter zum Liefertermin"}
             </button>
           </div>
-
-          {!shippingDetails && customer.street && !calculating && (
-            <p className="chk-final-status error">
-              ❌ Please check your address before continuing
-            </p>
-          )}
-        </form>
+        </div>
       </main>
 
       <Footer />

@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { supabase } from "../../../../lib/supabase";
 import toast from "react-hot-toast";
 import "./ShipOrderModal.css";
+import { isWeightBased, normalizeUnit } from "../../../../lib/units";
 
 export default function ShipOrderModal({ order, onClose, onSuccess }) {
   const [items, setItems] = useState([]);
@@ -19,30 +20,28 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
   const allowSubstitution = order.allow_substitution === true;
 
   // ============================================
-  // 📌 Helper: حساب السعر لكل وحدة (kg / pcs)
-  //    unit_price = السعر الإجمالي للمنتج (مثلاً €120)
-  //    weight = وزن المنتج (مثلاً 4 kg)
-  //    price_per_kg = 120 / 4 = €30/kg  ✅
+  // Helper: حساب السعر لكل وحدة (مع ضريبة)
   // ============================================
   const getPricePerUnit = (item) => {
-    const isKg = !item.weight_unit || item.weight_unit === "kg";
-    const totalPrice = parseFloat(item.unit_price) || 0;
-    const originalWeight = parseFloat(item.weight) || 0;
+    const weightBased = isWeightBased(item.weight_unit);
+    const totalPrice = parseFloat(item.total_price) || 0; // ✅ مع ضريبة
 
-    if (isKg && originalWeight > 0) {
-      return totalPrice / originalWeight;
+    if (weightBased) {
+      const originalWeight = parseFloat(item.weight) || 0;
+      if (originalWeight > 0) return totalPrice / originalWeight;
     }
-    return totalPrice;
+
+    const quantity = parseFloat(item.quantity) || 1;
+    return totalPrice / quantity;
   };
 
   // ============================================
-  // جلب المنتجات + كل منتجات قاعدة البيانات
+  // تحميل المنتجات
   // ============================================
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
 
-      // 1. منتجات الطلب
       const { data: orderItems, error: itemsErr } = await supabase
         .from("order_items")
         .select("*")
@@ -54,32 +53,38 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
         return;
       }
 
-      // ✅ Pre-fill القيم المحفوظة + حساب السعر الصحيح لكل كيلو
       const normalized = (orderItems || []).map((item) => {
-        const isKg = !item.weight_unit || item.weight_unit === "kg";
+        const weightBased = isWeightBased(item.weight_unit);
         const originalWeight = parseFloat(item.weight) || 0;
         const pricePerUnit = getPricePerUnit(item);
 
         return {
           ...item,
           status: item.status || "pending",
-          // إذا لم يُحفظ وزن فعلي، املأه بالوزن المخزَّن
-          actual_weight: item.actual_weight || (isKg ? originalWeight : ""),
-          // إذا لم تُحفظ كمية، املأها بالكمية المطلوبة
-          actual_quantity: item.actual_quantity || (!isKg ? item.quantity : ""),
-          // السعر لكل كيلو/قطعة (وليس الإجمالي)
+          actual_weight:
+            item.actual_weight != null && item.actual_weight !== ""
+              ? item.actual_weight
+              : weightBased
+                ? originalWeight
+                : "",
+          actual_quantity:
+            item.actual_quantity != null && item.actual_quantity !== ""
+              ? item.actual_quantity
+              : !weightBased
+                ? item.quantity
+                : "",
           actual_unit_price:
-            item.actual_unit_price !== null &&
-              item.actual_unit_price !== undefined &&
-              item.actual_unit_price !== ""
+            item.actual_unit_price != null && item.actual_unit_price !== ""
               ? item.actual_unit_price
               : pricePerUnit.toFixed(2),
+          actual_total: item.actual_total != null ? item.actual_total : null,
+          price_difference:
+            item.price_difference != null ? item.price_difference : null,
         };
       });
 
       setItems(normalized);
 
-      // 2. كل المنتجات للاستبدال
       const { data: products } = await supabase
         .from("products")
         .select("*")
@@ -96,13 +101,13 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
   // حساب الإجمالي لمنتج
   // ============================================
   const calculateTotal = (item) => {
-    const isKg = !item.weight_unit || item.weight_unit === "kg";
+    const weightBased = isWeightBased(item.weight_unit);
     const weight = parseFloat(item.actual_weight) || 0;
     const qty = parseFloat(item.actual_quantity) || 0;
     const price = parseFloat(item.actual_unit_price) || 0;
 
-    if (isKg && weight > 0) return weight * price;
-    if (!isKg && qty > 0) return qty * price;
+    if (weightBased && weight > 0) return weight * price;
+    if (!weightBased && qty > 0) return qty * price;
     return 0;
   };
 
@@ -113,10 +118,10 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
   };
 
   // ============================================
-  // Confirm — التعبئة التلقائية للقطع
+  // تأكيد منتج
   // ============================================
   const confirmItem = (item) => {
-    const isKg = !item.weight_unit || item.weight_unit === "kg";
+    const weightBased = isWeightBased(item.weight_unit);
     const total = calculateTotal(item);
 
     setItems((prev) =>
@@ -125,7 +130,7 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
         return {
           ...i,
           status: "scanned",
-          actual_quantity: isKg ? i.actual_quantity : i.quantity,
+          actual_quantity: weightBased ? i.actual_quantity : i.quantity,
           actual_total: total,
           price_difference: total - parseFloat(i.total_price || 0),
         };
@@ -134,6 +139,9 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
     setEditingId(null);
   };
 
+  // ============================================
+  // وضع علامة غير متوفر
+  // ============================================
   const markUnavailable = (item) => {
     setItems((prev) =>
       prev.map((i) => {
@@ -149,12 +157,14 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
       })
     );
 
-    // ✅ احذف من سجل الاستبدالات إن وُجد
     setSubstitutionsLog((prev) =>
       prev.filter((s) => s.item_id !== item.id)
     );
   };
 
+  // ============================================
+  // استرجاع منتج
+  // ============================================
   const restoreItem = (item) => {
     setItems((prev) =>
       prev.map((i) => {
@@ -168,23 +178,29 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
       })
     );
 
-    // ✅ احذف من سجل الاستبدالات
     setSubstitutionsLog((prev) =>
       prev.filter((s) => s.item_id !== item.id)
     );
   };
 
   // ============================================
-  // Substitute
+  // ✅ استبدال منتج (مع ضريبة)
   // ============================================
   const applySubstitution = (originalItem, substituteProduct) => {
-    const isKg = !substituteProduct.weight_unit || substituteProduct.weight_unit === "kg";
-    const subPricePerKg =
-      isKg && substituteProduct.weight > 0
-        ? substituteProduct.price / substituteProduct.weight
-        : substituteProduct.price;
+    const weightBased = isWeightBased(substituteProduct.weight_unit);
 
-    // ✅ 1. تحديث المنتج في items
+    // ✅ احسب السعر مع ضريبة
+    const subTaxRate = parseFloat(substituteProduct.tax_rate) || 0;
+    const subBasePrice = parseFloat(substituteProduct.price) || 0;
+    const subGrossPrice = subBasePrice * (1 + subTaxRate / 100);
+
+    const subWeight = parseFloat(substituteProduct.weight) || 0;
+
+    const subPricePerUnit =
+      weightBased && subWeight > 0
+        ? subGrossPrice / subWeight
+        : subGrossPrice;
+
     setItems((prev) =>
       prev.map((i) => {
         if (i.id !== originalItem.id) return i;
@@ -200,18 +216,16 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
           weight: substituteProduct.weight,
           weight_unit: substituteProduct.weight_unit,
           tax_rate: substituteProduct.tax_rate,
-          actual_unit_price: subPricePerKg.toFixed(2),
-          actual_weight: isKg ? substituteProduct.weight : "",
-          actual_quantity: isKg ? "" : i.quantity,
+          actual_unit_price: subPricePerUnit.toFixed(2),
+          actual_weight: weightBased ? substituteProduct.weight : "",
+          actual_quantity: weightBased ? "" : i.quantity,
           actual_total: null,
           price_difference: null,
         };
       })
     );
 
-    // ✅ 2. إضافة الاستبدال إلى السجل
     setSubstitutionsLog((prev) => {
-      // احذف أي إدخال سابق لنفس المنتج الأصلي (في حالة تعديل)
       const filtered = prev.filter(
         (s) => s.original_product_id !== originalItem.product_id
       );
@@ -240,14 +254,10 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
     setSubstitutingItem(null);
     toast.success(`Substituted with "${substituteProduct.name}"`);
   };
+
   // ============================================
   // الإجماليات
   // ============================================
-  const estimatedProductsTotal = items.reduce(
-    (sum, i) => sum + parseFloat(i.total_price || 0),
-    0
-  );
-
   const actualProductsTotal = items.reduce((sum, i) => {
     if (i.status === "scanned" || i.status === "substituted")
       return sum + (i.actual_total || 0);
@@ -256,9 +266,7 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
   }, 0);
 
   const shippingCost = parseFloat(order.shipping_cost || 0);
-  const TAX_RATE = 0.07;
-  const actualTax = actualProductsTotal * TAX_RATE;
-  const finalTotal = actualProductsTotal + shippingCost + actualTax;
+  const finalTotal = actualProductsTotal + shippingCost;
 
   const authorizedMax = parseFloat(order.authorized_amount || 0);
   const remainingBuffer = authorizedMax - finalTotal;
@@ -320,18 +328,16 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
         if (itemError) throw new Error(`Failed to update ${item.product_name}`);
       }
 
-      // 2. تحديث الطلب
       const { error: orderError } = await supabase
         .from("orders")
         .update({
           total_price: finalTotal,
           subtotal: actualProductsTotal,
           shipping_cost: shippingCost,
-          tax: actualTax,
+          tax: 0,
           price_adjustment: 0,
           status: "shipped",
           updated_at: new Date().toISOString(),
-          // ✅ الحقل الجديد — سجل الاستبدالات
           substitutions: substitutionsLog,
         })
         .eq("id", order.id);
@@ -359,11 +365,15 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
       }
 
       if (result.type === "cod") {
-        toast.success(`✅ Order shipped! €${result.amountToCollect.toFixed(2)} to collect`);
+        toast.success(
+          `✅ Order shipped! €${result.amountToCollect.toFixed(2)} to collect`
+        );
       } else if (result.type === "bank_transfer") {
         toast.success(`✅ Order shipped! Awaiting transfer`);
       } else {
-        toast.success(`✅ Shipped & €${result.finalAmount?.toFixed(2)} charged!`);
+        toast.success(
+          `✅ Shipped & €${result.finalAmount?.toFixed(2)} charged!`
+        );
       }
 
       onSuccess();
@@ -380,7 +390,9 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
 
   const substitutesForItem = useMemo(() => {
     if (!substitutingItem) return [];
-    const original = allProducts.find((p) => p.id === substitutingItem.product_id);
+    const original = allProducts.find(
+      (p) => p.id === substitutingItem.product_id
+    );
     if (!original) return [];
     return allProducts.filter(
       (p) => p.category_id === original.category_id && p.id !== original.id
@@ -388,16 +400,13 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
   }, [substitutingItem, allProducts]);
 
   // ============================================
-  // عرض الواجهة
+  // Render
   // ============================================
   return createPortal(
     <div className="ship-modal-overlay" onClick={onClose}>
       <div className="ship-modal" onClick={(e) => e.stopPropagation()}>
-        {/* ============================================
-            ✅ Header مضغوط في صفّين
-        ============================================ */}
+        {/* ============ Header ============ */}
         <div className="ship-modal-header-sticky">
-          {/* Row 1: العنوان + رقم الطلب + إغلاق */}
           <div className="ship-modal-header">
             <div className="ship-modal-header-left">
               <span className="material-symbols-outlined ship-header-icon">
@@ -412,7 +421,6 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
             </button>
           </div>
 
-          {/* Row 2: معلومات العميل + موافقة الاستبدال (كلها في صف واحد) */}
           <div className="ship-modal-customer-compact">
             <span className="ship-info-item">
               <span className="material-symbols-outlined">person</span>
@@ -445,9 +453,7 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
           </div>
         </div>
 
-        {/* ============================================
-            Body — كل المساحة للمنتجات
-        ============================================ */}
+        {/* ============ Body ============ */}
         <div className="ship-modal-body">
           {loading ? (
             <div className="ship-loading">
@@ -457,7 +463,10 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
           ) : (
             <div className="ship-items">
               {items.map((item, idx) => {
-                const isKg = !item.weight_unit || item.weight_unit === "kg";
+                // ✅ الوحدات الموحّدة
+                const weightBased = isWeightBased(item.weight_unit);
+                const unitLabel = normalizeUnit(item.weight_unit);
+
                 const calc = calculateTotal(item);
                 const isPending = item.status === "pending";
                 const isScanned = item.status === "scanned";
@@ -465,9 +474,6 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                 const isSubstituted = item.status === "substituted";
                 const isEditing = editingId === item.id;
                 const showInput = isPending || isEditing;
-
-                // ✅ عرض السعر لكل كيلو (وليس الإجمالي)
-                const displayPricePerKg = getPricePerUnit(item);
 
                 return (
                   <div
@@ -487,32 +493,41 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                         )}
                       </div>
                       {isScanned && <span className="ship-badge ok">✓</span>}
-                      {isSubstituted && <span className="ship-badge sub">⇄</span>}
+                      {isSubstituted && (
+                        <span className="ship-badge sub">⇄</span>
+                      )}
                       {isRemoved && <span className="ship-badge no">✕</span>}
-                      {isPending && <span className="ship-badge pending">•</span>}
+                      {isPending && (
+                        <span className="ship-badge pending">•</span>
+                      )}
                     </div>
 
-                    {/* Requested */}
+                    {/* Requested info */}
                     <div className="ship-item-requested">
                       <span>
                         Requested: <strong>{item.quantity}</strong>
-                        {isKg && item.weight ? ` × ${item.weight} kg` : ""}
+                        {weightBased && item.weight
+                          ? ` × ${item.weight} ${unitLabel}`
+                          : ""}
                       </span>
                       <span>
+                        €
                         <strong>
-                          €{displayPricePerKg.toFixed(2)}
+                          {parseFloat(item.unit_price || 0).toFixed(2)}
                         </strong>
-                        {isKg ? "/kg" : "/pcs"}
+                        {weightBased ? `/${unitLabel}` : ""}
                       </span>
                     </div>
 
-                    {/* Input mode */}
+                    {/* Edit mode */}
                     {showInput && (
                       <div className="ship-item-edit">
                         <div className="ship-input-row">
                           <div className="ship-field">
                             <label>
-                              {isKg ? "Actual Weight (kg)" : "Quantity"}
+                              {weightBased
+                                ? `Actual ${unitLabel}`
+                                : "Quantity"}
                             </label>
                             <div className="ship-input-wrap">
                               <input
@@ -520,27 +535,27 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                                 step="0.001"
                                 inputMode="decimal"
                                 value={
-                                  isKg
+                                  weightBased
                                     ? item.actual_weight
                                     : item.actual_quantity
                                 }
                                 onChange={(e) =>
                                   updateField(
                                     item.id,
-                                    isKg ? "actual_weight" : "actual_quantity",
+                                    weightBased
+                                      ? "actual_weight"
+                                      : "actual_quantity",
                                     e.target.value
                                   )
                                 }
                                 autoFocus={idx === 0}
                               />
-                              <span className="ship-unit">
-                                {isKg ? "kg" : "pcs"}
-                              </span>
+                              <span className="ship-unit">{unitLabel}</span>
                             </div>
                           </div>
 
                           <div className="ship-field">
-                            <label>Price (€{isKg ? "/kg" : "/pcs"})</label>
+                            <label>Price (€/{unitLabel})</label>
                             <div className="ship-input-wrap">
                               <input
                                 type="number"
@@ -570,8 +585,9 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                             className="ship-btn-confirm"
                             onClick={() => confirmItem(item)}
                             disabled={
-                              isKg
-                                ? !item.actual_weight || !item.actual_unit_price
+                              weightBased
+                                ? !item.actual_weight ||
+                                !item.actual_unit_price
                                 : !item.actual_unit_price
                             }
                           >
@@ -594,29 +610,34 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                             <span className="material-symbols-outlined">
                               {allowSubstitution ? "swap_horiz" : "block"}
                             </span>
-                            {allowSubstitution ? "Substitute" : "Not Available"}
+                            {allowSubstitution
+                              ? "Substitute"
+                              : "Not Available"}
                           </button>
                         </div>
                       </div>
                     )}
 
-                    {/* Final mode */}
+                    {/* Final view */}
                     {!showInput && (
                       <div className="ship-item-final">
                         {(isScanned || isSubstituted) && (
                           <>
                             <div className="ship-item-result">
                               <span className="ship-item-weight">
-                                {isKg
-                                  ? `${item.actual_weight} kg × €${parseFloat(
-                                    item.actual_unit_price
+                                {weightBased
+                                  ? `${item.actual_weight} ${unitLabel} × €${parseFloat(
+                                    item.actual_unit_price || 0
                                   ).toFixed(2)}`
-                                  : `${item.actual_quantity} pcs × €${parseFloat(
-                                    item.actual_unit_price
+                                  : `${item.actual_quantity} ${unitLabel} × €${parseFloat(
+                                    item.actual_unit_price || 0
                                   ).toFixed(2)}`}
                               </span>
                               <strong className="ship-item-total">
-                                €{parseFloat(item.actual_total || 0).toFixed(2)}
+                                €
+                                {parseFloat(
+                                  item.actual_total || 0
+                                ).toFixed(2)}
                               </strong>
                             </div>
                             <div className="ship-item-actions">
@@ -685,15 +706,9 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
           )}
         </div>
 
-        {/* ============================================
-            Footer
-        ============================================ */}
+        {/* ============ Footer ============ */}
         <div className="ship-modal-footer">
           <div className="ship-totals">
-            <div className="ship-total-row">
-              <span>Products (estimated)</span>
-              <span>€{estimatedProductsTotal.toFixed(2)}</span>
-            </div>
             <div className="ship-total-row">
               <span>Products (actual)</span>
               <span className="actual-products">
@@ -704,12 +719,11 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
               <span>Shipping</span>
               <span>€{shippingCost.toFixed(2)}</span>
             </div>
-            <div className="ship-total-row">
-              <span>Tax (7%)</span>
-              <span>€{actualTax.toFixed(2)}</span>
-            </div>
+
             <div className="ship-total-row actual">
-              <span>Final Total {isCOD ? "(to collect)" : "(to charge)"}</span>
+              <span>
+                Final Total {isCOD ? "(to collect)" : "(to charge)"}
+              </span>
               <span>€{finalTotal.toFixed(2)}</span>
             </div>
           </div>
@@ -722,7 +736,9 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                 !allHandled || submitting || (!isCOD && remainingBuffer < 0)
               }
             >
-              <span className="material-symbols-outlined">local_shipping</span>
+              <span className="material-symbols-outlined">
+                local_shipping
+              </span>
               {submitting
                 ? "Processing..."
                 : !allHandled
@@ -735,7 +751,7 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
         </div>
       </div>
 
-      {/* Substitute Modal */}
+      {/* ============ Substitute Sub-modal ============ */}
       {substitutingItem && (
         <SubstituteModal
           item={substitutingItem}
@@ -780,31 +796,36 @@ function SubstituteModal({ item, products, onSelect, onClose }) {
             </div>
           ) : (
             <div className="substitute-list">
-              {products.map((product) => (
-                <button
-                  key={product.id}
-                  className="substitute-item"
-                  onClick={() => onSelect(product)}
-                >
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="substitute-img"
-                  />
-                  <div className="substitute-info">
-                    <span className="substitute-name">{product.name}</span>
-                    <span className="substitute-meta">
-                      €{parseFloat(product.price).toFixed(2)}
-                      {product.weight
-                        ? ` · ${product.weight} ${product.weight_unit || "kg"}`
-                        : ""}
+              {products.map((product) => {
+                const productUnit = normalizeUnit(product.weight_unit);
+                return (
+                  <button
+                    key={product.id}
+                    className="substitute-item"
+                    onClick={() => onSelect(product)}
+                  >
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="substitute-img"
+                    />
+                    <div className="substitute-info">
+                      <span className="substitute-name">
+                        {product.name}
+                      </span>
+                      <span className="substitute-meta">
+                        €{parseFloat(product.price || 0).toFixed(2)}
+                        {product.weight
+                          ? ` · ${product.weight} ${productUnit}`
+                          : ""}
+                      </span>
+                    </div>
+                    <span className="material-symbols-outlined substitute-arrow">
+                      arrow_forward
                     </span>
-                  </div>
-                  <span className="material-symbols-outlined substitute-arrow">
-                    arrow_forward
-                  </span>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

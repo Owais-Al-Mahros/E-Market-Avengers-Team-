@@ -9,6 +9,8 @@ import LoadingPage from "./Components/LoadingPage";
 import DisplayProducts from "./Pages/DisplayProducts/DisplayProducts";
 import ProductCardDetails from "./Pages/DisplayProducts/modals/ProductCardDetails";
 
+import TrackOrder from "./Pages/Track Orders/TrackOrder";
+
 // 🚀 تطبيق Lazy Loading على باقي الصفحات (بدون DisplayProducts)
 const AdminDashboard = lazy(
   () => import("./Pages/Admin dashboard/AdminDashboard"),
@@ -18,6 +20,11 @@ const LoginPage = lazy(() => import("./Pages/Log in  page/LoginPage"));
 const CartAndPayments = lazy(
   () => import("./Pages/Cart and payments/CartAndPayments"),
 );
+const AGB = lazy(() => import("./Pages/Legal/AGB"));
+const Impressum = lazy(() => import("./Pages/Legal/Impressum"));
+const Datenschutz = lazy(() => import("./Pages/Legal/Datenschutz"));
+const Widerruf = lazy(() => import("./Pages/Legal/Widerruf"));
+const LieferungZahlung = lazy(() => import("./Pages/Legal/LieferungZahlung"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -108,7 +115,7 @@ function App() {
           <Route path="/Cart&Payments/*" element={<CartAndPayments />} />
           {/* ✅ DisplayProducts مباشر — لا Suspense fallback له */}
           <Route path="/DisplayProducts" element={<DisplayProducts />} />
-          <Route path="/DisplayProducts/ProductCardDetails" element={<ProductCardDetails />}/>
+          <Route path="/DisplayProducts/ProductCardDetails" element={<ProductCardDetails />} />
           <Route
             path="/dashboard"
             element={
@@ -119,6 +126,13 @@ function App() {
             path="/login"
             element={<LoginPage setIsAdmin={setIsAdmin} />}
           />
+          <Route path="/agb" element={<AGB />} />
+          <Route path="/impressum" element={<Impressum />} />
+          <Route path="/datenschutz" element={<Datenschutz />} />
+          <Route path="/widerruf" element={<Widerruf />} />
+          <Route path="/lieferung-zahlung" element={<LieferungZahlung />} />
+          <Route path="/track-order" element={<TrackOrder />} />
+
         </Routes>
       </Suspense>
     </>
