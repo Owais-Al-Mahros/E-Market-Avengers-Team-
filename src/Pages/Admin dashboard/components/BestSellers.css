@@ -1,0 +1,237 @@
+/* ============================================
+   🔥 Best Sellers Section
+   ============================================ */
+
+.bs-section {
+  padding: 6rem 2.4rem;
+  max-width: 130rem;
+  margin: 1rem auto;
+  background: #fff;
+  border-radius: 2rem;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.bs-header {
+  display: flex;
+  justify-content: space-between;
+  /* align-items: flex-end; */
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.bs-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.bs-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 800;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  width: fit-content;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.bs-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: -0.8px;
+  line-height: 1.15;
+}
+
+.bs-subtitle {
+  font-size: 16px;
+  color: var(--secondary-text);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ============================================
+   Flex Grid 
+   ============================================ */
+.bs-flex-container {
+  display: flex;
+  flex-direction: row !important;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  padding: 1rem 0;
+}
+
+/* ============================================
+   Card Slot
+   ============================================ */
+.bs-card-slot {
+  position: relative;
+  flex: 0 1 10rem;
+  width: 20rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* ============================================
+   Rank Badge
+   ============================================ */
+.bs-rank {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  background: rgba(21, 49, 43, 0.75);
+  backdrop-filter: blur(8px);
+  border: 2px solid #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 🥇 الذهبي */
+.bs-rank-1 {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+}
+
+/* 🥈 الفضي */
+.bs-rank-2 {
+  background: linear-gradient(135deg, #d1d5db, #9ca3af);
+  box-shadow: 0 6px 20px rgba(156, 163, 175, 0.4);
+}
+
+/* 🥉 البرونزي */
+.bs-rank-3 {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  box-shadow: 0 6px 20px rgba(180, 83, 9, 0.4);
+}
+
+/* ============================================
+   Loading
+   ============================================ */
+.bs-loading {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.bs-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--secondary-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: bsSpin 0.8s linear infinite;
+}
+
+@keyframes bsSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* ============================================
+   🎛️ Limit Controls 
+   ============================================ */
+.bs-controls {
+  display: flex;
+  align-items: center;
+}
+
+.bs-limit-box {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 1.6rem;
+  border: 1.5px solid rgba(20, 92, 74, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+}
+
+.bs-limit-box:hover {
+  border-color: var(--secondary-color, #145c4a);
+  box-shadow: 0 6px 16px rgba(20, 92, 74, 0.08);
+}
+
+.bs-limit-label,
+.bs-limit-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text, #2d3748);
+}
+
+.bs-limit-input {
+  width: 4rem;
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background: var(---bg-color);
+  color: var(--primary-color, #145c4a);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.bs-limit-input:focus {
+  border-color: var(--primary-color, #145c4a);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(20, 92, 74, 15%);
+}
+
+.bs-limit-input::-webkit-inner-spin-button,
+.bs-limit-input::-webkit-outer-spin-button {
+  opacity: 1;
+}
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 768px) {
+  .bs-section {
+    padding: 40px 16px;
+    border-radius: 16px;
+  }
+
+  .bs-title {
+    font-size: 26px;
+  }
+
+  .bs-subtitle {
+    font-size: 14px;
+  }
+
+  .bs-flex-container {
+    gap: 16px;
+  }
+
+  .bs-card-slot {
+    flex: 0 1 180px;
+    width: 180px;
+  }
+
+  .bs-rank {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+    top: 8px;
+    left: 8px;
+  }
+}

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./OverViewSection.css";
 import { useOrders } from "../../../context/OrdersContext";
 import BackButton from "../../../Components/BackButton";
 import { useProducts } from "../../../context/ProductContext";
+import BestSellers from "./BestSellers";
 
 export default function OverViewSection() {
   const { fetchBestSellers } = useProducts();
@@ -107,12 +108,12 @@ export default function OverViewSection() {
         ))}
       </div>
 
-      <div className="overview-panel" >
+      <div className="overview-panel">
         <div className="overview-panel-header">
           <h3 className="overview-panel-title">Recent Orders</h3>
         </div>
 
-        <ul className="overview-list" >
+        <ul className="overview-list">
           {recentOrders.length > 0 ? (
             recentOrders.map((order) => (
               <li key={order.id} className="overview-row">
@@ -217,6 +218,7 @@ export default function OverViewSection() {
           )}
         </ul>
       </div>
+      <BestSellers />
     </section>
   );
 }

@@ -110,6 +110,7 @@ function DisplayProducts() {
                   nutritionObject={product.nutrition_facts}
                   storageObject={product.storage_notes}
                   ingredients={product.ingredients}
+                  product_number = {product.product_number}
                 />
               ))}
             </div>

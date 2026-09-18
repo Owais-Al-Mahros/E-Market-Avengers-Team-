@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useEffect, useState, useRef, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
-import { ProductProvider } from "./context/ProductContext";
 import { supabase } from "./lib/supabase";
 import LoadingPage from "./Components/LoadingPage";
 
@@ -10,6 +9,7 @@ import DisplayProducts from "./Pages/DisplayProducts/DisplayProducts";
 import ProductCardDetails from "./Pages/DisplayProducts/modals/ProductCardDetails";
 
 import TrackOrder from "./Pages/Track Orders/TrackOrder";
+import FavoriteList from "./Pages/Home page/modals/FavoriteList";
 
 // 🚀 تطبيق Lazy Loading على باقي الصفحات (بدون DisplayProducts)
 const AdminDashboard = lazy(

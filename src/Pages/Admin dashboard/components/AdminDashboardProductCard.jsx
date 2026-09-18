@@ -16,6 +16,7 @@ export default function AdminDashboardProductCar(props) {
         </div>
         <div className="title-admin">
           <span>{props.name}</span>
+          <span style={{paddingLeft: "1rem"}}>NO.{props.product_number}</span>
         </div>
         <div className="weight-admin">
           <span>
@@ -55,6 +56,7 @@ export default function AdminDashboardProductCar(props) {
             nutritionObject={props.nutritionObject}
             storageObject={props.storageObject}
             ingredients={props.ingredients}
+            product_number = {props.product_number}
             closeModel={closeEditCardModel}
             onUpdate={props.onUpdate}
           />,

@@ -10,7 +10,6 @@ import SubHomeHeader from "./components/SubHomeHeader.jsx";
 import FeaturesBar from "./components/FeaturesBar.jsx";
 import HowItWorks from "./components/HowItWorks.jsx";
 import Footer from "./../../Components/Footer"
-import BestSellers from "./components/BestSellers";   // ← استيراد
 
 function HomePage() {
   const { categories, loading: categoriesLoading } = useCategories();
@@ -32,10 +31,9 @@ function HomePage() {
       <HomePageHero />
 
       <FeaturesBar />
-      <BestSellers />
 
       <div className="category-sections" id="category-sections">
-        <h2>Categories</h2>
+        <h2 className="title-cate">Categories</h2>
         <div className="categories-grid">
           {categoriesLoading ? (
             <p>Loading categories...</p>

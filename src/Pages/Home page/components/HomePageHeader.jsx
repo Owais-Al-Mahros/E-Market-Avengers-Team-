@@ -11,6 +11,10 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
   console.count("📌 HomePageHeader");
   const navigate = useNavigate();
 
+  //Favorite list
+  const { favorite } = useFavorite();
+  const [isFavoriteOpen, setIfFavoriteOpen] = useState(false);
+
   const { totalItems } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -157,7 +161,7 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
             <div className="search-dropdown-list">
               {loadingProducts ? (
                 <div className="search-loading-state">
-                  <span>ٍSearching  🔍</span>
+                  <span>ٍSearching 🔍</span>
                 </div>
               ) : searchResult.length > 0 ? (
                 searchResult.map((item) => (
@@ -237,6 +241,17 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
                 >
                   <span className="material-symbols-outlined">person</span>
                   <span className="orders-label">My Account</span>
+                </Link>
+                <Link
+                  className="header-orders"
+                  to="/HomePage/FavoriteList"
+                  onClick={() => setIfFavoriteOpen(true)}
+                >
+                  <span className="material-symbols-outlined">favorite</span>
+                  <span className="orders-label">My Favorite</span>
+                  {favorite.length > 0 && (
+                    <span className="fav-badge">{favorite.length}</span>
+                  )}
                 </Link>
               </div>
             )}
