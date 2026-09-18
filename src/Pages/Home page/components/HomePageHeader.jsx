@@ -6,6 +6,7 @@ import { fetchData, searchProduct } from "../../../hooks/useProduct.js";
 import { useDebounce } from "../../../hooks/useDebounce.js";
 import { Link, useNavigate } from "react-router-dom";
 import ProductCard from "../../DisplayProducts/components/ProductCard.jsx";
+import { useFavorite } from "../../../context/FavoriteContext.jsx";
 
 function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
   console.count("📌 HomePageHeader");

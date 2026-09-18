@@ -1,22 +1,13 @@
-import { BrowserRouter } from 'react-router-dom'
-import { createRoot } from 'react-dom/client'
-import { ProductProvider } from './context/ProductContext.jsx'
-import { CategoryProvider } from './context/CategoryContext.jsx'
-import { SubcategoryProvider } from './context/SubcategoryContext.jsx'
-import { CartProvider } from './context/CartContext.jsx' // ✅ استيراد Cart
-import { OrdersProvider } from './context/OrdersContext.jsx'
-import { ShippingSettingsProvider } from './context/ShippingSettingsContext.jsx' // ✅ جديد
-import { PricingProvider } from './context/PricingContext.jsx' // ✅ استيراد الجديد
-import { CompanyProvider } from "./context/CompanyContext.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { createRoot } from "react-dom/client";
 import { ProductProvider } from "./context/ProductContext.jsx";
 import { CategoryProvider } from "./context/CategoryContext.jsx";
 import { SubcategoryProvider } from "./context/SubcategoryContext.jsx";
-import { CartProvider } from "./context/CartContext.jsx"; // ✅ استيراد Cart
+import { CartProvider } from "./context/CartContext.jsx";
 import { OrdersProvider } from "./context/OrdersContext.jsx";
-import { ShippingSettingsProvider } from "./context/ShippingSettingsContext.jsx"; // ✅ جديد
-import { PricingProvider } from "./context/PricingContext.jsx"; // ✅ استيراد الجديد
+import { ShippingSettingsProvider } from "./context/ShippingSettingsContext.jsx";
+import { PricingProvider } from "./context/PricingContext.jsx";
+import { CompanyProvider } from "./context/CompanyContext.jsx";
 import { FavoriteProvider } from "./context/FavoriteContext.jsx";
 import "./index.css";
 import App from "./App.jsx";
@@ -31,11 +22,10 @@ createRoot(document.getElementById("root")).render(
               <ShippingSettingsProvider>
                 <PricingProvider>
                   <CompanyProvider>
-                    <App />
+                    <FavoriteProvider>
+                      <App />
+                    </FavoriteProvider>
                   </CompanyProvider>
-                  <FavoriteProvider>
-                    <App />
-                  </FavoriteProvider>
                 </PricingProvider>
               </ShippingSettingsProvider>
             </OrdersProvider>
@@ -43,5 +33,5 @@ createRoot(document.getElementById("root")).render(
         </SubcategoryProvider>
       </CategoryProvider>
     </ProductProvider>
-  </BrowserRouter>,
+  </BrowserRouter>
 );
