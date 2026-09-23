@@ -1,121 +1,126 @@
 /* ==========================================
-   🌿 CATEGORY SECTION — Horizontal Row
+   🌿 CATEGORY SECTION — Horizontal Row (rem)
    ========================================== */
 
 .cat-section {
-    padding: 28px 0;
+  padding: 1.75rem 0;
 }
 
 /* ===== Header ===== */
 .cat-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.125rem;
+  padding: 0 1rem;
 }
 
 .cat-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0;
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--text);
-    text-transform: capitalize;
-    letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: var(--text);
+  text-transform: capitalize;
+  letter-spacing: -0.01875rem;
 }
 
 .cat-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
-    background: var(--secondary-color);
-    border-radius: 12px;
-    font-size: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.625rem;
+  height: 2.625rem;
+  background: var(--secondary-color);
+  border-radius: var(--radius-md);
+  font-size: 1.25rem;
 }
 
 .cat-count {
-    background: var(--primary-color);
-    color: var(--bg-color);
-    font-size: 12px;
-    font-weight: 800;
-    padding: 4px 10px;
-    border-radius: 12px;
-    min-width: 26px;
-    text-align: center;
+  background: var(--primary-color);
+  color: var(--bg-color);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-md);
+  min-width: 1.625rem;
+  text-align: center;
 }
 
 /* ===== Nav Buttons ===== */
 .cat-nav {
-    display: flex;
-    gap: 8px;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .cat-nav-btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    border: 1.5px solid var(--secondary-color);
-    background: var(--bg-color);
-    color: var(--primary-color);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.25s;
+  width: 2.625rem;
+  height: 2.625rem;
+  border-radius: var(--radius-full);
+  border: 0.09375rem solid var(--secondary-color);
+  background: var(--bg-color);
+  color: var(--primary-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
 }
 
 .cat-nav-btn:hover {
-    background: var(--primary-color);
-    color: var(--bg-color);
-    border-color: var(--primary-color);
+  background: var(--primary-color);
+  color: var(--bg-color);
+  border-color: var(--primary-color);
 }
 
 /* ============================================
-   ✅ Horizontal Scroll — فقط يعرض البطاقات في صف
+   ✅ Horizontal Scroll — حل مشكلة السحب للجوال
    ============================================ */
 .cat-scroll {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    padding-bottom: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding-bottom: 0.75rem;
+  padding-inline: 1rem; /* إضافة مسافة لكي تبدأ البطاقات بوضوح */
+  -webkit-overflow-scrolling: touch; /* تسليس السحب بأجهزة آبل وأندرويد */
+  touch-action: pan-x; /* ✅ إجبار المتصفح على معالجة السحب أفقياً ومنع تقاطعه مع تمرير الصفحة */
+  scrollbar-width: thin; /* لمتصفحات فايرفوكس */
 }
 
 .cat-scroll::-webkit-scrollbar {
-    height: 8px;
+  height: 0.5rem;
 }
 
 .cat-scroll::-webkit-scrollbar-track {
-    background: var(--bg-color);
-    border-radius: 8px;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+  margin-inline: 1rem;
 }
 
 .cat-scroll::-webkit-scrollbar-thumb {
-    background: var(--secondary-color);
-    border-radius: 8px;
+  background: var(--secondary-color);
+  border-radius: var(--radius-sm);
 }
 
 .cat-scroll::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-color);
+  background: var(--primary-color);
 }
 
 /* ===== Track (Flex Row) ===== */
 .cat-track {
-    display: flex;
-    gap: 18px;
-    width: max-content;
-    padding: 4px;
+  display: flex;
+  gap: 1.125rem;
+  width: max-content;
+  padding: 0.25rem 0;
 }
 
 /* ===== Slot لكل ProductCard ===== */
 .cat-card-slot {
-    flex: 0 0 240px;
-    /* ✅ عرض ثابت لكل بطاقة */
-    width: 240px;
+  flex: 0 0 15rem; /* عرض افتراضي متناسق (~240px) */
+  width: 15rem;
 }
 
 /* ============================================
@@ -123,91 +128,90 @@
    ============================================ */
 .cat-loading,
 .cat-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 0;
-    gap: 12px;
-    color: var(--primary-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3.75rem 0;
+  gap: 0.75rem;
+  color: var(--primary-color);
 }
 
 .cat-spinner {
-    width: 44px;
-    height: 44px;
-    border: 4px solid var(--secondary-color);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: catSpin 0.8s linear infinite;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0.25rem solid var(--secondary-color);
+  border-top-color: var(--primary-color);
+  border-radius: var(--radius-full);
+  animation: catSpin 0.8s linear infinite;
 }
 
 @keyframes catSpin {
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .cat-empty {
-    color: var(--secondary-text);
+  color: var(--secondary-text);
 }
 
 .cat-empty .material-symbols-outlined {
-    font-size: 52px;
-    color: var(--secondary-color);
+  font-size: 3.25rem;
+  color: var(--secondary-color);
 }
 
 /* ============================================
    Responsive
    ============================================ */
-@media (max-width: 1024px) {
-    .cat-card-slot {
-        flex: 0 0 220px;
-        width: 220px;
-    }
 
-    .cat-title {
-        font-size: 20px;
-    }
+@media (max-width: 64rem) {
+  .cat-card-slot {
+    flex: 0 0 13.75rem;
+    width: 13.75rem;
+  }
+
+  .cat-title {
+    font-size: 1.25rem;
+  }
 }
 
-@media (max-width: 768px) {
-    .cat-title {
-        font-size: 17px;
-    }
+@media (max-width: 48rem) {
+  .cat-title {
+    font-size: 1.0625rem;
+  }
 
-    .cat-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 18px;
-    }
+  .cat-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.125rem;
+  }
 
-    .cat-nav-btn {
-        width: 38px;
-        height: 38px;
-    }
+  .cat-nav-btn {
+    width: 2.375rem;
+    height: 2.375rem;
+  }
 
-    .cat-track {
-        gap: 14px;
-    }
-
-    .cat-card-slot {
-        flex: 0 0 180px;
-        width: 180px;
-    }
+  .cat-track {
+    gap: 0.875rem;
+  }
+  .cat-card-slot {
+    flex: 0 0 10.5rem;
+    width: 10.5rem;
+  }
 }
 
-@media (max-width: 480px) {
-    .cat-nav {
-        display: none;
-        /* إخفاء الأسهم على الجوال — السحب كافٍ */
-    }
+@media (max-width: 30rem) {
+  .cat-nav {
+    display: none;
+  }
 
-    .cat-card-slot {
-        flex: 0 0 160px;
-        width: 160px;
-    }
+  .cat-card-slot {
+    flex: 0 0 9.5rem;
+    width: 9.5rem;
+  }
 
-    .cat-track {
-        gap: 12px;
-    }
+  .cat-track {
+    gap: 0.75rem;
+  }
 }

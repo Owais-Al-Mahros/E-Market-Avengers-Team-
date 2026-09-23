@@ -21,11 +21,13 @@
   margin: 0;
   color: #191c1d;
 }
-
-.add-buttons {
+.add-buttons-dashboard {
   display: flex;
-  width: 40%;
-  justify-content: space-evenly;
+  align-items: center;
+  gap: 10px; 
+  justify-content: flex-end; 
+  width: auto !important;
+  flex-wrap: nowrap;
 }
 
 .ps-header p {
@@ -34,13 +36,13 @@
   margin: 4px 0 0;
 }
 
-.ps-add-btn {
+.ps-add-btn-dashboard {
   background: var(--neon-green);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
+  border-radius: 0.4rem;
+  padding: 0.9rem 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -49,11 +51,11 @@
   transition: background 0.2s;
 }
 
-.ps-add-btn:hover {
+.ps-add-btn-dashboard:hover {
   background: var(--hover-btn);
 }
 
-.ps-add-btn .material-symbols-outlined {
+.ps-add-btn-dashboard .material-symbols-outlined {
   font-size: 18px;
 }
 
@@ -170,14 +172,14 @@
     align-items: stretch;
   }
 
-  .add-buttons {
+  .add-buttons-dashboard {
     width: 100%;
     flex-direction: column;
     gap: 10px;
     margin-top: 12px;
   }
 
-  .ps-add-btn {
+  .ps-add-btn-dashboard {
     width: 100%;
     justify-content: center;
   }

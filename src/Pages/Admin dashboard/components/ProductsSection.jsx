@@ -133,12 +133,12 @@ function ProductsSection() {
           <h2>Product Management</h2>
           <p>Manage your catalog, pricing, and inventory.</p>
         </div>
-        <div className="add-buttons">
-          <button className="ps-add-btn" onClick={openCategoryModal}>
+        <div className="add-buttons-dashboard">
+          <button className="ps-add-btn-dashboard" onClick={openCategoryModal}>
             <span className="material-symbols-outlined">add</span>
             Add Category
           </button>
-          <button className="ps-add-btn" onClick={openModal}>
+          <button className="ps-add-btn-dashboard" onClick={openModal}>
             <span className="material-symbols-outlined">add</span>
             Add Product
           </button>
