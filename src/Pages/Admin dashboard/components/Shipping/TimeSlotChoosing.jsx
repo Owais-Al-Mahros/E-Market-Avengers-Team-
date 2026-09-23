@@ -1,96 +1,146 @@
-// src/Pages/Admin dashboard/components/Shipping/TimeSlotChoosing.jsx
 import "./TimeSlotChoosing.css";
 
+/* Format hour: "8 AM" / "12 PM" / "12 AM" */
+const formatHour = (h) => {
+    const normalized = h % 24; // wrap-around
+    const ampm = normalized >= 12 ? "PM" : "AM";
+    const hour12 = normalized % 12 || 12;
+    return `${hour12} ${ampm}`;
+};
+
+const formatDateLabel = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr + "T00:00:00");
+    return date.toLocaleDateString("en-US", {
+        weekday: "long",
+        day: "2-digit",
+        month: "short",
+    });
+};
+
 export default function TimeSlotChoosing({
-    selectedDay,
+    selectedDate,
     defaultHours,
-    dayOverrides,
+    dateOverrides,
     onToggleHour,
-    onResetDay,
-    onBackToDefault, // ✅ دالة جديدة للعودة إلى الوضع الافتراضي
+    onResetDate,
+    onBackToDefault,
     minDurationHours,
     onMinDurationChange,
     minAdvanceHours,
     onMinAdvanceChange,
 }) {
-    const allHours = [];
-    for (let i = 6; i <= 23; i++) {
-        allHours.push(`${String(i).padStart(2, "0")}:00`);
-    }
-
-    const activeHours = selectedDay
-        ? (dayOverrides[selectedDay] || defaultHours)
-        : defaultHours;
-
-    const morningHours = allHours.filter(h => parseInt(h.split(":")[0], 10) < 12);
-    const afternoonHours = allHours.filter(h => parseInt(h.split(":")[0], 10) >= 12);
-
-    const formatHourDisplay = (hourStr) => {
-        const hour = parseInt(hourStr.split(":")[0], 10);
-        const ampm = hour >= 12 ? "pm" : "am";
-        const hour12 = hour % 12 || 12;
-        return `${hour12}${ampm}`;
+    // ============================================
+    // Generate hour slots
+    // from = starting hour (24h)
+    // to   = ending hour (24h, inclusive as start of slot)
+    // ============================================
+    const generateSlots = (from, to) => {
+        const slots = [];
+        for (let h = from; h <= to; h++) {
+            const startStr = `${String(h).padStart(2, "0")}:00`;
+            slots.push({
+                hour: h,
+                startStr,
+                // Slot runs from `h` to `h+1`
+                label: `${formatHour(h)} → ${formatHour(h + 1)}`,
+            });
+        }
+        return slots;
     };
+
+    // ✅ Morning: 6 AM → 11 AM (last slot ends at 12 PM)
+    const morningSlots = generateSlots(6, 11);
+
+    // ✅ Afternoon: 12 PM → 11 PM (last slot ends at 12 AM / midnight)
+    const afternoonSlots = generateSlots(12, 23);
+
+    const activeHours = selectedDate
+        ? dateOverrides[selectedDate] || defaultHours
+        : defaultHours;
 
     return (
         <div className="time-slot-choosing">
             <div className="hours-section">
                 <h3>
-                    {selectedDay ? `🕒 Hours for ${selectedDay}` : "🕒 Default Hours (All Days)"}
-                    {selectedDay && (
+                    {selectedDate
+                        ? `🕒 Times for ${formatDateLabel(selectedDate)}`
+                        : "🕒 Default Times (all days)"}
+
+                    {selectedDate && (
                         <div className="day-actions">
                             <button
+                                type="button"
                                 className="reset-day-btn"
-                                onClick={onResetDay}
-                                title="Reset this day to default"
+                                onClick={onResetDate}
+                                title="Reset to default"
                             >
-                                ↺ Reset to default
+                                ↺ Reset
                             </button>
                             <button
+                                type="button"
                                 className="back-default-btn"
                                 onClick={onBackToDefault}
-                                title="Switch back to default view"
+                                title="Back to default times"
                             >
-                                ◀ Back to Default
+                                ◀ Back
                             </button>
                         </div>
                     )}
                 </h3>
+
                 <div className="hours-grid">
-                    {morningHours.map((hour) => {
-                        const isActive = activeHours.includes(hour);
+                    {morningSlots.map((slot) => {
+                        const isActive = activeHours.includes(slot.startStr);
                         return (
                             <button
-                                key={hour}
+                                key={slot.startStr}
+                                type="button"
                                 className={`hour-toggle ${isActive ? "active" : ""}`}
-                                onClick={() => onToggleHour(hour)}
-                                title={isActive ? "Click to disable" : "Click to enable"}
+                                onClick={() => onToggleHour(slot.startStr)}
+                                title={
+                                    isActive
+                                        ? "Click to disable"
+                                        : "Click to enable"
+                                }
                             >
-                                <span className="hour-label">{formatHourDisplay(hour)}</span>
-                                <span className="toggle-indicator">{isActive ? "✅" : "⛔"}</span>
+                                <span className="hour-label">{slot.label}</span>
+                                <span className="toggle-indicator">
+                                    {isActive ? "✅" : "⛔"}
+                                </span>
                             </button>
                         );
                     })}
-                    <div className="hour-divider"></div>
-                    {afternoonHours.map((hour) => {
-                        const isActive = activeHours.includes(hour);
+
+                    <div className="hour-divider" />
+
+                    {afternoonSlots.map((slot) => {
+                        const isActive = activeHours.includes(slot.startStr);
                         return (
                             <button
-                                key={hour}
+                                key={slot.startStr}
+                                type="button"
                                 className={`hour-toggle ${isActive ? "active" : ""}`}
-                                onClick={() => onToggleHour(hour)}
-                                title={isActive ? "Click to disable" : "Click to enable"}
+                                onClick={() => onToggleHour(slot.startStr)}
+                                title={
+                                    isActive
+                                        ? "Click to disable"
+                                        : "Click to enable"
+                                }
                             >
-                                <span className="hour-label">{formatHourDisplay(hour)}</span>
-                                <span className="toggle-indicator">{isActive ? "✅" : "⛔"}</span>
+                                <span className="hour-label">{slot.label}</span>
+                                <span className="toggle-indicator">
+                                    {isActive ? "✅" : "⛔"}
+                                </span>
                             </button>
                         );
                     })}
                 </div>
+
                 <small className="hours-note">
-                    {selectedDay
-                        ? "These are the hours for the selected day."
-                        : "These hours apply to all days unless overridden."}
+                    {selectedDate
+                        ? "These times apply only to this day."
+                        : "These times apply to all enabled days (unless a specific override is set)."}
                 </small>
             </div>
 
@@ -98,24 +148,47 @@ export default function TimeSlotChoosing({
                 <h3>⚙️ Time Rules</h3>
                 <div className="rules-grid">
                     <div className="rule-field">
-                        <label>Min Advance Hours</label>
+                        <label>Minimum Advance Hours</label>
                         <input
                             type="number"
                             min="0"
-                            max="6"
+                            max="48"
                             value={minAdvanceHours}
-                            onChange={(e) => onMinAdvanceChange(Number(e.target.value))}
+                            onChange={(e) =>
+                                onMinAdvanceChange(Number(e.target.value))
+                            }
                         />
-                        <small>Hours before delivery (e.g., 1 = can't order within 1 hour)</small>
+                        <small>
+                            Hours before delivery (24 = no same-day orders)
+                        </small>
+
+                        {/* Quick presets */}
+                        <div className="rule-presets">
+                            {[1, 12, 24, 48].map((h) => (
+                                <button
+                                    key={h}
+                                    type="button"
+                                    className={
+                                        minAdvanceHours === h ? "active" : ""
+                                    }
+                                    onClick={() => onMinAdvanceChange(h)}
+                                >
+                                    {h}h
+                                </button>
+                            ))}
+                        </div>
                     </div>
+
                     <div className="rule-field">
-                        <label>Min Duration (Hours)</label>
+                        <label>Minimum Duration (Hours)</label>
                         <input
                             type="number"
                             min="1"
                             max="8"
                             value={minDurationHours}
-                            onChange={(e) => onMinDurationChange(Number(e.target.value))}
+                            onChange={(e) =>
+                                onMinDurationChange(Number(e.target.value))
+                            }
                         />
                         <small>Minimum delivery window (e.g., 2 hours)</small>
                     </div>

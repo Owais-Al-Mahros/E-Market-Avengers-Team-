@@ -1,4 +1,3 @@
-// src/context/ShippingSettingsContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
@@ -6,9 +5,9 @@ const ShippingSettingsContext = createContext();
 
 export function ShippingSettingsProvider({ children }) {
     const [settings, setSettings] = useState({
-        enabledDays: [],
+        enabledDates: [],
         defaultHours: [],
-        dayOverrides: {},
+        dateOverrides: {},
         minAdvanceHours: 1,
         minDurationHours: 2,
     });
@@ -16,20 +15,16 @@ export function ShippingSettingsProvider({ children }) {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
 
-    const parseJsonArray = (value) => {
+    const parseArray = (value) => {
         if (!value) return [];
         if (Array.isArray(value)) return value;
         if (typeof value === "string") {
             try { return JSON.parse(value); } catch { return []; }
         }
-        if (typeof value === "object") {
-            if (Array.isArray(value.days)) return value.days;
-            if (Array.isArray(value.hours)) return value.hours;
-        }
         return [];
     };
 
-    const parseOverrides = (value) => {
+    const parseObject = (value) => {
         if (!value) return {};
         if (typeof value === "string") {
             try { return JSON.parse(value); } catch { return {}; }
@@ -51,9 +46,9 @@ export function ShippingSettingsProvider({ children }) {
 
             if (data) {
                 setSettings({
-                    enabledDays: parseJsonArray(data.enabled_days),
-                    defaultHours: parseJsonArray(data.default_hours || data.enabled_hours),
-                    dayOverrides: parseOverrides(data.day_overrides),
+                    enabledDates: parseArray(data.enabled_dates),
+                    defaultHours: parseArray(data.default_hours),
+                    dateOverrides: parseObject(data.date_overrides),
                     minAdvanceHours: data.min_advance_hours ?? 1,
                     minDurationHours: data.min_duration_hours ?? 2,
                 });
@@ -74,12 +69,11 @@ export function ShippingSettingsProvider({ children }) {
         setSaving(true);
         try {
             const payload = {
-                enabled_days: settings.enabledDays,
+                enabled_dates: settings.enabledDates,
                 default_hours: settings.defaultHours,
-                day_overrides: settings.dayOverrides,
+                date_overrides: settings.dateOverrides,
                 min_advance_hours: settings.minAdvanceHours,
                 min_duration_hours: settings.minDurationHours,
-                // لا نرسل max_duration_hours
                 updated_at: new Date().toISOString(),
             };
 
@@ -112,43 +106,47 @@ export function ShippingSettingsProvider({ children }) {
         }
     };
 
-    const toggleDay = (day) => {
+    // ✅ تشغيل/إطفاء تاريخ كامل
+    const toggleDate = (dateStr) => {
         setSettings(prev => ({
             ...prev,
-            enabledDays: prev.enabledDays.includes(day)
-                ? prev.enabledDays.filter(d => d !== day)
-                : [...prev.enabledDays, day],
+            enabledDates: prev.enabledDates.includes(dateStr)
+                ? prev.enabledDates.filter(d => d !== dateStr)
+                : [...prev.enabledDates, dateStr].sort(),
         }));
     };
 
-    const toggleHour = (day, hour) => {
-        if (!day) {
+    // ✅ تشغيل/إطفاء ساعة لتاريخ محدد (أو للافتراضي)
+    const toggleHour = (dateStr, hour) => {
+        if (!dateStr) {
+            // default hours
             setSettings(prev => ({
                 ...prev,
                 defaultHours: prev.defaultHours.includes(hour)
                     ? prev.defaultHours.filter(h => h !== hour)
-                    : [...prev.defaultHours, hour],
+                    : [...prev.defaultHours, hour].sort(),
             }));
             return;
         }
 
         setSettings(prev => {
-            const currentDayHours = prev.dayOverrides[day] || prev.defaultHours;
-            const newDayHours = currentDayHours.includes(hour)
-                ? currentDayHours.filter(h => h !== hour)
-                : [...currentDayHours, hour];
+            const currentDateHours = prev.dateOverrides[dateStr] || prev.defaultHours;
+            const newDateHours = currentDateHours.includes(hour)
+                ? currentDateHours.filter(h => h !== hour)
+                : [...currentDateHours, hour].sort();
+
             return {
                 ...prev,
-                dayOverrides: { ...prev.dayOverrides, [day]: newDayHours },
+                dateOverrides: { ...prev.dateOverrides, [dateStr]: newDateHours },
             };
         });
     };
 
-    const resetDay = (day) => {
+    const resetDate = (dateStr) => {
         setSettings(prev => {
-            const newOverrides = { ...prev.dayOverrides };
-            delete newOverrides[day];
-            return { ...prev, dayOverrides: newOverrides };
+            const newOverrides = { ...prev.dateOverrides };
+            delete newOverrides[dateStr];
+            return { ...prev, dateOverrides: newOverrides };
         });
     };
 
@@ -162,9 +160,9 @@ export function ShippingSettingsProvider({ children }) {
         error,
         fetchSettings,
         saveSettings,
-        toggleDay,
+        toggleDate,
         toggleHour,
-        resetDay,
+        resetDate,
         updateMinAdvance,
         updateMinDuration,
     };

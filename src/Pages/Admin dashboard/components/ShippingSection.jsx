@@ -1,4 +1,3 @@
-// src/Pages/Admin dashboard/components/ShippingSection.jsx
 import { useState } from "react";
 import toast from "react-hot-toast";
 import DayChoosing from "./Shipping/DayChoosing";
@@ -13,60 +12,90 @@ export default function ShippingSection() {
         loading,
         saving,
         saveSettings,
-        toggleDay,
+        toggleDate,
         toggleHour,
-        resetDay,
+        resetDate,
         updateMinAdvance,
         updateMinDuration,
     } = useShippingSettings();
 
-    const [selectedDay, setSelectedDay] = useState("");
+    const [selectedDate, setSelectedDate] = useState("");
 
-    const handleSave = async () => {
+    // ✅ Save shipping settings only (days + hours)
+    const handleSaveShipping = async () => {
         const result = await saveSettings();
         if (result.success) {
-            toast.success("✅ Settings saved!");
+            toast.success("✅ Delivery days & times saved!");
         } else {
-            toast.error(`Failed to save: ${result.error}`);
+            toast.error(`Error: ${result.error}`);
         }
     };
 
-    if (loading) return <div className="shipping-section loading"><div className="spinner"></div></div>;
+    if (loading) {
+        return (
+            <div className="shipping-section loading">
+                <div className="spinner"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="shipping-section">
             <div className="section-header">
                 <h2>🚚 Shipping Settings</h2>
+                <p className="section-subtitle">
+                    Manage delivery days, times, and pricing separately
+                </p>
             </div>
 
-            <div className="section-body">
-                <DayChoosing
-                    enabledDays={settings.enabledDays}
-                    onToggleDay={toggleDay}
-                    selectedDay={selectedDay}
-                    onSelectDay={setSelectedDay}
-                />
+            {/* ============================================
+                PART 1: Shipping Days & Hours
+            ============================================ */}
+            <div className="shipping-part">
+                <div className="shipping-part-header">
+                    <h3>📅 Delivery Days & Times</h3>
+                    <button
+                        type="button"
+                        className="save-part-btn"
+                        onClick={handleSaveShipping}
+                        disabled={saving}
+                    >
+                        {saving ? "Saving..." : "💾 Save Delivery Days"}
+                    </button>
+                </div>
 
-                <TimeSlotChoosing
-                    selectedDay={selectedDay}
-                    defaultHours={settings.defaultHours}
-                    dayOverrides={settings.dayOverrides}
-                    onToggleHour={(hour) => toggleHour(selectedDay, hour)}
-                    onResetDay={() => resetDay(selectedDay)}
-                    onBackToDefault={() => setSelectedDay("")} // ✅ دالة العودة
-                    minAdvanceHours={settings.minAdvanceHours}
-                    onMinAdvanceChange={updateMinAdvance}
-                    minDurationHours={settings.minDurationHours}
-                    onMinDurationChange={updateMinDuration}
-                />
+                <div className="section-body">
+                    <DayChoosing
+                        enabledDates={settings.enabledDates}
+                        onToggleDate={toggleDate}
+                        selectedDate={selectedDate}
+                        onSelectDate={setSelectedDate}
+                    />
+
+                    <TimeSlotChoosing
+                        selectedDate={selectedDate}
+                        defaultHours={settings.defaultHours}
+                        dateOverrides={settings.dateOverrides}
+                        onToggleHour={(hour) => toggleHour(selectedDate, hour)}
+                        onResetDate={() => resetDate(selectedDate)}
+                        onBackToDefault={() => setSelectedDate("")}
+                        minAdvanceHours={settings.minAdvanceHours}
+                        onMinAdvanceChange={updateMinAdvance}
+                        minDurationHours={settings.minDurationHours}
+                        onMinDurationChange={updateMinDuration}
+                    />
+                </div>
+            </div>
+
+            {/* ============================================
+                PART 2: Pricing (saved separately)
+            ============================================ */}
+            <div className="shipping-part">
+                <div className="shipping-part-header">
+                    <h3>💰 Pricing</h3>
+                </div>
+
                 <PricingSettings />
-
-            </div>
-
-            <div className="section-footer">
-                <button className="save-btn" onClick={handleSave} disabled={saving}>
-                    {saving ? "Saving..." : "Save All"}
-                </button>
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 /* ==========================================
-   TIME SLOT CHOOSING
+   TIME SLOT CHOOSING — Hour Ranges
    ========================================== */
 
 .time-slot-choosing {
@@ -10,15 +10,19 @@
 
 .hours-section h3,
 .rules-section h3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
     font-size: 18px;
     font-weight: 700;
-    color: var(--dark-green, #2D4A00);
+    color: var(--dark-green, #2d4a00);
     margin: 0 0 16px 0;
 }
 
 .hours-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 8px;
 }
 
@@ -27,17 +31,24 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
-    padding: 8px 6px;
-    background: var(--light-bg, #D4E8B0);
+    gap: 4px;
+    padding: 10px 8px;
+    background: var(--light-bg, #d4e8b0);
     border: 2px solid transparent;
     border-radius: 12px;
     font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--dark-green, #2D4A00);
+    font-size: 0.82rem;
+    color: var(--dark-green, #2d4a00);
     cursor: pointer;
     transition: all 0.2s ease;
-    min-height: 52px;
+    min-height: 58px;
+}
+
+.hour-toggle .hour-label {
+    font-family: "Courier New", monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
 }
 
 .hour-toggle .toggle-indicator {
@@ -45,7 +56,7 @@
 }
 
 .hour-toggle.active {
-    background: var(--neon-green, #B6F500);
+    background: var(--neon-green, #b6f500);
     border-color: var(--lime-mid, #61b927);
     box-shadow: 0 4px 12px rgba(182, 245, 0, 0.1);
 }
@@ -55,6 +66,23 @@
     transform: translateY(-2px);
 }
 
+/* Divider between morning & afternoon */
+.hour-divider {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--secondary-color), transparent);
+    margin: 6px 0;
+}
+
+.hours-note {
+    display: block;
+    font-size: 12px;
+    color: #6b7a77;
+    font-style: italic;
+    margin-top: 12px;
+}
+
+/* ===== Rules ===== */
 .rules-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -70,7 +98,7 @@
 .rule-field label {
     font-weight: 700;
     font-size: 0.9rem;
-    color: var(--dark-green, #2D4A00);
+    color: var(--dark-green, #2d4a00);
 }
 
 .rule-field input {
@@ -78,38 +106,29 @@
     border: 2px solid var(--border-color, rgba(207, 241, 144, 0.5));
     border-radius: 12px;
     font-size: 16px;
-    background: var(--light-bg, #D4E8B0);
-    color: var(--dark-green, #2D4A00);
+    background: var(--light-bg, #d4e8b0);
+    color: var(--dark-green, #2d4a00);
     outline: none;
     transition: 0.2s;
     width: 100%;
 }
 
 .rule-field input:focus {
-    border-color: var(--neon-green, #B6F500);
+    border-color: var(--neon-green, #b6f500);
     box-shadow: 0 0 0 4px rgba(182, 245, 0, 0.1);
 }
 
 .rule-field small {
     font-size: 0.7rem;
-    color: var(--mid-green, #5A8C00);
+    color: var(--mid-green, #5a8c00);
     opacity: 0.8;
 }
 
-@media (max-width: 768px) {
-    .hours-grid {
-        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    }
-
-    .rules-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
+/* ===== Day actions ===== */
 .day-actions {
     display: inline-flex;
     gap: 8px;
-    margin-left: 12px;
+    margin-left: auto;
 }
 
 .reset-day-btn,
@@ -120,13 +139,44 @@
     padding: 4px 12px;
     font-size: 12px;
     font-weight: 600;
-    color: var(--dark-green, #2D4A00);
+    color: var(--dark-green, #2d4a00);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .reset-day-btn:hover,
 .back-default-btn:hover {
-    background: var(--neon-green, #B6F500);
+    background: var(--neon-green, #b6f500);
     transform: translateY(-1px);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .hours-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+
+    .hour-toggle {
+        font-size: 0.75rem;
+        padding: 8px 6px;
+    }
+
+    .hour-toggle .hour-label {
+        font-size: 0.78rem;
+    }
+
+    .rules-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hours-section h3,
+    .rules-section h3 {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hours-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }

@@ -87,6 +87,7 @@
     transform: rotate(360deg);
   }
 }
+
 /* ==========================================
    MOBILE RESPONSIVE RULES (Max-width: 768px)
    ========================================== */
@@ -97,7 +98,8 @@
 
   .section-header {
     margin-bottom: 20px;
-    text-align: center; /* توسيط العنوان في الجوال */
+    text-align: center;
+    /* توسيط العنوان في الجوال */
   }
 
   .section-header h2 {
@@ -124,5 +126,87 @@
   .shipping-section {
     padding: 16px;
     border-radius: 16px;
+  }
+}
+
+/* ==========================================
+   SEPARATED PARTS + SUBTITLE
+   ========================================== */
+
+.section-subtitle {
+  font-size: 14px;
+  color: #6b7a77;
+  margin: 4px 0 0 0;
+  font-weight: 500;
+}
+
+.shipping-part {
+  padding: 24px;
+  background: #fafcfb;
+  border-radius: 16px;
+  border: 1.5px solid var(--secondary-color);
+  margin-bottom: 24px;
+}
+
+.shipping-part:last-child {
+  margin-bottom: 0;
+}
+
+.shipping-part-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--secondary-color);
+  flex-wrap: wrap;
+}
+
+.shipping-part-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary-color);
+}
+
+.save-part-btn {
+  padding: 10px 20px;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 4px 12px rgba(20, 92, 74, 0.2);
+  white-space: nowrap;
+}
+
+.save-part-btn:hover:not(:disabled) {
+  background: var(--success);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(20, 92, 74, 0.3);
+}
+
+.save-part-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+@media (max-width: 640px) {
+  .shipping-part {
+    padding: 16px;
+  }
+
+  .shipping-part-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .save-part-btn {
+    width: 100%;
+    justify-content: center;
   }
 }

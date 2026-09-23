@@ -2,20 +2,15 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import "./PricingSettings.css";
 import { usePricing } from "../../../../context/PricingContext";
-
+import DistanceTiersEditor from "./DistanceTiersEditor";
+import WeightTiersEditor from "./WeightTiersEditor";
 
 export default function PricingSettings() {
-  const {
-    pricing,
-    loading,
-    saving,
-    savePricing,
-  } = usePricing();
+  const { pricing, loading, saving, savePricing } = usePricing();
 
   const [formData, setFormData] = useState(pricing);
   const [geocoding, setGeocoding] = useState(false);
 
-  // مزامنة البيانات عند تحميل الإعدادات من السيرفر
   useEffect(() => {
     setFormData(pricing);
   }, [pricing]);
@@ -28,7 +23,6 @@ export default function PricingSettings() {
     }));
   };
 
-  // ✅ زر جلب الإحداثيات تلقائياً من العنوان
   const geocodeAddress = async () => {
     if (!formData.baseAddress?.trim()) {
       toast.error("Please enter an address first!");
@@ -66,7 +60,9 @@ export default function PricingSettings() {
     else toast.error(`Failed: ${result.error}`);
   };
 
-  if (loading) return <div className="pricing-loading">Loading pricing...</div>;
+  if (loading) {
+    return <div className="pricing-loading">Loading pricing...</div>;
+  }
 
   return (
     <div className="pricing-container">
@@ -76,9 +72,15 @@ export default function PricingSettings() {
       </div>
 
       <div className="pricing-grid">
-        {/* ===== بطاقة المركز ===== */}
+        {/* ============================================ */}
+        {/* ROW 1: Warehouse | Weight | Floor */}
+        {/* ============================================ */}
+
+        {/* ===== Warehouse Location ===== */}
         <div className="pricing-card">
           <h4>📍 Warehouse Location</h4>
+
+          <label>Base Address</label>
           <div className="address-row">
             <input
               type="text"
@@ -88,6 +90,7 @@ export default function PricingSettings() {
               placeholder="e.g., Marienplatz 1, München"
             />
             <button
+              type="button"
               className="geo-btn"
               onClick={geocodeAddress}
               disabled={geocoding}
@@ -95,6 +98,7 @@ export default function PricingSettings() {
               {geocoding ? "⏳" : "📍 Auto"}
             </button>
           </div>
+
           <div className="coord-row">
             <div>
               <label>Latitude</label>
@@ -117,71 +121,126 @@ export default function PricingSettings() {
               />
             </div>
           </div>
+
           <small>Used to measure distance to the customer.</small>
         </div>
 
-        {/* ===== بطاقة المسافة ===== */}
-        <div className="pricing-card">
-          <h4>🚗 Distance Pricing</h4>
-          <label>Price per Kilometer (€)</label>
-          <input
-            type="number" step="0.01" name="pricePerKm"
-            value={formData.pricePerKm || 0}
-            onChange={handleChange}
-          />
-          <label>Max Delivery Distance (Km)</label>
-          <input
-            type="number" step="0.1" name="maxDeliveryDistanceKm"
-            value={formData.maxDeliveryDistanceKm || 0}
-            onChange={handleChange}
-          />
-          <label>Free Delivery above (€)</label>
-          <input
-            type="number" step="0.01" name="freeDeliveryThresholdAmount"
-            value={formData.freeDeliveryThresholdAmount || 0}
-            onChange={handleChange}
-          />
-          <small>Set 0 to disable free delivery.</small>
-        </div>
 
-        {/* ===== بطاقة الوزن ===== */}
-        <div className="pricing-card">
-          <h4>⚖️ Weight Pricing</h4>
-          <label>Free Weight up to (Kg)</label>
-          <input
-            type="number" step="0.1" name="freeWeightThresholdKg"
-            value={formData.freeWeightThresholdKg || 0}
-            onChange={handleChange}
-          />
-          <small>No weight fee below this threshold.</small>
-          <label>Price per Extra Kg (€)</label>
-          <input
-            type="number" step="0.01" name="pricePerExtraKg"
-            value={formData.pricePerExtraKg || 0}
-            onChange={handleChange}
-          />
-        </div>
-
-        {/* ===== بطاقة الطوابق ===== */}
+        {/* ===== Floor Fees ===== */}
         <div className="pricing-card">
           <h4>🏢 Floor Fees (per floor)</h4>
+
           <label>With Elevator (€)</label>
           <input
-            type="number" step="0.01" name="pricePerFloorWithElevator"
+            type="number"
+            step="0.01"
+            name="pricePerFloorWithElevator"
             value={formData.pricePerFloorWithElevator || 0}
             onChange={handleChange}
           />
-          <label>Without Elevator (€) <span className="badge">+effort</span></label>
+
+          <label>
+            Without Elevator (€){" "}
+            <span className="badge">+effort</span>
+          </label>
           <input
-            type="number" step="0.01" name="pricePerFloorWithoutElevator"
+            type="number"
+            step="0.01"
+            name="pricePerFloorWithoutElevator"
             value={formData.pricePerFloorWithoutElevator || 0}
             onChange={handleChange}
+          />
+
+          <small>Applied per floor above ground level.</small>
+        </div>
+
+        {/* ===== Weight Pricing ===== */}
+        {/* ===== Weight Pricing ===== */}
+        <div className="pricing-card pricing-card-wide">
+          <h4>⚖️ Weight Pricing</h4>
+
+          <div className="weight-pricing-top">
+            <div className="weight-pricing-field">
+              <label>Maximum Weight (kg)</label>
+              <input
+                type="number"
+                step="0.1"
+                name="maxWeightKg"
+                value={formData.maxWeightKg || 0}
+                onChange={handleChange}
+              />
+              <small>Orders above this weight are rejected.</small>
+            </div>
+          </div>
+
+          <WeightTiersEditor
+            tiers={formData.weightTiers || []}
+            maxWeight={formData.maxWeightKg || 0}
+            onChange={(newTiers) =>
+              setFormData((prev) => ({
+                ...prev,
+                weightTiers: newTiers,
+              }))
+            }
+          />
+        </div>
+
+        {/* ============================================ */}
+        {/* ROW 2: Distance Pricing (full width) */}
+        {/* ============================================ */}
+        <div className="pricing-card pricing-card-wide">
+          <h4>🚗 Distance Pricing</h4>
+
+          <div className="distance-pricing-top">
+            <div className="distance-pricing-field">
+              <label>Max Delivery Distance (km)</label>
+              <input
+                type="number"
+                step="0.1"
+                name="maxDeliveryDistanceKm"
+                value={formData.maxDeliveryDistanceKm || 0}
+                onChange={handleChange}
+              />
+              <small>
+                Orders beyond this distance are rejected.
+              </small>
+            </div>
+
+            <div className="distance-pricing-field">
+              <label>Free Delivery above (€)</label>
+              <input
+                type="number"
+                step="0.01"
+                name="freeDeliveryThresholdAmount"
+                value={
+                  formData.freeDeliveryThresholdAmount || 0
+                }
+                onChange={handleChange}
+              />
+              <small>0 = disabled.</small>
+            </div>
+          </div>
+
+          {/* ✅ Distance Tiers Editor */}
+          <DistanceTiersEditor
+            tiers={formData.distanceTiers || []}
+            maxDistance={formData.maxDeliveryDistanceKm || 0}
+            onChange={(newTiers) =>
+              setFormData((prev) => ({
+                ...prev,
+                distanceTiers: newTiers,
+              }))
+            }
           />
         </div>
       </div>
 
       <div className="pricing-footer">
-        <button className="save-pricing-btn" onClick={handleSave} disabled={saving}>
+        <button
+          className="save-pricing-btn"
+          onClick={handleSave}
+          disabled={saving}
+        >
           {saving ? "Saving..." : "💾 Save Pricing"}
         </button>
       </div>

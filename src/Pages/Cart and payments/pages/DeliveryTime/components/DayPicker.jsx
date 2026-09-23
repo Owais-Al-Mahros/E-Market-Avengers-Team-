@@ -19,7 +19,7 @@ export default function DayPicker({ selectedDate, onSelectDate }) {
 
             const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
             const dateStr = date.toISOString().split("T")[0];
-            const isEnabled = settings.enabledDays?.includes(dayName) || false;
+            const isEnabled = settings.enabledDates?.includes(dateStr) || false;
             const isToday = i === 0;
             const isPast = date < today;
 
