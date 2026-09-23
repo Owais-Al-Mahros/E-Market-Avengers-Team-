@@ -8,7 +8,8 @@ export function ShippingSettingsProvider({ children }) {
         enabledDates: [],
         defaultHours: [],
         dateOverrides: {},
-        minAdvanceHours: 1,
+        maxOrdersPerHour: 0,      // ✅ جديد (0 = لا حد)
+        cutoffHour: "22:00",       // ✅ جديد
         minDurationHours: 2,
     });
     const [loading, setLoading] = useState(true);
@@ -49,7 +50,8 @@ export function ShippingSettingsProvider({ children }) {
                     enabledDates: parseArray(data.enabled_dates),
                     defaultHours: parseArray(data.default_hours),
                     dateOverrides: parseObject(data.date_overrides),
-                    minAdvanceHours: data.min_advance_hours ?? 1,
+                    maxOrdersPerHour: data.max_orders_per_hour ?? 0,
+                    cutoffHour: data.cutoff_hour ?? "22:00",
                     minDurationHours: data.min_duration_hours ?? 2,
                 });
             }
@@ -72,7 +74,8 @@ export function ShippingSettingsProvider({ children }) {
                 enabled_dates: settings.enabledDates,
                 default_hours: settings.defaultHours,
                 date_overrides: settings.dateOverrides,
-                min_advance_hours: settings.minAdvanceHours,
+                max_orders_per_hour: settings.maxOrdersPerHour,
+                cutoff_hour: settings.cutoffHour,
                 min_duration_hours: settings.minDurationHours,
                 updated_at: new Date().toISOString(),
             };
@@ -106,7 +109,6 @@ export function ShippingSettingsProvider({ children }) {
         }
     };
 
-    // ✅ تشغيل/إطفاء تاريخ كامل
     const toggleDate = (dateStr) => {
         setSettings(prev => ({
             ...prev,
@@ -116,10 +118,8 @@ export function ShippingSettingsProvider({ children }) {
         }));
     };
 
-    // ✅ تشغيل/إطفاء ساعة لتاريخ محدد (أو للافتراضي)
     const toggleHour = (dateStr, hour) => {
         if (!dateStr) {
-            // default hours
             setSettings(prev => ({
                 ...prev,
                 defaultHours: prev.defaultHours.includes(hour)
@@ -150,8 +150,14 @@ export function ShippingSettingsProvider({ children }) {
         });
     };
 
-    const updateMinAdvance = (value) => setSettings(prev => ({ ...prev, minAdvanceHours: value }));
-    const updateMinDuration = (value) => setSettings(prev => ({ ...prev, minDurationHours: value }));
+    const updateMaxOrdersPerHour = (value) =>
+        setSettings(prev => ({ ...prev, maxOrdersPerHour: parseInt(value) || 0 }));
+
+    const updateCutoffHour = (value) =>
+        setSettings(prev => ({ ...prev, cutoffHour: value }));
+
+    const updateMinDuration = (value) =>
+        setSettings(prev => ({ ...prev, minDurationHours: value }));
 
     const value = {
         settings,
@@ -163,7 +169,8 @@ export function ShippingSettingsProvider({ children }) {
         toggleDate,
         toggleHour,
         resetDate,
-        updateMinAdvance,
+        updateMaxOrdersPerHour,
+        updateCutoffHour,
         updateMinDuration,
     };
 

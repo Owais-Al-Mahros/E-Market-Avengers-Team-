@@ -27,8 +27,10 @@ export default function TimeSlotChoosing({
     onBackToDefault,
     minDurationHours,
     onMinDurationChange,
-    minAdvanceHours,
-    onMinAdvanceChange,
+    maxOrdersPerHour,            // ✅ جديد
+    onMaxOrdersPerHourChange,    // ✅ جديد
+    cutoffHour,                  // ✅ جديد
+    onCutoffHourChange,          // ✅ جديد
 }) {
     // ============================================
     // Generate hour slots
@@ -145,40 +147,42 @@ export default function TimeSlotChoosing({
             </div>
 
             <div className="rules-section">
-                <h3>⚙️ Time Rules</h3>
+                <h3>⚙️ Booking Rules</h3>
                 <div className="rules-grid">
+                    {/* Max Orders per Hour */}
                     <div className="rule-field">
-                        <label>Minimum Advance Hours</label>
+                        <label>Max Orders per Hour</label>
                         <input
                             type="number"
                             min="0"
-                            max="48"
-                            value={minAdvanceHours}
+                            max="99"
+                            value={maxOrdersPerHour}
                             onChange={(e) =>
-                                onMinAdvanceChange(Number(e.target.value))
+                                onMaxOrdersPerHourChange(Number(e.target.value))
                             }
                         />
                         <small>
-                            Hours before delivery (24 = no same-day orders)
+                            0 = no limit. A slot auto-closes when the limit is reached.
                         </small>
 
-                        {/* Quick presets */}
-                        <div className="rule-presets">
-                            {[1, 12, 24, 48].map((h) => (
-                                <button
-                                    key={h}
-                                    type="button"
-                                    className={
-                                        minAdvanceHours === h ? "active" : ""
-                                    }
-                                    onClick={() => onMinAdvanceChange(h)}
-                                >
-                                    {h}h
-                                </button>
-                            ))}
-                        </div>
+
                     </div>
 
+                    {/* Cutoff Hour */}
+                    <div className="rule-field">
+                        <label>Cutoff Hour</label>
+                        <input
+                            type="time"
+                            value={cutoffHour}
+                            onChange={(e) => onCutoffHourChange(e.target.value)}
+                        />
+                        <small>
+                            After this time, tomorrow's orders close — next available
+                            becomes day after tomorrow.
+                        </small>
+                    </div>
+
+                    {/* Min Duration */}
                     <div className="rule-field">
                         <label>Minimum Duration (Hours)</label>
                         <input

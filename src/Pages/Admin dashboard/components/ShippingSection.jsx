@@ -15,7 +15,8 @@ export default function ShippingSection() {
         toggleDate,
         toggleHour,
         resetDate,
-        updateMinAdvance,
+        updateMaxOrdersPerHour,   // ✅ جديد
+        updateCutoffHour,         // ✅ جديد
         updateMinDuration,
     } = useShippingSettings();
 
@@ -79,8 +80,10 @@ export default function ShippingSection() {
                         onToggleHour={(hour) => toggleHour(selectedDate, hour)}
                         onResetDate={() => resetDate(selectedDate)}
                         onBackToDefault={() => setSelectedDate("")}
-                        minAdvanceHours={settings.minAdvanceHours}
-                        onMinAdvanceChange={updateMinAdvance}
+                        maxOrdersPerHour={settings.maxOrdersPerHour}
+                        onMaxOrdersPerHourChange={updateMaxOrdersPerHour}
+                        cutoffHour={settings.cutoffHour}
+                        onCutoffHourChange={updateCutoffHour}
                         minDurationHours={settings.minDurationHours}
                         onMinDurationChange={updateMinDuration}
                     />

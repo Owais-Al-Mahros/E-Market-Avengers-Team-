@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../../../context/CartContext";
 import { useCheckout } from "../../../../context/CheckoutContext";
+import { useShippingSettings } from "../../../../context/ShippingSettingsContext";   // ✅ جديد
 import { supabase } from "../../../../lib/supabase";
 import toast from "react-hot-toast";
 import Footer from "../../../../Components/Footer";
@@ -9,7 +10,7 @@ import CartHeader from "../ShoppingCart/components/CartHeader";
 import DayPicker from "./components/DayPicker";
 import TimeSlotPicker from "./components/TimeSlotPicker";
 import DeliverySummary from "./components/DeliverySummary";
-import { toBaseUnit } from "../../../../lib/units";   // ✅ جديد
+import { toBaseUnit } from "../../../../lib/units";
 
 import "./DeliveryTimePage.css";
 
@@ -23,16 +24,23 @@ export default function DeliveryTimePage() {
         clearCheckout,
     } = useCheckout();
 
-    const [selectedDate, setSelectedDate] = useState(checkoutData.deliveryDate || "");
-    const [selectedTime, setSelectedTime] = useState(checkoutData.deliveryTime || "");
+    // ✅ جلب maxOrdersPerHour من Context
+    const { settings: shippingSettings } = useShippingSettings();
+    const maxOrdersPerHour = shippingSettings?.maxOrdersPerHour || 0;
+
+    const [selectedDate, setSelectedDate] = useState(
+        checkoutData.deliveryDate || ""
+    );
+    const [selectedTime, setSelectedTime] = useState(
+        checkoutData.deliveryTime || ""
+    );
     const [submitting, setSubmitting] = useState(false);
-    const [hasSubmitted, setHasSubmitted] = useState(false); // ✅ flag
+    const [hasSubmitted, setHasSubmitted] = useState(false);
 
     // ============================================
-    // التحقق من العنوان (يتخطى الفحص بعد الإرسال)
+    // التحقق من العنوان
     // ============================================
     useEffect(() => {
-        // ✅ لا نتحقق إذا كان الطلب قد أُرسل
         if (hasSubmitted) return;
 
         if (!isAddressComplete()) {
@@ -82,34 +90,71 @@ export default function DeliveryTimePage() {
         }
 
         setSubmitting(true);
-        setHasSubmitted(true); // ✅ منع الـ useEffect
+        setHasSubmitted(true);
         const toastId = toast.loading("Bestellung wird erstellt...");
 
         try {
             // ============================================
-            // 1. حساب المبالغ
+            // ✅ 1. التحقق من سعة الساعة (Race Condition safety)
             // ============================================
-            const productsTotal = totalPrice; // ✅ يتضمن الضريبة بالفعل
-            const shipping = checkoutData.shippingDetails.totalShipping || 0;
-            const total = productsTotal + shipping; // ✅ سعران فقط
+            if (maxOrdersPerHour > 0) {
+                const { data: existingOrders, error: countError } =
+                    await supabase
+                        .from("orders")
+                        .select("id")
+                        .eq("delivery_date", selectedDate)
+                        .eq("delivery_time", selectedTime)
+                        .in("status", [
+                            "awaiting_payment",
+                            "pending",
+                            "confirmed",
+                            "shipped",
+                            "delivered",
+                        ]);
+
+                if (countError) {
+                    console.error("❌ Count error:", countError);
+                }
+
+                const count = existingOrders?.length || 0;
+
+                if (count >= maxOrdersPerHour) {
+                    toast.error(
+                        "Dieser Zeitslot ist leider ausgebucht. Bitte wählen Sie einen anderen.",
+                        { id: toastId }
+                    );
+                    setSubmitting(false);
+                    setHasSubmitted(false);
+                    return;
+                }
+            }
 
             // ============================================
-            // 2. تحضير الطلب
+            // 2. حساب المبالغ
+            // ============================================
+            const productsTotal = totalPrice;
+            const shipping =
+                checkoutData.shippingDetails.totalShipping || 0;
+            const total = productsTotal + shipping;
+
+            // ============================================
+            // 3. تحضير الطلب
             // ============================================
             const orderData = {
                 customer_id: null,
                 order_number: generateOrderNumber(),
                 status: "awaiting_payment",
-                subtotal: productsTotal,       // ✅ مع الضريبة
+                subtotal: productsTotal,
                 shipping_cost: shipping,
-                tax: 0,                        // ✅ الضريبة مدمجة
+                tax: 0,
                 total_price: total,
                 current_total: total,
                 order_date: new Date().toISOString(),
 
                 allow_substitution: (() => {
                     try {
-                        const saved = localStorage.getItem("allowSubstitution");
+                        const saved =
+                            localStorage.getItem("allowSubstitution");
                         return saved === null ? true : JSON.parse(saved);
                     } catch {
                         return true;
@@ -136,16 +181,20 @@ export default function DeliveryTimePage() {
                     distance_km: checkoutData.shippingDetails.distance,
                     breakdown: {
                         distance_cost:
-                            checkoutData.shippingDetails.breakdown.distanceCost,
-                        weight_cost: checkoutData.shippingDetails.breakdown.weightCost,
-                        floor_cost: checkoutData.shippingDetails.breakdown.floorCost,
+                            checkoutData.shippingDetails.breakdown
+                                .distanceCost,
+                        weight_cost:
+                            checkoutData.shippingDetails.breakdown
+                                .weightCost,
+                        floor_cost:
+                            checkoutData.shippingDetails.breakdown.floorCost,
                     },
                 },
 
-                shipping_cost: checkoutData.shippingDetails.totalShipping,
-                floor_fee: checkoutData.shippingDetails.breakdown.floorCost,
-                total_price: total,
-                current_total: total,
+                shipping_cost:
+                    checkoutData.shippingDetails.totalShipping,
+                floor_fee:
+                    checkoutData.shippingDetails.breakdown.floorCost,
 
                 payment_method: "cod",
                 delivery_date: selectedDate,
@@ -158,7 +207,7 @@ export default function DeliveryTimePage() {
             };
 
             // ============================================
-            // 3. إدراج الطلب
+            // 4. إدراج الطلب
             // ============================================
             const { data: order, error: orderError } = await supabase
                 .from("orders")
@@ -169,7 +218,7 @@ export default function DeliveryTimePage() {
             if (orderError) throw new Error(orderError.message);
 
             // ============================================
-            // 4. إدراج بنود الطلب
+            // 5. إدراج بنود الطلب
             // ============================================
             const orderItems = cartItems.map((item) => ({
                 order_id: order.id,
@@ -178,12 +227,14 @@ export default function DeliveryTimePage() {
                 quantity: item.quantity,
                 product_name: item.name,
                 unit_price: item.price,
-                total_price: (item.total_price || item.price) * item.quantity,
+                total_price:
+                    (item.total_price || item.price) * item.quantity,
                 tax_rate: item.tax_rate || 0,
                 weight: item.weight || null,
                 weight_unit: item.weight_unit || "kg",
-                // ✅ الوزن الإجمالي بالوحدة الأساسية (kg/L)
-                total_weight: toBaseUnit(item.weight, item.weight_unit) * item.quantity,
+                total_weight:
+                    toBaseUnit(item.weight, item.weight_unit) *
+                    item.quantity,
             }));
 
             const { error: itemsError } = await supabase
@@ -193,7 +244,7 @@ export default function DeliveryTimePage() {
             if (itemsError) throw new Error(itemsError.message);
 
             // ============================================
-            // 5. حفظ آخر طلب
+            // 6. حفظ آخر طلب
             // ============================================
             localStorage.setItem(
                 "lastOrder",
@@ -206,7 +257,7 @@ export default function DeliveryTimePage() {
             );
 
             // ============================================
-            // 6. تنظيف (بعد الإرسال)
+            // 7. تنظيف
             // ============================================
             updateFields({
                 deliveryDate: selectedDate,
@@ -221,13 +272,16 @@ export default function DeliveryTimePage() {
             });
 
             // ============================================
-            // 7. الانتقال إلى صفحة الفاتورة والدفع
+            // 8. الانتقال لصفحة الدفع
             // ============================================
-            navigate(`/Cart&Payments/BillAndPayment/${order.id}`, { replace: true });
+            navigate(
+                `/Cart&Payments/BillAndPayment/${order.id}`,
+                { replace: true }
+            );
         } catch (error) {
             console.error("❌ Order submission failed:", error);
             toast.error(`Fehler: ${error.message}`, { id: toastId });
-            setHasSubmitted(false); // ✅ السماح بإعادة المحاولة
+            setHasSubmitted(false);
         } finally {
             setSubmitting(false);
         }
@@ -241,17 +295,20 @@ export default function DeliveryTimePage() {
             <CartHeader currentStep={3} />
 
             <main className="dt-main">
-                {/* Hero */}
                 <div className="dt-hero">
                     <span className="dt-hero-badge">🕒 Schritt 3 von 4</span>
                     <h1>Liefertermin wählen</h1>
-                    <p>Bestimmen Sie, wann wir Ihre Bestellung liefern sollen.</p>
+                    <p>
+                        Bestimmen Sie, wann wir Ihre Bestellung liefern
+                        sollen.
+                    </p>
                 </div>
 
-                {/* Progress */}
                 <div className="dt-progress">
                     <div className="dt-progress-item done">
-                        <span className="material-symbols-outlined">check_circle</span>
+                        <span className="material-symbols-outlined">
+                            check_circle
+                        </span>
                         <span>Adresse</span>
                     </div>
                     <div className="dt-progress-line done" />
@@ -266,7 +323,6 @@ export default function DeliveryTimePage() {
                     </div>
                 </div>
 
-                {/* Layout */}
                 <div className="dt-layout">
                     <div className="dt-pickers">
                         <DayPicker
@@ -292,12 +348,13 @@ export default function DeliveryTimePage() {
                     />
                 </div>
 
-                {/* Actions */}
                 <div className="dt-actions">
                     <button
                         type="button"
                         className="dt-btn-cancel"
-                        onClick={() => navigate("/Cart&Payments/Checkout")}
+                        onClick={() =>
+                            navigate("/Cart&Payments/Checkout")
+                        }
                         disabled={submitting}
                     >
                         ← Zurück zur Adresse
@@ -306,7 +363,9 @@ export default function DeliveryTimePage() {
                         type="button"
                         className="dt-btn-submit"
                         onClick={handleConfirmOrder}
-                        disabled={submitting || !selectedDate || !selectedTime}
+                        disabled={
+                            submitting || !selectedDate || !selectedTime
+                        }
                     >
                         {submitting ? (
                             <>
@@ -315,7 +374,9 @@ export default function DeliveryTimePage() {
                             </>
                         ) : (
                             <>
-                                <span className="material-symbols-outlined">lock</span>
+                                <span className="material-symbols-outlined">
+                                    lock
+                                </span>
                                 Bestellung bestätigen · Weiter zur Zahlung
                             </>
                         )}

@@ -180,3 +180,23 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* ===== Time input ===== */
+.rule-field input[type="time"] {
+    padding: 10px 14px;
+    border: 2px solid var(--border-color, rgba(207, 241, 144, 0.5));
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: "Courier New", monospace;
+    background: var(--light-bg, #d4e8b0);
+    color: var(--dark-green, #2d4a00);
+    outline: none;
+    transition: 0.2s;
+    width: 100%;
+}
+
+.rule-field input[type="time"]:focus {
+    border-color: var(--neon-green, #b6f500);
+    box-shadow: 0 0 0 4px rgba(182, 245, 0, 0.1);
+}
