@@ -73,29 +73,29 @@ export default function MyInfo() {
           <h2>My Info</h2>
           <div className="info-grid">
             <p>
-              <strong>First Name :</strong> {info?.firstName || "Unknown"}
+              <strong>First Name:</strong> {info?.firstName || "Unknown"}
             </p>
             <p>
-              <strong>Last Name :</strong> {info?.lastName || "Unknown"}
+              <strong>Last Name:</strong> {info?.lastName || "Unknown"}
             </p>
             <p>
-              <strong>Phone : </strong> <span>{info?.phone || "Unknown"}</span>
+              <strong>Phone: </strong> <span>{info?.phone || "Unknown"}</span>
             </p>
             <p>
-              <strong>Email : </strong> {info?.email || "Unknown"}
+              <strong>Email: </strong> {info?.email || "Unknown"}
             </p>
             <p>
-              <strong>Age :</strong> {info?.age || "Unknown"}
+              <strong>Age:</strong> {info?.age || "Unknown"}
             </p>
             <p>
-              <strong>Country : </strong> {info?.address?.country || "Unknown"}
+              <strong>Country: </strong> {info?.address?.country || "Unknown"}
             </p>
             <p>
-              <strong>Governorate : </strong>{" "}
+              <strong>Governorate: </strong>{" "}
               {info?.address?.governorate || "Unknown"}
             </p>
             <p>
-              <strong>Region : </strong> {info?.address?.region || "Unknown"}
+              <strong>Region: </strong> {info?.address?.region || "Unknown"}
             </p>
           </div>
           <button className="edit-btn" onClick={handleOpenModal}>
@@ -104,7 +104,7 @@ export default function MyInfo() {
         </div>
 
         {isModalOpen && (
-          <div className="modal-overlay">
+          <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
             <div className="modal-content">
               <h3>Edit My Info </h3>
               <form onSubmit={handleSave}>
@@ -113,7 +113,7 @@ export default function MyInfo() {
                   <input
                     type="text"
                     name="firstName"
-                    value={draftInfo.firstName}
+                    placeholder={draftInfo.firstName}
                     onChange={handleDraftFieldChange}
                   />
                 </div>
@@ -122,7 +122,7 @@ export default function MyInfo() {
                   <input
                     type="text"
                     name="lastName"
-                    value={draftInfo.lastName}
+                    placeholder={draftInfo.lastName}
                     onChange={handleDraftFieldChange}
                   />
                 </div>
@@ -131,7 +131,7 @@ export default function MyInfo() {
                   <input
                     type="tel"
                     name="phone"
-                    value={draftInfo.phone}
+                    placeholder={draftInfo.phone}
                     onChange={handleDraftFieldChange}
                   />
                 </div>
@@ -140,7 +140,7 @@ export default function MyInfo() {
                   <input
                     type="email"
                     name="email"
-                    value={draftInfo.email}
+                    placeholder={draftInfo.email}
                     onChange={handleDraftFieldChange}
                   />
                 </div>
@@ -149,7 +149,7 @@ export default function MyInfo() {
                   <input
                     type="number"
                     name="age"
-                    value={draftInfo.age}
+                    placeholder={draftInfo.age}
                     onChange={handleDraftFieldChange}
                   />
                 </div>
@@ -160,7 +160,7 @@ export default function MyInfo() {
                   <input
                     type="text"
                     name="country"
-                    value={draftInfo.address?.country}
+                    placeholder={draftInfo.address?.country}
                     onChange={handleUpdateAddressInfo}
                   />
                 </div>
@@ -170,7 +170,7 @@ export default function MyInfo() {
                     <input
                       type="text"
                       name="governorate"
-                      value={draftInfo.address?.governorate}
+                      placeholder={draftInfo.address?.governorate}
                       onChange={handleUpdateAddressInfo}
                     />
                   </div>
@@ -179,7 +179,7 @@ export default function MyInfo() {
                     <input
                       type="text"
                       name="region"
-                      value={draftInfo.address?.region}
+                      placeholder={draftInfo.address?.region}
                       onChange={handleUpdateAddressInfo}
                     />
                   </div>
