@@ -7,6 +7,7 @@ import { useDebounce } from "../../../hooks/useDebounce.js";
 import { Link, useNavigate } from "react-router-dom";
 import ProductCard from "../../DisplayProducts/components/ProductCard.jsx";
 import { useFavorite } from "../../../context/FavoriteContext.jsx";
+import { useMyInfo } from "../../../context/MyInfoContext.jsx";
 
 function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
   console.count("📌 HomePageHeader");
@@ -15,6 +16,9 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
   //Favorite list
   const { favorite } = useFavorite();
   const [isFavoriteOpen, setIfFavoriteOpen] = useState(false);
+
+  //My info
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   const { totalItems } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -237,11 +241,11 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
               <div className="profile-dropdown">
                 <Link
                   className="header-orders"
-                  to="/account"
-                  onClick={() => setMenuOpen(false)}
+                  to="/HomePage/MyInfo"
+                  onClick={() => setIsInfoOpen(true)}
                 >
                   <span className="material-symbols-outlined">person</span>
-                  <span className="orders-label">My Account</span>
+                  <span className="orders-label">My Info</span>
                 </Link>
                 <Link
                   className="header-orders"

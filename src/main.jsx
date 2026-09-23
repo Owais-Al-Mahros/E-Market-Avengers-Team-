@@ -9,6 +9,7 @@ import { ShippingSettingsProvider } from "./context/ShippingSettingsContext.jsx"
 import { PricingProvider } from "./context/PricingContext.jsx";
 import { CompanyProvider } from "./context/CompanyContext.jsx";
 import { FavoriteProvider } from "./context/FavoriteContext.jsx";
+import { MyInfoProvider } from "./context/MyInfoContext.jsx";
 import "./index.css";
 import App from "./App.jsx";
 
@@ -23,7 +24,9 @@ createRoot(document.getElementById("root")).render(
                 <PricingProvider>
                   <CompanyProvider>
                     <FavoriteProvider>
-                      <App />
+                      <MyInfoProvider>
+                        <App />
+                      </MyInfoProvider>
                     </FavoriteProvider>
                   </CompanyProvider>
                 </PricingProvider>
@@ -33,5 +36,5 @@ createRoot(document.getElementById("root")).render(
         </SubcategoryProvider>
       </CategoryProvider>
     </ProductProvider>
-  </BrowserRouter>
+  </BrowserRouter>,
 );

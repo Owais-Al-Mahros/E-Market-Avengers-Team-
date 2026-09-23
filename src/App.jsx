@@ -10,6 +10,7 @@ import ProductCardDetails from "./Pages/DisplayProducts/modals/ProductCardDetail
 
 import TrackOrder from "./Pages/Track Orders/TrackOrder";
 import FavoriteList from "./Pages/Home page/modals/FavoriteList";
+import MyInfo from "./Pages/Home page/modals/MyInfo";
 
 // 🚀 تطبيق Lazy Loading على باقي الصفحات (بدون DisplayProducts)
 const AdminDashboard = lazy(
@@ -115,7 +116,12 @@ function App() {
           <Route path="/Cart&Payments/*" element={<CartAndPayments />} />
           {/* ✅ DisplayProducts مباشر — لا Suspense fallback له */}
           <Route path="/DisplayProducts" element={<DisplayProducts />} />
-          <Route path="/DisplayProducts/ProductCardDetails" element={<ProductCardDetails />} />
+          <Route path="/HomePage/FavoriteList" element={<FavoriteList />} />
+          <Route path="/HomePage/MyInfo" element={<MyInfo />} />
+          <Route
+            path="/DisplayProducts/ProductCardDetails"
+            element={<ProductCardDetails />}
+          />
           <Route
             path="/dashboard"
             element={
@@ -132,7 +138,6 @@ function App() {
           <Route path="/widerruf" element={<Widerruf />} />
           <Route path="/lieferung-zahlung" element={<LieferungZahlung />} />
           <Route path="/track-order" element={<TrackOrder />} />
-
         </Routes>
       </Suspense>
     </>
