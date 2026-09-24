@@ -1,130 +1,170 @@
 /* ==========================================
-   🌿 CATEGORY SECTION — Horizontal Row (rem)
+   🌿 CATEGORY SECTION — Full-width responsive row
    ========================================== */
 
 .cat-section {
-  padding: 1.75rem 0;
+  /* ===== Responsive Config ===== */
+  --cat-visible: 7;
+  /* عدد البطاقات المرئية */
+  --cat-gap: 1.25rem;
+  /* المسافة بين البطاقات */
+  --cat-side-padding: 2rem;
+  /* الهامش الجانبي */
+
+  width: 100%;
+  padding: 2rem 0 1.5rem;
 }
 
-/* ===== Header ===== */
+/* ============================================
+   HEADER — Title + Nav
+   ============================================ */
 .cat-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.125rem;
-  padding: 0 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0 var(--cat-side-padding);
 }
 
 .cat-title {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.75rem;
   margin: 0;
-  font-size: 1.375rem;
+  font-family: "Readex Pro", "Inter", system-ui, sans-serif;
+  font-size: 1.75rem;
   font-weight: 800;
-  color: var(--text);
+  color: var(--primary-color, #145c4a);
   text-transform: capitalize;
-  letter-spacing: -0.01875rem;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
 }
 
 .cat-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.625rem;
-  height: 2.625rem;
-  background: var(--secondary-color);
-  border-radius: var(--radius-md);
-  font-size: 1.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: linear-gradient(135deg, var(--secondary-color, #ddf4ea), #c8ebd9);
+  border-radius: 0.75rem;
+  font-size: 1.35rem;
+  box-shadow: 0 2px 8px rgba(20, 92, 74, 0.1);
+  flex-shrink: 0;
 }
 
 .cat-count {
-  background: var(--primary-color);
-  color: var(--bg-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-color, #145c4a);
+  color: #fff;
   font-size: 0.75rem;
   font-weight: 800;
-  padding: 0.25rem 0.625rem;
-  border-radius: var(--radius-md);
-  min-width: 1.625rem;
-  text-align: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 2rem;
+  min-width: 1.75rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px rgba(20, 92, 74, 0.2);
 }
 
-/* ===== Nav Buttons ===== */
+/* ============================================
+   NAV BUTTONS
+   ============================================ */
 .cat-nav {
   display: flex;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .cat-nav-btn {
-  width: 2.625rem;
-  height: 2.625rem;
-  border-radius: var(--radius-full);
-  border: 0.09375rem solid var(--secondary-color);
-  background: var(--bg-color);
-  color: var(--primary-color);
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--secondary-color, #ddf4ea);
+  background: #fff;
+  color: var(--primary-color, #145c4a);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition-fast);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(20, 92, 74, 0.05);
 }
 
 .cat-nav-btn:hover {
-  background: var(--primary-color);
-  color: var(--bg-color);
-  border-color: var(--primary-color);
+  background: var(--primary-color, #145c4a);
+  color: #fff;
+  border-color: var(--primary-color, #145c4a);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(20, 92, 74, 0.2);
+}
+
+.cat-nav-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.cat-nav-btn .material-symbols-outlined {
+  font-size: 1.4rem;
 }
 
 /* ============================================
-   ✅ Horizontal Scroll — حل مشكلة السحب للجوال
+   SCROLL CONTAINER — full width
    ============================================ */
 .cat-scroll {
+  width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
+  padding-inline: var(--cat-side-padding);
   padding-bottom: 0.75rem;
-  padding-inline: 1rem; /* إضافة مسافة لكي تبدأ البطاقات بوضوح */
-  -webkit-overflow-scrolling: touch; /* تسليس السحب بأجهزة آبل وأندرويد */
-  touch-action: pan-x; /* ✅ إجبار المتصفح على معالجة السحب أفقياً ومنع تقاطعه مع تمرير الصفحة */
-  scrollbar-width: thin; /* لمتصفحات فايرفوكس */
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  scrollbar-width: thin;
 }
 
+/* Custom scrollbar */
 .cat-scroll::-webkit-scrollbar {
   height: 0.5rem;
 }
 
 .cat-scroll::-webkit-scrollbar-track {
-  background: var(--bg-color);
-  border-radius: var(--radius-sm);
-  margin-inline: 1rem;
+  background: var(--secondary-color, #ddf4ea);
+  border-radius: 0.25rem;
+  margin-inline: var(--cat-side-padding);
 }
 
 .cat-scroll::-webkit-scrollbar-thumb {
-  background: var(--secondary-color);
-  border-radius: var(--radius-sm);
+  background: var(--primary-color, #145c4a);
+  border-radius: 0.25rem;
 }
 
 .cat-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-color);
+  background: #0f4a3b;
 }
 
-/* ===== Track (Flex Row) ===== */
+/* ============================================
+   TRACK — Flex row
+   ============================================ */
 .cat-track {
   display: flex;
-  gap: 1.125rem;
+  gap: var(--cat-gap);
   width: max-content;
   padding: 0.25rem 0;
 }
 
-/* ===== Slot لكل ProductCard ===== */
+/* ============================================
+   ✅ SLOT — DINAMIC WIDTH based on visible count
+   ============================================ */
 .cat-card-slot {
-  flex: 0 0 15rem; /* عرض افتراضي متناسق (~240px) */
-  width: 15rem;
+  flex: 0 0 calc((100vw - (var(--cat-side-padding) * 2) - (var(--cat-gap) * (var(--cat-visible) - 1))) / var(--cat-visible));
+  min-width: 9rem;
+  max-width: 18rem;
 }
 
 /* ============================================
-   Loading / Empty
+   LOADING / EMPTY
    ============================================ */
 .cat-loading,
 .cat-empty {
@@ -132,17 +172,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3.75rem 0;
+  padding: 4rem 0;
   gap: 0.75rem;
-  color: var(--primary-color);
+  color: var(--primary-color, #145c4a);
 }
 
 .cat-spinner {
   width: 2.75rem;
   height: 2.75rem;
-  border: 0.25rem solid var(--secondary-color);
-  border-top-color: var(--primary-color);
-  border-radius: var(--radius-full);
+  border: 0.25rem solid var(--secondary-color, #ddf4ea);
+  border-top-color: var(--primary-color, #145c4a);
+  border-radius: 50%;
   animation: catSpin 0.8s linear infinite;
 }
 
@@ -153,65 +193,129 @@
 }
 
 .cat-empty {
-  color: var(--secondary-text);
+  color: var(--secondary-text, #4a4a4a);
 }
 
 .cat-empty .material-symbols-outlined {
   font-size: 3.25rem;
-  color: var(--secondary-color);
+  color: var(--secondary-color, #ddf4ea);
 }
 
 /* ============================================
-   Responsive
+   RESPONSIVE — Adjust visible cards
    ============================================ */
 
-@media (max-width: 64rem) {
-  .cat-card-slot {
-    flex: 0 0 13.75rem;
-    width: 13.75rem;
-  }
+/* Large Desktop: 7 cards (default) */
+/* > 1440px */
 
-  .cat-title {
-    font-size: 1.25rem;
+/* Desktop: 6 cards */
+@media (max-width: 90rem) {
+  .cat-section {
+    --cat-visible: 6;
   }
 }
 
-@media (max-width: 48rem) {
+/* Laptop: 5 cards */
+@media (max-width: 75rem) {
+  .cat-section {
+    --cat-visible: 5;
+    --cat-side-padding: 1.75rem;
+  }
+}
+
+/* Tablet: 4 cards */
+@media (max-width: 64rem) {
+  .cat-section {
+    --cat-visible: 4;
+    --cat-side-padding: 1.5rem;
+    --cat-gap: 1rem;
+  }
+
   .cat-title {
-    font-size: 1.0625rem;
+    font-size: 1.5rem;
+  }
+
+  .cat-icon {
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.2rem;
+  }
+}
+
+/* Small Tablet: 3 cards */
+@media (max-width: 48rem) {
+  .cat-section {
+    --cat-visible: 3;
+    --cat-side-padding: 1.25rem;
+    --cat-gap: 0.875rem;
+  }
+
+  .cat-title {
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
   }
 
   .cat-icon {
     width: 2.25rem;
     height: 2.25rem;
-    font-size: 1.125rem;
+    font-size: 1.1rem;
+  }
+
+  .cat-count {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
   }
 
   .cat-nav-btn {
-    width: 2.375rem;
-    height: 2.375rem;
-  }
-
-  .cat-track {
-    gap: 0.875rem;
-  }
-  .cat-card-slot {
-    flex: 0 0 10.5rem;
-    width: 10.5rem;
+    width: 2.4rem;
+    height: 2.4rem;
   }
 }
 
+/* Mobile Large: 2.5 cards (peek) */
+@media (max-width: 40rem) {
+  .cat-section {
+    --cat-visible: 2.5;
+    --cat-side-padding: 1rem;
+    --cat-gap: 0.75rem;
+  }
+
+  .cat-title {
+    font-size: 1.2rem;
+  }
+
+  .cat-header {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Mobile Small: 2 cards */
 @media (max-width: 30rem) {
+  .cat-section {
+    --cat-visible: 2;
+  }
+
+  .cat-title {
+    font-size: 1.1rem;
+    gap: 0.5rem;
+  }
+
+  .cat-icon {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+  }
+
   .cat-nav {
     display: none;
+    /* المستخدم يسحب بالإصبع */
   }
+}
 
-  .cat-card-slot {
-    flex: 0 0 9.5rem;
-    width: 9.5rem;
-  }
-
-  .cat-track {
-    gap: 0.75rem;
+/* Extra Small: 1.5 cards (peek) */
+@media (max-width: 22rem) {
+  .cat-section {
+    --cat-visible: 1.5;
+    --cat-side-padding: 0.75rem;
   }
 }

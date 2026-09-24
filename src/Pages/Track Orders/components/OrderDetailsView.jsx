@@ -1,25 +1,86 @@
 import {
     formatEuro,
-    calcLineNet,
-    calcLineTax,
+    calcNetFromGross,
+    calcTaxFromGross,
     buildTaxBreakdown,
 } from "../../../lib/invoiceHelpers";
-import { formatQuantity, normalizeUnit } from "../../../lib/units";
+import { formatQuantity } from "../../../lib/units";
 import "./OrderDetailsView.css";
 
 export default function OrderDetailsView({ order }) {
     if (!order) return null;
 
-    const items = order.order_items || [];
+    const rawItems = order.order_items || [];
+
+    // ============================================
+    // ✅ Normalize: استخدم القيم الفعلية إن وُجدت
+    // ============================================
+    const items = rawItems.map((item) => {
+        const isRemoved = item.status === "removed";
+        const isProcessed =
+            item.status === "scanned" || item.status === "substituted";
+
+        // --- منتج مُزال (Not Available) ---
+        if (isRemoved) {
+            return {
+                ...item,
+                total_price: 0,        // لا يُحتسب في المجموع
+                _displayQuantity: 0,
+                _isRemoved: true,
+                _isAdjusted: true,
+                _originalTotal: parseFloat(item.total_price) || 0,
+            };
+        }
+
+        // --- منتج تم مسحه/استبداله (له actual_total) ---
+        if (isProcessed && item.actual_total != null) {
+            const isWeightBased =
+                !item.weight_unit ||
+                ["kg", "g", "l", "ml"].includes(
+                    String(item.weight_unit).toLowerCase()
+                );
+
+            const finalQty = isWeightBased
+                ? item.actual_weight ?? item.quantity
+                : item.actual_quantity ?? item.quantity;
+
+            return {
+                ...item,
+                // ✅ نستبدل total_price بالقيمة الفعلية
+                total_price: parseFloat(item.actual_total) || 0,
+                _displayQuantity: finalQty,
+                _finalUnitPrice: parseFloat(item.actual_unit_price) || 0,
+                _isRemoved: false,
+                _isAdjusted: true,
+                _originalTotal: parseFloat(item.total_price) || 0,
+            };
+        }
+
+        // --- منتج لم يُلمس بعد (Status = pending أو لا توجد actual) ---
+        return {
+            ...item,
+            _displayQuantity: item.quantity,
+            _isRemoved: false,
+            _isAdjusted: false,
+        };
+    });
+
+    // ============================================
+    // ✅ الإجماليات — الآن تعتمد على القيم الفعلية
+    // ============================================
     const shipping = parseFloat(order.shipping_cost || 0);
+
     const productsTotal = items.reduce(
         (sum, item) => sum + parseFloat(item.total_price || 0),
         0
     );
+
     const total = productsTotal + shipping;
 
+    const hasAdjustments = items.some((i) => i._isAdjusted);
+
     // ============================================
-    // تفصيل الضريبة حسب النسبة
+    // تفصيل الضريبة (يعتمد الآن على القيم الفعلية)
     // ============================================
     const taxBreakdown = buildTaxBreakdown(items);
 
@@ -32,7 +93,7 @@ export default function OrderDetailsView({ order }) {
 
     return (
         <div className="invoice-container">
-            {/* ============ HEADER — رأس الفاتورة ============ */}
+            {/* ============ HEADER ============ */}
             <div className="invoice-header">
                 <div className="invoice-header-left">
                     <div className="invoice-brand">
@@ -51,11 +112,13 @@ export default function OrderDetailsView({ order }) {
                 </div>
             </div>
 
-            {/* ============ META — بيانات الطلب ============ */}
+            {/* ============ META ============ */}
             <div className="invoice-meta">
                 <div className="invoice-meta-item">
                     <span className="invoice-meta-label">Beleg-Nr.:</span>
-                    <span className="invoice-meta-value">#{order.order_number}</span>
+                    <span className="invoice-meta-value">
+                        #{order.order_number}
+                    </span>
                 </div>
                 <div className="invoice-meta-item">
                     <span className="invoice-meta-label">Datum:</span>
@@ -75,7 +138,9 @@ export default function OrderDetailsView({ order }) {
                     <div className="invoice-meta-item">
                         <span className="invoice-meta-label">Lieferung:</span>
                         <span className="invoice-meta-value">
-                            {new Date(order.delivery_date).toLocaleDateString("de-DE")}
+                            {new Date(order.delivery_date).toLocaleDateString(
+                                "de-DE"
+                            )}
                             {order.delivery_time && ` · ${order.delivery_time}`}
                         </span>
                     </div>
@@ -89,7 +154,8 @@ export default function OrderDetailsView({ order }) {
                     Kunde
                 </div>
                 <div className="invoice-customer-body">
-                    {order.customer_info?.first_name} {order.customer_info?.last_name}
+                    {order.customer_info?.first_name}{" "}
+                    {order.customer_info?.last_name}
                     <br />
                     {order.customer_info?.email}
                     {order.customer_info?.phone && (
@@ -101,7 +167,7 @@ export default function OrderDetailsView({ order }) {
                 </div>
             </div>
 
-            {/* ============ ITEMS — جدول المنتجات ============ */}
+            {/* ============ ITEMS ============ */}
             <table className="invoice-table">
                 <thead>
                     <tr>
@@ -124,27 +190,66 @@ export default function OrderDetailsView({ order }) {
                     ) : (
                         items.map((item, index) => {
                             const rate = parseFloat(item.tax_rate) || 0;
-                            const grossLine = parseFloat(item.total_price) || 0;
-                            const netLine = calcLineNet(item);
-                            const taxLine = calcLineTax(item);
+                            const grossLine =
+                                parseFloat(item.total_price) || 0;
+                            const netLine = calcNetFromGross(
+                                grossLine,
+                                rate
+                            );
+                            const taxLine = calcTaxFromGross(
+                                grossLine,
+                                rate
+                            );
 
                             return (
-                                <tr key={item.id}>
-                                    <td className="inv-col-num">{index + 1}</td>
+                                <tr
+                                    key={item.id}
+                                    className={
+                                        item._isRemoved
+                                            ? "invoice-row-removed"
+                                            : ""
+                                    }
+                                >
+                                    <td className="inv-col-num">
+                                        {index + 1}
+                                    </td>
                                     <td className="inv-col-product">
                                         <span className="invoice-product-name">
                                             {item.product_name}
+                                            {item._isAdjusted &&
+                                                !item._isRemoved && (
+                                                    <span className="invoice-adjusted-badge">
+                                                        ⚖️
+                                                    </span>
+                                                )}
                                         </span>
                                         {item.product_number && (
                                             <span className="invoice-product-number">
                                                 Art.-Nr. {item.product_number}
                                             </span>
                                         )}
+                                        {item._isRemoved && (
+                                            <span className="invoice-removed-label">
+                                                Nicht geliefert
+                                            </span>
+                                        )}
+                                        {item.substitution_note && (
+                                            <span className="invoice-sub-note">
+                                                ⇄ {item.substitution_note}
+                                            </span>
+                                        )}
                                     </td>
                                     <td className="inv-col-qty">
-                                        {formatQuantity(item.quantity, item.weight_unit)}
+                                        {item._isRemoved
+                                            ? "—"
+                                            : formatQuantity(
+                                                item._displayQuantity,
+                                                item.weight_unit
+                                            )}
                                     </td>
-                                    <td className="inv-col-net">{formatEuro(netLine)}</td>
+                                    <td className="inv-col-net">
+                                        {formatEuro(netLine)}
+                                    </td>
                                     <td className="inv-col-rate">
                                         <span
                                             className={`invoice-tax-badge invoice-tax-badge-${rate}`}
@@ -152,7 +257,9 @@ export default function OrderDetailsView({ order }) {
                                             {rate}%
                                         </span>
                                     </td>
-                                    <td className="inv-col-tax">{formatEuro(taxLine)}</td>
+                                    <td className="inv-col-tax">
+                                        {formatEuro(taxLine)}
+                                    </td>
                                     <td className="inv-col-gross invoice-gross-line">
                                         {formatEuro(grossLine)}
                                     </td>
@@ -162,6 +269,18 @@ export default function OrderDetailsView({ order }) {
                     )}
                 </tbody>
             </table>
+
+            {/* ============ ADJUSTMENT NOTICE ============ */}
+            {hasAdjustments && (
+                <div className="invoice-adjustment-notice">
+                    <span className="material-symbols-outlined">info</span>
+                    <span>
+                        <strong>Hinweis:</strong> Einige Artikel wurden nach
+                        dem Einkauf gewogen/angepasst. Die Endpreise
+                        entsprechen der tatsächlich gelieferten Menge.
+                    </span>
+                </div>
+            )}
 
             {/* ============ TOTALS ============ */}
             <div className="invoice-totals">
@@ -179,10 +298,12 @@ export default function OrderDetailsView({ order }) {
                 </div>
             </div>
 
-            {/* ============ TAX BREAKDOWN — تفصيل الضريبة ============ */}
+            {/* ============ TAX BREAKDOWN ============ */}
             <div className="invoice-tax-section">
                 <div className="invoice-tax-title">
-                    <span className="material-symbols-outlined">receipt</span>
+                    <span className="material-symbols-outlined">
+                        receipt
+                    </span>
                     MwSt. Aufschlüsselung
                 </div>
                 <div className="invoice-tax-grid">
@@ -223,19 +344,19 @@ export default function OrderDetailsView({ order }) {
                 <div className="invoice-tax-note">
                     <span className="material-symbols-outlined">info</span>
                     <span>
-                        Alle Preise sind Endpreise und enthalten die gesetzliche
-                        Umsatzsteuer. Die Aufschlüsselung zeigt den Nettoanteil und die
-                        enthaltene MwSt.
+                        Alle Preise sind Endpreise und enthalten die
+                        gesetzliche Umsatzsteuer. Die Aufschlüsselung zeigt den
+                        Nettoanteil und die enthaltene MwSt.
                     </span>
                 </div>
             </div>
 
-            {/* ============ WARNING — § 312g Abs. 2 Nr. 2 BGB ============ */}
+            {/* ============ WARNING ============ */}
             <div className="invoice-warning-banner">
                 <span className="material-symbols-outlined">warning</span>
                 <div>
-                    <strong>Hinweis:</strong>{" "}
-                    Frischeprodukte (Obst, Gemüse, Fleisch, Fisch) sind gemäß{" "}
+                    <strong>Hinweis:</strong> Frischeprodukte (Obst, Gemüse,
+                    Fleisch, Fisch) sind gemäß{" "}
                     <strong>§ 312g Abs. 2 Nr. 2 BGB</strong> vom Widerrufsrecht
                     ausgeschlossen.
                 </div>
@@ -244,7 +365,9 @@ export default function OrderDetailsView({ order }) {
             {/* ============ PAYMENT ============ */}
             <div className="invoice-payment">
                 <div className="invoice-payment-row">
-                    <span className="invoice-payment-label">Zahlungsart:</span>
+                    <span className="invoice-payment-label">
+                        Zahlungsart:
+                    </span>
                     <span className="invoice-payment-value">
                         {order.payment_method === "cod"
                             ? "💵 Barzahlung bei Lieferung"
@@ -254,7 +377,9 @@ export default function OrderDetailsView({ order }) {
                     </span>
                 </div>
                 <div className="invoice-payment-row">
-                    <span className="invoice-payment-label">Zahlungsstatus:</span>
+                    <span className="invoice-payment-label">
+                        Zahlungsstatus:
+                    </span>
                     <span
                         className={`invoice-payment-status invoice-payment-status-${order.payment_status}`}
                     >

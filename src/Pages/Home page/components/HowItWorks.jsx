@@ -226,7 +226,7 @@ export default function HowItWorks() {
                                 <thead>
                                     <tr>
                                         <th>Gesamtgewicht</th>
-                                        <th>Preis</th>
+                                        <th>Preis Pro kg</th>
                                     </tr>
                                 </thead>
                                 <tbody>

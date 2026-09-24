@@ -22,7 +22,7 @@ export default function ProductCard(props) {
       id: props.id,
       name: props.name,
       image: props.image,
-      price: props.price,
+      price: props.total_price,
     });
     if (isFav) {
       toast("Removed from favorites", { icon: "💔" });
@@ -58,7 +58,7 @@ export default function ProductCard(props) {
         product_number: props.product_number,
         name: props.name,
         price: props.price,                       // ✅ base price
-        total_price: props.total_price || props.price,  // ✅ with tax
+        total_price: props.total_price || props.total_price,  // ✅ with tax
         tax_rate: props.tax_rate || 0,
         image: props.image,
         weight: props.weight,
@@ -73,7 +73,7 @@ export default function ProductCard(props) {
   };
 
   const pricePerKg = calculatePriceByKg(
-    props.price,
+    props.total_price,
     props.weight,
     props.weight_unit,
   );
@@ -81,7 +81,7 @@ export default function ProductCard(props) {
   console.log(
     props.name,
     "Price:",
-    props.price,
+    props.total_price,
     "Weight:",
     props.weight,
     "Unit:",
@@ -142,7 +142,7 @@ export default function ProductCard(props) {
         <div className="action">
           <div className="price">
             <span className="main-price">
-              {(props.price * counter).toFixed(2)}€
+              {(props.total_price * counter).toFixed(2)}€
             </span>
             {pricePerKg > 0 && (
               <span className="price-per-kg">({pricePerKg}€ / kg)</span>

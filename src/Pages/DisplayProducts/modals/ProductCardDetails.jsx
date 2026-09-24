@@ -1,7 +1,7 @@
 import "./ProductCardDetails.css";
-import toast from "react-hot-toast"; // ✅ اختياري
+import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
-import { useCart } from "../../../context/CartContext.jsx"; // ✅ استيراد السياق
+import { useCart } from "../../../context/CartContext.jsx";
 import {
   getProductById,
   getProductsByCategory,
@@ -12,6 +12,7 @@ import Footer from "../../../Components/Footer.jsx";
 import BackButton from "../../../Components/BackButton.jsx";
 import Subscribe from "../../../Components/Subscribe.jsx";
 import ProductCard from "../components/ProductCard.jsx";
+
 export default function ProductCardDetails() {
   const [searchParams] = useSearchParams();
   const productId =
@@ -56,23 +57,30 @@ export default function ProductCardDetails() {
 
   const finalCategory = product?.categories?.name;
 
+  // ============================================
+  // ✅ Destructuring — نستخدم total_price (Gross)
+  // ============================================
   const {
     id = "",
+    product_number = "",
     name = "",
     image = "",
-    price = "",
+    price = 0,                  // ← للتوافق مع المنتجات القديمة
+    total_price = 0,            // ✅ السعر النهائي (مع VAT)
     weight = "",
     tax_rate = "",
     weight_unit = "",
-    total_price = "",
     description = "",
     nutrition_facts: nutritionObject = {},
     storage_notes: storageObject = {},
     ingredients = "",
   } = product || {};
 
-  const { addToCart } = useCart(); // ✅ جلب دالة الإضافة
-  const [quantity, setQuantity] = useState(1); // ✅ كمية المنتج داخل المودال
+  // ✅ السعر المعروض = total_price (أو price إن لم يوجد)
+  const displayPrice = parseFloat(total_price || price) || 0;
+
+  const { addToCart } = useCart();
+  const [quantity, setQuantity] = useState(1);
 
   // ✅ زيادة الكمية
   const increaseQty = (e) => {
@@ -86,16 +94,22 @@ export default function ProductCardDetails() {
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
-  // ✅ دالة إضافة المنتج للسلة (مع الكمية المحددة)
+  // ============================================
+  // ✅ إضافة للسلة — نمرر total_price كمصدر أساسي
+  // ============================================
   const handleAddToCart = () => {
     addToCart(
       {
         id,
+        product_number,
         name,
-        price,
         image,
         weight,
         weight_unit,
+        tax_rate: parseFloat(tax_rate) || 0,
+        // ✅ السعر النهائي (مع VAT)
+        price: displayPrice,
+        total_price: displayPrice,
       },
       quantity,
     );
@@ -112,6 +126,7 @@ export default function ProductCardDetails() {
       </div>
     );
   }
+
   const hasNutrition =
     ingredients || (nutritionObject && Object.keys(nutritionObject).length > 0);
   const hasStorage = storageObject && Object.keys(storageObject).length > 0;
@@ -124,6 +139,7 @@ export default function ProductCardDetails() {
           <BackButton label={"Back"} />
           <BackButton label={"Go Home"} />
         </div>
+
         <div className="product-main-layout">
           <div className="product-img-box">
             <img src={image} alt={name} />
@@ -132,8 +148,9 @@ export default function ProductCardDetails() {
           <div className="product-info-box">
             <h1 className="main-product-title">{name}</h1>
 
+            {/* ✅ السعر النهائي مع العملة الصحيحة */}
             <div className="main-product-price">
-              {price} $
+              {displayPrice.toFixed(2)} €
               {weight && (
                 <span className="unit-label">
                   {" "}
@@ -147,9 +164,17 @@ export default function ProductCardDetails() {
                 <strong>Category:</strong> {finalCategory}
               </p>
             )}
-            {tax_rate != null && (
+
+            {/* ✅ عرض معلومات الضريبة المشمولة */}
+            {parseFloat(tax_rate) > 0 && (
               <p className="meta-info">
-                <strong>Tax:</strong> {tax_rate}% (Total: {total_price} $)
+                <strong>inkl. {tax_rate}% MwSt.</strong>{" "}
+                (
+                {(
+                  displayPrice -
+                  displayPrice / (1 + parseFloat(tax_rate) / 100)
+                ).toFixed(2)}{" "}
+                €)
               </p>
             )}
 
@@ -163,7 +188,7 @@ export default function ProductCardDetails() {
               </div>
 
               <button className="checkout-add-btn" onClick={handleAddToCart}>
-                🛒 Add To Cart ({(price * quantity).toFixed(2)} $)
+                🛒 Add To Cart ({(displayPrice * quantity).toFixed(2)} €)
               </button>
             </div>
           </div>
@@ -214,7 +239,9 @@ export default function ProductCardDetails() {
           )}
         </div>
       </div>
+
       <Subscribe />
+
       {relatedProducts.length > 0 && (
         <div className="related-products-section">
           <h3>🛒 Products in the same category</h3>
@@ -223,6 +250,7 @@ export default function ProductCardDetails() {
               <ProductCard
                 key={item.id}
                 id={item.id}
+                product_number={item.product_number}
                 name={item.name}
                 image={item.image}
                 category={item.category}
@@ -240,6 +268,7 @@ export default function ProductCardDetails() {
           </div>
         </div>
       )}
+
       <Footer />
     </>
   );

@@ -207,7 +207,6 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
         {/* الأزرار الجانبية */}
         <div className="header-actions">
           {/* زر تسجيل الدخول / الحساب */}
-          <button className="header-login">Login</button>
           <Link to="/login">Go To DashBoard</Link>
 
           {/* زر السلة مع العداد */}

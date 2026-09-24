@@ -83,9 +83,14 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
     const selectedItemsList = items.filter((i) => selectedItems[i.id]);
     const returnableCount = items.filter((i) => i.canReturn).length;
     const selectedCount = selectedItemsList.length;
-
     const subtotal = selectedItemsList.reduce(
-        (sum, i) => sum + parseFloat(i.total_price || 0),
+        (sum, i) => {
+            // ✅ استخدم actual_total إن وُجد
+            if (i.actual_total != null && i.status !== "pending") {
+                return sum + parseFloat(i.actual_total);
+            }
+            return sum + parseFloat(i.total_price || 0);
+        },
         0
     );
     const TAX_RATE = 0.07;
