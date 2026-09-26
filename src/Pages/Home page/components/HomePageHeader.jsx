@@ -13,18 +13,18 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
   console.count("📌 HomePageHeader");
   const navigate = useNavigate();
 
-  //Favorite list
+  // Favorite list
   const { favorite } = useFavorite();
   const [isFavoriteOpen, setIfFavoriteOpen] = useState(false);
 
-  //My info
+  // My info
   const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   const { totalItems } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // { Search Variables}
+  // { Search Variables }
   const [searchResult, setSearchResult] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loadingProducts, setLoadingProducts] = useState(false);
@@ -70,7 +70,8 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
 
-  const [isMenuOpen, setMenuOpen] = useState("");
+  const [isMenuOpen, setMenuOpen] = useState(false);
+
   const performSearch = async (term) => {
     if (setIsSearching) setIsSearching(true);
     try {
@@ -99,22 +100,17 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
 
   // ✅ زر تتبع الطلبات – منطق ذكي للزوار والمسجلين
   const goToOrders = () => {
-    // 1. التحقق من وجود آخر طلب في localStorage
     const lastOrder = JSON.parse(localStorage.getItem("lastOrder"));
 
-    // 2. إذا لم يكن هناك طلب نهائياً → انتقل إلى صفحة "لا توجد طلبات"
     if (!lastOrder) {
       navigate("/no-orders");
       return;
     }
 
-    // 3. إذا كان هناك طلب، تحقق من حالته
     const activeStatuses = ["pending", "confirmed", "shipped"];
     if (activeStatuses.includes(lastOrder.status)) {
-      // ✅ طلب نشط → اعرض تفاصيله
       navigate(`/Cart&Payments/order-confirmation/${lastOrder.id}`);
     } else {
-      // ❌ الطلب منتهي (delivered أو cancelled) → انتقل إلى صفحة "لا توجد طلبات نشطة"
       navigate("/no-orders", {
         state: {
           message: `طلبك السابق (${lastOrder.order_number}) تم ${lastOrder.status === "delivered" ? "توصيله" : "إلغاؤه"}. يمكنك طلب جديد الآن!`,
@@ -134,11 +130,7 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
         </div>
 
         {/* نموذج البحث */}
-        <div
-          className="search-container-wrapper"
-          ref={serRef}
-          style={{ position: "relative" }}
-        >
+        <div className="search-container-wrapper" ref={serRef}>
           <form onSubmit={handleSubmit} className="header-search">
             <input
               type="text"
@@ -160,13 +152,12 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
             </button>
           </form>
 
-          {/* {Drop Down List } */}
-          {/* القائمة المنسدلة */}
+          {/* القائمة المنسدلة للبحث */}
           {showDropdown && (
             <div className="search-dropdown-list">
               {loadingProducts ? (
                 <div className="search-loading-state">
-                  <span>ٍSearching 🔍</span>
+                  <span>Searching 🔍</span>
                 </div>
               ) : searchResult.length > 0 ? (
                 searchResult.map((item) => (
@@ -206,8 +197,16 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
 
         {/* الأزرار الجانبية */}
         <div className="header-actions">
-          {/* زر تسجيل الدخول / الحساب */}
-          <Link to="/login">Go To DashBoard</Link>
+          {/* زر Dashboard المنسق للجوال */}
+          <Link to="/login" className="header-dashboard-link">
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: "1.1rem" }}
+            >
+              dashboard
+            </span>
+            <span className="dashboard-text">Dashboard</span>
+          </Link>
 
           {/* زر السلة مع العداد */}
           <div
@@ -225,6 +224,7 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
             )}
           </div>
 
+          {/* قائمة البروفايل */}
           <div
             className="profile-menu-container"
             onMouseEnter={() => setMenuOpen(true)}
@@ -261,6 +261,7 @@ function HomePageHeader({ setProducts, setIsSearching, isSearching }) {
             )}
           </div>
         </div>
+
         {/* مودال السلة */}
         {isCartOpen && <Cart closeModal={closeCart} />}
       </header>
