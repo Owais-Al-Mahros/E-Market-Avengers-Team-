@@ -8,6 +8,7 @@
 }
 .btn-back{
     margin: 1rem;
+    max-width: 10rem;
 }
 .profile-card {
   background: var(--light-cream);

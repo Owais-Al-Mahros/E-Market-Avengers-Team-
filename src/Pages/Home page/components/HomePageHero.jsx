@@ -14,7 +14,7 @@ export default function HomePageHero() {
     heroImage2,
     heroImage5,
     heroImage3,
-    heroImage6
+    heroImage6,
   ];
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -70,7 +70,6 @@ export default function HomePageHero() {
               </button>
             </div>
 
-            {/* قسم العملاء/التقييم بدلاً من الأوسمة */}
             <div className="hero-social-proof">
               <div className="avatar-group">
                 <img src="https://i.pravatar.cc/100?img=1" alt="User" />
@@ -85,29 +84,27 @@ export default function HomePageHero() {
           </div>
         </div>
 
-        {/* ===== العمود الأوسط: الصورة الرئيسية و dots التنقل ===== */}
-        <div className="hero-image-wrapper">
-          <img
-            src={heroImages[currentIndex]}
-            alt="Fresh Groceries"
-            className="hero-image fade-effect"
-            key={currentIndex}
-          />
+        <div className="hero-visual-area">
+          <div className="hero-image-wrapper">
+            <img
+              src={heroImages[currentIndex]}
+              alt="Fresh Groceries"
+              className="hero-image fade-effect"
+              key={currentIndex}
+            />
 
-          <div className="carousel-dots">
-            {heroImages.map((_, index) => (
-              <span
-                key={index}
-                className={`dot ${currentIndex === index ? "active" : ""}`}
-                onClick={() => setCurrentIndex(index)}
-              ></span>
-            ))}
+            <div className="carousel-dots">
+              {heroImages.map((_, index) => (
+                <span
+                  key={index}
+                  className={`dot ${currentIndex === index ? "active" : ""}`}
+                  onClick={() => setCurrentIndex(index)}
+                ></span>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* ===== العمود الأيمن: بطاقات المميزات المزدوجة ===== */}
-        <div className="hero-features-wrapper">
-          <div className="floating-card">
+          <div className="floating-card card-top-left">
             <span className="floating-icon">🌿</span>
             <div>
               <strong>100% Organic</strong>
@@ -115,7 +112,7 @@ export default function HomePageHero() {
             </div>
           </div>
 
-          <div className="floating-card">
+          <div className="floating-card card-middle-right">
             <span className="floating-icon">🚚</span>
             <div>
               <strong>Free Delivery</strong>
@@ -123,7 +120,7 @@ export default function HomePageHero() {
             </div>
           </div>
 
-          <div className="floating-card">
+          <div className="floating-card card-bottom-left">
             <span className="floating-icon">🛡️</span>
             <div>
               <strong>Secure Payment</strong>

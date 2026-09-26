@@ -49,14 +49,14 @@
   font-weight: 700;
   color: #0f172a;
   margin: 0 0 3px 0;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .feature-info p {
   font-size: 0.78rem;
   color: #64748b;
   margin: 0;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 /* التجاوب مع الشاشات الصغيرة */
@@ -72,5 +72,11 @@
   .features-container {
     grid-template-columns: repeat(1, 1fr);
     padding: 20px;
+  }
+}
+@media (min-width: 768px) {
+  .feature-info h4,
+  .feature-info p {
+    white-space: nowrap;
   }
 }

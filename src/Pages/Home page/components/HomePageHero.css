@@ -1,47 +1,44 @@
-/* Container الرئيسي */
 .hero-section {
   background: linear-gradient(135deg, #093820 0%, #114c2c 50%, #072917 100%);
-  border-radius: 24px;
-  padding: 48px 40px;
+  border-radius: 1.5rem;
+  padding: 3rem 2.5rem;
   color: #ffffff;
-  margin: 20px auto;
-  max-width: 1400px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  margin: 1.25rem auto;
+  max-width: 87.5rem;
+  box-shadow: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.2);
 }
 
-/* توزيع عناصر Grid */
 .hero-grid {
   display: grid;
-  grid-template-columns: 1.1fr 1.3fr 0.8fr;
+  grid-template-columns: 1.1fr 1.9fr;
   align-items: center;
-  gap: 32px;
+  gap: 2rem;
 }
 
-/* ----- العمود الأيسر ----- */
 .hero-text-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: #8bc34a;
-  padding: 6px 14px;
-  border-radius: 20px;
+  padding: 0.375rem 0.875rem;
+  border-radius: 1.25rem;
   font-size: 0.75rem;
   font-weight: 700;
   width: fit-content;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.03125rem;
 }
 
 .badge-dot {
-  width: 6px;
-  height: 6px;
+  width: 0.375rem;
+  height: 0.375rem;
   background-color: #8bc34a;
   border-radius: 50%;
 }
@@ -52,7 +49,7 @@
   font-size: 2.75rem;
   font-weight: 800;
   line-height: 1.1;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.03125rem;
 }
 
 .brand-name {
@@ -71,19 +68,19 @@
   color: #b0bec5;
   font-size: 0.95rem;
   line-height: 1.5;
-  max-width: 360px;
+  max-width: 22.5rem;
 }
 
 .hero-buttons {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 8px;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 .hero-btn {
-  padding: 12px 24px;
-  border-radius: 30px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1.875rem;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
@@ -98,7 +95,7 @@
 
 .hero-btn.primary:hover {
   background-color: #7cb33d;
-  transform: translateY(-2px);
+  transform: translateY(-0.125rem);
 }
 
 .hero-btn.secondary {
@@ -112,13 +109,12 @@
   border-color: #ffffff;
 }
 
-/* تقييم وصور المستخدمين */
 .hero-social-proof {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 12px;
-  padding-top: 16px;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding-top: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -127,11 +123,11 @@
 }
 
 .avatar-group img {
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
-  border: 2px solid #093820;
-  margin-left: -8px;
+  border: 0.125rem solid #093820;
+  margin-left: -0.5rem;
 }
 
 .avatar-group img:first-child {
@@ -148,20 +144,30 @@
   color: #ffffff;
 }
 
-/* ----- العمود الأوسط ----- */
+.hero-visual-area {
+  position: relative;
+  width: 100%;
+  min-height: 28rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .hero-image-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  z-index: 1;
+  width: 100%;
 }
 
 .hero-image {
   width: 100%;
-  max-width: 80rem;
+  max-width: 40rem;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 0.9375rem 1.5625rem rgba(0, 0, 0, 0.4));
   transition: transform 0.3s ease;
   background-color: transparent;
 }
@@ -172,57 +178,86 @@
 
 .carousel-dots {
   display: flex;
-  gap: 6px;
-  margin-top: 16px;
+  gap: 0.375rem;
+  margin-top: 1rem;
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 0.25rem;
   background-color: rgba(255, 255, 255, 0.25);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .dot.active {
-  width: 22px;
+  width: 1.375rem;
   background-color: #8bc34a;
 }
 
-/* ----- العمود الأيمن ----- */
-.hero-features-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
 .floating-card {
+  position: absolute;
   background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(0.625rem);
+  -webkit-backdrop-filter: blur(0.625rem);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  padding: 14px 18px;
+  border-radius: 1rem;
+  padding: 0.875rem 1.125rem;
   display: flex;
   align-items: center;
-  gap: 14px;
-  transition: transform 0.2s ease, background 0.2s ease;
+  gap: 0.875rem;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+  z-index: 3;
+  box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.15);
 }
 
 .floating-card:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(1.03);
+}
+
+.card-top-left {
+  top: 1rem;
+  left: 0.5rem;
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.card-middle-right {
+  top: 50%;
+  right: 0rem;
+  transform: translateY(-50%);
+  animation: floatSlow 4s ease-in-out infinite;
+}
+
+
+.card-bottom-left {
+  bottom: 2rem;
+  left: 1rem;
+  animation: floatSlow 4s ease-in-out infinite;
+}
+
+@keyframes floatSlow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.625rem);
+  }
 }
 
 .floating-icon {
   font-size: 1.2rem;
   background: rgba(255, 255, 255, 0.1);
-  width: 38px;
-  height: 38px;
+  width: 2.375rem;
+  height: 2.375rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 0.625rem;
 }
 
 .floating-card strong {
@@ -234,7 +269,7 @@
 .floating-card p {
   font-size: 0.75rem;
   color: #a5d6a7;
-  margin: 2px 0 0 0;
+  margin: 0.125rem 0 0 0;
 }
 
 .hero-image.fade-effect {
@@ -253,11 +288,11 @@
   }
 }
 
-/* ----- Responsiveness للتجاوب مع الشاشات الصغرى ----- */
+/* Responsiveness */
 @media (max-width: 1024px) {
   .hero-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 2.5rem;
   }
 
   .hero-text-card {
@@ -269,13 +304,18 @@
     max-width: 100%;
   }
 
-  .hero-features-wrapper {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
+  .hero-visual-area {
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
 
   .floating-card {
-    flex: 1 1 200px;
+    position: static;
+    transform: none !important;
+    width: 100%;
+    max-width: 22rem;
+    margin: 0 auto;
   }
 }

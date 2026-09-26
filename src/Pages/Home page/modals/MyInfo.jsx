@@ -65,9 +65,7 @@ export default function MyInfo() {
   return (
     <>
       <HomePageHeader />
-      <div className="btn-back">
-      <BackButton label={"Go Home"} />
-      </div>
+      <BackButton label={"Back"} />
       <div className="container">
         <div className="profile-card">
           <h2>My Info</h2>
@@ -105,7 +103,7 @@ export default function MyInfo() {
 
         {isModalOpen && (
           <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
-            <div className="modal-content">
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <h3>Edit My Info </h3>
               <form onSubmit={handleSave}>
                 <div className="form-group">
@@ -151,6 +149,7 @@ export default function MyInfo() {
                     name="age"
                     placeholder={draftInfo.age}
                     onChange={handleDraftFieldChange}
+                    min="1"
                   />
                 </div>
 
