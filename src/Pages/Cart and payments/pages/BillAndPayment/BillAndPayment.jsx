@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../../../../context/CartContext";
-import { supabase } from "../../../../lib/supabase";
 import toast from "react-hot-toast";
 import CartHeader from "../ShoppingCart/components/CartHeader";
-import Footer from "./../../../../Components/Footer";
+import Footer from "../../../../components/layout/Footer";
+import Invoice from "../../../../components/invoice/Invoice";
 import {
     Elements,
     PaymentElement,
@@ -14,10 +14,14 @@ import {
 import { stripePromise } from "../../../../lib/stripe";
 import "./BillAndPayment.css";
 
-// ✅ الهامش الموحّد (يُضاف للمبلغ المُحجوز فقط)
+// ============================================================
+// ✅ ثابت الهامش (نفس ما هو في create-payment-intent)
+// ============================================================
 const WEIGHT_BUFFER = 5.0;
 
-// ✅ Helper للتنسيق
+// ============================================================
+// ✅ Helper: تنسيق اليورو
+// ============================================================
 const fmtEur = (value) => {
     const num = parseFloat(value) || 0;
     return num.toLocaleString("de-DE", {
@@ -25,6 +29,24 @@ const fmtEur = (value) => {
         maximumFractionDigits: 2,
     });
 };
+
+// ============================================================
+// ✅ Helper: استدعاء Edge Function
+// ============================================================
+async function callEdgeFunction(path, payload) {
+    const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${path}`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            },
+            body: JSON.stringify(payload),
+        }
+    );
+    return res.json().catch(() => ({ success: false, error: "Bad JSON response" }));
+}
 
 /* ============================================
    نموذج Stripe
@@ -75,14 +97,19 @@ function CheckoutForm({ orderId, clientSecret, onSuccess }) {
             if (
                 paymentIntent &&
                 (paymentIntent.status === "succeeded" ||
-                    paymentIntent.status === "requires_capture")
+                    paymentIntent.status === "requires_capture" ||
+                    paymentIntent.status === "processing")
             ) {
                 if (paymentIntent.status === "requires_capture") {
                     toast.success("Payment authorized! ✅");
+                } else if (paymentIntent.status === "processing") {
+                    toast.success("Payment processing...");
                 } else {
                     toast.success("Payment successful! 🎉");
                 }
-                onSuccess();
+
+                // ✅ نمرّر paymentIntent.id لـ onSuccess
+                onSuccess(paymentIntent.id);
             } else {
                 setPaymentError(
                     "Unexpected payment status: " +
@@ -99,12 +126,7 @@ function CheckoutForm({ orderId, clientSecret, onSuccess }) {
 
     return (
         <form onSubmit={handleSubmit} className="stripe-form">
-            <PaymentElement
-                onReady={() => {
-                    console.log("✅ PaymentElement ready");
-                    setIsReady(true);
-                }}
-            />
+            <PaymentElement onReady={() => setIsReady(true)} />
 
             {paymentError && (
                 <div className="stripe-error">
@@ -120,15 +142,15 @@ function CheckoutForm({ orderId, clientSecret, onSuccess }) {
             >
                 <span className="material-symbols-outlined">lock</span>
                 {isProcessing
-                    ? "Processing..."
+                    ? "Wird verarbeitet..."
                     : !isReady
-                        ? "Loading..."
-                        : "Authorize Payment"}
+                        ? "Wird geladen..."
+                        : "Zahlungspflichtig bestellen"}
             </button>
 
             <p className="stripe-note">
-                🔒 Your payment is secured by Stripe. You will only be charged
-                after we confirm the final weight and price.
+                🔒 Ihre Zahlung wird sicher über Stripe abgewickelt. Der Betrag wird erst
+                nach Bestätigung des endgültigen Gewichts belastet.
             </p>
         </form>
     );
@@ -146,69 +168,61 @@ export default function BillAndPayment() {
     const [loading, setLoading] = useState(true);
     const [clientSecret, setClientSecret] = useState("");
 
-    // ===== 1. جلب الطلب =====
+    // ============================================================
+    // ✅ 1. جلب الطلب عبر Edge Function (service_role)
+    // ============================================================
     useEffect(() => {
-        const fetchOrder = async () => {
-            if (!orderId) {
+        if (!orderId) {
+            navigate("/");
+            return;
+        }
+
+        let cancelled = false;
+
+        (async () => {
+            try {
+                const result = await callEdgeFunction("get-order-for-payment", {
+                    orderId,
+                });
+
+                if (cancelled) return;
+
+                if (!result.success || !result.order) {
+                    toast.error(result.error || "Order not found");
+                    navigate("/");
+                    return;
+                }
+
+                setOrder(result.order);
+                setLoading(false);
+            } catch (err) {
+                if (cancelled) return;
+                console.error("Failed to fetch order:", err);
+                toast.error("Fehler beim Laden der Bestellung");
                 navigate("/");
-                return;
             }
+        })();
 
-            const { data, error } = await supabase
-                .from("orders")
-                .select(
-                    `
-                    *,
-                    order_items (
-                        id,
-                        product_id,
-                        product_name,
-                        quantity,
-                        unit_price,
-                        total_price,
-                        tax_rate,
-                        weight,
-                        weight_unit,
-                        total_weight,
-                        is_returned
-                    )
-                    `
-                )
-                .eq("id", orderId)
-                .single();
-
-            if (error || !data) {
-                toast.error("Order not found");
-                navigate("/");
-                return;
-            }
-
-            setOrder(data);
-            setLoading(false);
+        return () => {
+            cancelled = true;
         };
-
-        fetchOrder();
     }, [orderId, navigate]);
 
-    // ===== 2. إنشاء PaymentIntent =====
+    // ============================================================
+    // ✅ 2. إنشاء PaymentIntent عبر Edge Function
+    // ============================================================
     useEffect(() => {
-        const createPaymentIntent = async () => {
-            if (!orderId || clientSecret) return;
+        if (!orderId || clientSecret) return;
 
+        let cancelled = false;
+
+        (async () => {
             try {
-                const response = await fetch(
-                    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-payment-intent`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-                        },
-                        body: JSON.stringify({ orderId }),
-                    }
-                );
+                const data = await callEdgeFunction("create-payment-intent", {
+                    orderId,
+                });
 
-                const data = await response.json();
+                if (cancelled) return;
 
                 if (data.clientSecret) {
                     setClientSecret(data.clientSecret);
@@ -216,42 +230,40 @@ export default function BillAndPayment() {
                     toast.error(data.error || "Failed to initialize payment");
                 }
             } catch (error) {
+                if (cancelled) return;
                 console.error("Error creating payment intent:", error);
                 toast.error("Failed to initialize payment");
             }
-        };
+        })();
 
-        createPaymentIntent();
+        return () => {
+            cancelled = true;
+        };
     }, [orderId, clientSecret]);
 
-    // ===== 3. عند نجاح الدفع =====
-    const handlePaymentSuccess = async () => {
+    // ============================================================
+    // ✅ 3. عند نجاح الدفع — استدعاء mark-order-paid
+    // ============================================================
+    const handlePaymentSuccess = async (paymentIntentId) => {
         try {
-            const { error } = await supabase
-                .from("orders")
-                .update({
-                    status: "pending",
-                    payment_method: "card",
-                    payment_status: "authorized",
-                    price_adjustment: WEIGHT_BUFFER,
-                    updated_at: new Date().toISOString(),
-                })
-                .eq("id", orderId);
+            const result = await callEdgeFunction("mark-order-paid", {
+                orderId,
+                paymentIntentId,
+            });
 
-            if (error) {
-                console.error("Failed to update order status:", error);
-                toast.error("Payment succeeded but order update failed.");
+            if (!result.success) {
+                console.error("mark-order-paid failed:", result.error);
+                // لا نُعطّل المستخدم — Webhook سيُصلح الحالة لاحقًا
             }
         } catch (err) {
-            console.error("Update error:", err);
+            console.error("mark-order-paid error:", err);
         }
 
         clearCart();
 
-        toast.success(
-            "✅ Zahlung erfolgreich! Bestellung wird verarbeitet.",
-            { duration: 4000 }
-        );
+        toast.success("✅ Zahlung erfolgreich! Bestellung wird verarbeitet.", {
+            duration: 4000,
+        });
 
         navigate("/track-order", {
             state: {
@@ -266,14 +278,16 @@ export default function BillAndPayment() {
         });
     };
 
-    // ===== Loading =====
+    // ============================================================
+    // Loading
+    // ============================================================
     if (loading) {
         return (
             <div className="bill-page">
                 <CartHeader currentStep={4} />
                 <div className="bill-loading">
                     <div className="bill-spinner" />
-                    <p>Loading invoice...</p>
+                    <p>Bestellübersicht wird geladen...</p>
                 </div>
             </div>
         );
@@ -281,40 +295,37 @@ export default function BillAndPayment() {
 
     if (!order) return null;
 
-    // ============================================
-    // ✅ الحسابات — كلها تستخدم total_price (Gross)
-    // ============================================
+    // ============================================================
+    // تجهيز عناصر الفاتورة
+    // ============================================================
     const activeItems =
         order.order_items?.filter((item) => !item.is_returned) || [];
-    const returnedItems =
-        order.order_items?.filter((item) => item.is_returned) || [];
 
-    // subtotal = مجموع total_price لكل منتج (Gross مع VAT)
-    const subtotal = activeItems.reduce(
+    const invoiceItems = activeItems.map((item) => ({
+        ...item,
+        _displayQuantity: item.quantity,
+        _isRemoved: false,
+        _isAdjusted: false,
+    }));
+
+    const subtotal = invoiceItems.reduce(
         (sum, item) => sum + parseFloat(item.total_price || 0),
         0
     );
-
     const shippingCost = parseFloat(order.shipping_cost || 0);
-
-    // ✅ الإجمالي النهائي = منتجات + شحن (كلها Gross)
     const estimatedTotal = subtotal + shippingCost;
-
-    // ✅ المبلغ المُحجوز = الإجمالي + هامش احتياطي
-    const authorizedAmount = estimatedTotal + WEIGHT_BUFFER;
 
     return (
         <div className="bill-page">
             <CartHeader currentStep={4} />
 
             <main className="bill-main">
-                {/* Hero */}
                 <div className="bill-hero">
-                    <span className="bill-badge">🧾 Final Step</span>
-                    <h1>Review & Pay</h1>
+                    <span className="bill-badge">🧾 Letzter Schritt</span>
+                    <h1>Bestellung prüfen & bezahlen</h1>
                     <p>
-                        Order <strong>#{order.order_number}</strong> — Complete
-                        your payment to finalize.
+                        Bestellung <strong>#{order.order_number}</strong> — Schließen Sie die
+                        Zahlung ab, um die Bestellung zu bestätigen.
                     </p>
                 </div>
 
@@ -322,211 +333,87 @@ export default function BillAndPayment() {
                     {/* ============================================
                         LEFT: Invoice
                     ============================================ */}
-                    <div className="bill-invoice">
-                        <div className="bill-invoice-header">
-                            <h2>📋 Invoice</h2>
-                            <span className="bill-items-count">
-                                {activeItems.length} items
-                            </span>
-                        </div>
-
-                        {/* ===== Products ===== */}
-                        <div className="bill-items">
-                            {activeItems.map((item) => {
-                                const qty = parseFloat(item.quantity) || 1;
-                                const lineTotal =
-                                    parseFloat(item.total_price) || 0;
-                                // ✅ سعر الوحدة = lineTotal / qty (Gross)
-                                const unitPrice = lineTotal / qty;
-                                const taxRate =
-                                    parseFloat(item.tax_rate) || 0;
-
-                                return (
-                                    <div key={item.id} className="bill-item">
-                                        <div className="bill-item-info">
-                                            <span className="bill-item-name">
-                                                {item.product_name}
+                    <Invoice
+                        order={order}
+                        items={invoiceItems}
+                        variant="preview"
+                        showTaxBreakdown={true}
+                        showAdjustmentNotice={false}
+                        showWarningBanner={false}
+                        showPaymentInfo={false}
+                        showBufferInfo={true}
+                        bufferAmount={WEIGHT_BUFFER}
+                        afterTotalsSlot={
+                            <div className="bill-explanation">
+                                <div className="bill-explanation-icon">ℹ️</div>
+                                <div>
+                                    <strong>
+                                        Warum reservieren wir €
+                                        {fmtEur(WEIGHT_BUFFER)} extra?
+                                    </strong>
+                                    <p>
+                                        Frischeprodukte werden nach Gewicht
+                                        verkauft. Daher kann der endgültige
+                                        Preis leicht vom geschätzten Betrag
+                                        abweichen. Um eine reibungslose
+                                        Abwicklung zu gewährleisten, reservieren
+                                        wir vorübergehend{" "}
+                                        <strong>€{fmtEur(WEIGHT_BUFFER)}</strong>{" "}
+                                        zusätzlich auf Ihrer Zahlungsmethode.
+                                    </p>
+                                    <div className="bill-explanation-points">
+                                        <div className="bill-explanation-point">
+                                            <span className="material-symbols-outlined">
+                                                check_circle
                                             </span>
-                                            <span className="bill-item-qty">
-                                                {qty} × €{fmtEur(unitPrice)}
-                                                {taxRate > 0 && (
-                                                    <span className="bill-item-tax">
-                                                        {" "}
-                                                        (inkl. {taxRate}%)
-                                                    </span>
-                                                )}
-                                                {item.total_weight > 0 &&
-                                                    ` · ${parseFloat(
-                                                        item.total_weight
-                                                    ).toFixed(2)} kg`}
-                                            </span>
-                                        </div>
-                                        <span className="bill-item-total">
-                                            €{fmtEur(lineTotal)}
-                                        </span>
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        {/* ===== Returned Items ===== */}
-                        {returnedItems.length > 0 && (
-                            <div className="bill-returned-section">
-                                <div className="bill-returned-header">
-                                    <span className="material-symbols-outlined">
-                                        assignment_return
-                                    </span>
-                                    <span>
-                                        Returned Items ({returnedItems.length})
-                                    </span>
-                                </div>
-                                {returnedItems.map((item) => {
-                                    const qty =
-                                        parseFloat(item.quantity) || 1;
-                                    const lineTotal =
-                                        parseFloat(item.total_price) || 0;
-                                    const unitPrice = lineTotal / qty;
-
-                                    return (
-                                        <div
-                                            key={item.id}
-                                            className="bill-item is-returned"
-                                        >
-                                            <div className="bill-item-info">
-                                                <span className="bill-item-name">
-                                                    {item.product_name}
-                                                    <span className="bill-item-returned-badge">
-                                                        ↩️ Returned
-                                                    </span>
-                                                </span>
-                                                <span className="bill-item-qty">
-                                                    {qty} × €
-                                                    {fmtEur(unitPrice)}
-                                                </span>
-                                            </div>
-                                            <span className="bill-item-total">
-                                                €{fmtEur(lineTotal)}
+                                            <span>
+                                                Sie werden{" "}
+                                                <strong>
+                                                    nur für die tatsächlich
+                                                    gelieferte Menge
+                                                </strong>{" "}
+                                                belastet.
                                             </span>
                                         </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-
-                        <div className="bill-divider" />
-
-                        {/* ===== Totals ===== */}
-                        <div className="bill-totals">
-                            <div className="bill-row">
-                                <span>Produkte (inkl. MwSt.)</span>
-                                <span>€{fmtEur(subtotal)}</span>
-                            </div>
-                            <div className="bill-row">
-                                <span>Versand</span>
-                                <span>€{fmtEur(shippingCost)}</span>
-                            </div>
-                        </div>
-
-                        <div className="bill-divider" />
-
-                        {/* ===== Grand Total ===== */}
-                        <div className="bill-grand-total">
-                            <span>Zu zahlender Betrag</span>
-                            <span>€{fmtEur(estimatedTotal)}</span>
-                        </div>
-
-                        {/* ===== Buffer ===== */}
-                        <div className="bill-buffer-info">
-                            <div className="bill-buffer-header">
-                                <span className="material-symbols-outlined">
-                                    info
-                                </span>
-                                <strong>
-                                    Sicherheitsreserve (kein Aufpreis)
-                                </strong>
-                            </div>
-                            <div className="bill-buffer-row">
-                                <span>Vorübergehend reserviert</span>
-                                <span>+€{fmtEur(WEIGHT_BUFFER)}</span>
-                            </div>
-                            <div className="bill-buffer-divider" />
-                            <div className="bill-buffer-row total">
-                                <span>Autorisierter Gesamtbetrag</span>
-                                <span>€{fmtEur(authorizedAmount)}</span>
-                            </div>
-                        </div>
-
-                        {/* ===== Explanation ===== */}
-                        <div className="bill-explanation">
-                            <div className="bill-explanation-icon">ℹ️</div>
-                            <div>
-                                <strong>
-                                    Warum reservieren wir €
-                                    {fmtEur(WEIGHT_BUFFER)} extra?
-                                </strong>
-                                <p>
-                                    Frischeprodukte werden nach Gewicht
-                                    verkauft. Daher kann der endgültige Preis
-                                    leicht vom geschätzten Betrag abweichen. Um
-                                    eine reibungslose Abwicklung zu
-                                    gewährleisten, reservieren wir
-                                    vorübergehend{" "}
-                                    <strong>€{fmtEur(WEIGHT_BUFFER)}</strong>{" "}
-                                    zusätzlich auf Ihrer Zahlungsmethode.
-                                </p>
-                                <div className="bill-explanation-points">
-                                    <div className="bill-explanation-point">
-                                        <span className="material-symbols-outlined">
-                                            check_circle
-                                        </span>
-                                        <span>
-                                            Sie werden{" "}
-                                            <strong>
-                                                nur für die tatsächlich
-                                                gelieferte Menge
-                                            </strong>{" "}
-                                            belastet.
-                                        </span>
-                                    </div>
-                                    <div className="bill-explanation-point">
-                                        <span className="material-symbols-outlined">
-                                            schedule
-                                        </span>
-                                        <span>
-                                            Der nicht verwendete Betrag wird{" "}
-                                            <strong>
-                                                automatisch innerhalb von 3-5
-                                                Werktagen
-                                            </strong>{" "}
-                                            freigegeben.
-                                        </span>
-                                    </div>
-                                    <div className="bill-explanation-point">
-                                        <span className="material-symbols-outlined">
-                                            shield
-                                        </span>
-                                        <span>
-                                            <strong>
-                                                Keine versteckten Gebühren.
-                                            </strong>{" "}
-                                            Diese Reserve ist keine Zahlung,
-                                            sondern nur eine Sicherheit.
-                                        </span>
+                                        <div className="bill-explanation-point">
+                                            <span className="material-symbols-outlined">
+                                                schedule
+                                            </span>
+                                            <span>
+                                                Der nicht verwendete Betrag wird{" "}
+                                                <strong>
+                                                    automatisch innerhalb von 3-5
+                                                    Werktagen
+                                                </strong>{" "}
+                                                freigegeben.
+                                            </span>
+                                        </div>
+                                        <div className="bill-explanation-point">
+                                            <span className="material-symbols-outlined">
+                                                shield
+                                            </span>
+                                            <span>
+                                                <strong>
+                                                    Keine versteckten Gebühren.
+                                                </strong>{" "}
+                                                Diese Reserve ist keine Zahlung,
+                                                sondern nur eine Sicherheit.
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        }
+                    />
 
                     {/* ============================================
                         RIGHT: Stripe Payment
                     ============================================ */}
                     <div className="bill-payment">
                         <div className="bill-payment-section">
-                            <h2>🔐 Secure Payment</h2>
+                            <h2>🔐 Sichere Zahlung</h2>
                             <p className="bill-payment-sub">
-                                Your payment will be authorized now and charged
-                                after we confirm the weight.
+                                Ihre Zahlung wird jetzt autorisiert und nach Bestätigung des Gewichts belastet.
                             </p>
 
                             {clientSecret ? (
@@ -555,7 +442,7 @@ export default function BillAndPayment() {
                             ) : (
                                 <div className="bill-loading-inline">
                                     <div className="bill-spinner-small" />
-                                    <span>Preparing payment...</span>
+                                    <span>Zahlung wird vorbereitet...</span>
                                 </div>
                             )}
                         </div>

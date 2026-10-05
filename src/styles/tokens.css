@@ -1,0 +1,309 @@
+:root {
+    /* ═══════════════════════════════════════════════
+       1. BRAND COLORS
+       ═══════════════════════════════════════════════ */
+    --primary-color: #145c4a;
+    --primary-hover: #0f4638;
+    --secondary-color: #ddf4ea;
+    --accent-color: #b9e769;
+    --neon-green: #4bb429;
+    --lime-500: #8bc34a;
+    --lime-light: #7cb33d;
+    --lime-mid: #61b927;
+    --dark-green: #2d4a00;
+    --mid-green: #5a8c00;
+
+    /* ═══════════════════════════════════════════════
+       2. NEUTRALS
+       ═══════════════════════════════════════════════ */
+    --gray-50: #f7faf8;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-700: #4a4a4a;
+    --gray-900: #1a1a1a;
+    --cream: #f4efd9;
+    --light-cream: #fdf8f0;
+    --light-bg: #d4e8b0;
+
+    /* ═══════════════════════════════════════════════
+       3. SEMANTIC
+       ═══════════════════════════════════════════════ */
+    --bg-color: var(--gray-50);
+    --text: #15312b;
+    --secondary-text: var(--gray-700);
+    --text-muted: var(--gray-500);
+    --border-color: rgba(207, 241, 144, 0.933);
+    --danger-color: #d94f4f;
+    --danger-light: #fee2e2;
+    --success: #238b65;
+    --light-danger-color: #ffa02e;
+    --hover-btn: #a4dd00;
+    --back: #f9ecec;
+
+    /* ═══════════════════════════════════════════════
+       4. SPACING (8px base)
+       ═══════════════════════════════════════════════ */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+
+    /* ═══════════════════════════════════════════════
+       5. RADIUS
+       ═══════════════════════════════════════════════ */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-full: 9999px;
+
+    /* ═══════════════════════════════════════════════
+       6. SHADOW
+       ═══════════════════════════════════════════════ */
+    --shadow-sm: 0 1px 3px rgba(20, 92, 74, 0.05);
+    --shadow-md: 0 4px 12px rgba(20, 92, 74, 0.08);
+    --shadow-lg: 0 12px 32px rgba(20, 92, 74, 0.12);
+    --shadow-color: rgba(98, 207, 25, 0.989);
+
+    /* ═══════════════════════════════════════════════
+       7. TRANSITIONS
+       ═══════════════════════════════════════════════ */
+    --transition-fast: all 0.2s ease;
+    --transition-base: all 0.3s ease;
+    --transition-slow: all 0.35s ease;
+
+    /* ═══════════════════════════════════════════════
+       8. TYPOGRAPHY — Scale
+       ═══════════════════════════════════════════════ */
+    --font-xs: 0.6875rem;
+    /* 11px */
+    --font-sm: 0.8125rem;
+    /* 13px */
+    --font-base: 0.9375rem;
+    /* 15px */
+    --font-md: 1rem;
+    /* 16px */
+    --font-lg: 1.125rem;
+    /* 18px */
+    --font-xl: 1.375rem;
+    /* 22px */
+    --font-2xl: 1.75rem;
+    /* 28px */
+
+    --font-weight-normal: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+
+    /* ═══════════════════════════════════════════════
+       9. Z-INDEX — Layered System
+       ═══════════════════════════════════════════════ */
+    --z-base: 1;
+    --z-dropdown: 100;
+    --z-sidebar: 50;
+    --z-sidebar-mobile: 1000;
+    --z-overlay: 9999;
+    --z-overlay-top: 10000;
+    --z-menu-fixed: 99999;
+    --z-toast: 99999;
+
+    /* ═══════════════════════════════════════════════
+       10. ORDER STATUS COLORS
+       ═══════════════════════════════════════════════ */
+    /* Pending */
+    --status-pending-bg: #FEF3C7;
+    --status-pending-text: #92400E;
+    --status-pending-border: #F59E0B;
+    --status-pending-accent: var(--light-danger-color);
+
+    /* Confirmed */
+    --status-confirmed-bg: #DBEAFE;
+    --status-confirmed-text: #1E40AF;
+    --status-confirmed-border: #3B82F6;
+    --status-confirmed-accent: #3B82F6;
+
+    /* Shipped */
+    --status-shipped-bg: #EDE9FE;
+    --status-shipped-text: #5B21B6;
+    --status-shipped-border: #8B5CF6;
+    --status-shipped-accent: #8B5CF6;
+
+    /* Delivered */
+    --status-delivered-bg: #DCFCE7;
+    --status-delivered-text: #065F46;
+    --status-delivered-border: #10B981;
+    --status-delivered-accent: #10B981;
+
+    /* Cancelled */
+    --status-cancelled-bg: #FEE2E2;
+    --status-cancelled-text: #991B1B;
+    --status-cancelled-border: var(--danger-color);
+    --status-cancelled-accent: var(--danger-color);
+
+    /* ═══════════════════════════════════════════════
+       11. ITEM STATUS BADGES
+       ═══════════════════════════════════════════════ */
+    --item-pending-bg: rgba(245, 158, 11, 0.15);
+    --item-pending-text: #B45309;
+    --item-scanned-bg: rgba(16, 185, 129, 0.15);
+    --item-scanned-text: #047857;
+    --item-substituted-bg: rgba(139, 92, 246, 0.15);
+    --item-substituted-text: #6D28D9;
+    --item-removed-bg: rgba(239, 68, 68, 0.15);
+    --item-removed-text: #B91C1C;
+
+    /* ═══════════════════════════════════════════════
+       12. TAX BADGES
+       ═══════════════════════════════════════════════ */
+    --tax-7-bg: #DCFCE7;
+    --tax-7-text: #166534;
+    --tax-7-border: #86EFAC;
+
+    --tax-19-bg: #FEE2E2;
+    --tax-19-text: #991B1B;
+    --tax-19-border: #FCA5A5;
+
+    --tax-0-bg: #F3F4F6;
+    --tax-0-text: #4B5563;
+    --tax-0-border: #D1D5DB;
+
+    /* ═══════════════════════════════════════════════
+       13. PAYMENT STATUS
+       ═══════════════════════════════════════════════ */
+    --payment-authorized-bg: #DBEAFE;
+    --payment-authorized-text: #1E40AF;
+    --payment-captured-bg: #DCFCE7;
+    --payment-captured-text: #166534;
+    --payment-refunded-bg: #FEE2E2;
+    --payment-refunded-text: #991B1B;
+    --payment-pending-bg: #FEF3C7;
+    --payment-pending-text: #92400E;
+    --payment-failed-bg: #FEE2E2;
+    --payment-failed-text: #991B1B;
+
+    /* ═══════════════════════════════════════════════
+       14. DELIVERY URGENCY
+       ═══════════════════════════════════════════════ */
+    --urgency-overdue-bg: #EF4444;
+    --urgency-overdue-text: #FFFFFF;
+    --urgency-today-bg: #F59E0B;
+    --urgency-today-text: #FFFFFF;
+    --urgency-tomorrow-bg: rgba(255, 255, 255, 0.2);
+    --urgency-tomorrow-text: #FFFFFF;
+    --urgency-soon-bg: rgba(255, 255, 255, 0.12);
+    --urgency-soon-text: rgba(255, 255, 255, 0.9);
+
+    /* ═══════════════════════════════════════════════
+       15. ADMIN SURFACES & CARDS
+       ═══════════════════════════════════════════════ */
+    --admin-bg: var(--gray-50);
+    --admin-card-bg: #FFFFFF;
+    --admin-card-border: rgba(20, 92, 74, 0.06);
+    --admin-card-shadow-sm: 0 1px 3px rgba(20, 92, 74, 0.04);
+    --admin-card-shadow-md: 0 8px 24px rgba(20, 92, 74, 0.06);
+    --admin-card-shadow-lg: 0 16px 44px rgba(20, 92, 74, 0.12);
+
+    /* ═══════════════════════════════════════════════
+       16. ADMIN SIDEBAR
+       ═══════════════════════════════════════════════ */
+    --admin-sidebar-bg: var(--primary-color);
+    --admin-sidebar-text: var(--cream);
+    --admin-sidebar-text-muted: rgba(245, 241, 232, 0.7);
+    --admin-sidebar-hover: rgba(255, 255, 255, 0.08);
+    --admin-sidebar-active-bg: rgba(182, 245, 0, 0.15);
+    --admin-sidebar-active-text: var(--dark-green);
+    --admin-sidebar-border: rgba(255, 255, 255, 0.12);
+    --admin-sidebar-width: 280px;
+    --admin-sidebar-mobile-height: 70px;
+
+    /* ═══════════════════════════════════════════════
+       17. OVERLAYS & MODALS
+       ═══════════════════════════════════════════════ */
+    --overlay-bg: rgba(21, 49, 43, 0.65);
+    --overlay-bg-strong: rgba(21, 49, 43, 0.7);
+    --overlay-blur: blur(6px);
+    --overlay-blur-strong: blur(8px);
+
+    --modal-max-width-sm: 460px;
+    --modal-max-width-md: 520px;
+    --modal-max-width-lg: 640px;
+    --modal-max-width-xl: 780px;
+    --modal-max-width-2xl: 1100px;
+
+    /* ═══════════════════════════════════════════════
+       18. ADMIN BUTTONS (Action Colors)
+       ═══════════════════════════════════════════════ */
+    /* Confirm (blue) */
+    --btn-confirm-bg: rgba(59, 130, 246, 0.1);
+    --btn-confirm-text: #2563EB;
+    --btn-confirm-border: rgba(59, 130, 246, 0.25);
+    --btn-confirm-hover: #3B82F6;
+
+    /* Ship (purple) */
+    --btn-ship-gradient: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    --btn-ship-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+
+    /* Deliver (green) */
+    --btn-deliver-bg: rgba(16, 185, 129, 0.1);
+    --btn-deliver-text: #059669;
+    --btn-deliver-border: rgba(16, 185, 129, 0.25);
+    --btn-deliver-hover: #10B981;
+
+    /* Cancel (red) */
+    --btn-cancel-bg: rgba(239, 68, 68, 0.08);
+    --btn-cancel-text: #DC2626;
+    --btn-cancel-border: rgba(239, 68, 68, 0.25);
+    --btn-cancel-hover: #EF4444;
+
+    /* Undo (amber) */
+    --btn-undo-bg: var(--light-danger-color);
+    --btn-undo-text: var(--bg-color);
+    --btn-undo-hover: #d97706;
+
+    /* Edit (secondary) */
+    --btn-edit-bg: var(--secondary-color);
+    --btn-edit-text: var(--primary-color);
+
+    /* ═══════════════════════════════════════════════
+       19. ADMIN INSIGHT COLORS
+       ═══════════════════════════════════════════════ */
+    /* Info */
+    --info-bg: rgba(59, 130, 246, 0.06);
+    --info-border: #3B82F6;
+    --info-text: #1E40AF;
+    --info-icon: #3B82F6;
+
+    /* Warning */
+    --warning-bg: rgba(245, 158, 11, 0.08);
+    --warning-border: #F59E0B;
+    --warning-text: #78350F;
+    --warning-icon: #D97706;
+
+    /* Danger */
+    --danger-info-bg: rgba(217, 79, 79, 0.06);
+    --danger-info-border: var(--danger-color);
+    --danger-info-text: #991B1B;
+    --danger-info-icon: var(--danger-color);
+
+    /* ═══════════════════════════════════════════════
+       20. ROLE COLORS (Admin Management)
+       ═══════════════════════════════════════════════ */
+    --role-admin: #3b82f6;
+    --role-super-admin: #f59e0b;
+    --role-driver: #8b5cf6;
+    --role-tax-collector: #10b981;
+    --role-data-entry: #ec4899;
+
+    /* ═══════════════════════════════════════════════
+       21. RESPONSIVE BREAKPOINTS (Reference)
+       ═══════════════════════════════════════════════ */
+    /* لا يمكن استخدامها كـ CSS variables فعليًا، لكن للتوثيق */
+    /* --bp-sm: 480px; --bp-md: 640px; --bp-lg: 768px; --bp-xl: 1024px; --bp-2xl: 1200px; */
+}

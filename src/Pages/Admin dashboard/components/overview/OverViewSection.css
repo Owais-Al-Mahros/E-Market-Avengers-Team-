@@ -1,0 +1,408 @@
+/* ==========================================
+   📊 OVERVIEW SECTION — Admin Dashboard
+   ========================================== */
+
+.overview-section {
+  padding: var(--space-6);
+  background: linear-gradient(135deg, var(--bg-color) 0%, var(--back) 100%);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  color: var(--text);
+}
+
+/* ===== Header ===== */
+.overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.overview-title {
+  margin: 0;
+  font-size: var(--font-2xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--primary-color);
+}
+
+.overview-subtitle {
+  margin: var(--space-2) 0 0;
+  color: var(--secondary-text);
+  font-size: var(--font-base);
+}
+
+/* ===== Stats Cards ===== */
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.overview-card {
+  background: var(--admin-card-bg);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  border: 1px solid var(--admin-card-border);
+  box-shadow: var(--admin-card-shadow-sm);
+  transition: var(--transition-fast);
+}
+
+.overview-card:hover {
+  box-shadow: var(--admin-card-shadow-md);
+  transform: translateY(-2px);
+}
+
+.overview-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+/* ==========================================
+   💡 Hint Line (تحت الـ label)
+   ========================================== */
+.overview-hint {
+  margin: 4px 0 0;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ==========================================
+   🎨 Accent Variants (Cards)
+   ========================================== */
+.overview-card.accent-success {
+  border-left: 4px solid var(--success);
+}
+
+.overview-card.accent-warning {
+  border-left: 4px solid var(--status-pending-border);
+}
+
+.overview-card.accent-info {
+  border-left: 4px solid var(--status-confirmed-border);
+}
+
+.overview-card.accent-danger {
+  border-left: 4px solid var(--danger-color);
+}
+
+/* ==========================================
+   ⏳ Loading Spinner
+   ========================================== */
+.overview-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--secondary-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: overviewSpin 0.8s linear infinite;
+}
+
+@keyframes overviewSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================
+   🚫 Error State
+   ========================================== */
+.overview-state-error {
+  color: var(--danger-color);
+}
+
+.overview-state-error .material-symbols-outlined {
+  font-size: 48px;
+  color: var(--danger-color);
+}
+
+.overview-retry-btn {
+  margin-top: var(--space-3);
+  padding: 10px 22px;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: var(--font-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.overview-retry-btn:hover {
+  background: var(--dark-green);
+  transform: translateY(-1px);
+}
+
+.overview-icon {
+  width: 2.625rem;
+  height: 2.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--secondary-color);
+  border-radius: var(--radius-md);
+  font-size: 1.3rem;
+}
+
+.overview-metric {
+  font-size: var(--font-2xl);
+  font-weight: var(--font-weight-extrabold);
+  margin: 0;
+  color: var(--primary-color);
+  letter-spacing: -0.5px;
+}
+
+.overview-label {
+  margin: var(--space-2) 0 0;
+  color: var(--secondary-text);
+  font-size: var(--font-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+/* ===== Panels ===== */
+.overview-panel {
+  background: var(--admin-card-bg);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  border: 1px solid var(--admin-card-border);
+  box-shadow: var(--admin-card-shadow-sm);
+  margin-bottom: var(--space-4);
+}
+
+.overview-panel:last-child {
+  margin-bottom: 0;
+}
+
+.overview-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--secondary-color);
+}
+
+.overview-panel-title {
+  margin: 0;
+  font-size: var(--font-lg);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ===== List ===== */
+.overview-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.overview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--secondary-color);
+  gap: var(--space-3);
+}
+
+.overview-row:last-child {
+  border-bottom: none;
+}
+
+/* Left side (rank + image + info) */
+.overview-row-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  flex: 1;
+}
+
+.overview-rank {
+  font-weight: 800;
+  color: var(--text-muted);
+  min-width: 28px;
+  font-size: var(--font-base);
+}
+
+.overview-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--bg-color);
+  flex-shrink: 0;
+  border: 1px solid var(--secondary-color);
+}
+
+.overview-order-id {
+  font-weight: 700;
+  margin: 0;
+  color: var(--text);
+  font-size: var(--font-base);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.overview-customer {
+  margin: 2px 0 0;
+  color: var(--secondary-text);
+  font-size: var(--font-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Right side (total + status) */
+.overview-row-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.overview-total {
+  font-weight: 800;
+  color: var(--primary-color);
+  font-size: var(--font-base);
+}
+
+/* ===== Status Badges ===== */
+.overview-status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.overview-status.status-pending {
+  background: var(--status-pending-bg);
+  color: var(--status-pending-text);
+}
+
+.overview-status.status-confirmed {
+  background: var(--status-confirmed-bg);
+  color: var(--status-confirmed-text);
+}
+
+.overview-status.status-shipped {
+  background: var(--status-shipped-bg);
+  color: var(--status-shipped-text);
+}
+
+.overview-status.status-delivered,
+.overview-status.status-paid {
+  background: var(--status-delivered-bg);
+  color: var(--status-delivered-text);
+}
+
+.overview-status.status-cancelled {
+  background: var(--status-cancelled-bg);
+  color: var(--status-cancelled-text);
+}
+
+.overview-status.sales-badge {
+  background: #E0F2FE;
+  color: #0369A1;
+}
+
+/* أضف هذا بعد .overview-customer */
+.overview-info {
+  min-width: 0;
+  flex: 1;
+}
+
+/* ===== States ===== */
+.overview-state {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--secondary-text);
+  font-size: var(--font-base);
+  font-weight: 600;
+}
+
+.overview-state.error {
+  color: var(--danger-color);
+}
+
+.overview-empty {
+  text-align: center;
+  padding: var(--space-6) var(--space-4);
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: var(--font-sm);
+  margin: 0;
+}
+
+/* ==========================================
+   📱 MOBILE (max-width: 48rem = 768px)
+   ========================================== */
+@media (max-width: 48rem) {
+  .overview-section {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+  }
+
+  .overview-title {
+    font-size: var(--font-xl);
+  }
+
+  .overview-subtitle {
+    font-size: var(--font-sm);
+  }
+
+  .overview-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+
+  .overview-card {
+    padding: var(--space-3);
+  }
+
+  .overview-metric {
+    font-size: var(--font-xl);
+  }
+
+  .overview-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.1rem;
+  }
+
+  .overview-panel {
+    padding: var(--space-4);
+  }
+
+  .overview-panel-title {
+    font-size: var(--font-base);
+  }
+}
+
+@media (max-width: 30rem) {
+  .overview-cards {
+    grid-template-columns: 1fr;
+  }
+}

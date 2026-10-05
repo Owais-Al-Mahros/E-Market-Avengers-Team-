@@ -1,0 +1,190 @@
+/* ==========================================
+   🕒 TIME SLOT CHOOSING
+   ========================================== */
+
+.time-slot-choosing {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.hours-section h3,
+.rules-section h3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--font-lg);
+    font-weight: 700;
+    color: var(--dark-green);
+    margin: 0 0 var(--space-4) 0;
+}
+
+/* ═══ Hours Grid ═══ */
+.hours-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--space-2);
+}
+
+.hour-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 8px;
+    min-height: 58px;
+    background: var(--light-bg);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--dark-green);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-family: inherit;
+}
+
+.hour-toggle .hour-label {
+    font-family: "Courier New", monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.hour-toggle .toggle-indicator {
+    font-size: 0.7rem;
+}
+
+.hour-toggle.active {
+    background: var(--neon-green);
+    border-color: var(--lime-mid);
+    box-shadow: 0 4px 12px rgba(182, 245, 0, 0.1);
+}
+
+.hour-toggle:hover:not(.active) {
+    background: rgba(182, 245, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.hour-divider {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--secondary-color), transparent);
+    margin: 6px 0;
+}
+
+.hours-note {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: var(--space-3);
+}
+
+/* ═══ Rules ═══ */
+.rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-5);
+}
+
+.rule-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rule-field label {
+    font-weight: 700;
+    font-size: var(--font-sm);
+    color: var(--dark-green);
+}
+
+.rule-field input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: var(--font-md);
+    background: var(--light-bg);
+    color: var(--dark-green);
+    outline: none;
+    transition: var(--transition-fast);
+    font-family: inherit;
+}
+
+.rule-field input:focus {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 0 4px rgba(182, 245, 0, 0.1);
+}
+
+.rule-field input[type="time"] {
+    font-weight: 700;
+    font-family: "Courier New", monospace;
+}
+
+.rule-field small {
+    font-size: 0.7rem;
+    color: var(--mid-green);
+    opacity: 0.8;
+}
+
+/* ═══ Day Actions ═══ */
+.day-actions {
+    display: inline-flex;
+    gap: var(--space-2);
+    margin-left: auto;
+}
+
+.reset-day-btn,
+.back-default-btn {
+    background: rgba(182, 245, 0, 0.15);
+    border: 1px solid var(--lime-mid);
+    border-radius: var(--radius-full);
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--dark-green);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-family: inherit;
+}
+
+.reset-day-btn:hover,
+.back-default-btn:hover {
+    background: var(--neon-green);
+    transform: translateY(-1px);
+}
+
+/* ═══ Mobile ═══ */
+@media (max-width: 48rem) {
+    .hours-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+
+    .hour-toggle {
+        font-size: 0.75rem;
+        padding: 8px 6px;
+    }
+
+    .hour-toggle .hour-label {
+        font-size: 0.78rem;
+    }
+
+    .rules-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hours-section h3,
+    .rules-section h3 {
+        font-size: var(--font-base);
+    }
+}
+
+@media (max-width: 30rem) {
+    .hours-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

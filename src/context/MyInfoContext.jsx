@@ -3,27 +3,31 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 
 const MyInfoContext = createContext();
 
-export function MyInfoProvider({ children }) {
-  const [info, setInfo] = useLocalStorage("MyInfo", {
-    firstName: "Unknown",
-    lastName: "Unknown",
-    age: "Unknown",
-    phone: "Unknown",
-    email: "Unknown",
-    address: {
-      country: "Unknown",
-      governorate: "Unknown",
-      region: "Unknown",
-    },
-  });
+const DEFAULT_INFO = {
+  // ===== Personal =====
+  firstName: "",
+  lastName: "",
+  phone: "",
+  email: "",
+  // ===== Address =====
+  street: "",
+  houseNumber: "",
+  postalCode: "",
+  city: "",
+  // ===== Access =====
+  floor: "",
+  apartment: "",
+  doorbellName: "",
+  hasElevator: "no",
+};
 
-  const value = {
-    info,
-    setInfo,
-  };
+export function MyInfoProvider({ children }) {
+  const [info, setInfo] = useLocalStorage("MyInfo", DEFAULT_INFO);
 
   return (
-    <MyInfoContext.Provider value={value}> {children}</MyInfoContext.Provider>
+    <MyInfoContext.Provider value={{ info, setInfo }}>
+      {children}
+    </MyInfoContext.Provider>
   );
 }
 

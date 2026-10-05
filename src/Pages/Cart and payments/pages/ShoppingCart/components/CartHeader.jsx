@@ -1,14 +1,14 @@
 // src/Pages/Cart and payments/pages/ShoppingCart/components/CartHeader.jsx
 import { Link } from "react-router-dom";
 import "./CartHeader.css";
-import BackButton from "../../../../../Components/BackButton";
+import BackButton from "../../../../../components/ui/BackButton";
 
 const STEPS = [
-  { id: 1, label: "Shopping cart" },
-  { id: 2, label: "Address" },
-  { id: 3, label: "Delivery Date" },
-  { id: 4, label: "Payment method" },
-  { id: 5, label: "Order" },
+  { id: 1, label: "Warenkorb" },
+  { id: 2, label: "Adresse" },
+  { id: 3, label: "Liefertermin" },
+  { id: 4, label: "Zahlung" },
+  { id: 5, label: "Bestellung" },
 ];
 
 export default function CartHeader({ currentStep }) {
@@ -29,9 +29,8 @@ export default function CartHeader({ currentStep }) {
             return (
               <div key={step.id} className="cart-header-step">
                 <div
-                  className={`cart-header-circle ${isActive ? "active" : ""} ${
-                    isPast ? "past" : ""
-                  }`}
+                  className={`cart-header-circle ${isActive ? "active" : ""} ${isPast ? "past" : ""
+                    }`}
                 >
                   {isPast ? "✓" : step.id}
                 </div>
@@ -61,7 +60,7 @@ export default function CartHeader({ currentStep }) {
                 fill="none"
               />
             </svg>
-            <span>Secure Order</span>
+            <span>Sichere Bestellung</span>
           </div>
           <BackButton label={"Back"} />
         </div>

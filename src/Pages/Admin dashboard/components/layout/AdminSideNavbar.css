@@ -1,0 +1,241 @@
+/* ==========================================
+   🧭 ADMIN SIDEBAR
+   ========================================== */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: var(--admin-sidebar-width);
+  background: var(--admin-sidebar-bg);
+  color: var(--admin-sidebar-text);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-5) var(--space-4);
+  overflow-y: auto;
+  z-index: var(--z-sidebar);
+  border-right: 1px solid var(--admin-sidebar-border);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Scrollbar ===== */
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--neon-green);
+  border-radius: var(--radius-full);
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================
+   👤 Logo / Profile
+   ========================================== */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--admin-sidebar-border);
+  margin-bottom: var(--space-5);
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--neon-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark-green);
+  flex-shrink: 0;
+  border: 2px solid var(--lime-mid);
+  overflow: hidden;
+}
+
+.logo-icon .admin-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.logo-container h1 {
+  font-size: var(--font-lg);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--admin-sidebar-text);
+  margin: 0;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logo-container p {
+  font-size: var(--font-xs);
+  color: var(--neon-green);
+  font-weight: 600;
+  margin: 2px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================
+   🧭 Menu
+   ========================================== */
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--admin-sidebar-text-muted);
+  text-decoration: none;
+  font-size: var(--font-base);
+  font-weight: 600;
+  transition: var(--transition-fast);
+  cursor: pointer;
+  border-left: 4px solid transparent;
+  position: relative;
+}
+
+.menu-item:hover {
+  color: var(--admin-sidebar-text);
+  background: var(--admin-sidebar-hover);
+}
+
+.menu-item:focus-visible {
+  outline: 2px solid var(--neon-green);
+  outline-offset: 2px;
+}
+
+.menu-item.active {
+  color: var(--admin-sidebar-active-text);
+  background: var(--admin-sidebar-active-bg);
+  border-left-color: var(--dark-green);
+  font-weight: var(--font-weight-extrabold);
+}
+
+.menu-item .material-symbols-outlined {
+  font-size: 22px;
+  flex-shrink: 0;
+  transition: var(--transition-fast);
+}
+
+.menu-item.active .material-symbols-outlined {
+  color: var(--dark-green);
+}
+
+.menu-item:hover .material-symbols-outlined {
+  color: var(--admin-sidebar-text);
+}
+
+/* ==========================================
+   📱 MOBILE (max-width: 48rem = 768px)
+   ========================================== */
+@media (max-width: 48rem) {
+  .sidebar {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--admin-sidebar-mobile-height);
+    flex-direction: row;
+    padding: 0 var(--space-2);
+    border-right: none;
+    border-top: 1px solid var(--admin-sidebar-border);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    z-index: var(--z-sidebar-mobile);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  .sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .logo-container {
+    display: none;
+  }
+
+  .menu-list {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: stretch;
+    width: 100%;
+    padding: 0;
+    gap: 0;
+    margin: 0;
+  }
+
+  .menu-list>li {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+  }
+
+  .menu-item {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-2) var(--space-1);
+    border-radius: 0;
+    border-left: none;
+    border-top: 3px solid transparent;
+    gap: 2px;
+    min-height: 44px;
+    /* ✅ Apple/Google touch target */
+    min-width: 44px;
+  }
+
+  .menu-item:hover {
+    background: var(--admin-sidebar-hover);
+    transform: none;
+  }
+
+  .menu-item.active {
+    background: transparent;
+    border-top-color: var(--neon-green);
+    color: var(--neon-green);
+  }
+
+  .menu-item span:not(.material-symbols-outlined) {
+    display: none;
+  }
+
+  .menu-item .material-symbols-outlined {
+    font-size: 24px;
+  }
+
+  .menu-item.active .material-symbols-outlined {
+    color: var(--neon-green);
+  }
+}
+
+/* ==========================================
+   📱 Small Mobile (max-width: 30rem = 480px)
+   ========================================== */
+@media (max-width: 30rem) {
+  .menu-item .material-symbols-outlined {
+    font-size: 22px;
+  }
+}

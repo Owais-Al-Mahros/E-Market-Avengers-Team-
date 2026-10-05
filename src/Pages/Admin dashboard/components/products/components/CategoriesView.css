@@ -1,0 +1,589 @@
+/* ==========================================
+   📁 CATEGORIES VIEW — Accordion
+   ========================================== */
+
+.cv-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/* ===== Section ===== */
+.cv-section {
+    background: var(--admin-card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    box-shadow: var(--shadow-sm);
+}
+
+.cv-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 2px solid var(--secondary-color);
+    flex-wrap: wrap;
+}
+
+.cv-section-header h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-size: var(--font-lg);
+    font-weight: 800;
+    color: #0f1c18;
+}
+
+.cv-section-header .material-symbols-outlined {
+    font-size: 22px;
+    color: var(--primary-color);
+}
+
+.cv-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 24px;
+    padding: 0 8px;
+    background: var(--primary-color);
+    color: #fff;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 800;
+    margin-left: 4px;
+}
+
+/* ===== Add Bar (Category / Subcategory) ===== */
+.cv-sub-add {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    padding: var(--space-3);
+    background: var(--bg-color);
+    border: 2px dashed var(--secondary-color);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-4);
+}
+
+.cv-sub-add-image {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--light-bg);
+    border: 2px dashed var(--mid-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cv-sub-add-image img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.cv-sub-add-image>.material-symbols-outlined {
+    font-size: 26px;
+    color: var(--mid-green);
+}
+
+/* Upload button overlay */
+.cv-img-upload-btn {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 26px;
+    height: 26px;
+    background: var(--primary-color);
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+    padding: 0;
+    z-index: 2;
+}
+
+.cv-img-upload-btn:hover {
+    background: var(--dark-green);
+    transform: scale(1.1);
+}
+
+.cv-img-upload-btn .material-symbols-outlined {
+    font-size: 15px;
+    color: #fff;
+}
+
+.cv-img-upload-sm {
+    width: 24px;
+    height: 24px;
+}
+
+.cv-img-upload-sm .material-symbols-outlined {
+    font-size: 14px;
+}
+
+.cv-img-upload-xs {
+    width: 22px;
+    height: 22px;
+}
+
+.cv-img-upload-xs .material-symbols-outlined {
+    font-size: 13px;
+}
+
+/* ===== Input ===== */
+.cv-input {
+    flex: 1;
+    padding: 12px 14px;
+    background: #fff;
+    border: 2px solid var(--secondary-color);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f1c18;
+    outline: none;
+    transition: var(--transition-fast);
+    min-width: 0;
+}
+
+.cv-input::placeholder {
+    color: #8a9a95;
+    font-weight: 500;
+}
+
+.cv-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(20, 92, 74, 0.1);
+}
+
+/* ===== Add Button ===== */
+.cv-add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 20px;
+    background: var(--neon-green);
+    color: #0f1c18;
+    border: 1px solid var(--lime-mid);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+
+.cv-add-btn:hover:not(:disabled) {
+    background: var(--hover-btn);
+    transform: translateY(-1px);
+}
+
+.cv-add-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cv-add-btn .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* ==========================================
+   🎯 Accordion
+   ========================================== */
+.cv-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.cv-acc-item {
+    background: var(--bg-color);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: var(--transition-fast);
+}
+
+.cv-acc-item:hover {
+    border-color: var(--secondary-color);
+}
+
+.cv-acc-item.is-expanded {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 16px rgba(20, 92, 74, 0.08);
+    background: #fff;
+}
+
+/* ===== Header ===== */
+.cv-acc-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    cursor: pointer;
+    user-select: none;
+    transition: var(--transition-fast);
+}
+
+.cv-acc-header:hover {
+    background: rgba(20, 92, 74, 0.03);
+}
+
+.cv-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--light-bg);
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.cv-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cv-thumb .material-symbols-outlined {
+    font-size: 24px;
+    color: var(--mid-green);
+}
+
+.cv-acc-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cv-acc-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f1c18;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cv-acc-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.cv-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    background: var(--secondary-color);
+    color: #0f2a22;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.cv-badge-alt {
+    background: rgba(185, 231, 105, 0.25);
+    color: #3a4a00;
+}
+
+.cv-acc-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.cv-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: #4a5b56;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.cv-icon-btn:hover {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.cv-icon-btn.cv-danger:hover {
+    background: rgba(217, 79, 79, 0.1);
+    color: var(--danger-color);
+}
+
+.cv-icon-btn.cv-save {
+    background: var(--success);
+    color: #fff;
+}
+
+.cv-icon-btn.cv-save:hover {
+    background: var(--primary-color);
+}
+
+.cv-icon-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cv-icon-btn .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.cv-chevron {
+    font-size: 24px;
+    color: #4a5b56;
+    flex-shrink: 0;
+    transition: var(--transition-fast);
+}
+
+.is-expanded .cv-chevron {
+    color: var(--primary-color);
+}
+
+/* ===== Edit Mode ===== */
+.cv-acc-edit {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background: #fff;
+}
+
+.cv-acc-edit-image {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--light-bg);
+    border: 2px dashed var(--mid-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cv-acc-edit-image img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.cv-acc-edit-image>.material-symbols-outlined {
+    font-size: 26px;
+    color: var(--mid-green);
+}
+
+.cv-acc-edit-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+/* ===== Expanded Body ===== */
+.cv-acc-body {
+    padding: var(--space-4);
+    border-top: 1px solid var(--secondary-color);
+    background: #fafcfb;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.cv-acc-body .cv-sub-add {
+    margin-bottom: 0;
+    background: #fff;
+}
+
+/* ===== Subs List ===== */
+.cv-subs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cv-sub-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: #fff;
+    border: 1px solid var(--secondary-color);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.cv-sub-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(20, 92, 74, 0.06);
+}
+
+.cv-sub-thumb {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--light-bg);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cv-sub-thumb img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.cv-sub-thumb>.material-symbols-outlined {
+    font-size: 18px;
+    color: var(--mid-green);
+}
+
+.cv-sub-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.cv-sub-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f1c18;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cv-sub-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.cv-sub-edit {
+    background: #fff;
+    border-color: var(--primary-color);
+}
+
+/* ===== Empty ===== */
+.cv-empty {
+    padding: var(--space-5);
+    text-align: center;
+    font-size: 13px;
+    font-style: italic;
+    color: #4a5b56;
+    background: var(--bg-color);
+    border-radius: var(--radius-md);
+    margin: 0;
+}
+
+.cv-empty-sm {
+    padding: var(--space-3);
+    font-size: 12px;
+}
+
+/* ==========================================
+   📱 MOBILE (max-width: 48rem)
+   ========================================== */
+@media (max-width: 48rem) {
+    .cv-section {
+        padding: var(--space-4);
+    }
+
+    .cv-section-header h3 {
+        font-size: 15px;
+    }
+
+    .cv-sub-add {
+        flex-wrap: wrap;
+        gap: var(--space-2);
+    }
+
+    .cv-sub-add-image {
+        width: 44px;
+        height: 44px;
+    }
+
+    .cv-input {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    .cv-add-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 16px;
+    }
+
+    .cv-acc-header {
+        padding: var(--space-3);
+        gap: var(--space-2);
+    }
+
+    .cv-thumb {
+        width: 40px;
+        height: 40px;
+    }
+
+    .cv-acc-name {
+        font-size: 14px;
+    }
+
+    .cv-icon-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .cv-icon-btn .material-symbols-outlined {
+        font-size: 18px;
+    }
+
+    .cv-acc-edit {
+        flex-wrap: wrap;
+        padding: var(--space-3);
+    }
+
+    .cv-acc-edit .cv-input {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    .cv-sub-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+}

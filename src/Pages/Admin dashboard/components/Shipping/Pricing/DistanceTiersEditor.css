@@ -1,0 +1,305 @@
+/* ==========================================
+   🚗 DISTANCE TIERS EDITOR
+   ========================================== */
+
+.distance-tiers {
+    margin-top: var(--space-4);
+    padding: var(--space-4);
+    background: var(--bg-color);
+    border-radius: var(--radius-md);
+    border: 1.5px dashed var(--border-color);
+}
+
+.distance-tiers-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--secondary-color);
+}
+
+.distance-tiers-header h5 {
+    margin: 0;
+    font-size: var(--font-sm);
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+.distance-tiers-hint {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.distance-tiers-hint strong {
+    color: var(--success);
+    font-weight: 800;
+    font-style: normal;
+}
+
+/* ═══ List ═══ */
+.distance-tiers-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.distance-tier-row,
+.distance-tier-add {
+    display: grid;
+    grid-template-columns: 1fr 30px 1fr 30px 1fr 44px;
+    gap: var(--space-2);
+    align-items: end;
+    padding: var(--space-3) var(--space-4);
+    background: var(--admin-card-bg);
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--secondary-color);
+}
+
+.distance-tier-add {
+    border-style: dashed;
+    background: var(--bg-color);
+}
+
+.distance-tier-row.is-last {
+    border-color: var(--primary-color);
+    background: var(--secondary-color);
+}
+
+.distance-tier-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.distance-tier-field label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.distance-tier-field input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1.5px solid var(--secondary-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-color);
+    font-size: var(--font-sm);
+    font-weight: 700;
+    font-family: "Courier New", monospace;
+    color: var(--text);
+    outline: none;
+    transition: var(--transition-fast);
+    box-sizing: border-box;
+}
+
+.distance-tier-field input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(20, 92, 74, 0.12);
+    background: var(--admin-card-bg);
+}
+
+.distance-tier-field input.readonly {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    cursor: not-allowed;
+    font-weight: 800;
+}
+
+.distance-tier-field input.has-error {
+    border-color: var(--danger-color);
+    background: rgba(217, 79, 79, 0.04);
+}
+
+.distance-tier-arrow,
+.distance-tier-equals {
+    text-align: center;
+    color: var(--primary-color);
+    font-weight: 800;
+    font-size: var(--font-md);
+    padding-bottom: 10px;
+    user-select: none;
+}
+
+.distance-tier-remove {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(217, 79, 79, 0.1);
+    color: var(--danger-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.distance-tier-remove:hover {
+    background: var(--danger-color);
+    color: #fff;
+}
+
+.distance-tier-remove .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.distance-tier-add-btn {
+    grid-column: 1 / -1;
+    margin-top: 4px;
+    padding: 11px 20px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 800;
+    font-size: var(--font-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: var(--transition-fast);
+    font-family: inherit;
+}
+
+.distance-tier-add-btn:hover:not(:disabled) {
+    background: var(--success);
+    transform: translateY(-1px);
+}
+
+.distance-tier-add-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.distance-tier-add-btn .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* ═══ Empty ═══ */
+.distance-tiers-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: var(--font-sm);
+    font-style: italic;
+    padding: var(--space-4);
+    margin: 0 0 var(--space-3) 0;
+    background: var(--admin-card-bg);
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--secondary-color);
+    line-height: 1.6;
+}
+
+.distance-tiers-empty strong {
+    color: var(--primary-color);
+    font-weight: 800;
+    font-style: normal;
+}
+
+/* ═══ Error / Info / Complete ═══ */
+.distance-tiers-error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    background: rgba(217, 79, 79, 0.08);
+    border-left: 3px solid var(--danger-color);
+    border-radius: var(--radius-sm);
+    font-size: 12.5px;
+    color: var(--status-cancelled-text);
+    font-weight: 600;
+}
+
+.distance-tiers-error .material-symbols-outlined {
+    font-size: 16px;
+    color: var(--danger-color);
+    flex-shrink: 0;
+}
+
+.distance-tiers-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    margin-top: var(--space-3);
+    background: var(--info-bg);
+    border-left: 3px solid var(--info-border);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--info-text);
+    line-height: 1.5;
+}
+
+.distance-tiers-info .material-symbols-outlined {
+    font-size: 16px;
+    color: var(--info-icon);
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.distance-tiers-info strong {
+    font-weight: 800;
+    color: var(--info-text);
+}
+
+.distance-tiers-complete {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    margin-top: var(--space-3);
+    background: rgba(35, 139, 101, 0.08);
+    border: 1.5px dashed var(--success);
+    border-radius: var(--radius-md);
+}
+
+.distance-tiers-complete .material-symbols-outlined {
+    font-size: 24px;
+    color: var(--success);
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.distance-tiers-complete strong {
+    display: block;
+    font-size: var(--font-sm);
+    font-weight: 800;
+    color: var(--success);
+    margin-bottom: 4px;
+}
+
+.distance-tiers-complete span {
+    display: block;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* ═══ Mobile ═══ */
+@media (max-width: 48rem) {
+
+    .distance-tier-row,
+    .distance-tier-add {
+        grid-template-columns: 1fr;
+        gap: var(--space-2);
+    }
+
+    .distance-tier-arrow,
+    .distance-tier-equals {
+        padding-bottom: 0;
+        font-size: var(--font-sm);
+    }
+
+    .distance-tier-remove {
+        width: 100%;
+        height: 36px;
+    }
+}

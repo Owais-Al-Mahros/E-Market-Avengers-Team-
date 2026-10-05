@@ -1,0 +1,64 @@
+/* ==========================================
+   🏠 HOME PAGE — Layout & Section Title
+   ========================================== */
+
+.category-sections {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 3.75rem 1.5rem 2.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.category-sections h2 {
+  font-size: 2.125rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 var(--space-2);
+  text-align: left;
+  letter-spacing: -0.6px;
+  display: inline-block;
+}
+
+.title-cate::after {
+  content: "";
+  display: block;
+  width: 13rem;
+  height: 0.3rem;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  margin: var(--space-4) 0 0;
+  border-radius: 4px;
+}
+
+/* ============================================
+   📱 Responsive
+   ============================================ */
+@media (max-width: 64rem) {
+  .category-sections {
+    padding: 3.125rem 1.25rem 1.875rem;
+  }
+
+  .category-sections h2 {
+    font-size: 1.875rem;
+  }
+}
+
+@media (max-width: 48rem) {
+  .category-sections {
+    padding: 2.5rem var(--space-4) var(--space-5);
+  }
+
+  .category-sections h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .category-sections {
+    padding: var(--space-6) var(--space-3) 1.25rem;
+  }
+
+  .category-sections h2 {
+    font-size: 1.25rem;
+  }
+}

@@ -1,22 +1,25 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { useEffect, useState, useRef, lazy, Suspense } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "./lib/supabase";
-import LoadingPage from "./Components/LoadingPage";
+import LoadingPage from "./components/ui/LoadingPage";
 
 import DisplayProducts from "./Pages/DisplayProducts/DisplayProducts";
-import ProductCardDetails from "./Pages/DisplayProducts/modals/ProductCardDetails";
+import ProductDetails from "./Pages/DisplayProducts/ProductDetails";
 
 import TrackOrder from "./Pages/Track Orders/TrackOrder";
-import FavoriteList from "./Pages/Home page/modals/FavoriteList";
-import MyInfo from "./Pages/Home page/modals/MyInfo";
+import FavoriteList from "./Pages/favorites/FavoriteList";
+import MyInfo from "./Pages/my-info/MyInfo";
 
 // 🚀 تطبيق Lazy Loading على باقي الصفحات (بدون DisplayProducts)
+const FaqPage = lazy(() => import("./Pages/Faq/FaqPage"));
+const HelpPage = lazy(() => import("./Pages/Help/HelpPage"));
+const DriverDashboard = lazy(() => import("./Pages/driver/DriverDashboard"));
 const AdminDashboard = lazy(
   () => import("./Pages/Admin dashboard/AdminDashboard"),
 );
-const HomePage = lazy(() => import("./Pages/Home page/HomePage"));
+const HomePage = lazy(() => import("./Pages/home/HomePage"));
 const LoginPage = lazy(() => import("./Pages/Log in  page/LoginPage"));
 const CartAndPayments = lazy(
   () => import("./Pages/Cart and payments/CartAndPayments"),
@@ -40,7 +43,6 @@ function ScrollToTop() {
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const isInitialMount = useRef(true);
 
   const checkAdminStatus = async (session) => {
     if (!session) {
@@ -71,7 +73,6 @@ function App() {
       await checkAdminStatus(session);
 
       setIsLoading(false);
-      isInitialMount.current = false;
     };
 
     initializeAuth();
@@ -110,17 +111,17 @@ function App() {
         }}
       />
       {/* ⏳ Suspense لباقي الصفحات (بدون DisplayProducts) */}
-      <Suspense fallback={<h1>Loading page...</h1>}>
+      <Suspense fallback={<LoadingPage />}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/Cart&Payments/*" element={<CartAndPayments />} />
           {/* ✅ DisplayProducts مباشر — لا Suspense fallback له */}
           <Route path="/DisplayProducts" element={<DisplayProducts />} />
-          <Route path="/HomePage/FavoriteList" element={<FavoriteList />} />
-          <Route path="/HomePage/MyInfo" element={<MyInfo />} />
+          <Route path="/favorites" element={<FavoriteList />} />
+          <Route path="/my-info" element={<MyInfo />} />
           <Route
             path="/DisplayProducts/ProductCardDetails"
-            element={<ProductCardDetails />}
+            element={<ProductDetails />}
           />
           <Route
             path="/dashboard"
@@ -138,6 +139,9 @@ function App() {
           <Route path="/widerruf" element={<Widerruf />} />
           <Route path="/lieferung-zahlung" element={<LieferungZahlung />} />
           <Route path="/track-order" element={<TrackOrder />} />
+          <Route path="/faq" element={<FaqPage />} />
+          <Route path="/help" element={<HelpPage />} />
+          {/* <Route path="/driver" element={<DriverDashboard />} /> */}
         </Routes>
       </Suspense>
     </>

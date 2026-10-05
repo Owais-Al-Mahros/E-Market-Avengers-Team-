@@ -1,43 +1,12 @@
 /* ==========================================
-   1. GLOBAL VARIABLES & RESET
+   1. IMPORTS
    =========================================== */
-
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500&family=Readex+Pro:wght@500;700&display=swap");
+@import "./styles/tokens.css";
 
-:root {
-  /* Branding Palette */
-  --primary-color: #145c4a;
-  --secondary-color: #ddf4ea;
-  --accent-color: #b9e769;
-  --hover-btn: #a4dd00;
-  --bg-color: #f7faf8;
-  --text: #15312b;
-  --secondary-text: #4a4a4a;
-  --danger-color: #d94f4f;
-  --light-danger-color: #ffa02e;
-  --success: #238b65;
-
-  /* Product & Theme Colors */
-  --cream: #f4efd9;
-  --light-cream: #fdf8f0;
-  --neon-green: #4bb429;
-  --lime-light: #61b927;
-  --lime-mid: #61b927;
-  --dark-green: #2d4a00;
-  --mid-green: #5a8c00;
-  --light-bg: #d4e8b0;
-  --back : #f9ecec;
-
-  /* Utilities */
-  --shadow-color: rgba(98, 207, 25, 0.989);
-  --border-color: rgba(207, 241, 144, 0.933);
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-full: 9999px;
-  --transition-fast: all 0.2s ease;
-  --transition-normal: all 0.3s ease;
-}
-
+/* ==========================================
+   2. RESET
+   =========================================== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -45,12 +14,9 @@
 }
 
 body {
-  /* font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; */
-  /* font-family: "Cairo", "Inter", sans-serif; */
   font-family: "IBM Plex Sans Arabic", sans-serif;
-
   color: var(--primary-color);
-  background-color: var(--bg-color) !important;
+  background-color: var(--bg-color);
 }
 
 h1,
@@ -71,10 +37,11 @@ input {
   font-family: "IBM Plex Sans Arabic", sans-serif;
   font-weight: 400;
 }
+
 a {
   text-decoration: none;
   color: inherit;
-  transition: color 0.2s ease;
+  transition: color var(--transition-fast);
 }
 
 button {
@@ -90,10 +57,8 @@ input {
 }
 
 /* ==========================================
-   2. UTILITY CLASSES (فئات مركزية للاستخدام المكرر)
-   ========================================== */
-
-/* Flexbox Helpers */
+   3. UTILITY CLASSES
+   =========================================== */
 .flex-center {
   display: flex;
   align-items: center;
@@ -106,12 +71,11 @@ input {
   justify-content: space-between;
 }
 
-/* Base Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
+  padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-sm);
   font-weight: 600;
   transition: var(--transition-fast);
@@ -119,7 +83,7 @@ input {
 
 .btn-primary {
   background-color: var(--dark-green);
-  color: #ffffff;
+  color: #fff;
 }
 
 .btn-primary:hover {

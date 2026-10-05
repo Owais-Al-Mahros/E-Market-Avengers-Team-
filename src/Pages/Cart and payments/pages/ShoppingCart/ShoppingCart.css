@@ -219,6 +219,159 @@
   font-size: 16px;
 }
 
+/* ============================================
+   🔍 Search — Enhanced with dropdown
+   ============================================ */
+.cart-search-wrapper {
+  position: relative;
+  /* ← ضروري للـ dropdown */
+  text-align: center;
+  margin-bottom: 44px;
+}
+
+/* زر Clear */
+.cart-search-clear {
+  background: transparent;
+  border: none;
+  padding: 0 12px;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  transition: var(--transition-fast);
+}
+
+.cart-search-clear .material-symbols-outlined {
+  font-size: 1.125rem;
+}
+
+.cart-search-clear:hover {
+  color: var(--danger-color);
+}
+
+/* ============================================
+   Dropdown
+   ============================================ */
+.cart-search-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 560px;
+  /* ← نفس عرض حقل البحث */
+  background: #fff;
+  border: 1.5px solid var(--secondary-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 32px rgba(20, 92, 74, 0.12);
+  z-index: 100;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+/* شريط التمرير */
+.cart-search-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cart-search-dropdown::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 6px;
+}
+
+/* حالة البحث / الفراغ */
+.cart-search-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 20px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.cart-search-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--secondary-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: cartSearchSpin 0.7s linear infinite;
+}
+
+@keyframes cartSearchSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* صف نتيجة */
+.cart-search-result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  font-family: inherit;
+  text-align: left;
+}
+
+.cart-search-result:hover {
+  background: var(--gray-50);
+}
+
+.cart-search-result-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: var(--gray-50);
+  flex-shrink: 0;
+  padding: 4px;
+}
+
+.cart-search-result-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  /* ← ضروري لـ ellipsis */
+}
+
+.cart-search-result-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cart-search-result-price {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.cart-search-result-add {
+  font-size: 24px;
+  color: var(--primary-color);
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.cart-search-result:hover .cart-search-result-add {
+  transform: scale(1.15);
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
   .cart-layout {
@@ -244,28 +397,107 @@
 }
 
 @media (max-width: 640px) {
-  .cart-title {
-    font-size: 26px;
+  .cart-page {
+    background: var(--bg-color);
   }
 
   .cart-main {
-    padding: 24px 16px 40px;
+    padding: 16px 12px 32px;
   }
 
+  /* ✅ العنوان — مسافة أقل */
+  .cart-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+    letter-spacing: -0.3px;
+  }
+
+  /* ✅ Search — مسافات مضغوطة */
+  .cart-search-wrapper {
+    margin-bottom: 24px;
+    padding: 0 4px;
+  }
+
+  .cart-search-text {
+    font-size: 13px;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .cart-search {
+    max-width: 100%;
+  }
+
+  .cart-search input {
+    padding: 12px 16px;
+    font-size: 15px;
+  }
+
+  /* ✅ بطاقة الفئات */
   .cart-products-col {
-    padding: 18px;
+    padding: 16px 14px;
+    border-radius: 12px;
+  }
+
+  /* ✅ رأس القسم — إخفاء UNIT PRICE/TOTAL */
+  .cart-category-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .cart-category-cols {
-    gap: 20px;
-    font-size: 12px;
+    display: none;
+    /* ← لا معنى لها على الموبايل */
   }
 
   .cart-category-name {
     font-size: 17px;
+    font-weight: 800;
+    color: var(--primary-color);
+  }
+
+  .cart-category-group {
+    margin-bottom: 24px;
+  }
+
+  .cart-delivery-info {
+    padding-bottom: 14px;
+    margin-bottom: 16px;
   }
 
   .cart-delivery-info h3 {
-    font-size: 19px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  /* ✅ أزرار الأسفل */
+  .cart-bottom-actions {
+    padding-top: 18px;
+    margin-top: 18px;
+  }
+
+  .cart-back-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+
+  /* ✅ Empty state */
+  .cart-empty {
+    padding: 60px 20px;
+  }
+
+  .cart-empty-title {
+    font-size: 20px;
+  }
+
+  .cart-empty-btn {
+    width: 100%;
+    text-align: center;
+    padding: 12px 24px;
   }
 }

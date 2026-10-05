@@ -1,11 +1,14 @@
+/* ============================================
+   🛒 CART HEADER — Dark Green (matches main header)
+   ============================================ */
 .cart-header {
-  background: #fff;
-  border-bottom: 1px solid var(--secondary-color);
-  padding: 16px 40px;
+  background-color: var(--primary-color);
+  border-bottom: 3px solid var(--neon-green);
+  padding: 12px 40px;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .cart-header-inner {
@@ -17,14 +20,16 @@
   gap: 24px;
 }
 
-/* ===== Left: Logo ===== */
+/* ============================================
+   Left — Logo
+   ============================================ */
 .cart-header-logo {
   justify-self: start;
   display: flex;
   align-items: center;
   gap: 12px;
   text-decoration: none;
-  color: var(--text);
+  color: var(--cream);
 }
 
 .cart-header-logo-img {
@@ -32,17 +37,21 @@
   height: 48px;
   object-fit: contain;
   border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px;
 }
 
 .cart-header-brand {
   font-size: 26px;
-  /* ✅ من 22 إلى 26 */
   font-weight: 800;
-  color: var(--primary-color);
+  color: var(--cream);
   letter-spacing: -0.5px;
+  white-space: nowrap;
 }
 
-/* ===== Center: Steps ===== */
+/* ============================================
+   Center — Steps
+   ============================================ */
 .cart-header-steps {
   justify-self: center;
   display: flex;
@@ -51,8 +60,6 @@
   width: 100%;
   max-width: 780px;
   gap: 40px;
-
-  /* ✅ من 780 إلى 700 (أقرب لبعضها) */
 }
 
 .cart-header-step {
@@ -67,8 +74,8 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--secondary-color);
-  color: var(--text);
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--cream);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,24 +84,28 @@
   margin-bottom: 8px;
   z-index: 2;
   position: relative;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+}
+
+.cart-header-circle .material-symbols-outlined {
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .cart-header-circle.active {
-  background: var(--primary-color);
-  color: #fff;
-  box-shadow: 0 0 0 5px rgba(20, 92, 74, 0.15);
+  background: var(--neon-green);
+  color: var(--primary-color);
+  box-shadow: 0 0 0 5px rgba(75, 180, 41, 0.25);
 }
 
 .cart-header-circle.past {
-  background: var(--success);
-  color: #fff;
+  background: var(--neon-green);
+  color: var(--primary-color);
 }
 
 .cart-header-step-label {
   font-size: 14px;
-  /* ✅ من 11 إلى 14 */
-  color: #6b7a77;
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
   text-align: center;
   white-space: nowrap;
@@ -102,7 +113,7 @@
 }
 
 .cart-header-step-label.active {
-  color: var(--primary-color);
+  color: var(--cream);
   font-weight: 700;
   font-size: 14.5px;
 }
@@ -112,47 +123,82 @@
   top: 19px;
   left: calc(50% + 24px);
   width: calc(100% - 8px);
-  /* ✅ يمتد حتى ما قبل الدائرة التالية (تعديل جوهري) */
   height: 2px;
-  background: var(--secondary-color);
+  background: rgba(255, 255, 255, 0.15);
   z-index: 0;
   border-radius: 2px;
 }
 
 .cart-header-step.past-step .cart-header-step-line {
-  background: var(--success);
-}
-.cart-header-left-container{
-  display: flex;
-  flex-direction: row;
-  justify-content: end;
-  gap: 1rem;
+  background: var(--neon-green);
 }
 
-/* ===== Right: Secure ===== */
-.cart-header-secure {
+/* ============================================
+   Right — Secure + Back
+   ============================================ */
+.cart-header-left-container {
   justify-self: end;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+.cart-header-secure {
   display: flex;
   align-items: center;
   gap: 8px;
   color: var(--primary-color);
-  font-size: 15px;
-  /* ✅ من 13 إلى 15 */
+  font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
   padding: 10px 18px;
-  background: var(--secondary-color);
+  background: var(--cream);
   border-radius: 22px;
 }
 
-.cart-header-secure svg {
-  width: 18px;
-  height: 18px;
+.cart-header-secure .material-symbols-outlined {
+  font-size: 18px;
   color: var(--primary-color);
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 1024px) {
+.cart-header-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--cream);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 22px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cart-header-back-btn .material-symbols-outlined {
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+.cart-header-back-btn:hover {
+  background: var(--cream);
+  color: var(--primary-color);
+  border-color: var(--cream);
+}
+
+.cart-header-back-btn:hover .material-symbols-outlined {
+  transform: translateX(-3px);
+}
+
+/* ============================================
+   📱 Tablet (≤ 1024px)
+   ============================================ */
+@media (max-width: 64rem) {
   .cart-header {
     padding: 14px 20px;
   }
@@ -163,6 +209,7 @@
 
   .cart-header-steps {
     max-width: 550px;
+    gap: 24px;
   }
 
   .cart-header-step-label {
@@ -180,47 +227,151 @@
     left: calc(50% + 17px);
     width: calc(100% - 34px);
   }
-}
 
-@media (max-width: 768px) {
-  .cart-header-inner {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .cart-header-steps {
-    order: 3;
-    width: 100%;
-    max-width: 100%;
-    margin-top: 10px;
-  }
-
-  .cart-header-secure span {
+  .cart-header-secure span:not(.material-symbols-outlined) {
     display: none;
   }
 
   .cart-header-secure {
-    padding: 10px 12px;
+    padding: 10px;
     border-radius: 50%;
-    margin-left: auto;
   }
 }
 
-@media (max-width: 480px) {
-  .cart-header-circle {
-    width: 28px;
-    height: 28px;
-    font-size: 12px;
+/* ============================================
+   📱 Small Tablet (≤ 768px)
+   ============================================ */
+@media (max-width: 48rem) {
+  .cart-header {
+    padding: 12px 16px;
   }
 
-  .cart-header-step-line {
-    top: 14px;
-    left: calc(50% + 14px);
-    width: calc(100% - 28px);
+  .cart-header-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  /* Logo + Actions في صف واحد */
+  .cart-header-logo {
+    order: 1;
+    justify-content: flex-start;
+  }
+
+  .cart-header-logo-img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .cart-header-brand {
+    display: block;
+    font-size: 20px;
+  }
+
+  /* Steps في صف مستقل */
+  .cart-header-steps {
+    order: 2;
+    max-width: 100%;
+    gap: 4px;
+    padding: 0 4px;
+  }
+
+  .cart-header-circle {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .cart-header-circle .material-symbols-outlined {
+    font-size: 16px;
   }
 
   .cart-header-step-label {
-    font-size: 10px;
+    font-size: 9.5px;
+    line-height: 1.2;
+    white-space: normal;
+    letter-spacing: 0;
+  }
+
+  .cart-header-step-line {
+    top: 15px;
+    left: calc(50% + 15px);
+    width: calc(100% - 30px);
+  }
+
+  /* Secure + Back في صف مستقل */
+  .cart-header-left-container {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .cart-header-secure {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .cart-header-secure span:not(.material-symbols-outlined) {
+    display: inline;
+  }
+
+  .cart-header-back-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
+/* ============================================
+   📱 Mobile (≤ 480px)
+   ============================================ */
+@media (max-width: 30rem) {
+  .cart-header {
+    padding: 10px 12px;
+  }
+
+  .cart-header-logo-img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .cart-header-brand {
+    font-size: 18px;
+  }
+
+  .cart-header-circle {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+  }
+
+  .cart-header-circle .material-symbols-outlined {
+    font-size: 14px;
+  }
+
+  .cart-header-step-line {
+    top: 13px;
+    left: calc(50% + 13px);
+    width: calc(100% - 26px);
+  }
+
+  .cart-header-step-label {
+    font-size: 8.5px;
+  }
+
+  .cart-header-secure {
+    padding: 6px 10px;
+  }
+
+  .cart-header-secure span:not(.material-symbols-outlined) {
+    display: none;
+  }
+
+  .cart-header-back-btn {
+    padding: 6px 12px;
+    font-size: 12px;
   }
 }

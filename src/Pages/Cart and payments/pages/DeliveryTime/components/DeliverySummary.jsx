@@ -1,4 +1,6 @@
 import "./DeliverySummary.css";
+import { useMemo } from "react";
+import { useShippingSettings } from "../../../../../context/ShippingSettingsContext";
 
 export default function DeliverySummary({
     checkoutData,
@@ -7,13 +9,29 @@ export default function DeliverySummary({
     cartItems,
     totalPrice,
 }) {
+    const { settings } = useShippingSettings();
+    const duration = settings.minDurationHours || 2;
+
     const shipping = checkoutData?.shippingDetails?.totalShipping || 0;
-    const tax = totalPrice * 0.07;
-    const total = totalPrice + shipping + tax;
+    const total = totalPrice + shipping;
+
+    /* ═══ 24h format ═══ */
+    const formatTime = (timeStr) => {
+        if (!timeStr) return "—";
+        const [h, m] = timeStr.split(":");
+        return `${String(h).padStart(2, "0")}:${m || "00"} Uhr`;
+    };
+
+    const calculateEndTime = () => {
+        if (!selectedTime) return "—";
+        const [h] = selectedTime.split(":");
+        const endHour = (parseInt(h, 10) + duration) % 24;
+        return `${String(endHour).padStart(2, "0")}:00 Uhr`;
+    };
 
     const formatDate = (dateStr) => {
         if (!dateStr) return "—";
-        const date = new Date(dateStr);
+        const date = new Date(`${dateStr}T00:00:00`);
         return date.toLocaleDateString("de-DE", {
             weekday: "long",
             year: "numeric",
@@ -22,20 +40,22 @@ export default function DeliverySummary({
         });
     };
 
-    const formatTime = (timeStr) => {
-        if (!timeStr) return "—";
-        const [h] = timeStr.split(":");
-        const hour = parseInt(h, 10);
-        const ampm = hour >= 12 ? "PM" : "AM";
-        const hour12 = hour % 12 || 12;
-        return `${hour12}:00 ${ampm}`;
+    /* ═══ الكمية مع الوحدة ═══ */
+    const formatQty = (item) => {
+        const unit = String(item.weight_unit || "").toLowerCase();
+        const isWeightUnit = ["kg", "g", "l", "ml"].includes(unit);
+        const weight = parseFloat(item.weight);
+
+        if (isWeightUnit && weight > 0 && weight !== item.quantity) {
+            return `${item.quantity} × ${weight} ${item.weight_unit}`;
+        }
+        return `${item.quantity} ${item.weight_unit || "Stk"}`;
     };
 
-    const calculateEndTime = () => {
-        if (!selectedTime) return "—";
-        const [h] = selectedTime.split(":");
-        const endHour = parseInt(h, 10) + 2;
-        return formatTime(`${String(endHour).padStart(2, "0")}:00`);
+    /* ═══ سعر الوحدة ═══ */
+    const getUnitPrice = (item) => {
+        const total = parseFloat(item.total_price || item.price) || 0;
+        return total / (item.quantity || 1);
     };
 
     return (
@@ -45,7 +65,7 @@ export default function DeliverySummary({
                 Übersicht
             </h3>
 
-            {/* Delivery Date */}
+            {/* ═══ Liefertermin ═══ */}
             <div className="dsum-block">
                 <div className="dsum-block-header">
                     <span className="material-symbols-outlined">event</span>
@@ -63,7 +83,7 @@ export default function DeliverySummary({
                 )}
             </div>
 
-            {/* Address */}
+            {/* ═══ Lieferadresse ═══ */}
             <div className="dsum-block">
                 <div className="dsum-block-header">
                     <span className="material-symbols-outlined">location_on</span>
@@ -76,7 +96,7 @@ export default function DeliverySummary({
                     <span>
                         {checkoutData?.postalCode} {checkoutData?.city}
                     </span>
-                    {checkoutData?.floor && (
+                    {checkoutData?.floor !== "" && (
                         <span className="dsum-detail">
                             Etage {checkoutData.floor}
                             {checkoutData.hasElevator === "yes" && " (Aufzug)"}
@@ -85,15 +105,38 @@ export default function DeliverySummary({
                 </div>
             </div>
 
-            {/* Items Count */}
+            {/* ═══ Produkte (تفصيل) ═══ */}
             <div className="dsum-block">
                 <div className="dsum-block-header">
                     <span className="material-symbols-outlined">shopping_bag</span>
                     <span>Produkte ({cartItems.length})</span>
                 </div>
+
+                <ul className="dsum-items">
+                    {cartItems.map((item) => {
+                        const unitPrice = getUnitPrice(item);
+                        const lineTotal = unitPrice * item.quantity;
+
+                        return (
+                            <li key={item.id} className="dsum-item">
+                                <div className="dsum-item-info">
+                                    <span className="dsum-item-name">
+                                        {item.name}
+                                    </span>
+                                    <span className="dsum-item-meta">
+                                        {formatQty(item)} × €{unitPrice.toFixed(2)}
+                                    </span>
+                                </div>
+                                <span className="dsum-item-price">
+                                    €{lineTotal.toFixed(2)}
+                                </span>
+                            </li>
+                        );
+                    })}
+                </ul>
             </div>
 
-            {/* Totals */}
+            {/* ═══ Totals ═══ */}
             <div className="dsum-totals">
                 <div className="dsum-row">
                     <span>Zwischensumme</span>
@@ -103,17 +146,14 @@ export default function DeliverySummary({
                     <span>Versand</span>
                     <span>€{shipping.toFixed(2)}</span>
                 </div>
-                <div className="dsum-row">
-                    <span>MwSt. (7%)</span>
-                    <span>€{tax.toFixed(2)}</span>
-                </div>
+
                 <div className="dsum-row dsum-total">
-                    <span>Gesamt</span>
+                    <span>Gesamt (inkl. MwSt.)</span>
                     <strong>€{total.toFixed(2)}</strong>
                 </div>
             </div>
 
-            {/* Note */}
+            {/* ═══ Note ═══ */}
             <div className="dsum-note">
                 <span className="material-symbols-outlined">info</span>
                 <p>

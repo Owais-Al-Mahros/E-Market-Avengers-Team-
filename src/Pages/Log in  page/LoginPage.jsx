@@ -4,182 +4,153 @@ import { toast } from "react-hot-toast";
 import "./LoginPage.css";
 import { supabase } from "../../lib/supabase.js";
 
-function LoginPage({ setIsAdmin }) {
+export default function LoginPage({ setIsAdmin }) {
   const navigate = useNavigate();
 
-  const [adminInfo, setAdminInfo] = useState({ name: "", password: "" });
-  const [showpassword, setShowpassword] = useState(false);
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (event) => {
-    const { id, value } = event.target;
-    setAdminInfo((prevState) => ({
-      ...prevState,
-      [id]: value,
-    }));
+    const { name, value } = event.target;
+    setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: adminInfo.name,
-      password: adminInfo.password,
-    });
+    try {
+      // ══════════════════════════════════════════════
+      // 1. تسجيل الدخول
+      // ══════════════════════════════════════════════
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: credentials.email.trim().toLowerCase(),
+        password: credentials.password,
+      });
 
-    if (error) {
-      toast.error(`Login failed: ${error.message}`);
-      setAdminInfo({ name: "", password: "" });
-      setIsLoading(false);
-      return;
-    }
+      if (error) {
+        toast.error("Invalid email or password.");
+        setCredentials({ email: "", password: "" });
+        return;
+      }
 
-    const user = data.user;
+      // ══════════════════════════════════════════════
+      // 2. تأكيد الإيميل
+      // ══════════════════════════════════════════════
+      if (!data.user?.email_confirmed_at) {
+        toast.error("Please confirm your email first.");
+        await supabase.auth.signOut();
+        return;
+      }
 
-    const { data: profileData, error: profileError } = await supabase
-      .from("profiles")
-      .select("is_admin, email, name, image")
-      .eq("id", user.id)
-      .single();
+      // ══════════════════════════════════════════════
+      // 3. جلب البروفايل الكامل
+      // ══════════════════════════════════════════════
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("is_admin, role, is_active")
+        .eq("id", data.user.id)
+        .single();
 
-    if (profileError || !profileData) {
-      toast.error("Your account is not fully set up. Please contact support.");
+      if (profileError || !profile) {
+        toast.error("Access denied.");
+        await supabase.auth.signOut();
+        return;
+      }
+
+      // ══════════════════════════════════════════════
+      // 4. فحص الحساب المعطّل
+      // ══════════════════════════════════════════════
+      if (profile.is_active === false) {
+        toast.error("Ihr Konto ist deaktiviert.");
+        await supabase.auth.signOut();
+        return;
+      }
+
+      // ══════════════════════════════════════════════
+      // 5. التوجيه حسب الدور (مرة واحدة فقط!)
+      // ══════════════════════════════════════════════
+      if (profile.is_admin) {
+        toast.success("Login successful");
+        setIsAdmin(true);
+        navigate("/dashboard", { replace: true });
+      } else if (profile.role === "driver") {
+        toast.success("Willkommen, Fahrer!");
+        navigate("/driver", { replace: true });
+      } else {
+        toast.error("Access denied.");
+        await supabase.auth.signOut();
+        setCredentials({ email: "", password: "" });
+      }
+    } catch (err) {
+      console.error("Login error:", err?.message || err);
+      toast.error("Something went wrong. Please try again.");
       await supabase.auth.signOut();
-      setIsLoading(false);
-      return;
-    }
-
-    if (profileData.is_admin === true) {
-      toast.success("Login successful");
-      setIsAdmin(true);
-      setIsLoading(false);
-      navigate("/dashboard");
-    } else {
-      toast.error("Access denied. You are not an admin.");
-      await supabase.auth.signOut();
-      setAdminInfo({ name: "", password: "" });
+    } finally {
       setIsLoading(false);
     }
   };
 
   return (
     <div className="login-container">
-      {/* 🌿 قسم النصوص الترحيبية المعروض فوق الصورة */}
-      <div className="login-info">
-        <h1 className="welcome-title">Welcome Back! 🌿</h1>
-        <p className="welcome-desc">
-          Log in to your account and continue shopping fresh and healthy products.
-        </p>
+      <div className="login-card">
+        <h2>Login</h2>
 
-        <div className="features-list">
-          <div className="feature-item">
-            <span className="feature-icon">🚚</span>
-            <div>
-              <h3>Fast Delivery</h3>
-              <p>Get your order at your doorstep</p>
-            </div>
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={credentials.email}
+              onChange={handleChange}
+              placeholder="admin@shopora.com"
+              disabled={isLoading}
+              autoComplete="email"
+              autoFocus
+              required
+            />
           </div>
 
-          <div className="feature-item">
-            <span className="feature-icon">🛡️</span>
-            <div>
-              <h3>Secure Payments</h3>
-              <p>100% safe and trusted</p>
-            </div>
-          </div>
-
-          <div className="feature-item">
-            <span className="feature-icon">🥦</span>
-            <div>
-              <h3>Best Quality</h3>
-              <p>Fresh & quality products</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 💳 كارت تسجيل الدخول */}
-      <div className="login-card-wrapper">
-        <div className="login-card">
-          <h2>Login</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="input-group">
-              <label htmlFor="name">👤 Enter your Email: </label>
+          <div className="input-group">
+            <label htmlFor="password">Password</label>
+            <div className="password-fields">
               <input
-                id="name"
-                type="email"
-                value={adminInfo.name}
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={credentials.password}
                 onChange={handleChange}
-                placeholder="Your email"
+                placeholder="Enter your password"
                 disabled={isLoading}
+                autoComplete="current-password"
                 required
               />
-            </div>
-            <div className="input-group">
-              <label htmlFor="password">🔒 Enter your password</label>
-              <div className="password-fields">
-                <input
-                  id="password"
-                  type={showpassword ? "text" : "password"}
-                  value={adminInfo.password}
-                  onChange={handleChange}
-                  placeholder="Enter your password"
-                  disabled={isLoading}
-                  required
-                />
-                {adminInfo.password.length > 0 && (
-                  <button
-                    className="password-field-btn"
-                    type="button"
-                    onMouseLeave={() => setShowpassword(false)}
-                    onMouseDown={() => setShowpassword(true)}
-                    onMouseUp={() => setShowpassword(false)}
-                  >
-                    {showpassword ? "✋" : "✍"}
-                  </button>
-                )}
-              </div>
-            </div>
-            <button type="submit" className="login-btn" disabled={isLoading}>
-              {isLoading ? "Loading..." : "Enter"}
-            </button>
-          </form>
-          <div className="login-footer">
-            <div className="forgot-password">
-              <span>Forgot your password? </span>
-              <a href="mailto:support@namecompany.com">Contact Support</a>
-            </div>
-            <div className="signup-link">
-              <span>Don't have an account? </span>
-              <a href="/signup">Sign Up</a>
-            </div>
-            <div className="copyright">
-              <span>© 2024 E-Market. All rights reserved.</span>
+              {credentials.password.length > 0 && (
+                <button
+                  type="button"
+                  className="password-field-btn"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  tabIndex={-1}
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </button>
+              )}
             </div>
           </div>
-        </div>
 
-        {/* 🛡️ شريط الضمانات أسفل الكارت */}
-        <div className="trust-badges">
-          <div className="badge-item">
-            <span className="badge-icon">✅</span>
-            <span>Secure & Trusted</span>
-          </div>
-          <span className="badge-divider">|</span>
-          <div className="badge-item">
-            <span className="badge-icon">🔒</span>
-            <span>Your Data is Safe</span>
-          </div>
-          <span className="badge-divider">|</span>
-          <div className="badge-item">
-            <span className="badge-icon">🌿</span>
-            <span>Fresh Guarantee</span>
-          </div>
-        </div>
+          <button type="submit" className="login-btn" disabled={isLoading}>
+            {isLoading ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+
+        <p className="login-footer">
+          © {new Date().getFullYear()} Shopora. All rights reserved.
+        </p>
       </div>
     </div>
   );
 }
-
-export default LoginPage;

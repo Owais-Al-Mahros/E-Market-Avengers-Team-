@@ -1,0 +1,902 @@
+/* ==========================================
+   📊 ORDERS TABLE
+   ========================================== */
+
+.orders-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+/* ==========================================
+   🚗 DRIVER CELL
+   ========================================== */
+.driver-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 140px;
+}
+
+.driver-cell-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.driver-cell-head .material-symbols-outlined {
+    font-size: 18px;
+    color: var(--primary-color);
+    font-variation-settings: "FILL" 1;
+}
+
+.driver-cell-head strong {
+    font-weight: 800;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.driver-phone-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    border-radius: var(--radius-full);
+    font-size: 11.5px;
+    font-weight: 800;
+    text-decoration: none;
+    font-family: "Courier New", monospace;
+    transition: var(--transition-fast);
+    width: fit-content;
+}
+
+.driver-phone-btn:hover {
+    background: var(--primary-color);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.driver-phone-btn .material-symbols-outlined {
+    font-size: 14px;
+}
+
+.driver-phone-missing {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-style: italic;
+    font-weight: 600;
+}
+
+.driver-unassigned {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: rgba(245, 158, 11, 0.1);
+    color: #b45309;
+    border-radius: var(--radius-full);
+    font-size: 11.5px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.driver-unassigned .material-symbols-outlined {
+    font-size: 14px;
+}
+
+/* ==========================================
+   📱 Update Mobile nth-child (بعد إضافة عمود Fahrer)
+   ========================================== */
+@media (max-width: 48rem) {
+
+    /* Order # */
+    .orders-table td:nth-child(1) {
+        grid-column: 1 / 2;
+    }
+
+    .orders-table td:nth-child(1)::before {
+        content: "Bestellung";
+    }
+
+    /* Customer */
+    .orders-table td:nth-child(2) {
+        grid-column: 1 / -1;
+    }
+
+    .orders-table td:nth-child(2)::before {
+        content: "Kunde";
+    }
+
+    /* Address */
+    .orders-table td:nth-child(3) {
+        grid-column: 1 / -1;
+    }
+
+    .orders-table td:nth-child(3)::before {
+        content: "Adresse";
+    }
+
+    /* Driver — جديد */
+    .orders-table td:nth-child(4) {
+        grid-column: 1 / -1;
+        padding: var(--space-2) 0;
+        border-top: 1px dashed var(--secondary-color);
+        border-bottom: 1px dashed var(--secondary-color);
+    }
+
+    .orders-table td:nth-child(4)::before {
+        content: "🚗 Fahrer";
+        color: var(--primary-color);
+    }
+
+    /* Delivery — كان 4 الآن 5 */
+    .orders-table td.td-delivery {
+        grid-column: 1 / -1;
+    }
+
+    /* Weight — كان 5 الآن 6 */
+    .orders-table td:nth-child(6) {
+        grid-column: 1 / 2;
+    }
+
+    .orders-table td:nth-child(6)::before {
+        content: "Gewicht";
+    }
+
+    /* Total — كان 6 الآن 7 */
+    .orders-table td:nth-child(7) {
+        grid-column: 2 / 3;
+        align-items: flex-end;
+    }
+
+    .orders-table td:nth-child(7)::before {
+        content: "Gesamt";
+    }
+
+    /* Status — كان 7 الآن 8 */
+    .orders-table td:nth-child(8) {
+        grid-column: 2 / 3;
+        align-items: flex-end;
+    }
+
+    .orders-table td:nth-child(8)::before {
+        content: "Status";
+    }
+
+    /* Actions — كان 8 الآن 9 */
+    .orders-table td:nth-child(9) {
+        grid-column: 1 / -1;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   📋 Header + Refresh
+   ═══════════════════════════════════════════ */
+.orders-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.orders-header h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-extrabold);
+    color: var(--primary-color);
+}
+
+.orders-header h2 .material-symbols-outlined {
+    font-size: 26px;
+    color: var(--primary-color);
+}
+
+.btn-refresh {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    background: var(--neon-green);
+    color: var(--dark-green);
+    border: 2px solid var(--lime-mid);
+    border-radius: var(--radius-full);
+    font-family: inherit;
+    font-size: var(--font-sm);
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.btn-refresh:hover:not(:disabled) {
+    background: var(--hover-btn);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(182, 245, 0, 0.3);
+}
+
+.btn-refresh:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════
+   📋 Table
+   ═══════════════════════════════════════════ */
+.orders-table-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--secondary-color);
+    background: var(--admin-card-bg);
+    box-shadow: var(--shadow-sm);
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-base);
+    min-width: 1000px;
+}
+
+.orders-table thead {
+    background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
+}
+
+.orders-table th {
+    padding: 16px 14px;
+    text-align: left;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    font-size: var(--font-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* Header — Delivery column highlight */
+.orders-table th.th-delivery {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.orders-table td {
+    padding: 16px 14px;
+    border-bottom: 1px solid var(--secondary-color);
+    vertical-align: middle;
+    color: var(--text);
+}
+
+.orders-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.orders-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ═══════════════════════════════════════════
+   🎨 Row Status Backgrounds
+   ═══════════════════════════════════════════ */
+.order-row {
+    border-left: 4px solid transparent;
+}
+
+.order-row-pending {
+    background-color: var(--status-pending-bg);
+    border-left-color: var(--status-pending-border);
+}
+
+.order-row-confirmed {
+    background-color: var(--status-confirmed-bg);
+    border-left-color: var(--status-confirmed-border);
+}
+
+.order-row-shipped {
+    background-color: var(--status-shipped-bg);
+    border-left-color: var(--status-shipped-border);
+}
+
+.order-row-delivered {
+    background-color: var(--status-delivered-bg);
+    border-left-color: var(--status-delivered-border);
+}
+
+.order-row-cancelled {
+    background-color: var(--status-cancelled-bg);
+    border-left-color: var(--status-cancelled-border);
+}
+
+.order-row:hover {
+    filter: brightness(0.98);
+}
+
+/* ═══════════════════════════════════════════
+   📝 Cell Content
+   ═══════════════════════════════════════════ */
+.order-number-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+    text-align: left;
+}
+
+.order-number {
+    font-weight: 800;
+    color: var(--primary-color);
+    font-size: var(--font-base);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-family: "Courier New", monospace;
+    transition: var(--transition-fast);
+}
+
+.order-number-btn:hover .order-number {
+    color: var(--dark-green);
+}
+
+/* Customer */
+.customer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.customer-name {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.customer-email,
+.customer-phone {
+    font-size: var(--font-xs);
+    color: var(--secondary-text);
+}
+
+/* Address */
+.address-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--font-sm);
+}
+
+.address-info>span {
+    display: block;
+}
+
+.address-detail {
+    font-size: var(--font-xs);
+    color: var(--secondary-text);
+}
+
+/* ═══════════════════════════════════════════
+   🚚 Delivery Column — مميّز!
+   ═══════════════════════════════════════════ */
+.td-delivery {
+    background: rgba(20, 92, 74, 0.03) !important;
+    border-right: 2px dashed var(--secondary-color);
+    border-left: 2px dashed var(--secondary-color);
+}
+
+.delivery-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 140px;
+}
+
+.delivery-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 800;
+    color: var(--primary-color);
+    font-size: var(--font-base);
+}
+
+.delivery-date .material-symbols-outlined {
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+.delivery-date-value {
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+}
+
+.delivery-time {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--font-sm);
+    font-weight: 700;
+    color: var(--text);
+    font-family: "Courier New", monospace;
+}
+
+.delivery-time .material-symbols-outlined {
+    font-size: 16px;
+    color: var(--text-muted);
+}
+
+/* ═══ Urgency Badges ═══ */
+.delivery-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    width: fit-content;
+}
+
+.delivery-badge-overdue {
+    background: var(--status-cancelled-bg);
+    color: var(--status-cancelled-text);
+    border: 1px solid var(--status-cancelled-border);
+    animation: pulseDelivery 1.5s ease-in-out infinite;
+}
+
+.delivery-badge-today {
+    background: var(--status-pending-bg);
+    color: var(--status-pending-text);
+    border: 1px solid var(--status-pending-border);
+    animation: pulseDelivery 1.8s ease-in-out infinite;
+}
+
+.delivery-badge-tomorrow {
+    background: var(--status-confirmed-bg);
+    color: var(--status-confirmed-text);
+    border: 1px solid var(--status-confirmed-border);
+}
+
+.delivery-badge-soon {
+    background: var(--status-shipped-bg);
+    color: var(--status-shipped-text);
+    border: 1px solid var(--status-shipped-border);
+}
+
+.delivery-badge-later {
+    background: var(--gray-100);
+    color: var(--text-muted);
+    border: 1px solid var(--gray-300);
+}
+
+@keyframes pulseDelivery {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* Weight & Total */
+.order-weight {
+    font-weight: 600;
+    color: var(--secondary-text);
+}
+
+.order-total {
+    font-weight: 800;
+    color: var(--primary-color);
+    font-size: var(--font-md);
+    white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════
+   🏷️ Status Badges
+   ═══════════════════════════════════════════ */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-sm);
+    font-weight: 700;
+    text-transform: capitalize;
+    white-space: nowrap;
+    border: 2px solid transparent;
+}
+
+.status-badge::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-pending {
+    background: var(--status-pending-bg);
+    color: var(--status-pending-text);
+    border-color: var(--status-pending-border);
+}
+
+.status-pending::before {
+    background: var(--status-pending-border);
+}
+
+.status-confirmed {
+    background: var(--status-confirmed-bg);
+    color: var(--status-confirmed-text);
+    border-color: var(--status-confirmed-border);
+}
+
+.status-confirmed::before {
+    background: var(--status-confirmed-border);
+}
+
+.status-shipped {
+    background: var(--status-shipped-bg);
+    color: var(--status-shipped-text);
+    border-color: var(--status-shipped-border);
+}
+
+.status-shipped::before {
+    background: var(--status-shipped-border);
+}
+
+.status-delivered {
+    background: var(--status-delivered-bg);
+    color: var(--status-delivered-text);
+    border-color: var(--status-delivered-border);
+}
+
+.status-delivered::before {
+    background: var(--status-delivered-border);
+}
+
+.status-cancelled {
+    background: var(--status-cancelled-bg);
+    color: var(--status-cancelled-text);
+    border-color: var(--status-cancelled-border);
+}
+
+.status-cancelled::before {
+    background: var(--status-cancelled-border);
+}
+
+/* ═══════════════════════════════════════════
+   🎯 Action Buttons
+   ═══════════════════════════════════════════ */
+.actions-cell {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 14px;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: var(--font-sm);
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+
+.btn-action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn-action:not(:disabled):active {
+    transform: scale(0.95);
+}
+
+.btn-confirm {
+    background: var(--btn-confirm-bg);
+    color: var(--btn-confirm-text);
+    border-color: var(--btn-confirm-border);
+}
+
+.btn-confirm:hover {
+    background: var(--btn-confirm-hover);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-ship {
+    background: var(--btn-ship-gradient);
+    color: #fff;
+    box-shadow: var(--btn-ship-shadow);
+}
+
+.btn-ship:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.45);
+}
+
+.btn-deliver {
+    background: var(--btn-deliver-bg);
+    color: var(--btn-deliver-text);
+    border-color: var(--btn-deliver-border);
+}
+
+.btn-deliver:hover {
+    background: var(--btn-deliver-hover);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-cancel {
+    background: var(--btn-cancel-bg);
+    color: var(--btn-cancel-text);
+    border-color: var(--btn-cancel-border);
+}
+
+.btn-cancel:hover {
+    background: var(--btn-cancel-hover);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-undo {
+    background: var(--btn-undo-bg);
+    color: var(--btn-undo-text);
+    border-color: var(--btn-undo-bg);
+}
+
+.btn-undo:hover {
+    background: var(--btn-undo-hover);
+    transform: scale(1.02);
+}
+
+/* ═══════════════════════════════════════════
+   ⏳ Row Processing
+   ═══════════════════════════════════════════ */
+.row-processing {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    font-size: 16px;
+    animation: rowPulse 1s ease-in-out infinite;
+}
+
+@keyframes rowPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   🚫 Empty / Loading
+   ═══════════════════════════════════════════ */
+.empty-state,
+.loading-state {
+    padding: var(--space-8) var(--space-4);
+    text-align: center;
+    color: var(--secondary-text);
+}
+
+.empty-state .material-symbols-outlined {
+    display: block;
+    font-size: 56px;
+    color: var(--secondary-color);
+    margin-bottom: var(--space-3);
+}
+
+.empty-state p,
+.loading-state {
+    font-size: var(--font-lg);
+    margin: 0;
+}
+
+/* ==========================================
+   📱 MOBILE — Card View
+   ========================================== */
+@media (max-width: 48rem) {
+    .orders-header h2 {
+        font-size: var(--font-lg);
+    }
+
+    .orders-table-wrapper {
+        border: none;
+        background: transparent;
+        box-shadow: none;
+        overflow: visible;
+    }
+
+    .orders-table {
+        display: block;
+        min-width: 0;
+        font-size: var(--font-sm);
+    }
+
+    .orders-table thead {
+        display: none;
+    }
+
+    .orders-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+
+    /* ═══ Row → Card ═══ */
+    .orders-table tbody tr {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-2) var(--space-3);
+        padding: var(--space-4);
+        border-radius: var(--radius-md);
+        border-left-width: 5px;
+        box-shadow: var(--shadow-sm);
+        position: relative;
+    }
+
+    .orders-table tbody tr:hover {
+        filter: none;
+        box-shadow: var(--shadow-md);
+    }
+
+    .orders-table td {
+        padding: 0;
+        border: none;
+        background: transparent !important;
+        text-align: left !important;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    .orders-table td::before {
+        font-size: 9.5px;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+
+    /* ═══ ترتيب خلايا الكارد ═══ */
+    /* 1. Order # + Status */
+    .orders-table td:nth-child(1) {
+        grid-column: 1 / 2;
+    }
+
+    .orders-table td:nth-child(1)::before {
+        content: "Bestellung";
+    }
+
+    .orders-table td:nth-child(7) {
+        grid-column: 2 / 3;
+        align-items: flex-end;
+    }
+
+    .orders-table td:nth-child(7)::before {
+        content: "Status";
+    }
+
+    /* 2. Customer (full width) */
+    .orders-table td:nth-child(2) {
+        grid-column: 1 / -1;
+        padding: var(--space-2) 0;
+        border-top: 1px dashed var(--secondary-color);
+        border-bottom: 1px dashed var(--secondary-color);
+        margin: var(--space-1) 0;
+    }
+
+    .orders-table td:nth-child(2)::before {
+        content: "Kunde";
+    }
+
+    /* 3. Address (full width) */
+    .orders-table td:nth-child(3) {
+        grid-column: 1 / -1;
+    }
+
+    .orders-table td:nth-child(3)::before {
+        content: "Adresse";
+    }
+
+    /* 4. DELIVERY — مهم! full width، مميّز */
+    .orders-table td.td-delivery {
+        grid-column: 1 / -1;
+        background: rgba(20, 92, 74, 0.04) !important;
+        border: 2px solid var(--secondary-color) !important;
+        border-radius: var(--radius-md);
+        padding: var(--space-3) !important;
+        margin: var(--space-1) 0;
+    }
+
+    .orders-table td.td-delivery::before {
+        content: "🚚 Lieferung";
+        color: var(--primary-color);
+        font-size: 11px;
+    }
+
+    .delivery-info {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-3);
+        min-width: 0;
+    }
+
+    .delivery-date {
+        font-size: var(--font-md);
+    }
+
+    /* 5. Weight + Total */
+    .orders-table td:nth-child(5) {
+        grid-column: 1 / 2;
+    }
+
+    .orders-table td:nth-child(5)::before {
+        content: "Gewicht";
+    }
+
+    .orders-table td:nth-child(6) {
+        grid-column: 2 / 3;
+        align-items: flex-end;
+    }
+
+    .orders-table td:nth-child(6)::before {
+        content: "Gesamt";
+    }
+
+    /* 8. Actions (full width) */
+    .orders-table td:nth-child(8) {
+        grid-column: 1 / -1;
+        padding-top: var(--space-3) !important;
+        border-top: 1px dashed var(--secondary-color);
+        margin-top: var(--space-1);
+    }
+
+    .actions-cell {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .btn-action {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: var(--font-sm);
+    }
+
+    .customer-name {
+        font-size: var(--font-base);
+    }
+
+    .order-number {
+        font-size: var(--font-sm);
+    }
+
+    .order-total {
+        font-size: var(--font-base);
+    }
+}

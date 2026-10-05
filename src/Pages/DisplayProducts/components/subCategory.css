@@ -1,39 +1,48 @@
+/* ============================================
+   🏷️ SUBCATEGORY BAR
+   ============================================ */
 .subcategory-bar {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  align-items: center;
+  gap: 0.625rem;
   flex-wrap: wrap;
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
   padding: 4px 0;
 }
+
 .subcategories-group {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 0.625rem;
   flex: 1;
 }
+
+/* ============================================
+   Chip
+   ============================================ */
 .subcategories-chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
+  gap: 0.5rem;
+  padding: 0.625rem 1.125rem;
   background: #fff;
   border: 1.5px solid var(--secondary-color);
   border-radius: 30px;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--text);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
   white-space: nowrap;
 }
 
 .subcategories-chip:hover {
   border-color: var(--primary-color);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(20, 92, 74, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .subcategories-chip.active {
@@ -51,22 +60,29 @@
   object-fit: cover;
 }
 
-.sub-categories-display {
-  margin-inline-start: auto;
-}
-@media (max-width: 640px) {
+@media (max-width: 48rem) {
   .subcategory-bar {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    -webkit-overflow-scrolling: touch;
+    flex-direction: column;
+    /* ← عمودي */
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 12px;
+    overflow-x: visible;
+    /* ← ألغِ السكرول */
+    padding-bottom: 0;
   }
 
-  .subcategory-bar::-webkit-scrollbar {
-    display: none;
+  .subcategories-group {
+    flex-wrap: wrap;
+    /* ← يلف على سطر جديد */
+    width: 100%;
+    gap: 8px;
   }
 
-  .subcat-chip {
+  .subcategories-chip {
     flex-shrink: 0;
+    font-size: 0.8125rem;
+    padding: 8px 14px;
   }
+
 }

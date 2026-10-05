@@ -1,50 +1,42 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
-import CartHeader from "../Cart and payments/pages/ShoppingCart/components/CartHeader";
-import Footer from "../../Components/Footer";
-import OrderSearch from "./components/OrderSearch";
-import OrderStatusTracker from "./components/OrderStatusTracker";
-import OrderDetailsView from "./components/OrderDetailsView";
-import OrderActionsPanel from "./components/OrderActionsPanel";
-import AmendmentHistory from "./components/AmendmentHistory";
+import Header from "../../components/layout/Header";
+import Footer from "../../components/layout/Footer";
+import OrderSearch from "./components/search/OrderSearch";
+import OrderStatusTracker from "./components/status/OrderStatusTracker";
+import OrderDetailsView from "./components/details/OrderDetailsView";
+import OrderActionsPanel from "./components/actions/OrderActionsPanel";
+import AmendmentHistory from "./components/actions/AmendmentHistory";
+import { verifyOrderAccess } from "../../api/orders";
+import { saveLastOrder } from "../../lib/lastOrder";
+import toast from "react-hot-toast";
 import "./TrackOrder.css";
 
 export default function TrackOrder() {
     const location = useLocation();
+
     const [order, setOrder] = useState(null);
     const [justPaid, setJustPaid] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
     // ============================================
     // استقبال الحالة من BillAndPayment
     // ============================================
     useEffect(() => {
-        if (location.state?.justPaid) {
-            setJustPaid(true);
-        }
+        if (location.state?.justPaid) setJustPaid(true);
     }, [location.state]);
 
     // ============================================
     // عند العثور على الطلب
     // ============================================
-    const handleOrderFound = (foundOrder) => {
+    const handleOrderFound = useCallback((foundOrder) => {
         setOrder(foundOrder);
 
-        // ✅ حفظ آخر طلب في localStorage (ليعود إليه العميل لاحقاً)
-        try {
-            localStorage.setItem(
-                "lastTrackedOrder",
-                JSON.stringify({
-                    order_number: foundOrder.order_number,
-                    email: foundOrder.customer_info?.email,
-                    tracked_at: new Date().toISOString(),
-                })
-            );
-        } catch (err) {
-            console.warn("Failed to save last order:", err);
-        }
+        // ✅ حفظ آخر طلب (مصدر واحد)
+        saveLastOrder(foundOrder);
 
         window.scrollTo({ top: 0, behavior: "smooth" });
-    };
+    }, []);
 
     // ============================================
     // العودة إلى البحث
@@ -56,10 +48,41 @@ export default function TrackOrder() {
     };
 
     // ============================================
-    // إعادة تحميل الطلب (بعد إجراء)
+    // ✅ إعادة جلب الطلب (بعد إجراء إلغاء/تعديل/إرجاع)
     // ============================================
     const handleRefresh = async () => {
-        setOrder(null);
+        if (!order || refreshing) return;
+
+        const orderNumber = order.order_number;
+        const email = order.customer_info?.email;
+
+        if (!orderNumber || !email) {
+            // لا نستطيع إعادة الجلب — نعود للبحث
+            handleBackToSearch();
+            return;
+        }
+
+        setRefreshing(true);
+        const toastId = toast.loading("Bestellung wird aktualisiert...");
+
+        const result = await verifyOrderAccess(orderNumber, email);
+
+        if (!result.success) {
+            toast.error(result.error || "Aktualisierung fehlgeschlagen", {
+                id: toastId,
+            });
+            setRefreshing(false);
+            return;
+        }
+
+        // ✅ تحديث الطلب بالبيانات الجديدة
+        setOrder(result.order);
+        saveLastOrder(result.order);
+
+        toast.success("Bestellung aktualisiert", { id: toastId });
+        setRefreshing(false);
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     // ============================================
@@ -67,45 +90,58 @@ export default function TrackOrder() {
     // ============================================
     return (
         <div className="track-order-page">
-            <CartHeader currentStep={null} />
+            {/* ✅ Header الرئيسي بدل CartHeader */}
+            <Header />
 
             <main className="track-order-main">
                 {!order ? (
-                    /* ============ وضع البحث ============ */
                     <OrderSearch
                         onOrderFound={handleOrderFound}
-                        initialOrderNumber={location.state?.prefilledOrder?.order_number || ""}
-                        initialEmail={location.state?.prefilledOrder?.email || ""}
+                        initialOrderNumber={
+                            location.state?.prefilledOrder?.order_number || ""
+                        }
+                        initialEmail={
+                            location.state?.prefilledOrder?.email || ""
+                        }
                         autoSubmit={location.state?.autoSearch || false}
                     />
                 ) : (
-                    /* ============ وضع عرض الطلب ============ */
                     <div className="track-order-result">
-                        {/* ✅ رسالة نجاح الدفع (تظهر فقط بعد الدفع) */}
+                        {/* ✅ رسالة نجاح الدفع */}
                         {justPaid && (
                             <div className="track-order-success-banner">
-                                <span className="material-symbols-outlined">check_circle</span>
+                                <span className="material-symbols-outlined">
+                                    check_circle
+                                </span>
                                 <div>
-                                    <strong>Zahlung erfolgreich!</strong>
+                                    <strong>Bestellung erfolgreich übermittelt!</strong>
                                     <p>
-                                        Ihre Bestellung wurde erfolgreich aufgenommen und wird jetzt
-                                        bearbeitet.
+                                        Ihre Bestellung wurde erfolgreich aufgenommen und wird nun geprüft.
+                                        Der Betrag ist vorübergehend reserviert und wird erst nach der
+                                        Gewichtsbestätigung endgültig belastet.
                                     </p>
 
-                                    {/* ✅ عرض رقم الطلب */}
                                     <div className="track-order-number-display">
-                                        <span className="track-order-number-label">Ihre Bestellnummer:</span>
+                                        <span className="track-order-number-label">
+                                            Ihre Bestellnummer:
+                                        </span>
                                         <strong className="track-order-number-value">
                                             {order?.order_number}
                                         </strong>
                                     </div>
 
                                     <p className="track-order-success-hint">
-                                        <span className="material-symbols-outlined">bookmark</span>
+                                        <span className="material-symbols-outlined">
+                                            bookmark
+                                        </span>
                                         <span>
-                                            <strong>Bitte speichern Sie diese Nummer</strong> für die spätere
-                                            Sendungsverfolgung. Sie können jederzeit unter
-                                            <em> "Bestellung verfolgen" </em> zurückkehren.
+                                            <strong>
+                                                Bitte speichern Sie diese Nummer
+                                            </strong>{" "}
+                                            für die spätere Sendungsverfolgung. Sie können
+                                            jederzeit unter
+                                            <em> "Bestellung verfolgen" </em>{" "}
+                                            zurückkehren.
                                         </span>
                                     </p>
                                 </div>
@@ -116,6 +152,7 @@ export default function TrackOrder() {
                         <button
                             className="track-order-back-btn"
                             onClick={handleBackToSearch}
+                            disabled={refreshing}
                         >
                             <span className="material-symbols-outlined">arrow_back</span>
                             Andere Bestellung verfolgen
@@ -127,14 +164,16 @@ export default function TrackOrder() {
                             orderNumber={order.order_number}
                         />
 
-                        {/* تفاصيل الطلب */}
+                        {/* تفاصيل الطلب (الفاتورة) */}
                         <OrderDetailsView order={order} />
 
                         {/* لوحة الإجراءات */}
-                        <OrderActionsPanel order={order} onRefresh={handleRefresh} />
+                        <OrderActionsPanel
+                            order={order}
+                            onRefresh={handleRefresh}
+                        />
 
-                        {/* سجل التعديلات */}
-                        <AmendmentHistory orderId={order.id} />
+                        <AmendmentHistory amendments={order.amendments || []} />
                     </div>
                 )}
             </main>

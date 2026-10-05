@@ -1,0 +1,173 @@
+/* ==========================================
+   🃏 ADMIN PRODUCT CARD
+   ========================================== */
+
+.card-container-admin {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  width: 100%;
+  background-color: var(--cream);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.card-container-admin:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--lime-mid);
+}
+
+/* ===== Image ===== */
+.image-container-admin-dashboard {
+  position: relative;
+  width: 100%;
+  height: 8rem;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--cream);
+  flex-shrink: 0;
+}
+
+.image-admin-dashboard {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.card-container-admin:hover .image-admin-dashboard {
+  transform: scale(1.05);
+}
+
+/* ===== Title ===== */
+.title-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  width: 100%;
+  font-size: var(--font-base);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--dark-green);
+  text-transform: capitalize;
+}
+
+.title-admin>span:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title-admin>span:last-child {
+  font-size: var(--font-xs);
+  color: var(--mid-green);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.3px;
+}
+
+/* ===== Weight + Price ===== */
+.weight-admin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--mid-green);
+}
+
+.weight-admin .price {
+  font-size: var(--font-lg);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--primary-color);
+}
+
+/* ===== Actions ===== */
+.action-admin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: 0.6rem 1rem;
+  background-color: var(--danger-color);
+  color: #fff;
+  font-size: var(--font-sm);
+  font-weight: var(--font-weight-bold);
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-family: inherit;
+}
+
+.delete-button:hover {
+  background-color: #b91c1c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+}
+
+.delete-button:active {
+  transform: scale(0.95);
+}
+
+/* ==========================================
+   📱 MOBILE (max-width: 48rem = 768px)
+   ========================================== */
+@media (max-width: 48rem) {
+  .card-container-admin {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .image-container-admin-dashboard {
+    height: 6.5rem;
+  }
+
+  .title-admin {
+    font-size: var(--font-sm);
+  }
+
+  .weight-admin {
+    font-size: var(--font-xs);
+  }
+
+  .weight-admin .price {
+    font-size: var(--font-base);
+  }
+}
+
+/* ==========================================
+   📱 SMALL MOBILE (max-width: 30rem = 480px)
+   ========================================== */
+@media (max-width: 30rem) {
+  .image-container-admin-dashboard {
+    height: 5.5rem;
+  }
+
+  .title-admin>span:last-child {
+    display: none;
+    /* نخفي رقم المنتج على الشاشات الصغيرة */
+  }
+
+  .delete-button {
+    padding: 0.5rem 0.75rem;
+    font-size: var(--font-xs);
+  }
+}

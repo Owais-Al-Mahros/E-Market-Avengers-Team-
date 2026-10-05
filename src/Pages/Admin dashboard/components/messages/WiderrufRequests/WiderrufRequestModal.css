@@ -1,0 +1,297 @@
+/* ==========================================
+   📮 WITHDRAWAL REQUEST MODAL
+   ========================================== */
+
+.wfm-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--overlay-bg-strong);
+    backdrop-filter: var(--overlay-blur-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-overlay);
+    padding: var(--space-4);
+    animation: wfmFade 0.2s ease;
+}
+
+@keyframes wfmFade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.wfm-modal {
+    background: var(--admin-card-bg);
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 600px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+    animation: wfmSlide 0.25s ease;
+}
+
+@keyframes wfmSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ═══ Header ═══ */
+.wfm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
+    color: #fff;
+}
+
+.wfm-header h2 {
+    font-size: var(--font-lg);
+    font-weight: 800;
+    margin: 0 0 4px;
+    color: #fff;
+}
+
+.wfm-header p {
+    font-family: "Courier New", monospace;
+    font-size: var(--font-xs);
+    margin: 0;
+    color: var(--accent-color);
+}
+
+.wfm-close {
+    width: 34px;
+    height: 34px;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #fff;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.wfm-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: rotate(90deg);
+}
+
+.wfm-close .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* ═══ Body ═══ */
+.wfm-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    background: var(--bg-color);
+}
+
+.wfm-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--space-3) var(--space-4);
+    background: var(--admin-card-bg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--secondary-color);
+}
+
+.wfm-label {
+    font-size: var(--font-xs);
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.wfm-block strong {
+    font-size: var(--font-base);
+    font-weight: 700;
+    color: var(--text);
+}
+
+.wfm-sub {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+}
+
+.wfm-reason {
+    margin: 0;
+    font-size: var(--font-sm);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+.wfm-code {
+    font-family: "Courier New", monospace;
+    font-size: var(--font-xs);
+    color: var(--primary-color);
+    background: var(--secondary-color);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    word-break: break-all;
+}
+
+/* ═══ Items ═══ */
+.wfm-items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: var(--space-2);
+}
+
+.wfm-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: var(--space-3);
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--bg-color);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-sm);
+}
+
+.wfm-item-name {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.wfm-item-qty {
+    font-weight: 700;
+    color: var(--text-muted);
+    font-family: "Courier New", monospace;
+}
+
+.wfm-item-price {
+    font-weight: 800;
+    color: var(--primary-color);
+    white-space: nowrap;
+}
+
+/* ═══ Amount ═══ */
+.wfm-amount {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4) var(--space-5);
+    background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
+    border-radius: var(--radius-md);
+    color: #fff;
+}
+
+.wfm-amount span {
+    font-size: var(--font-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent-color);
+}
+
+.wfm-amount strong {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* ═══ Actions ═══ */
+.wfm-actions {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-top: 2px solid var(--secondary-color);
+    background: var(--admin-card-bg);
+}
+
+.wfm-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: var(--font-base);
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition-fast);
+}
+
+.wfm-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.wfm-btn .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.wfm-btn-reject {
+    background: var(--btn-cancel-bg);
+    color: var(--btn-cancel-text);
+    border: 1.5px solid var(--btn-cancel-border);
+}
+
+.wfm-btn-reject:hover:not(:disabled) {
+    background: var(--btn-cancel-hover);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.wfm-btn-approve {
+    background: linear-gradient(135deg, var(--success), var(--primary-color));
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(35, 139, 101, 0.3);
+}
+
+.wfm-btn-approve:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(35, 139, 101, 0.45);
+}
+
+/* ═══ Mobile ═══ */
+@media (max-width: 30rem) {
+    .wfm-overlay {
+        padding: 0;
+    }
+
+    .wfm-modal {
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .wfm-actions {
+        flex-direction: column-reverse;
+    }
+
+    .wfm-btn {
+        width: 100%;
+    }
+}

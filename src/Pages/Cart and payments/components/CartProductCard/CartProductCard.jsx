@@ -1,9 +1,9 @@
 import "./CartProductCard.css";
 
 export default function CartProductCard(props) {
-    const { id, name, image, qty, price, weight, weight_unit, increaseQty, decreaseQty, removeFromCart } = props;
+    const { id, name, image, qty, price, weight, total_price, weight_unit, increaseQty, decreaseQty, removeFromCart } = props;
 
-    const unitPrice = parseFloat(price) || 0;
+    const unitPrice = parseFloat(total_price) || parseFloat(price) || 0;
     const totalPrice = unitPrice * qty;
     const itemWeight = parseFloat(weight) || 0;
     const totalWeight = itemWeight * qty;

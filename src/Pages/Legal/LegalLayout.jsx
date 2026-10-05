@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import CartHeader from "../Cart and payments/pages/ShoppingCart/components/CartHeader";
-import Footer from "../../Components/Footer";
+import Footer from "../../components/layout/Footer";
 import "./LegalLayout.css";
 
 const LEGAL_PAGES = [

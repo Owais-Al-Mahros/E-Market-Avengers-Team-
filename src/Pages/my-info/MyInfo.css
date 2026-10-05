@@ -1,0 +1,389 @@
+/* ==========================================
+   👤 MY INFO PAGE
+   ========================================== */
+
+/* ============================================
+   Back Button
+   ============================================ */
+.myinfo-back {
+  padding: var(--space-4) var(--space-6) 0;
+}
+
+.myinfo-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.myinfo-back-btn:hover {
+  background: var(--dark-green);
+  transform: translateY(-1px);
+}
+
+.myinfo-back-btn .material-symbols-outlined {
+  font-size: 1.125rem;
+}
+
+/* ============================================
+   Page Container
+   ============================================ */
+.myinfo-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 70vh;
+  padding: var(--space-6) var(--space-4) var(--space-8);
+  background: var(--bg-color);
+  box-sizing: border-box;
+}
+
+/* ============================================
+   Profile Card
+   ============================================ */
+.profile-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 44rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-card h2 {
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: var(--space-3);
+  margin: 0 0 var(--space-3);
+  color: var(--primary-color);
+  font-size: 1.75rem;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: -0.3px;
+}
+
+.profile-subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin: 0 0 var(--space-6);
+  line-height: 1.5;
+}
+
+/* ============================================
+   Sections
+   ============================================ */
+.profile-section {
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.profile-section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.profile-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin: 0 0 var(--space-4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.profile-section-title .material-symbols-outlined {
+  font-size: 1.375rem;
+  background: var(--secondary-color);
+  padding: 6px;
+  border-radius: 50%;
+  color: var(--primary-color);
+}
+
+/* ============================================
+   Info Grid (2 columns)
+   ============================================ */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+/* ============================================
+   🎯 Form Group — بطاقة قراءة / حقل إدخال
+   ============================================ */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* ✅ الـ label — صغير، كابيتال، هادئ */
+.form-group label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  font-weight: 800;
+  padding-left: 2px;
+}
+
+/* ===== الحقل الأساسي ===== */
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 13px 15px;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  border-radius: 10px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+}
+
+/* ============================================
+   🔒 Disabled State — بطاقة قراءة أنيقة
+   ============================================ */
+.form-group input:disabled,
+.form-group select:disabled {
+  background: linear-gradient(135deg,
+      var(--secondary-color) 0%,
+      rgba(221, 244, 234, 0.4) 100%);
+  border: 1px solid rgba(20, 92, 74, 0.1);
+  border-left: 4px solid var(--primary-color);
+  color: var(--text);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: default;
+  opacity: 1;
+  -webkit-text-fill-color: var(--text);
+  /* Safari */
+}
+
+/* القيمة الفارغة — "Not set" */
+.form-group input:disabled::placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+  font-weight: 500;
+  -webkit-text-fill-color: var(--text-muted);
+  opacity: 0.8;
+}
+
+/* ============================================
+   ✏️ Editable State — حقل إدخال حقيقي
+   ============================================ */
+.form-group input:not(:disabled),
+.form-group select:not(:disabled) {
+  background: #fff;
+  border: 2px solid var(--primary-color);
+  color: var(--text);
+  box-shadow: 0 0 0 4px rgba(20, 92, 74, 0.08);
+}
+
+.form-group input:not(:disabled):focus,
+.form-group select:not(:disabled):focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 4px rgba(185, 231, 105, 0.3);
+}
+
+/* ============================================
+   Actions
+   ============================================ */
+.profile-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  padding: 16px 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  width: 100%;
+  transition: var(--transition-fast);
+}
+
+.edit-btn:hover {
+  background: var(--dark-green);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(20, 92, 74, 0.2);
+}
+
+.edit-btn .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+.save-btn {
+  flex: 1;
+  background: var(--success);
+  color: #fff;
+  border: none;
+  padding: 16px 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: var(--transition-fast);
+}
+
+.save-btn:hover {
+  background: var(--hover-btn);
+  color: var(--dark-green);
+}
+
+.cancel-btn {
+  flex: 1;
+  background: transparent;
+  color: var(--danger-color);
+  border: 2px solid var(--danger-color);
+  padding: 14px 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: var(--transition-fast);
+}
+
+.cancel-btn:hover {
+  background: var(--danger-light);
+}
+
+/* ============================================
+   📱 Tablet (≤ 768px)
+   ============================================ */
+@media (max-width: 48rem) {
+  .myinfo-back {
+    padding: var(--space-4) var(--space-4) 0;
+  }
+
+  .myinfo-page {
+    padding: var(--space-4) var(--space-3) var(--space-6);
+  }
+
+  .profile-card {
+    padding: var(--space-5) var(--space-4);
+    border-radius: var(--radius-md);
+  }
+
+  .profile-card h2 {
+    font-size: 1.5rem;
+  }
+
+  .profile-subtitle {
+    font-size: 0.8125rem;
+    margin-bottom: var(--space-5);
+  }
+
+  .profile-section {
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-3);
+  }
+
+  .profile-section-title {
+    font-size: 0.875rem;
+    gap: 6px;
+  }
+
+  .profile-section-title .material-symbols-outlined {
+    font-size: 1.125rem;
+    padding: 4px;
+  }
+
+  /* ✅ عمودان → عمود واحد */
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  /* ✅ الحقول أقصر على الجوال */
+  .form-group input,
+  .form-group select {
+    padding: 12px 14px;
+    font-size: 0.9375rem;
+  }
+
+  .profile-actions {
+    flex-direction: column-reverse;
+  }
+
+  .edit-btn,
+  .save-btn,
+  .cancel-btn {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 0.9375rem;
+  }
+}
+
+/* ============================================
+   📱 Small Mobile (≤ 480px)
+   ============================================ */
+@media (max-width: 30rem) {
+  .myinfo-page {
+    padding: var(--space-3) var(--space-2) var(--space-5);
+  }
+
+  .profile-card {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .profile-card h2 {
+    font-size: 1.375rem;
+    padding-bottom: var(--space-2);
+  }
+
+  .profile-subtitle {
+    font-size: 0.78125rem;
+  }
+
+  .profile-section-title {
+    font-size: 0.8125rem;
+    letter-spacing: 0.3px;
+  }
+
+  .form-group label {
+    font-size: 0.625rem;
+    letter-spacing: 0.6px;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 11px 13px;
+    font-size: 0.9rem;
+  }
+
+  .form-group input:disabled,
+  .form-group select:disabled {
+    border-left-width: 3px;
+  }
+}

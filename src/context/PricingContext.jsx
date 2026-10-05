@@ -1,145 +1,85 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { supabase } from "../lib/supabase";
+import { createContext, useContext } from "react";
+import { useSupabaseSingleton } from "../hooks/useSupabaseSingleton";
 
 const PricingContext = createContext();
 
+// ============================================
+// Mappers — التحويل بين DB والواجهة
+// ============================================
+const DEFAULT_PRICING = {
+    baseLatitude: 52.52,
+    baseLongitude: 13.405,
+    baseStreet: "",
+    baseHouseNumber: "",
+    basePostalCode: "",
+    baseCity: "",
+    weightTiers: [],
+    maxWeightKg: 100,
+    maxDeliveryDistanceKm: 30.0,
+    freeDeliveryThresholdAmount: 0.0,
+    pricePerFloorWithElevator: 0.5,
+    pricePerFloorWithoutElevator: 1.0,
+    distanceTiers: [],
+};
+
+const fromDb = (d) => ({
+    baseLatitude: d.base_latitude ?? DEFAULT_PRICING.baseLatitude,
+    baseLongitude: d.base_longitude ?? DEFAULT_PRICING.baseLongitude,
+    baseStreet: d.base_street ?? "",
+    baseHouseNumber: d.base_house_number ?? "",
+    basePostalCode: d.base_postal_code ?? "",
+    baseCity: d.base_city ?? "",
+    weightTiers: d.weight_tiers ?? [],
+    maxWeightKg: d.max_weight_kg ?? 100,
+    maxDeliveryDistanceKm: d.max_delivery_distance_km ?? 30.0,
+    freeDeliveryThresholdAmount: d.free_delivery_threshold_amount ?? 0.0,
+    pricePerFloorWithElevator: d.price_per_floor_with_elevator ?? 0.5,
+    pricePerFloorWithoutElevator: d.price_per_floor_without_elevator ?? 1.0,
+    distanceTiers: d.distance_tiers ?? [],
+});
+
+const toDb = (p) => ({
+    base_street: p.baseStreet,
+    base_house_number: p.baseHouseNumber,
+    base_postal_code: p.basePostalCode,
+    base_city: p.baseCity,
+    base_latitude: p.baseLatitude,
+    base_longitude: p.baseLongitude,
+    weight_tiers: p.weightTiers || [],
+    max_weight_kg: p.maxWeightKg ?? 100,
+    max_delivery_distance_km: p.maxDeliveryDistanceKm,
+    free_delivery_threshold_amount: p.freeDeliveryThresholdAmount,
+    price_per_floor_with_elevator: p.pricePerFloorWithElevator,
+    price_per_floor_without_elevator: p.pricePerFloorWithoutElevator,
+    distance_tiers: p.distanceTiers || [],
+    updated_at: new Date().toISOString(),
+});
+
 export function PricingProvider({ children }) {
-    const [pricing, setPricing] = useState({
-        baseLatitude: 52.5200,
-        baseLongitude: 13.4050,
-        baseAddress: "Berlin, Germany",
-        weightTiers: [],               // ✅ جديد
-        maxWeightKg: 100,              // ✅ جديد
-        maxDeliveryDistanceKm: 30.00,
-        freeDeliveryThresholdAmount: 0.00,
-        pricePerFloorWithElevator: 0.50,
-        pricePerFloorWithoutElevator: 1.00,
-        distanceTiers: [],
-    });
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-
-    // ============================================
-    // Fetch
-    // ============================================
-    const fetchPricing = async () => {
-        setLoading(true);
-        const { data, error } = await supabase
-            .from("pricing_settings")
-            .select("*")
-            .single();
-
-        if (!error && data) {
-            setPricing({
-                baseLatitude: data.base_latitude ?? 52.5200,
-                baseLongitude: data.base_longitude ?? 13.4050,
-                baseAddress: data.base_address ?? "Berlin, Germany",
-                weightTiers: data.weight_tiers ?? [],              // ✅
-                maxWeightKg: data.max_weight_kg ?? 100,            // ✅
-                maxDeliveryDistanceKm: data.max_delivery_distance_km ?? 30.00,
-                freeDeliveryThresholdAmount:
-                    data.free_delivery_threshold_amount ?? 0.00,
-                pricePerFloorWithElevator:
-                    data.price_per_floor_with_elevator ?? 0.50,
-                pricePerFloorWithoutElevator:
-                    data.price_per_floor_without_elevator ?? 1.00,
-                distanceTiers: data.distance_tiers ?? [],
-            });
-            console.log("✅ Pricing loaded:", {
-                weightTiers: data.weight_tiers,
-                distanceTiers: data.distance_tiers,
-                maxWeightKg: data.max_weight_kg,
-            });
-        } else {
-            console.warn("⚠️ No pricing settings found, using defaults.");
-        }
-        setLoading(false);
-    };
-
-    useEffect(() => {
-        fetchPricing();
-    }, []);
-
-    // ============================================
-    // Save
-    // ============================================
-    const savePricing = async (newPricing) => {
-        setSaving(true);
-        try {
-            const dbPayload = {
-                base_address: newPricing.baseAddress,
-                base_latitude: newPricing.baseLatitude,
-                base_longitude: newPricing.baseLongitude,
-                weight_tiers: newPricing.weightTiers || [],         // ✅ جديد
-                max_weight_kg: newPricing.maxWeightKg ?? 100,       // ✅ جديد
-                max_delivery_distance_km: newPricing.maxDeliveryDistanceKm,
-                free_delivery_threshold_amount:
-                    newPricing.freeDeliveryThresholdAmount,
-                price_per_floor_with_elevator:
-                    newPricing.pricePerFloorWithElevator,
-                price_per_floor_without_elevator:
-                    newPricing.pricePerFloorWithoutElevator,
-                distance_tiers: newPricing.distanceTiers || [],
-                updated_at: new Date().toISOString(),
-            };
-
-            console.log("💾 Saving pricing:", dbPayload);
-
-            // ابحث عن الصف الموجود
-            const { data: existing, error: selectError } = await supabase
-                .from("pricing_settings")
-                .select("id")
-                .limit(1);
-
-            if (selectError) throw selectError;
-
-            let error;
-
-            if (existing && existing.length > 0) {
-                const { error: updateError } = await supabase
-                    .from("pricing_settings")
-                    .update(dbPayload)
-                    .eq("id", existing[0].id);
-                error = updateError;
-            } else {
-                const { error: insertError } = await supabase
-                    .from("pricing_settings")
-                    .insert([dbPayload]);
-                error = insertError;
-            }
-
-            if (error) throw error;
-
-            // تحديث الحالة المحلية
-            setPricing((prev) => ({ ...prev, ...newPricing }));
-            return { success: true };
-        } catch (error) {
-            console.error("❌ Save pricing error:", error);
-            return { success: false, error: error.message };
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    const value = {
-        pricing,
+    const {
+        data: pricing,
+        setData: setPricing,
         loading,
         saving,
-        fetchPricing,
-        savePricing,
-    };
+        fetchOne: fetchPricing,
+        save: savePricing,
+    } = useSupabaseSingleton("pricing_settings", {
+        defaults: DEFAULT_PRICING,
+        fromDb,
+        toDb,
+    });
 
     return (
-        <PricingContext.Provider value={value}>
+        <PricingContext.Provider
+            value={{ pricing, setPricing, loading, saving, fetchPricing, savePricing }}
+        >
             {children}
         </PricingContext.Provider>
     );
 }
 
-export function usePricing() {
-    const context = useContext(PricingContext);
-    if (!context) {
-        throw new Error("usePricing must be used within a PricingProvider");
-    }
-    return context;
-}
+export const usePricing = () => {
+    const ctx = useContext(PricingContext);
+    if (!ctx) throw new Error("usePricing must be used within PricingProvider");
+    return ctx;
+};

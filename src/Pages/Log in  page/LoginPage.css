@@ -1,138 +1,106 @@
-/* حاوية الصفحة بالكامل مع الصورة الخلفية */
+/* ==========================================
+   🔐 LOGIN PAGE
+   ========================================== */
+
+/* ===== Container ===== */
 .login-container {
   display: flex;
-  justify-content: space-between; /* توزيع العناصر بين اليسار واليمين */
-  align-items: flex-start; /* رفع المحتوى للأعلى بدل المنتصف */
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
   margin: 0;
-  padding: 60px 8% 0 8%; /* إضافة مسافة من الأعلى والجانبين */
-  background-image: url("../../assets/Login-page.png");
-  background-size: 85% auto;
-  background-position: left 20%;
-  background-repeat: no-repeat;
-  background-color: #E2F9D3;
+  padding: var(--space-5);
+  background: linear-gradient(135deg, #e2f9d3 0%, #f0faf0 100%);
   box-sizing: border-box;
-  position: relative;
 }
 
-/* 
-   تنسيقات قسم النصوص الترحيبية والميزات
-  */
-
-/* كلاس الحاوية للنصوص على اليسار (أعلى اليسار) */
-.login-info {
-  max-width: 360px;
-  color: #1e2e28;
-  margin-top: 10px; /* ضبط المسافة من الأعلى */
-  z-index: 2; /* ضمان ظهور النصوص فوق خلفية الصورة */
-}
-
-/* العنوان الرئيسي */
-.welcome-title {
-  font-size: 32px;
-  font-weight: 800;
-  color: #1b4332;
-  margin-bottom: 10px;
-}
-
-/* الوصف السفلي للعنوان */
-.welcome-desc {
-  font-size: 15px;
-  color: #4a5568;
-  line-height: 1.5;
-  margin-bottom: 30px;
-}
-
-/* قائمة الميزات (الأيقونات مع النصوص) */
-.features-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* دائرية الأيقونة */
-.feature-icon {
-  font-size: 20px;
-  background: #ffffff;
-  padding: 8px;
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.feature-item h3 {
-  margin: 0;
-  font-size: 15px;
-  color: #2d3748;
-}
-
-.feature-item p {
-  margin: 2px 0 0 0;
-  font-size: 12px;
-  color: #718096;
-}
-
-
-.login-card-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 420px;
-  width: 100%;
-}
-
-/* البطاقة الرئيسية للفورم (على اليمين) */
+/* ============================================
+   Login Card
+   ============================================ */
 .login-card {
-  background-color: #ffffff;
-  padding: 40px 35px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
+  padding: 2.5rem 2.1875rem;
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 10px 30px rgba(20, 92, 74, 0.08),
+    0 4px 12px rgba(20, 92, 74, 0.05);
   width: 100%;
+  max-width: 420px;
   box-sizing: border-box;
-  border: 1px solid var(--border-color, #e2e8f0);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-  margin-top: 20px; /* محاذاة ارتفاع الكارت بشكل ممتاز */
+  border: 1px solid var(--border-color);
+  transition: var(--transition-base);
 }
 
 .login-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 18px 40px rgba(20, 92, 74, 0.12),
+    0 6px 16px rgba(20, 92, 74, 0.08);
 }
 
-/* عنوان تسجيل الدخول */
 .login-card h2 {
   text-align: center;
-  color: var(--primary-color, #2d3748);
-  margin-bottom: 25px;
+  color: var(--primary-color);
+  margin-bottom: 1.5625rem;
   font-weight: 700;
   letter-spacing: 0.5px;
-  border-bottom: 2px solid var(--neon-green, #48bb78);
-  padding-bottom: 10px;
+  border-bottom: 2px solid var(--neon-green);
+  padding-bottom: 0.625rem;
 }
 
-/* تنسيق مجموعات الإدخال */
+/* ============================================
+   Inputs
+   ============================================ */
 .input-group {
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .input-group label {
   display: block;
   margin-bottom: 6px;
-  color: var(--primary-color, #2d3748);
+  color: var(--primary-color);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
-/* حقل إدخال كلمة المرور مع زر الأيقونة */
+.input-group input {
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  background-color: #fff;
+  color: var(--primary-color);
+  box-sizing: border-box;
+  transition: var(--transition-base);
+}
+
+.input-group input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--dark-green);
+  box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.15);
+}
+
+.input-group input:disabled {
+  background-color: var(--gray-100);
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Password Field + Toggle
+   ============================================ */
 .password-fields {
   position: relative;
   width: 100%;
+}
+
+.password-fields input {
+  padding-right: 2.625rem;
 }
 
 .password-field-btn {
@@ -143,141 +111,71 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--mid-green, #38a169);
+  color: var(--mid-green);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4px;
+  font-size: 1rem;
+  transition: var(--transition-fast);
 }
 
-/* تنسيق حقول الإدخال */
-.input-group input {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid var(--border-color, #cbd5e0);
-  border-radius: 10px;
-  font-size: 15px;
-  background-color: #ffffff;
-  color: var(--primary-color, #2d3748);
-  box-sizing: border-box;
-  transition: border-color 0.3s, box-shadow 0.3s;
+.password-field-btn:hover {
+  color: var(--dark-green);
+  transform: translateY(-50%) scale(1.1);
 }
 
-.password-fields input {
-  padding-right: 42px;
-}
-
-.input-group input:focus {
-  outline: none;
-  border-color: var(--dark-green, #2f855a);
-  box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.15);
-}
-
-/* زر تسجيل الدخول */
+/* ============================================
+   Submit Button
+   ============================================ */
 .login-btn {
   width: 100%;
-  padding: 14px;
-  background-color: var(--neon-green, #48bb78);
-  color: #ffffff;
+  padding: 0.875rem;
+  background-color: var(--neon-green);
+  color: #fff;
   border: none;
-  border-radius: 50px;
-  font-size: 16px;
+  border-radius: var(--radius-full);
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-  margin-top: 10px;
+  transition: var(--transition-base);
+  margin-top: 0.625rem;
 }
 
-.login-btn:hover {
-  background-color: var(--lime-light, #38a169);
+.login-btn:hover:not(:disabled) {
+  background-color: var(--lime-light);
   box-shadow: 0 8px 20px rgba(56, 161, 105, 0.3);
 }
 
-.login-btn:active {
+.login-btn:active:not(:disabled) {
   transform: scale(0.98);
 }
 
-/* الجزء السفلي للـ Footer */
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Footer
+   ============================================ */
 .login-footer {
   text-align: center;
-  margin-top: 20px;
-  font-size: 13px;
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
-.login-footer a {
-  color: var(--primary-color, #2f855a);
-  text-decoration: underline;
-  font-weight: 600;
-}
-
-.login-footer .forgot-password,
-.login-footer .signup-link {
-  margin-bottom: 8px;
-}
-
-.login-footer .copyright {
-  margin-top: 18px;
-  font-size: 12px;
-  color: #a0aec0;
-}
-
-
- /*  تنسيق شريط الضمانات أسفل الكارت
- */
-
-.trust-badges {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 20px;
-  font-size: 13px;
-  color: #2d6a4f;
-  font-weight: 600;
-  width: 100%;
-}
-
-.badge-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-
-.badge-icon {
-  font-size: 14px;
-}
-
-.badge-divider {
-  color: #a3b18a;
-  font-weight: 300;
-  font-size: 14px;
-}
-
-
-@media (max-width: 850px) {
-  .login-info {
-    display: none;
-  }
-  .login-container {
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-image: none;
-    background-color: #E2F9D3;
-  }
+/* ============================================
+   📱 Responsive
+   ============================================ */
+@media (max-width: 30rem) {
   .login-card {
-    margin-top: 0;
+    padding: 2rem 1.5rem;
   }
-}
 
-@media (max-width: 480px) {
-  .trust-badges {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .badge-divider {
-    display: none;
+  .login-card h2 {
+    font-size: 1.25rem;
   }
 }

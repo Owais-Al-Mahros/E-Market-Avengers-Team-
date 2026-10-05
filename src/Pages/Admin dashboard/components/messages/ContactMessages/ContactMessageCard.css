@@ -1,0 +1,174 @@
+/* ==========================================
+   📮 CONTACT MESSAGE CARD
+   ========================================== */
+
+.cmsg-card {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--admin-card-bg);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4) var(--space-5);
+    border: 2px solid var(--secondary-color);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-family: inherit;
+}
+
+.cmsg-card:hover {
+    border-color: var(--primary-color);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* ═══ Status Borders ═══ */
+.cmsg-card-pending {
+    border-left: 5px solid var(--status-pending-border);
+}
+
+.cmsg-card-read {
+    border-left: 5px solid var(--status-confirmed-border);
+}
+
+.cmsg-card-replied {
+    border-left: 5px solid var(--status-delivered-border);
+}
+
+.cmsg-card-archived {
+    border-left: 5px solid var(--gray-400);
+    opacity: 0.7;
+}
+
+/* ═══ Header ═══ */
+.cmsg-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.cmsg-card-subject {
+    font-size: var(--font-base);
+    font-weight: 800;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+/* ═══ Status Badge ═══ */
+.cmsg-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: var(--radius-md);
+    font-size: var(--font-xs);
+    font-weight: 800;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.cmsg-status-badge.status-pending {
+    background: var(--item-pending-bg);
+    color: var(--item-pending-text);
+}
+
+.cmsg-status-badge.status-read {
+    background: rgba(59, 130, 246, 0.15);
+    color: #1d4ed8;
+}
+
+.cmsg-status-badge.status-replied {
+    background: var(--item-scanned-bg);
+    color: var(--item-scanned-text);
+}
+
+.cmsg-status-badge.status-archived {
+    background: var(--gray-200);
+    color: var(--gray-700);
+}
+
+/* ═══ Body ═══ */
+.cmsg-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: var(--space-2);
+}
+
+.cmsg-card-name {
+    font-size: var(--font-base);
+    font-weight: 700;
+    color: var(--text);
+}
+
+.cmsg-card-email {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+}
+
+/* ═══ Preview ═══ */
+.cmsg-card-preview {
+    margin: 0 0 var(--space-3);
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+/* ═══ Meta ═══ */
+.cmsg-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+    padding-top: var(--space-2);
+    border-top: 1px dashed var(--secondary-color);
+    flex-wrap: wrap;
+}
+
+.cmsg-card-cat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.cmsg-card-cat .material-symbols-outlined {
+    font-size: 14px;
+}
+
+.cmsg-card-date {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* ═══ Mobile ═══ */
+@media (max-width: 30rem) {
+    .cmsg-card {
+        padding: var(--space-3);
+    }
+
+    .cmsg-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-2);
+    }
+
+    .cmsg-card-subject {
+        white-space: normal;
+        line-height: 1.35;
+    }
+
+    .cmsg-card-preview {
+        font-size: var(--font-xs);
+    }
+}

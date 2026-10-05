@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useCart } from "../../../../context/CartContext";
 import { useCheckout } from "../../../../context/CheckoutContext";
-import toast from "react-hot-toast";
-import Footer from "./../../../../Components/Footer";
+import { useMyInfo } from "../../../../context/MyInfoContext";
+import Footer from "../../../../components/layout/Footer";
 import CartHeader from "../ShoppingCart/components/CartHeader";
 import "./CheckoutPage.css";
 
@@ -12,8 +13,13 @@ const EDGE_FUNCTION_URL = import.meta.env.VITE_EDGE_FUNCTION_URL;
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { totalPrice, totalWeight } = useCart();
-  const { checkoutData, updateField, updateFields, isAddressComplete } =
-    useCheckout();
+  const {
+    checkoutData,
+    updateField,
+    updateFields,
+    isAddressComplete,
+  } = useCheckout();
+  const { info } = useMyInfo();
 
   const [calculating, setCalculating] = useState(false);
   const [errors, setErrors] = useState({});
@@ -54,18 +60,70 @@ export default function CheckoutPage() {
     }
   };
 
+  // ✅ إزالة الفراغات عند مغادرة الحقل
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    if (value !== value.trim()) {
+      updateField(name, value.trim());
+    }
+  };
+
+  // ============================================
+  // ✨ Apply Saved Info — بضغطة زر
+  // ============================================
+  const handleUseSavedInfo = () => {
+    const fieldKeys = [
+      "firstName",
+      "lastName",
+      "email",
+      "phone",
+      "street",
+      "houseNumber",
+      "postalCode",
+      "city",
+      "floor",
+      "apartment",
+      "doorbellName",
+      "hasElevator",
+    ];
+
+    // ✅ هل هناك بيانات محفوظة فعلًا؟
+    const hasAnyValue = fieldKeys.some(
+      (key) => info?.[key] && info[key] !== "" && info[key] !== "no"
+    );
+
+    if (!hasAnyValue) {
+      toast.error("No saved info yet. Please fill My Info first.", {
+        duration: 3500,
+      });
+      return;
+    }
+
+    // ✅ انسخ الحقول التي لها قيمة فقط
+    const fieldsToApply = {};
+    fieldKeys.forEach((key) => {
+      if (info[key] !== undefined && info[key] !== null && info[key] !== "") {
+        fieldsToApply[key] = info[key];
+      }
+    });
+
+    updateFields(fieldsToApply);
+    setErrors({});
+
+    toast.success("Saved info applied! You can edit any field.", {
+      icon: "✨",
+      duration: 3000,
+    });
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   // ============================================
   // حساب الشحن تلقائياً
   // ============================================
   useEffect(() => {
-    const {
-      street,
-      houseNumber,
-      postalCode,
-      city,
-      floor,
-      hasElevator,
-    } = checkoutData;
+    const { street, houseNumber, postalCode, city, floor, hasElevator } =
+      checkoutData;
 
     if (!street || !houseNumber || !postalCode || !city) {
       updateField("shippingDetails", null);
@@ -199,6 +257,24 @@ export default function CheckoutPage() {
         </div>
 
         <div className="chk-form">
+          {/* ============================================
+              ✨ Apply Saved Info Banner
+          ============================================ */}
+          <div className="chk-saved-info-bar">
+            <span className="material-symbols-outlined">bookmark</span>
+            <span className="chk-saved-info-text">
+              Save time — apply your saved info with one click
+            </span>
+            <button
+              type="button"
+              className="chk-use-saved-btn"
+              onClick={handleUseSavedInfo}
+            >
+              <span className="material-symbols-outlined">auto_fix_high</span>
+              Apply Saved Info
+            </button>
+          </div>
+
           {/* Grid 2x2 */}
           <div className="chk-grid">
             {/* --- Personal Info --- */}
@@ -218,6 +294,7 @@ export default function CheckoutPage() {
                   name="firstName"
                   value={checkoutData.firstName}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="Vorname"
                   className={errors.firstName ? "has-error" : ""}
                 />
@@ -233,6 +310,7 @@ export default function CheckoutPage() {
                   name="lastName"
                   value={checkoutData.lastName}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="Nachname"
                   className={errors.lastName ? "has-error" : ""}
                 />
@@ -248,6 +326,7 @@ export default function CheckoutPage() {
                   name="phone"
                   value={checkoutData.phone}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="+49 …"
                   className={errors.phone ? "has-error" : ""}
                 />
@@ -265,6 +344,7 @@ export default function CheckoutPage() {
                   name="email"
                   value={checkoutData.email}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="E-Mail"
                   className={errors.email ? "has-error" : ""}
                 />
@@ -280,7 +360,9 @@ export default function CheckoutPage() {
                 <div className="chk-section-icon">📍</div>
                 <div>
                   <h3>Lieferadresse</h3>
-                  <p className="chk-section-sub">Wohin soll geliefert werden?</p>
+                  <p className="chk-section-sub">
+                    Wohin soll geliefert werden?
+                  </p>
                 </div>
               </div>
 
@@ -291,6 +373,7 @@ export default function CheckoutPage() {
                   name="street"
                   value={checkoutData.street}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="Straße"
                   className={errors.street ? "has-error" : ""}
                 />
@@ -307,6 +390,7 @@ export default function CheckoutPage() {
                     name="houseNumber"
                     value={checkoutData.houseNumber}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Nr."
                   />
                 </div>
@@ -317,6 +401,7 @@ export default function CheckoutPage() {
                     name="postalCode"
                     value={checkoutData.postalCode}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="PLZ"
                     className={errors.postalCode ? "has-error" : ""}
                   />
@@ -333,10 +418,13 @@ export default function CheckoutPage() {
                   name="city"
                   value={checkoutData.city}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="Ort / Stadt"
                   className={errors.city ? "has-error" : ""}
                 />
-                {errors.city && <span className="chk-error">{errors.city}</span>}
+                {errors.city && (
+                  <span className="chk-error">{errors.city}</span>
+                )}
               </div>
             </div>
 
@@ -360,6 +448,7 @@ export default function CheckoutPage() {
                     name="floor"
                     value={checkoutData.floor}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Etage"
                     className={errors.floor ? "has-error" : ""}
                   />
@@ -371,6 +460,7 @@ export default function CheckoutPage() {
                     name="apartment"
                     value={checkoutData.apartment}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Wohnung"
                   />
                 </div>
@@ -383,6 +473,7 @@ export default function CheckoutPage() {
                   name="doorbellName"
                   value={checkoutData.doorbellName}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="Name an der Klingel"
                   className={errors.doorbellName ? "has-error" : ""}
                 />
@@ -405,17 +496,6 @@ export default function CheckoutPage() {
                   💡 Beeinflusst die Etagengebühr
                 </small>
               </div>
-
-              <div className="chk-field">
-                <label>Notizen (optional)</label>
-                <textarea
-                  name="deliveryNotes"
-                  value={checkoutData.deliveryNotes}
-                  onChange={handleChange}
-                  placeholder="z.B. 'Bitte leise klingeln'"
-                  rows="2"
-                />
-              </div>
             </div>
 
             {/* --- Shipping Summary --- */}
@@ -436,7 +516,9 @@ export default function CheckoutPage() {
                   berechnen.
                 </p>
               ) : calculating ? (
-                <p className="chk-hint">⏳ Versandkosten werden berechnet...</p>
+                <p className="chk-hint">
+                  ⏳ Versandkosten werden berechnet...
+                </p>
               ) : checkoutData.shippingDetails ? (
                 <div className="shipping-breakdown">
                   <div className="breakdown-row">
@@ -445,10 +527,7 @@ export default function CheckoutPage() {
                       {checkoutData.shippingDetails.distance} km)
                     </span>
                     <span>
-                      €
-                      {checkoutData.shippingDetails.breakdown.distanceCost.toFixed(
-                        2
-                      )}
+                      €{checkoutData.shippingDetails?.breakdown?.distanceCost?.toFixed(2) ?? "0.00"}
                     </span>
                   </div>
                   {checkoutData.shippingDetails.breakdown.weightCost > 0 && (
@@ -483,9 +562,12 @@ export default function CheckoutPage() {
                   </div>
                 </div>
               ) : (
-                <p className="chk-hint" style={{ color: "var(--danger-color)" }}>
-                  ❌ Versand konnte nicht berechnet werden. Bitte prüfen Sie Ihre
-                  Adresse.
+                <p
+                  className="chk-hint"
+                  style={{ color: "var(--danger-color)" }}
+                >
+                  ❌ Versand konnte nicht berechnet werden. Bitte prüfen Sie
+                  Ihre Adresse.
                 </p>
               )}
 
@@ -511,7 +593,9 @@ export default function CheckoutPage() {
               disabled={calculating || !checkoutData.shippingDetails}
             >
               <span className="material-symbols-outlined">arrow_forward</span>
-              {calculating ? "Wird berechnet..." : "Weiter zum Liefertermin"}
+              {calculating
+                ? "Wird berechnet..."
+                : "Weiter zum Liefertermin"}
             </button>
           </div>
         </div>

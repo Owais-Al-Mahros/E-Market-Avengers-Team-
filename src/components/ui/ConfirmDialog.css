@@ -1,0 +1,259 @@
+/* ============================================
+   🎯 CONFIRM DIALOG
+   ============================================ */
+.cd-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(21, 49, 43, 0.65);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+    animation: cdFade 0.2s ease;
+}
+
+@keyframes cdFade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.cd-modal {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px 28px 24px;
+    width: 100%;
+    max-width: 460px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+    animation: cdSlide 0.25s ease;
+    text-align: center;
+    border-top: 5px solid var(--primary-color);
+}
+
+.cd-modal-warning {
+    border-top-color: #f59e0b;
+}
+
+.cd-modal-danger {
+    border-top-color: var(--danger-color);
+}
+
+@keyframes cdSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ===== Icon ===== */
+.cd-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.cd-icon .material-symbols-outlined {
+    font-size: 34px;
+    font-variation-settings: "FILL" 1;
+}
+
+.cd-icon-warning {
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+}
+
+.cd-icon-danger {
+    background: rgba(217, 79, 79, 0.12);
+    color: var(--danger-color);
+}
+
+/* ===== Title ===== */
+.cd-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 0 14px;
+    letter-spacing: -0.3px;
+    line-height: 1.35;
+}
+
+/* ===== Message ===== */
+.cd-message {
+    color: var(--secondary-text);
+    font-size: 14.5px;
+    line-height: 1.65;
+    margin-bottom: 26px;
+    text-align: left;
+}
+
+.cd-message p {
+    margin: 0 0 10px;
+}
+
+.cd-message p:last-child {
+    margin-bottom: 0;
+}
+
+.cd-message strong {
+    color: var(--text);
+    font-weight: 800;
+}
+
+.cd-message ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.cd-message li {
+    margin-bottom: 4px;
+}
+
+/* ===== Actions ===== */
+.cd-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.cd-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    white-space: nowrap;
+}
+
+.cd-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cd-btn .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* Cancel */
+.cd-btn-cancel {
+    background: #fff;
+    color: var(--text);
+    border: 2px solid var(--secondary-color);
+}
+
+.cd-btn-cancel:hover:not(:disabled) {
+    background: var(--secondary-color);
+    border-color: var(--primary-color);
+}
+
+/* Confirm — default */
+.cd-btn-confirm {
+    background: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(20, 92, 74, 0.25);
+}
+
+.cd-btn-confirm:hover:not(:disabled) {
+    background: var(--dark-green);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(20, 92, 74, 0.35);
+}
+
+/* Confirm — warning */
+.cd-btn-confirm-warning {
+    background: #f59e0b;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+}
+
+.cd-btn-confirm-warning:hover:not(:disabled) {
+    background: #d97706;
+    box-shadow: 0 10px 28px rgba(245, 158, 11, 0.4);
+}
+
+/* Confirm — danger */
+.cd-btn-confirm-danger {
+    background: var(--danger-color);
+    box-shadow: 0 6px 20px rgba(217, 79, 79, 0.3);
+}
+
+.cd-btn-confirm-danger:hover:not(:disabled) {
+    background: #b91c1c;
+    box-shadow: 0 10px 28px rgba(185, 28, 28, 0.4);
+}
+
+/* ===== Spinner ===== */
+.cd-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: cdSpin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes cdSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================
+   📱 Responsive
+   ============================================ */
+@media (max-width: 480px) {
+    .cd-modal {
+        padding: 24px 20px 20px;
+        border-radius: 16px;
+    }
+
+    .cd-icon {
+        width: 56px;
+        height: 56px;
+        margin-bottom: 14px;
+    }
+
+    .cd-icon .material-symbols-outlined {
+        font-size: 28px;
+    }
+
+    .cd-title {
+        font-size: 17px;
+    }
+
+    .cd-message {
+        font-size: 13.5px;
+    }
+
+    .cd-actions {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .cd-btn-cancel {
+        order: 2;
+    }
+}

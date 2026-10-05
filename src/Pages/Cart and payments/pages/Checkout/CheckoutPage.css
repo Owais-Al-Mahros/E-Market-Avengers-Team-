@@ -348,6 +348,79 @@
 }
 
 /* ============================================
+   💾 Apply Saved Info Banner
+   ============================================ */
+.chk-saved-info-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 22px;
+    background: linear-gradient(135deg, #e8f5e0, #f0faf0);
+    border: 2px solid var(--primary-color);
+    border-radius: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.chk-saved-info-bar>.material-symbols-outlined {
+    font-size: 1.75rem;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.chk-saved-info-text {
+    flex: 1;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text);
+    min-width: 200px;
+}
+
+.chk-use-saved-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+
+.chk-use-saved-btn:hover {
+    background: var(--dark-green);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(20, 92, 74, 0.2);
+}
+
+.chk-use-saved-btn .material-symbols-outlined {
+    font-size: 1.125rem;
+}
+
+@media (max-width: 48rem) {
+    .chk-saved-info-bar {
+        flex-direction: column;
+        text-align: center;
+        padding: 16px;
+    }
+
+    .chk-saved-info-bar>.material-symbols-outlined {
+        font-size: 1.5rem;
+    }
+
+    .chk-use-saved-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ============================================
    Responsive
    ============================================ */
 @media (max-width: 900px) {

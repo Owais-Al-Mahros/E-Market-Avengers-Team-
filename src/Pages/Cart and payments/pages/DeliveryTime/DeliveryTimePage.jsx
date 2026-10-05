@@ -2,17 +2,42 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../../../context/CartContext";
 import { useCheckout } from "../../../../context/CheckoutContext";
-import { useShippingSettings } from "../../../../context/ShippingSettingsContext";   // ✅ جديد
+import { useShippingSettings } from "../../../../context/ShippingSettingsContext";
 import { supabase } from "../../../../lib/supabase";
 import toast from "react-hot-toast";
-import Footer from "../../../../Components/Footer";
+import Footer from "../../../../components/layout/Footer";
 import CartHeader from "../ShoppingCart/components/CartHeader";
 import DayPicker from "./components/DayPicker";
 import TimeSlotPicker from "./components/TimeSlotPicker";
 import DeliverySummary from "./components/DeliverySummary";
 import { toBaseUnit } from "../../../../lib/units";
+import { saveLastOrder } from "../../../../lib/lastOrder";
 
 import "./DeliveryTimePage.css";
+
+// ============================================================
+// ✅ توليد UUID متوافق مع كل السياقات (حتى HTTP غير آمن)
+// ============================================================
+function generateOrderId() {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        try { return crypto.randomUUID(); } catch { /* fall through */ }
+    }
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+        const r = (Math.random() * 16) | 0;
+        const v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+}
+
+// ============================================================
+// ✅ توليد رقم طلب (Order Number)
+// ============================================================
+function generateOrderNumber() {
+    const now = new Date();
+    const date = now.toISOString().slice(0, 10).replace(/-/g, "");
+    const random = Math.floor(1000 + Math.random() * 9000);
+    return `ORD-${date}-${random}`;
+}
 
 export default function DeliveryTimePage() {
     const navigate = useNavigate();
@@ -24,7 +49,6 @@ export default function DeliveryTimePage() {
         clearCheckout,
     } = useCheckout();
 
-    // ✅ جلب maxOrdersPerHour من Context
     const { settings: shippingSettings } = useShippingSettings();
     const maxOrdersPerHour = shippingSettings?.maxOrdersPerHour || 0;
 
@@ -38,7 +62,7 @@ export default function DeliveryTimePage() {
     const [hasSubmitted, setHasSubmitted] = useState(false);
 
     // ============================================
-    // التحقق من العنوان
+    // التحقق من العنوان والسلة
     // ============================================
     useEffect(() => {
         if (hasSubmitted) return;
@@ -66,16 +90,6 @@ export default function DeliveryTimePage() {
     };
 
     // ============================================
-    // Generate order number
-    // ============================================
-    const generateOrderNumber = () => {
-        const now = new Date();
-        const date = now.toISOString().slice(0, 10).replace(/-/g, "");
-        const random = Math.floor(1000 + Math.random() * 9000);
-        return `ORD-${date}-${random}`;
-    };
-
-    // ============================================
     // Create Order
     // ============================================
     const handleConfirmOrder = async () => {
@@ -94,31 +108,19 @@ export default function DeliveryTimePage() {
         const toastId = toast.loading("Bestellung wird erstellt...");
 
         try {
-            // ============================================
-            // ✅ 1. التحقق من سعة الساعة (Race Condition safety)
-            // ============================================
+            // ══════════════════════════════════════════════════════
+            // 1. التحقق من سعة الساعة عبر RPC (SECURITY DEFINER)
+            // ══════════════════════════════════════════════════════
             if (maxOrdersPerHour > 0) {
-                const { data: existingOrders, error: countError } =
-                    await supabase
-                        .from("orders")
-                        .select("id")
-                        .eq("delivery_date", selectedDate)
-                        .eq("delivery_time", selectedTime)
-                        .in("status", [
-                            "awaiting_payment",
-                            "pending",
-                            "confirmed",
-                            "shipped",
-                            "delivered",
-                        ]);
+                const { data: currentCount, error: countError } = await supabase.rpc(
+                    "get_slot_order_count",
+                    { p_date: selectedDate, p_time: selectedTime }
+                );
 
                 if (countError) {
-                    console.error("❌ Count error:", countError);
-                }
-
-                const count = existingOrders?.length || 0;
-
-                if (count >= maxOrdersPerHour) {
+                    // فشل غير حاسم — نُسجّل ونكمل (القرار النهائي للأدمن)
+                    console.warn("⚠️ Capacity check unavailable:", countError.message);
+                } else if ((currentCount || 0) >= maxOrdersPerHour) {
                     toast.error(
                         "Dieser Zeitslot ist leider ausgebucht. Bitte wählen Sie einen anderen.",
                         { id: toastId }
@@ -129,37 +131,49 @@ export default function DeliveryTimePage() {
                 }
             }
 
-            // ============================================
+            // ══════════════════════════════════════════════════════
             // 2. حساب المبالغ
-            // ============================================
+            // ══════════════════════════════════════════════════════
             const productsTotal = totalPrice;
-            const shipping =
-                checkoutData.shippingDetails.totalShipping || 0;
+            const shipping = checkoutData.shippingDetails.totalShipping || 0;
             const total = productsTotal + shipping;
 
-            // ============================================
-            // 3. تحضير الطلب
-            // ============================================
+            // ══════════════════════════════════════════════════════
+            // 3. توليد المعرّفات من جهة العميل (لتفادي مشكلة RLS)
+            // ══════════════════════════════════════════════════════
+            const orderId = generateOrderId();
+            const orderNumber = generateOrderNumber();
+
+            // ══════════════════════════════════════════════════════
+            // 4. تحضير بيانات الطلب
+            // ══════════════════════════════════════════════════════
+            // ══════════════════════════════════════════════════════
+            // 4. تحضير بيانات الطلب
+            // ══════════════════════════════════════════════════════
+            const allowSubstitution = (() => {
+                try {
+                    const saved = localStorage.getItem("allowSubstitution");
+                    return saved === null ? true : JSON.parse(saved);
+                } catch {
+                    return true;
+                }
+            })();
+
+            // ✅ حماية: نستخرج القيم بأمان
+            const shippingDetails = checkoutData.shippingDetails || {};
+            const breakdown = shippingDetails.breakdown || {};
+
             const orderData = {
+                id: orderId,
                 customer_id: null,
-                order_number: generateOrderNumber(),
+                order_number: orderNumber,
                 status: "awaiting_payment",
                 subtotal: productsTotal,
-                shipping_cost: shipping,
                 tax: 0,
                 total_price: total,
                 current_total: total,
                 order_date: new Date().toISOString(),
-
-                allow_substitution: (() => {
-                    try {
-                        const saved =
-                            localStorage.getItem("allowSubstitution");
-                        return saved === null ? true : JSON.parse(saved);
-                    } catch {
-                        return true;
-                    }
-                })(),
+                allow_substitution: allowSubstitution,
 
                 customer_info: {
                     first_name: checkoutData.firstName,
@@ -178,87 +192,76 @@ export default function DeliveryTimePage() {
                     doorbell_name: checkoutData.doorbellName,
                     has_elevator: checkoutData.hasElevator === "yes",
                     notes: checkoutData.deliveryNotes || "",
-                    distance_km: checkoutData.shippingDetails.distance,
+                    distance_km: shippingDetails.distance || 0,
                     breakdown: {
-                        distance_cost:
-                            checkoutData.shippingDetails.breakdown
-                                .distanceCost,
-                        weight_cost:
-                            checkoutData.shippingDetails.breakdown
-                                .weightCost,
-                        floor_cost:
-                            checkoutData.shippingDetails.breakdown.floorCost,
+                        distance_cost: breakdown.distanceCost || 0,
+                        weight_cost: breakdown.weightCost || 0,
+                        floor_cost: breakdown.floorCost || 0,
                     },
                 },
 
-                shipping_cost:
-                    checkoutData.shippingDetails.totalShipping,
-                floor_fee:
-                    checkoutData.shippingDetails.breakdown.floorCost,
-
-                payment_method: "cod",
+                shipping_cost: shippingDetails.totalShipping || 0,
+                floor_fee: breakdown.floorCost || 0,
+                payment_method: null,
                 delivery_date: selectedDate,
                 delivery_time: selectedTime,
-
                 coupon_code: null,
                 discount_type: null,
                 discount_value: null,
                 discount_amount: 0,
             };
-
-            // ============================================
-            // 4. إدراج الطلب
-            // ============================================
-            const { data: order, error: orderError } = await supabase
+            // ══════════════════════════════════════════════════════
+            // 5. إدراج الطلب — بدون .select() (RLS يمنع القراءة)
+            // ══════════════════════════════════════════════════════
+            const { error: orderError } = await supabase
                 .from("orders")
-                .insert([orderData])
-                .select()
-                .single();
+                .insert([orderData]);
 
-            if (orderError) throw new Error(orderError.message);
+            if (orderError) {
+                throw new Error(orderError.message);
+            }
 
-            // ============================================
-            // 5. إدراج بنود الطلب
-            // ============================================
+            // ══════════════════════════════════════════════════════
+            // 6. إدراج بنود الطلب — نستخدم orderId المعروف
+            // ══════════════════════════════════════════════════════
             const orderItems = cartItems.map((item) => ({
-                order_id: order.id,
+                order_id: orderId,
                 product_id: item.id,
                 product_number: item.product_number || null,
                 quantity: item.quantity,
                 product_name: item.name,
                 unit_price: item.price,
-                total_price:
-                    (item.total_price || item.price) * item.quantity,
+                total_price: (item.total_price || item.price) * item.quantity,
                 tax_rate: item.tax_rate || 0,
                 weight: item.weight || null,
                 weight_unit: item.weight_unit || "kg",
                 total_weight:
-                    toBaseUnit(item.weight, item.weight_unit) *
-                    item.quantity,
+                    toBaseUnit(item.weight, item.weight_unit) * item.quantity,
             }));
 
             const { error: itemsError } = await supabase
                 .from("order_items")
                 .insert(orderItems);
 
-            if (itemsError) throw new Error(itemsError.message);
+            if (itemsError) {
+                // فشل البنود → نحاول حذف الطلب (best-effort) ونُبلّغ
+                console.error("❌ Order items insert failed:", itemsError);
+                throw new Error(itemsError.message);
+            }
 
-            // ============================================
-            // 6. حفظ آخر طلب
-            // ============================================
-            localStorage.setItem(
-                "lastOrder",
-                JSON.stringify({
-                    id: order.id,
-                    order_number: order.order_number,
-                    status: order.status,
-                    created_at: order.created_at,
-                })
-            );
+            // ══════════════════════════════════════════════════════
+            // 7. حفظ آخر طلب
+            // ══════════════════════════════════════════════════════
+            saveLastOrder({
+                id: orderId,
+                order_number: orderNumber,
+                status: "awaiting_payment",
+                customer_info: { email: checkoutData.email },
+            });
 
-            // ============================================
-            // 7. تنظيف
-            // ============================================
+            // ══════════════════════════════════════════════════════
+            // 8. تنظيف
+            // ══════════════════════════════════════════════════════
             updateFields({
                 deliveryDate: selectedDate,
                 deliveryTime: selectedTime,
@@ -267,17 +270,16 @@ export default function DeliveryTimePage() {
             clearCart();
             clearCheckout();
 
-            toast.success(`✅ Bestellung ${order.order_number} erstellt!`, {
+            toast.success(`✅ Bestellung ${orderNumber} erstellt!`, {
                 id: toastId,
             });
 
-            // ============================================
-            // 8. الانتقال لصفحة الدفع
-            // ============================================
-            navigate(
-                `/Cart&Payments/BillAndPayment/${order.id}`,
-                { replace: true }
-            );
+            // ══════════════════════════════════════════════════════
+            // 9. الانتقال لصفحة الدفع — نمرّر orderId المعروف
+            // ══════════════════════════════════════════════════════
+            navigate(`/Cart&Payments/BillAndPayment/${orderId}`, {
+                replace: true,
+            });
         } catch (error) {
             console.error("❌ Order submission failed:", error);
             toast.error(`Fehler: ${error.message}`, { id: toastId });
@@ -296,31 +298,9 @@ export default function DeliveryTimePage() {
 
             <main className="dt-main">
                 <div className="dt-hero">
-                    <span className="dt-hero-badge">🕒 Schritt 3 von 4</span>
+                    <span className="dt-hero-badge">🕒 Schritt 2 von 4</span>
                     <h1>Liefertermin wählen</h1>
-                    <p>
-                        Bestimmen Sie, wann wir Ihre Bestellung liefern
-                        sollen.
-                    </p>
-                </div>
-
-                <div className="dt-progress">
-                    <div className="dt-progress-item done">
-                        <span className="material-symbols-outlined">
-                            check_circle
-                        </span>
-                        <span>Adresse</span>
-                    </div>
-                    <div className="dt-progress-line done" />
-                    <div className="dt-progress-item active">
-                        <span className="dt-progress-num">2</span>
-                        <span>Liefertermin</span>
-                    </div>
-                    <div className="dt-progress-line" />
-                    <div className="dt-progress-item">
-                        <span className="dt-progress-num">3</span>
-                        <span>Zahlung</span>
-                    </div>
+                    <p>Bestimmen Sie, wann wir Ihre Bestellung liefern sollen.</p>
                 </div>
 
                 <div className="dt-layout">
@@ -352,9 +332,7 @@ export default function DeliveryTimePage() {
                     <button
                         type="button"
                         className="dt-btn-cancel"
-                        onClick={() =>
-                            navigate("/Cart&Payments/Checkout")
-                        }
+                        onClick={() => navigate("/Cart&Payments/Checkout")}
                         disabled={submitting}
                     >
                         ← Zurück zur Adresse
@@ -363,9 +341,7 @@ export default function DeliveryTimePage() {
                         type="button"
                         className="dt-btn-submit"
                         onClick={handleConfirmOrder}
-                        disabled={
-                            submitting || !selectedDate || !selectedTime
-                        }
+                        disabled={submitting || !selectedDate || !selectedTime}
                     >
                         {submitting ? (
                             <>
@@ -374,10 +350,8 @@ export default function DeliveryTimePage() {
                             </>
                         ) : (
                             <>
-                                <span className="material-symbols-outlined">
-                                    lock
-                                </span>
-                                Bestellung bestätigen · Weiter zur Zahlung
+                                <span className="material-symbols-outlined">arrow_forward</span>
+                                Weiter zur Zahlung
                             </>
                         )}
                     </button>

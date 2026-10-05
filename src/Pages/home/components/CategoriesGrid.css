@@ -1,0 +1,56 @@
+/* ============================================
+   🗂️ HOME CATEGORIES GRID — 6 columns
+   ============================================ */
+.home-categories-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 1.25rem;
+    width: 100%;
+    margin-top: var(--space-6);
+    align-items: stretch;
+    box-sizing: border-box;
+}
+
+.categories-grid-state {
+    margin-top: var(--space-6);
+    padding: var(--space-6);
+    text-align: center;
+    color: var(--secondary-text);
+    font-size: 0.95rem;
+}
+
+/* ============================================
+   📱 Responsive — عدد الأعمدة
+   ============================================ */
+
+/* Laptop متوسط: 5 أعمدة */
+@media (max-width: 75rem) {
+    .home-categories-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* Tablet: 4 أعمدة */
+@media (max-width: 64rem) {
+    .home-categories-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-4);
+    }
+}
+
+/* Small Tablet: 3 أعمدة */
+@media (max-width: 48rem) {
+    .home-categories-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.875rem;
+        margin-top: var(--space-5);
+    }
+}
+
+/* Mobile: عمودان */
+@media (max-width: 30rem) {
+    .home-categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-3);
+    }
+}

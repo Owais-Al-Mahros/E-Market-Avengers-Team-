@@ -123,6 +123,13 @@
     font-weight: 600;
 }
 
+.dsum-row-tax {
+    font-size: 0.75rem !important;
+    color: var(--text-muted) !important;
+    padding: 2px 0 !important;
+    font-weight: 500;
+}
+
 .dsum-total {
     padding-top: 12px;
     margin-top: 4px;
@@ -160,6 +167,103 @@
     color: var(--text);
     line-height: 1.55;
     font-weight: 500;
+}
+
+/* ============================================
+   📦 PRODUCTS LIST (mini)
+   ============================================ */
+.dsum-items {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.dsum-items::-webkit-scrollbar {
+    width: 4px;
+}
+
+.dsum-items::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 4px;
+}
+
+.dsum-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 10px;
+    background: #fafcfb;
+    border-radius: 8px;
+    border: 1px solid var(--secondary-color);
+}
+
+.dsum-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+.dsum-item-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.dsum-item-meta {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-family: "Courier New", monospace;
+    white-space: nowrap;
+}
+
+.dsum-item-price {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--primary-color);
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-family: "Courier New", monospace;
+}
+
+/* ============================================
+   📱 Mobile
+   ============================================ */
+@media (max-width: 640px) {
+    .dsum-items {
+        max-height: 200px;
+    }
+
+    .dsum-item {
+        padding: 6px 8px;
+    }
+
+    .dsum-item-name {
+        font-size: 12.5px;
+    }
+
+    .dsum-item-meta {
+        font-size: 11px;
+    }
+
+    .dsum-item-price {
+        font-size: 12.5px;
+    }
 }
 
 /* ===== Responsive ===== */

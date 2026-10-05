@@ -1,0 +1,203 @@
+/* ==========================================
+   📬 CONTACT MESSAGES SECTION
+   ========================================== */
+
+.cmsg-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/* ═══ Header ═══ */
+.cmsg-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    padding-bottom: var(--space-4);
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.cmsg-header h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-xl);
+    font-weight: 800;
+    color: var(--primary-color);
+    margin: 0 0 4px;
+}
+
+.cmsg-header h3 .material-symbols-outlined {
+    font-size: 26px;
+}
+
+.cmsg-header p {
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+    margin: 0;
+    font-weight: 500;
+}
+
+.cmsg-badge-new {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    background: var(--danger-color);
+    color: #fff;
+    border-radius: var(--radius-full);
+    font-size: var(--font-sm);
+    font-weight: 800;
+    animation: cmsgPulse 1.5s ease-in-out infinite;
+    white-space: nowrap;
+}
+
+@keyframes cmsgPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.75;
+    }
+}
+
+/* ═══ Filters ═══ */
+.cmsg-filters {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.cmsg-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background: var(--admin-card-bg);
+    border: 2px solid var(--secondary-color);
+    border-radius: var(--radius-full);
+    font-family: inherit;
+    font-size: var(--font-sm);
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    min-height: 40px;
+}
+
+.cmsg-filter-btn:hover {
+    border-color: var(--primary-color);
+}
+
+.cmsg-filter-btn.active {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.cmsg-filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 20px;
+    padding: 0 6px;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs);
+    font-weight: 800;
+}
+
+.cmsg-filter-btn.active .cmsg-filter-count {
+    background: rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
+/* ═══ List ═══ */
+.cmsg-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+/* ═══ States ═══ */
+.cmsg-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.cmsg-state .material-symbols-outlined {
+    font-size: 56px;
+    color: var(--secondary-color);
+    margin-bottom: var(--space-3);
+}
+
+.cmsg-state p {
+    margin: 0;
+    font-size: var(--font-base);
+}
+
+.cmsg-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-8) var(--space-5);
+    text-align: center;
+    color: var(--danger-color);
+}
+
+.cmsg-error .material-symbols-outlined {
+    font-size: 48px;
+}
+
+.cmsg-retry-btn {
+    padding: 10px 22px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: var(--font-sm);
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.cmsg-retry-btn:hover {
+    background: var(--dark-green);
+    transform: translateY(-1px);
+}
+
+/* ═══ Responsive ═══ */
+@media (max-width: 40rem) {
+    .cmsg-header h3 {
+        font-size: var(--font-lg);
+    }
+
+    .cmsg-filters {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+    }
+
+    .cmsg-filters::-webkit-scrollbar {
+        display: none;
+    }
+
+    .cmsg-filter-btn {
+        flex-shrink: 0;
+        padding: 8px 14px;
+        font-size: var(--font-xs);
+    }
+}

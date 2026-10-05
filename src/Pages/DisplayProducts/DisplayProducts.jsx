@@ -1,41 +1,40 @@
-import { useState, useMemo, useEffect, memo, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
-import ProductCard from "../DisplayProducts/components/ProductCard";
-import HomePageHeader from "../Home page/components/HomePageHeader";
-import Footer from "./../../Components/Footer";
+import { useState, useMemo, useCallback, memo } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import ProductCard from "../../components/product/ProductCard";
 import SubCategory from "./components/subCategory";
-import Subscribe from "../../Components/Subscribe";
+import Header from "../../components/layout/Header";
+import Footer from "../../components/layout/Footer";
+import Subscribe from "../../components/layout/Subscribe";
 import { useCategories } from "../../context/CategoryContext";
 import { useProducts } from "../../context/ProductContext";
 import { useSubcategories } from "../../context/SubcategoryContext";
 import "./DisplayProducts.css";
 
-const StaticHeader = memo(HomePageHeader);
+const StaticHeader = memo(Header);
 const StaticFooter = memo(Footer);
 const StaticSubscribe = memo(Subscribe);
 
-function DisplayProducts() {
-  console.count("🎯 DisplayProducts");
-
-  // ✅ نقرأ categoryId من URL مرة واحدة فقط عند أول فتح
+export default function DisplayProducts() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialCategoryId = searchParams.get("categoryId");
+  const searchTerm = (searchParams.get("search") || "").trim();
 
   const { categories, loading: categoriesLoading } = useCategories();
   const { products, loading: productsLoading } = useProducts();
   const { subcategories, loading: subcategoriesLoading } = useSubcategories();
 
-  // ✅ كل الفلترة في state محلي — لا URL، لا navigate
   const [activeCategoryId, setActiveCategoryId] = useState(initialCategoryId);
   const [selectSubCat, setSelectSubCat] = useState(null);
 
-  // ✅ الفئة الحالية
+  // ============================================
+  // Current category (only in category mode)
+  // ============================================
   const currentCategory = useMemo(() => {
     if (!activeCategoryId) return null;
     return categories.find((c) => Number(c.id) === Number(activeCategoryId));
   }, [categories, activeCategoryId]);
 
-  // ✅ الفئات الفرعية للفئة النشطة
   const currentSubcategories = useMemo(() => {
     if (!activeCategoryId) return [];
     return subcategories.filter(
@@ -43,8 +42,27 @@ function DisplayProducts() {
     );
   }, [subcategories, activeCategoryId]);
 
-  // ✅ فلترة المنتجات — تماماً مثل filteredProducts في Dashboard
+  // ============================================
+  // Filtered products — search mode OR category mode
+  // ============================================
   const filteredProducts = useMemo(() => {
+    // 🎯 Search mode — حد 100 منتج
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      const isNumeric = /^\d+$/.test(term);
+
+      return products
+        .filter((p) => {
+          if (isNumeric) {
+            return String(p.product_number || "").includes(term);
+          }
+          return (p.name || "").toLowerCase().includes(term);
+        })
+        .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
+        .slice(0, 100);            // ← ✅ الحد الأقصى
+    }
+
+    // 📂 Category mode — لا حد
     if (!activeCategoryId) return [];
 
     return products
@@ -53,65 +71,77 @@ function DisplayProducts() {
         selectSubCat ? Number(p.subcategory_id) === Number(selectSubCat) : true
       )
       .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-  }, [products, activeCategoryId, selectSubCat]);
+  }, [products, activeCategoryId, selectSubCat, searchTerm]);
 
-  // ✅ تغيير الفئة الرئيسية — state فقط
-  const handleCategorySelect = useCallback((id) => {
-    setActiveCategoryId(id);
-    setSelectSubCat(null);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  // ============================================
+  // Handlers
+  // ============================================
+  const handleCategorySelect = useCallback(
+    (id) => {
+      // إذا كنا في وضع البحث → اذهب لصفحة الفئة (لتحديث URL)
+      if (searchTerm) {
+        navigate(`/DisplayProducts?categoryId=${id}`);
+        return;
+      }
+      setActiveCategoryId(id);
+      setSelectSubCat(null);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    [searchTerm, navigate]
+  );
 
-  // ✅ تغيير الفئة الفرعية — state فقط
   const handleSubCategorySelect = useCallback((subId) => {
     setSelectSubCat((prev) =>
       Number(prev) === Number(subId) ? null : subId
     );
   }, []);
 
-  const isLoadingContexts =
-    categoriesLoading || productsLoading || subcategoriesLoading;
+  // ============================================
+  // Derived values
+  // ============================================
+  const isLoading = categoriesLoading || productsLoading || subcategoriesLoading;
+  const pageTitle = searchTerm
+    ? `Search results for "${searchTerm}"`
+    : currentCategory?.name || "Products";
 
-  const categoryName = currentCategory?.name || "Products";
+  // نخفي الفئات الفرعية في وضع البحث
+  const showSubcategories = !searchTerm && currentSubcategories.length > 0;
 
   return (
     <>
       <StaticHeader />
 
-      <div className="display-products-page">
-        <h1>{categoryName}</h1>
+      <div className="display-back-wrapper">
+        <button
+          type="button"
+          className="display-back-btn"
+          onClick={() => navigate(-1)}
+        >
+          <span className="material-symbols-outlined">arrow_back</span>
+          <span>Back</span>
+        </button>
+      </div>
 
-        <SubCategory
-          subcategories={currentSubcategories}
-          selectSubCat={selectSubCat}
-          onSelect={handleSubCategorySelect}
-        />
+      <div className="display-products-page">
+        <h1 className="display-products-title">{pageTitle}</h1>
+
+        {showSubcategories && (
+          <SubCategory
+            subcategories={currentSubcategories}
+            selectSubCat={selectSubCat}
+            onSelect={handleSubCategorySelect}
+          />
+        )}
 
         <div className="products-area">
-          {isLoadingContexts ? (
-            <div className="loading">Loading products...</div>
+          {isLoading ? (
+            <div className="products-state">Loading products...</div>
           ) : filteredProducts.length === 0 ? (
-            <div className="empty">No products found.</div>
+            <div className="products-state">No products found.</div>
           ) : (
             <div className="products-grid">
               {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  image={product.image}
-                  category={product.category}
-                  price={product.price}
-                  weight={product.weight}
-                  tax_rate={product.tax_rate}
-                  weight_unit={product.weight_unit}
-                  total_price={product.total_price}
-                  description={product.description}
-                  nutritionObject={product.nutrition_facts}
-                  storageObject={product.storage_notes}
-                  ingredients={product.ingredients}
-                  product_number = {product.product_number}
-                />
+                <ProductCard key={product.id} {...product} />
               ))}
             </div>
           )}
@@ -121,33 +151,44 @@ function DisplayProducts() {
       <StaticSubscribe />
 
       <div className="category-sections-display">
-        <h2>Categories</h2>
-        <div className="categories-grid-display">
-          {categoriesLoading ? (
-            <p>Loading categories...</p>
-          ) : (
-            categories.map((cat) => (
+        <h2 className="category-sections-display-title">Categories</h2>
+
+        {categoriesLoading ? (
+          <div className="products-state">Loading categories...</div>
+        ) : (
+          <div className="display-categories-grid">
+            {categories.map((cat) => (
               <div
                 key={cat.id}
-                className={`category-card-display ${Number(cat.id) === Number(activeCategoryId) ? "active" : ""
+                className={`display-category-card ${Number(cat.id) === Number(activeCategoryId) && !searchTerm
+                  ? "active"
+                  : ""
                   }`}
                 onClick={() => handleCategorySelect(cat.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleCategorySelect(cat.id);
+                  }
+                }}
               >
-                <img
-                  src={cat.image}
-                  className="category-image-display"
-                  alt={cat.name}
-                />
-                <h2 className="category-name-display">{cat.name}</h2>
+                {cat.image && (
+                  <img
+                    src={cat.image}
+                    className="display-category-image"
+                    alt={cat.name}
+                  />
+                )}
+                <span className="display-category-name">{cat.name}</span>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <StaticFooter />
     </>
   );
 }
-
-export default DisplayProducts;

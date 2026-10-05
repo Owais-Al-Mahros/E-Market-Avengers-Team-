@@ -217,3 +217,64 @@ export const UNIT_LABELS = {
     ml: { en: "Milliliter", de: "Milliliter", short: "ml" },
     Stk: { en: "Piece", de: "Stück", short: "Stk" },
 };
+// ==========================================================
+// 🎯 Product Type — WEIGHT_BASED vs UNIT_BASED
+// ==========================================================
+
+/**
+ * هل المنتج يُباع بالوزن (kg) أم بالعبوة/القطعة؟
+ * @param {object} product
+ * @returns {boolean}
+ */
+export function isProductWeightBased(product) {
+    if (!product) return false;
+    if (product.product_type) {
+        return product.product_type === "weight_based";
+    }
+    // fallback: infer من weight_unit
+    return String(product.weight_unit || "").toLowerCase() === "kg";
+}
+
+/**
+ * هل المنتج يُباع بالعبوة/القطعة؟
+ */
+export function isProductUnitBased(product) {
+    return !isProductWeightBased(product);
+}
+
+/**
+ * السعر لكل كيلوغرام (للعرض فقط، للمنتجات بالوزن)
+ */
+export function getPricePerKg(product) {
+    if (!isProductWeightBased(product)) return 0;
+    const price = parseFloat(product.total_price || product.price) || 0;
+    const weight = parseFloat(product.weight) || 0;
+    if (weight <= 0) return 0;
+    return (price / weight).toFixed(2);
+}
+
+/**
+ * وصف كامل للعرض:
+ * - Weight-based: "1 × 200 g (9,95 €/kg)"
+ * - Unit-based:   "2 Stück × 0,76 €"
+ */
+export function formatProductDisplay(product, quantity = 1) {
+    if (isProductWeightBased(product)) {
+        const unit = product.weight_unit || "kg";
+        const totalWeight = (parseFloat(product.weight) || 0) * quantity;
+        return `${quantity} × ${totalWeight} ${unit}`;
+    }
+    return `${quantity} Stück`;
+}
+
+/**
+ * عرض سعر الوحدة حسب نوع المنتج
+ * - Weight-based: "€/kg"
+ * - Unit-based:   "€/Stück"
+ */
+export function getUnitLabel(product) {
+    if (isProductWeightBased(product)) {
+        return `€/${product.weight_unit || "kg"}`;
+    }
+    return "€/Stück";
+}

@@ -1,0 +1,498 @@
+.dd-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f7faf8 0%, #eff5f1 100%);
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.dd-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #145c4a, #0f4a3b);
+    border-radius: 20px;
+    color: #fff;
+    box-shadow: 0 12px 32px rgba(20, 92, 74, 0.2);
+    margin-bottom: 20px;
+}
+
+.dd-header-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.dd-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid #b9e769;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.dd-header h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0 0 2px;
+    color: #fff;
+}
+
+.dd-header p {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dd-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.dd-logout:hover {
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.dd-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.dd-stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #ddf4ea;
+    box-shadow: 0 2px 8px rgba(20, 92, 74, 0.04);
+}
+
+.dd-stat-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.dd-stat strong {
+    display: block;
+    font-size: 22px;
+    font-weight: 800;
+    color: #145c4a;
+    line-height: 1.1;
+}
+
+.dd-stat span {
+    font-size: 11px;
+    color: #6b7a77;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dd-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #ddf4ea;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.dd-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.dd-tab {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: #6b7a77;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-height: 44px;
+}
+
+.dd-tab:hover {
+    background: #f7faf8;
+    color: #145c4a;
+}
+
+.dd-tab.active {
+    background: #145c4a;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(20, 92, 74, 0.2);
+}
+
+.dd-tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 20px;
+    padding: 0 6px;
+    background: rgba(20, 92, 74, 0.15);
+    color: #145c4a;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.dd-tab.active .dd-tab-count {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+.dd-content {
+    min-height: 300px;
+}
+
+.dd-orders {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.dd-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: #6b7a77;
+    gap: 14px;
+}
+
+.dd-state .material-symbols-outlined {
+    font-size: 56px;
+    color: #ddf4ea;
+}
+
+.dd-card {
+    background: #fff;
+    border-radius: 18px;
+    border: 2px solid #ddf4ea;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(20, 92, 74, 0.04);
+    transition: all 0.2s ease;
+}
+
+.dd-card:hover {
+    border-color: #145c4a;
+    box-shadow: 0 8px 24px rgba(20, 92, 74, 0.1);
+}
+
+.dd-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #ddf4ea;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.dd-card-num {
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+    font-weight: 800;
+    color: #145c4a;
+    margin-right: 8px;
+}
+
+.dd-card-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.dd-status-confirmed {
+    background: rgba(59, 130, 246, 0.12);
+    color: #1d4ed8;
+}
+
+.dd-status-shipped {
+    background: rgba(139, 92, 246, 0.12);
+    color: #5b21b6;
+}
+
+.dd-status-delivered {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+}
+
+.dd-card-delivery {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #145c4a;
+    font-family: "Courier New", monospace;
+}
+
+.dd-card-delivery .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.dd-card-section {
+    padding: 8px 0;
+}
+
+.dd-card-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #6b7a77;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin: 0 0 6px;
+}
+
+.dd-card-section h4 .material-symbols-outlined {
+    font-size: 16px;
+    color: #145c4a;
+}
+
+.dd-card-section p {
+    margin: 0;
+    font-size: 14px;
+    color: #15312b;
+    line-height: 1.55;
+}
+
+.dd-card-section p strong {
+    font-weight: 800;
+}
+
+.dd-card-hint {
+    font-size: 12.5px !important;
+    color: #6b7a77 !important;
+    margin-top: 4px !important;
+}
+
+.dd-card-note {
+    font-size: 12.5px !important;
+    background: rgba(245, 158, 11, 0.08);
+    border-left: 3px solid #f59e0b;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-top: 8px !important;
+    font-style: italic;
+}
+
+.dd-card-link {
+    display: inline-block;
+    margin-top: 4px;
+    color: #145c4a;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 13.5px;
+}
+
+.dd-card-link:hover {
+    text-decoration: underline;
+}
+
+.dd-card-actions {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed #ddf4ea;
+}
+
+.dd-btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 50px;
+}
+
+.dd-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dd-btn-ship {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+}
+
+.dd-btn-ship:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(139, 92, 246, 0.45);
+}
+
+.dd-btn-deliver {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+}
+
+.dd-btn-deliver:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(16, 185, 129, 0.45);
+}
+
+.dd-card-done {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px;
+    background: rgba(16, 185, 129, 0.08);
+    color: #059669;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.dd-card-done .material-symbols-outlined {
+    font-size: 22px;
+}
+
+@media (max-width: 48rem) {
+    .dd-page {
+        padding: 12px;
+    }
+
+    .dd-header {
+        padding: 16px 18px;
+    }
+
+    .dd-header h1 {
+        font-size: 17px;
+    }
+
+    .dd-stats {
+        gap: 8px;
+    }
+
+    .dd-stat {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .dd-stat strong {
+        font-size: 18px;
+    }
+
+    .dd-stat span {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 30rem) {
+    .dd-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .dd-stat {
+        padding: 14px;
+    }
+
+    .dd-card {
+        padding: 16px;
+    }
+
+    .dd-logout span:not(.material-symbols-outlined) {
+        display: none;
+    }
+
+    .dd-logout {
+        padding: 10px;
+        border-radius: 50%;
+        width: 42px;
+        height: 42px;
+        justify-content: center;
+    }
+}
+
+.dd-card-head-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.dd-details-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 14px;
+    background: #ddf4ea;
+    color: #145c4a;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.dd-details-btn:hover {
+    background: #145c4a;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.dd-details-btn .material-symbols-outlined {
+    font-size: 16px;
+}

@@ -1,4 +1,3 @@
-// src/context/CartContext.jsx
 import { createContext, useContext, useMemo } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { toBaseUnit } from "../lib/units";
@@ -38,7 +37,28 @@ export function CartProvider({ children }) {
             prevItems.filter((item) => item.id !== productId)
         );
     };
-
+    // ============================================
+    // زيادة الكمية
+    // ============================================
+    const increaseQty = (productId) => {
+        setCartItems((prev) =>
+            prev.map((item) =>
+                item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+            )
+        );
+    };
+    // ============================================
+    // إنقاص الكمية
+    // ============================================
+    const decreaseQty = (productId) => {
+        setCartItems((prev) =>
+            prev
+                .map((item) =>
+                    item.id === productId ? { ...item, quantity: item.quantity - 1 } : item
+                )
+                .filter((item) => item.quantity > 0)
+        );
+    };
     // ============================================
     // تحديث الكمية
     // ============================================
@@ -79,6 +99,9 @@ export function CartProvider({ children }) {
         }, 0);
     }, [cartItems]);
 
+
+
+
     // ============================================
     // ✅ إجمالي الوزن بالوحدة الأساسية (kg / L)
     // ============================================
@@ -103,6 +126,8 @@ export function CartProvider({ children }) {
         removeFromCart,
         updateQuantity,
         clearCart,
+        decreaseQty,
+        increaseQty,
     };
 
     return (

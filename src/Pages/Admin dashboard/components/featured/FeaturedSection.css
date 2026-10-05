@@ -1,0 +1,569 @@
+/* ==========================================
+   🔥 FEATURED SECTION — Admin
+   ========================================== */
+
+.feat-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding: var(--space-4);
+}
+
+/* ═══ Header ═══ */
+.feat-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    padding-bottom: var(--space-4);
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.feat-head h2 {
+    font-size: var(--font-2xl);
+    font-weight: 800;
+    color: var(--primary-color);
+    margin: 0 0 4px;
+    letter-spacing: -0.4px;
+}
+
+.feat-head p {
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+    margin: 0;
+    font-weight: 500;
+    max-width: 42rem;
+}
+
+.feat-head-actions {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+/* ═══ Buttons ═══ */
+.feat-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: var(--font-sm);
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+    min-height: 44px;
+}
+
+.feat-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.feat-btn .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.feat-btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(20, 92, 74, 0.25);
+}
+
+.feat-btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(20, 92, 74, 0.35);
+    background: linear-gradient(135deg, var(--success), var(--primary-color));
+}
+
+.feat-btn-secondary {
+    background: var(--admin-card-bg);
+    color: var(--primary-color);
+    border: 2px solid var(--secondary-color);
+}
+
+.feat-btn-secondary:hover:not(:disabled) {
+    background: var(--secondary-color);
+}
+
+.feat-spinner-sm {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: featSpin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes featSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ═══ Progress ═══ */
+.feat-progress-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: var(--space-4) var(--space-5);
+    background: var(--admin-card-bg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--secondary-color);
+}
+
+.feat-progress-info {
+    font-size: var(--font-sm);
+    font-weight: 700;
+    color: var(--text);
+}
+
+.feat-progress-info strong {
+    color: var(--primary-color);
+    font-weight: 800;
+    font-size: var(--font-md);
+}
+
+.feat-progress-full {
+    color: var(--success);
+    font-weight: 800;
+    margin-left: 4px;
+}
+
+.feat-progress-dirty {
+    color: #f59e0b;
+    font-weight: 800;
+    margin-left: 4px;
+}
+
+.feat-progress-track {
+    height: 8px;
+    background: var(--secondary-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.feat-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--success));
+    border-radius: var(--radius-full);
+    transition: width 0.3s ease;
+}
+
+/* ═══ Selected Panel ═══ */
+.feat-selected-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    background: var(--admin-card-bg);
+    border: 2px solid var(--success);
+    border-radius: var(--radius-lg);
+    border-left-width: 5px;
+}
+
+.feat-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--font-sm);
+    font-weight: 800;
+    color: var(--success);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.feat-subtitle .material-symbols-outlined {
+    font-size: 18px;
+    font-variation-settings: "FILL" 1;
+}
+
+.feat-selected-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px;
+}
+
+.feat-selected-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--bg-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.feat-selected-chip:hover {
+    border-color: var(--primary-color);
+}
+
+.feat-selected-rank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    background: var(--primary-color);
+    color: #fff;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 800;
+    font-family: "Courier New", monospace;
+    flex-shrink: 0;
+}
+
+.feat-selected-thumb {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    object-fit: contain;
+    background: #fff;
+    border: 1px solid var(--secondary-color);
+    flex-shrink: 0;
+}
+
+.feat-selected-name {
+    flex: 1;
+    font-size: var(--font-sm);
+    font-weight: 700;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.feat-selected-actions {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.feat-icon-btn-sm {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.feat-icon-btn-sm:hover:not(:disabled) {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.feat-icon-btn-sm:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.feat-icon-btn-sm.feat-danger:hover {
+    background: rgba(217, 79, 79, 0.1);
+    color: var(--danger-color);
+}
+
+.feat-icon-btn-sm .material-symbols-outlined {
+    font-size: 16px;
+}
+
+/* ═══ Search ═══ */
+.feat-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--admin-card-bg);
+    border: 2px solid var(--secondary-color);
+    border-radius: var(--radius-md);
+    padding: 0 12px;
+    transition: var(--transition-fast);
+}
+
+.feat-search:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(20, 92, 74, 0.1);
+}
+
+.feat-search>.material-symbols-outlined {
+    font-size: 20px;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.feat-search input {
+    flex: 1;
+    padding: 12px 10px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: var(--font-base);
+    color: var(--text);
+    min-width: 0;
+}
+
+.feat-search input::placeholder {
+    color: var(--text-muted);
+}
+
+.feat-search-clear {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.feat-search-clear:hover {
+    background: rgba(217, 79, 79, 0.1);
+    color: var(--danger-color);
+}
+
+.feat-search-clear .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* ═══ Grid ═══ */
+.feat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--space-4);
+}
+
+/* ═══ Card ═══ */
+.feat-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: var(--space-3);
+    background: var(--admin-card-bg);
+    border: 2px solid var(--secondary-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-family: inherit;
+    text-align: left;
+    overflow: hidden;
+}
+
+.feat-card:hover:not(.is-disabled) {
+    border-color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(20, 92, 74, 0.1);
+}
+
+.feat-card.is-selected {
+    border-color: var(--success);
+    background: linear-gradient(135deg, rgba(35, 139, 101, 0.04), #fff);
+    box-shadow: 0 4px 16px rgba(35, 139, 101, 0.15);
+}
+
+.feat-card.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.feat-card-rank {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: var(--success);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    font-family: "Courier New", monospace;
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    box-shadow: 0 2px 6px rgba(35, 139, 101, 0.4);
+    z-index: 2;
+}
+
+.feat-card-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--bg-color);
+    border: 2px solid var(--secondary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: var(--transition-fast);
+    z-index: 2;
+}
+
+.feat-card.is-selected .feat-card-check {
+    background: var(--success);
+    border-color: var(--success);
+    color: #fff;
+}
+
+.feat-card-check .material-symbols-outlined {
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.feat-card-image {
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-color);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.feat-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+}
+
+.feat-card-image .material-symbols-outlined {
+    font-size: 48px;
+    color: var(--secondary-color);
+}
+
+.feat-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.feat-card-name {
+    font-size: var(--font-sm);
+    font-weight: 700;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
+}
+
+.feat-card-price {
+    font-size: var(--font-xs);
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+/* ═══ States ═══ */
+.feat-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1.25rem;
+    text-align: center;
+    color: var(--text-muted);
+    gap: var(--space-3);
+    background: var(--admin-card-bg);
+    border: 2px dashed var(--secondary-color);
+    border-radius: var(--radius-lg);
+}
+
+.feat-state .material-symbols-outlined {
+    font-size: 56px;
+    color: var(--secondary-color);
+}
+
+.feat-state p {
+    margin: 0;
+    font-size: var(--font-base);
+    font-weight: 600;
+}
+
+/* ═══ Responsive ═══ */
+@media (max-width: 48rem) {
+    .feat-page {
+        padding: var(--space-3);
+    }
+
+    .feat-head h2 {
+        font-size: var(--font-xl);
+    }
+
+    .feat-head-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .feat-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .feat-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: var(--space-3);
+    }
+
+    .feat-selected-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 30rem) {
+    .feat-head-actions {
+        flex-direction: column-reverse;
+    }
+
+    .feat-btn {
+        width: 100%;
+    }
+
+    .feat-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .feat-card {
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .feat-card-name {
+        font-size: var(--font-xs);
+    }
+
+    .feat-card-check {
+        width: 22px;
+        height: 22px;
+    }
+
+    .feat-card-check .material-symbols-outlined {
+        font-size: 14px;
+    }
+
+    .feat-card-rank {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+}

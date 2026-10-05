@@ -1,94 +1,48 @@
 /* ==========================================
-   ADMIN DASHBOARD (لوحة تحكم الأدمن)
+   🛠️ ADMIN DASHBOARD
    ========================================== */
 
 .dashboard-container {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
-  background-color: var(--bg-color);
+  background-color: var(--admin-bg);
 }
 
-.dashboard-layout {
-  display: flex;
-  gap: 20px;
-  padding: 20px;
-  flex: 1;
+/* ==========================================
+   📦 Main Content Area
+   ========================================== */
+.dashboard-content {
+  /* ✅ حجز مساحة الـ Sidebar الثابت */
+  padding: var(--space-5);
+  padding-left: calc(var(--admin-sidebar-width) + var(--space-5));
+  min-width: 0;
+  min-height: 100vh;
 }
 
-.sidebar-wrapper {
-  flex: 0 0 280px;
-  position: sticky;
-  top: 20px;
-  align-self: flex-start;
-  height: fit-content;
-}
-
-.content-wrapper {
-  flex: 1;
-  overflow: hidden;
-}
-
-/* التنبيهات وإجراءات الشريط العلوي */
-.notification-badge {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  background: var(--danger-color, #ef4444);
-  color: var(--bg-color);
-  font-size: 10px;
-  font-weight: 800;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
+/* ==========================================
+   🚧 Placeholder (Analytics)
+   ========================================== */
+.dashboard-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--cream);
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--font-lg);
+  font-weight: 600;
+  background: var(--admin-card-bg);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--secondary-color);
+  min-height: 40vh;
 }
 
-.logout-btn {
-  color: var(--danger-color, #ef4444);
-  background: transparent;
-  border: 1px solid transparent;
-  padding: 8px 14px;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    background-color 0.2s,
-    border-color 0.2s,
-    transform 0.1s;
-}
-
-.logout-btn:hover {
-  background: #fee2e2;
-  border-color: #fca5a5;
-  color: var(--danger-color);
-}
-
-.logout-btn:active {
-  transform: scale(0.96);
-}
 /* ==========================================
-   MOBILE RESPONSIVE RULES (Max-width: 768px)
+   📱 MOBILE (max-width: 48rem = 768px)
    ========================================== */
-@media (max-width: 768px) {
-  .dashboard-layout {
-    flex-direction: column;
-    padding: 10px;
-    padding-bottom: 85px;
-  }
-
-  .sidebar-wrapper {
-    flex: unset;
-    width: 100%;
-    position: static;
-    height: auto;
-  }
-
-  .content-wrapper {
-    width: 100%;
-    overflow-x: hidden;
+@media (max-width: 48rem) {
+  .dashboard-content {
+    padding: var(--space-3);
+    /* ✅ حجز مساحة الـ Sidebar السفلي */
+    padding-bottom: calc(var(--admin-sidebar-mobile-height) + var(--space-4));
   }
 }

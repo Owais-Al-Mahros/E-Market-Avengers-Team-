@@ -1,0 +1,177 @@
+/* ==========================================
+   📮 WITHDRAWAL REQUESTS SECTION
+   ========================================== */
+
+.wf-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/* ═══ Header ═══ */
+.wf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    padding-bottom: var(--space-4);
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.wf-header h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-xl);
+    font-weight: 800;
+    color: var(--primary-color);
+    margin: 0 0 4px;
+}
+
+.wf-header h3 .material-symbols-outlined {
+    font-size: 26px;
+}
+
+.wf-header p {
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+    margin: 0;
+    font-weight: 500;
+}
+
+.wf-badge-new {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    background: var(--danger-color);
+    color: #fff;
+    border-radius: var(--radius-full);
+    font-size: var(--font-sm);
+    font-weight: 800;
+    animation: wfPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes wfPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.75;
+    }
+}
+
+/* ═══ Filters ═══ */
+.wf-filters {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.wf-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background: var(--admin-card-bg);
+    border: 2px solid var(--secondary-color);
+    border-radius: var(--radius-full);
+    font-family: inherit;
+    font-size: var(--font-sm);
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.wf-filter-btn:hover {
+    border-color: var(--primary-color);
+}
+
+.wf-filter-btn.active {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.wf-filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 20px;
+    padding: 0 6px;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs);
+    font-weight: 800;
+}
+
+.wf-filter-btn.active .wf-filter-count {
+    background: rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
+/* ═══ List ═══ */
+.wf-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+/* ═══ States ═══ */
+.wf-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.wf-state .material-symbols-outlined {
+    font-size: 56px;
+    color: var(--secondary-color);
+    margin-bottom: var(--space-3);
+}
+
+.wf-state p {
+    margin: 0;
+    font-size: var(--font-base);
+}
+
+.wf-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-8) var(--space-5);
+    text-align: center;
+    color: var(--danger-color);
+}
+
+.wf-error .material-symbols-outlined {
+    font-size: 48px;
+}
+
+.wf-retry-btn {
+    padding: 10px 22px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: var(--font-sm);
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.wf-retry-btn:hover {
+    background: var(--dark-green);
+    transform: translateY(-1px);
+}

@@ -1,4 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { searchProduct } from "../../../../api";
+import { useDebounce } from "../../../../hooks/useDebounce";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import CartProductCard from "../../components/CartProductCard/CartProductCard";
 import { useCart } from "../../../../context/CartContext";
@@ -7,34 +10,27 @@ import { useCategories } from "../../../../context/CategoryContext";
 import "./ShoppingCart.css";
 import CartHeader from "./components/CartHeader";
 import OrderSummary from "../../components/OrderSummary/OrderSummary";
-import Footer from "../../../../Components/Footer"
+import Footer from "../../../../components/layout/Footer"
 
-const STEPS = [
-  { id: 1, label: "Cart" },
-  { id: 2, label: "Address" },
-  { id: 3, label: "Delivery Date" },
-  { id: 4, label: "Payment" },
-  { id: 5, label: "Order" },
-];
 
 export default function ShoppingCart() {
   const navigate = useNavigate();
-  const { cartItems, totalItems, totalPrice, removeFromCart, updateQuantity } = useCart();
+  const {
+    cartItems,
+    removeFromCart,
+    increaseQty,     // ← من الـ Context
+    decreaseQty,
+    addToCart,
+  } = useCart();
   const { products } = useProducts();
   const { categories } = useCategories();
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchRef = useRef(null);
 
-  const increaseQty = (productId) => {
-    const item = cartItems.find((i) => i.id === productId);
-    if (item) updateQuantity(productId, item.quantity + 1);
-  };
-
-  const decreaseQty = (productId) => {
-    const item = cartItems.find((i) => i.id === productId);
-    if (item && item.quantity > 1) updateQuantity(productId, item.quantity - 1);
-    else removeFromCart(productId);
-  };
-
+  const debouncedSearchTerm = useDebounce(searchTerm, 250);
   // ✅ تجميع المنتجات حسب الفئة
   const groupedItems = useMemo(() => {
     const groups = {};
@@ -50,6 +46,87 @@ export default function ShoppingCart() {
     });
     return groups;
   }, [cartItems, products, categories]);
+
+  // ============================================
+  // 🔍 البحث — debounced + safe cleanup
+  // ============================================
+  useEffect(() => {
+    const term = debouncedSearchTerm.trim();
+
+    if (!term) {
+      setSearchResults([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    let cancelled = false;
+    setIsSearching(true);
+
+    searchProduct(term)
+      .then((results) => {
+        if (cancelled) return;
+        setSearchResults(results || []);
+        setShowDropdown(true);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Search error:", err?.message);
+        setSearchResults([]);
+      })
+      .finally(() => {
+        if (!cancelled) setIsSearching(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedSearchTerm]);
+
+  // ============================================
+  // 🖱️ إغلاق عند النقر خارجاً
+  // ============================================
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // ============================================
+  // ➕ إضافة منتج من نتائج البحث
+  // ============================================
+  const handleAddFromSearch = (product) => {
+    const price = parseFloat(product.total_price || product.price) || 0;
+
+    addToCart(
+      {
+        id: product.id,
+        product_number: product.product_number,
+        name: product.name,
+        image: product.image,
+        price: parseFloat(product.price) || 0,
+        total_price: price,
+        tax_rate: parseFloat(product.tax_rate) || 0,
+        weight: product.weight,
+        weight_unit: product.weight_unit,
+      },
+      1
+    );
+
+    toast.success(`Added "${product.name}" to cart`, { duration: 1500 });
+    setSearchTerm("");
+    setSearchResults([]);
+    setShowDropdown(false);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    setSearchResults([]);
+    setShowDropdown(false);
+  };
 
   if (!cartItems) {
     return <div className="cart-loading">Loading cart...</div>;
@@ -75,24 +152,83 @@ export default function ShoppingCart() {
         <h1 className="cart-title">Shopping Cart</h1>
 
         {/* ===== Search ===== */}
-        <div className="cart-search-wrapper">
+        <div className="cart-search-wrapper" ref={searchRef}>
           <p className="cart-search-text">
             Did you forget something? Search for products and add them to your cart.
           </p>
+
           <div className="cart-search">
             <input
               type="text"
-              placeholder="Search"
+              placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onFocus={() => searchTerm.trim() && setShowDropdown(true)}
             />
-            <button className="cart-search-btn" aria-label="Search">
+
+            {searchTerm && (
+              <button
+                type="button"
+                className="cart-search-clear"
+                onClick={handleClearSearch}
+                aria-label="Clear search"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            )}
+
+            <button className="cart-search-btn" aria-label="Search" type="button">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
                 <path d="M20 20l-3.5-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </button>
           </div>
+
+          {showDropdown && (
+            <div className="cart-search-dropdown">
+              {isSearching ? (
+                <div className="cart-search-state">
+                  <div className="cart-search-spinner" />
+                  Searching...
+                </div>
+              ) : searchResults.length === 0 ? (
+                <div className="cart-search-state">No products found.</div>
+              ) : (
+                searchResults.slice(0, 8).map((product) => {
+                  const displayPrice =
+                    parseFloat(product.total_price || product.price) || 0;
+
+                  return (
+                    <button
+                      key={product.id}
+                      type="button"
+                      className="cart-search-result"
+                      onClick={() => handleAddFromSearch(product)}
+                    >
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="cart-search-result-img"
+                        loading="lazy"
+                      />
+
+                      <div className="cart-search-result-info">
+                        <span className="cart-search-result-name">{product.name}</span>
+                        <span className="cart-search-result-price">
+                          €{displayPrice.toFixed(2)}
+                        </span>
+                      </div>
+
+                      <span className="material-symbols-outlined cart-search-result-add">
+                        add_circle
+                      </span>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          )}
         </div>
 
         {/* ===== Layout ===== */}
@@ -123,6 +259,7 @@ export default function ShoppingCart() {
                       id={product.id}
                       qty={product.quantity}
                       price={product.price}
+                      total_price={product.total_price}
                       increaseQty={increaseQty}
                       weight={product.weight}
                       weight_unit={product.weight_unit}

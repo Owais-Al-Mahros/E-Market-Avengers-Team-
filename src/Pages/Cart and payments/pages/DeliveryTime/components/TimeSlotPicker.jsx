@@ -1,3 +1,5 @@
+// src/Pages/Cart and payments/pages/DeliveryTime/components/TimeSlotPicker.jsx
+
 import { useMemo, useState, useEffect } from "react";
 import { useShippingSettings } from "../../../../../context/ShippingSettingsContext";
 import { supabase } from "../../../../../lib/supabase";
@@ -13,7 +15,10 @@ export default function TimeSlotPicker({
     const [loadingOrders, setLoadingOrders] = useState(false);
 
     // ============================================
-    // ✅ جلب عدد الطلبات لكل ساعة (capacity check)
+    // ✅ استخدم RPC بدل select مباشر (RLS يمنع anon)
+    // ============================================
+    // ============================================
+    // ✅ جلب عدد الطلبات لكل ساعة عبر RPC (RLS-safe)
     // ============================================
     useEffect(() => {
         const fetchOrdersCount = async () => {
@@ -21,40 +26,31 @@ export default function TimeSlotPicker({
 
             setLoadingOrders(true);
             try {
-                const { data, error } = await supabase
-                    .from("orders")
-                    .select("delivery_time, status")
-                    .eq("delivery_date", selectedDate)
-                    .in("status", [
-                        "pending",
-                        "confirmed",
-                        "shipped",
-                        "delivered",
-                        "awaiting_payment",
-                    ]);
+                const { data, error } = await supabase.rpc(
+                    "get_delivery_slot_counts",
+                    { p_date: selectedDate }
+                );
 
                 if (error) throw error;
 
-                // عدّ الطلبات لكل ساعة
+                // [{ slot: "10:00", cnt: 3 }, ...] → { "10:00": 3, ... }
                 const counts = {};
-                (data || []).forEach((order) => {
-                    const time = order.delivery_time;
-                    if (time) {
-                        counts[time] = (counts[time] || 0) + 1;
-                    }
+                (data || []).forEach((row) => {
+                    if (row?.slot) counts[row.slot] = Number(row.cnt) || 0;
                 });
 
                 setOrdersCount(counts);
             } catch (err) {
                 console.error("Failed to count orders:", err);
-                setOrdersCount({});
+                setOrdersCount({}); // fallback: جميع الساعات متاحة
             } finally {
                 setLoadingOrders(false);
             }
         };
 
         fetchOrdersCount();
-    }, [selectedDate]);
+    }, [selectedDate]);;
+
 
     // ============================================
     // حساب الفترات المتاحة
@@ -62,15 +58,11 @@ export default function TimeSlotPicker({
     const slots = useMemo(() => {
         if (!selectedDate) return [];
 
-        const dayName = new Date(selectedDate).toLocaleDateString("en-US", {
-            weekday: "long",
-        });
-
+        // ✅ المفتاح هو التاريخ نفسه (نفس صيغة DayPicker)
         const hoursForDay =
-            settings.dateOverrides?.[dayName] ||
+            settings.dateOverrides?.[selectedDate] ||
             settings.defaultHours ||
             [];
-
         const normalizedHours = hoursForDay.map((h) => {
             const [hour, min] = h.split(":");
             return `${String(parseInt(hour, 10)).padStart(2, "0")}:${min || "00"
@@ -125,10 +117,8 @@ export default function TimeSlotPicker({
     ]);
 
     const formatTime = (timeStr) => {
-        const hour = parseInt(timeStr.split(":")[0], 10);
-        const ampm = hour >= 12 ? "PM" : "AM";
-        const hour12 = hour % 12 || 12;
-        return `${hour12}:00 ${ampm}`;
+        const [h, m] = timeStr.split(":");
+        return `${String(h).padStart(2, "0")}:${m || "00"} Uhr`;
     };
 
     const maxOrders = settings.maxOrdersPerHour || 0;
@@ -141,10 +131,8 @@ export default function TimeSlotPicker({
                     Lieferzeit auswählen
                 </h2>
                 <p className="tsp-subtitle">
-                    Mindestdauer: {settings.minDurationHours || 2} Stunden
-                    {maxOrders > 0 && (
-                        <> · Max. {maxOrders} Bestellungen pro Stunde</>
-                    )}
+                    Mindestdauer: {settings.minDurationHours || 2}{" "}
+                    {(settings.minDurationHours || 2) === 1 ? "Stunde" : "Stunden"}
                 </p>
             </div>
 
@@ -185,19 +173,9 @@ export default function TimeSlotPicker({
                                 <span className="tsp-slot-duration">
                                     {slot.end - slot.start}h
                                 </span>
-
-                                {isDisabled ? (
-                                    <span className="tsp-slot-full-badge">
-                                        Ausgebucht
-                                    </span>
-                                ) : (
-                                    maxOrders > 0 && (
-                                        <span className="tsp-slot-availability">
-                                            {slot.booked}/{maxOrders}
-                                        </span>
-                                    )
+                                {isDisabled && (
+                                    <span className="tsp-slot-full-badge">Ausgebucht</span>
                                 )}
-
                                 {isSelected && !isDisabled && (
                                     <span className="tsp-slot-check">
                                         <span className="material-symbols-outlined">

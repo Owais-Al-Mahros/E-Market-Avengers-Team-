@@ -1,0 +1,38 @@
+/* ==========================================
+   🔙 BACK BUTTON
+   ========================================== */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1rem;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  white-space: nowrap;
+}
+
+.back-btn .material-symbols-outlined {
+  font-size: 1.125rem;
+  transition: transform var(--transition-fast);
+}
+
+.back-btn:hover {
+  background: var(--success);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.back-btn:hover .material-symbols-outlined {
+  transform: translateX(-3px);
+}
+
+.back-btn:active {
+  transform: translateY(0);
+}

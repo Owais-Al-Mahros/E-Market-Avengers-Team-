@@ -1,0 +1,488 @@
+/* ============================================
+   📦 ORDER STATUS TRACKER
+   ============================================ */
+
+.tracker-container {
+  background: #fff;
+  border: 2px solid var(--secondary-color);
+  border-radius: 20px;
+  padding: 32px 28px;
+  max-width: 800px;
+  margin: 20px auto;
+  box-shadow: 0 4px 20px rgba(20, 92, 74, 0.06);
+  font-family: inherit;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.tracker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--secondary-color);
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tracker-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+/* Status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.status-badge.status-pending {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+}
+
+.status-badge.status-confirmed {
+  background: rgba(59, 130, 246, 0.12);
+  color: #1d4ed8;
+}
+
+.status-badge.status-shipped {
+  background: rgba(20, 92, 74, 0.12);
+  color: var(--primary-color);
+}
+
+.status-badge.status-delivered {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.status-badge.status-cancelled {
+  background: rgba(217, 79, 79, 0.12);
+  color: var(--danger-color);
+}
+
+/* ============================================
+   PROGRESS STEPS
+   ============================================ */
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin: 20px 0 32px;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.step-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--secondary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: all 0.4s ease;
+}
+
+.step-circle .material-symbols-outlined {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.step-circle.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 0 0 6px rgba(20, 92, 74, 0.12);
+  transform: scale(1.05);
+}
+
+.step-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.step-item.active .step-label {
+  color: var(--primary-color);
+  font-weight: 800;
+}
+
+/* Connector line */
+.step-line {
+  position: absolute;
+  top: 25px;
+  left: calc(50% + 26px);
+  right: calc(-50% + 26px);
+  height: 3px;
+  background: var(--secondary-color);
+  z-index: 0;
+  transition: background 0.4s ease;
+}
+
+.step-line.active {
+  background: var(--primary-color);
+}
+
+/* ============================================
+   CONTENT
+   ============================================ */
+.tracker-content {
+  text-align: center;
+  padding: 16px 0 8px;
+}
+
+.status-display {
+  margin-bottom: 16px;
+  min-height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.status-display .material-symbols-outlined {
+  font-size: 64px;
+  transition: transform 0.3s ease;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.pulse .material-symbols-outlined {
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce .material-symbols-outlined {
+  animation: bounce 0.6s infinite alternate;
+}
+
+@keyframes drive {
+  0% {
+    transform: translateX(-40px) scale(1);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: translateX(0) scale(1.1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(40px) scale(1);
+    opacity: 0.5;
+  }
+}
+
+.drive .material-symbols-outlined {
+  animation: drive 2s infinite linear;
+}
+
+@keyframes confetti {
+
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  25% {
+    transform: rotate(-15deg) scale(1.1);
+  }
+
+  75% {
+    transform: rotate(15deg) scale(1.1);
+  }
+}
+
+.confetti .material-symbols-outlined {
+  animation: confetti 0.8s infinite ease-in-out;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+.tracker-content h3 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 8px 0;
+  letter-spacing: -0.3px;
+}
+
+.tracker-content p {
+  font-size: 16px;
+  color: var(--text-muted);
+  max-width: 500px;
+  margin: 8px auto 20px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn-invoice,
+.btn-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+  box-shadow: 0 6px 20px rgba(20, 92, 74, 0.2);
+}
+
+.btn-invoice:hover,
+.btn-contact:hover {
+  background: var(--dark-green);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(20, 92, 74, 0.3);
+}
+
+/* ============================================
+   WAITING SPINNER
+   ============================================ */
+.waiting-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-color);
+  background: var(--secondary-color);
+  padding: 12px 22px;
+  border-radius: 9999px;
+  margin: 10px auto;
+  max-width: 100%;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(20, 92, 74, 0.2);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   CANCELLED STATE
+   ============================================ */
+.tracker-container.cancelled {
+  border-color: rgba(217, 79, 79, 0.3);
+  background: linear-gradient(180deg, #fff 0%, rgba(217, 79, 79, 0.04) 100%);
+}
+
+.status-icon-large {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 16px;
+}
+
+.status-icon-large .material-symbols-outlined {
+  font-size: 72px;
+}
+
+.status-badge.status-awaiting_payment {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+}
+
+/* ============================================
+   📱 Responsive (≤ 640px)
+   ============================================ */
+@media (max-width: 640px) {
+  .tracker-container {
+    padding: 20px 16px;
+    border-radius: 16px;
+    margin: 12px;
+  }
+
+  .tracker-header {
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+  }
+
+  .tracker-header h2 {
+    font-size: 16px;
+  }
+
+  .status-badge {
+    font-size: 10.5px;
+    padding: 5px 12px;
+  }
+
+  /* Progress: أصغر على الجوال */
+  .progress-steps {
+    margin: 16px 0 24px;
+  }
+
+  .step-circle {
+    width: 38px;
+    height: 38px;
+    border-width: 2.5px;
+  }
+
+  .step-circle .material-symbols-outlined {
+    font-size: 18px;
+  }
+
+  .step-label {
+    font-size: 10px;
+    margin-top: 6px;
+    white-space: normal;
+    line-height: 1.2;
+  }
+
+  .step-line {
+    top: 18px;
+    left: calc(50% + 20px);
+    right: calc(-50% + 20px);
+    height: 2.5px;
+  }
+
+  .tracker-content h3 {
+    font-size: 20px;
+  }
+
+  .tracker-content p {
+    font-size: 14px;
+    margin: 8px auto 16px;
+  }
+
+  .status-display .material-symbols-outlined {
+    font-size: 48px;
+  }
+
+  .status-icon-large .material-symbols-outlined {
+    font-size: 56px;
+  }
+
+  .btn-invoice,
+  .btn-contact {
+    padding: 11px 22px;
+    font-size: 14px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .waiting-spinner {
+    font-size: 13px;
+    padding: 10px 18px;
+  }
+}
+
+/* ============================================
+   📱 Small Mobile (≤ 480px)
+   ============================================ */
+@media (max-width: 30rem) {
+  .step-circle {
+    width: 32px;
+    height: 32px;
+    border-width: 2px;
+  }
+
+  .step-circle .material-symbols-outlined {
+    font-size: 16px;
+  }
+
+  .step-line {
+    top: 15px;
+    left: calc(50% + 17px);
+    right: calc(-50% + 17px);
+    height: 2px;
+  }
+
+  .step-label {
+    font-size: 9px;
+  }
+
+  .tracker-content h3 {
+    font-size: 18px;
+  }
+}
+
+/* ============================================
+   ✅ PENDING STEP — خطوة قيد الانتظار (برتقالي)
+   ============================================ */
+.step-circle.active.pending-step {
+  background: #fff;
+  border-color: #f59e0b;
+  color: #f59e0b;
+  box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.15);
+  animation: pendingStepPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes pendingStepPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 0 12px rgba(245, 158, 11, 0.06);
+  }
+}

@@ -1,0 +1,234 @@
+/* ==========================================
+   🦶 FOOTER
+   ========================================== */
+.footer {
+  margin-top: auto;
+  width: 100%;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  padding: var(--space-6);
+  font-size: 0.9rem;
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   Information block
+   ============================================ */
+.footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 18rem;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.footer-logo-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.footer-logo-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--secondary-color);
+}
+
+.footer-description {
+  margin: 0;
+  color: var(--secondary-color);
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* ============================================
+   Social links
+   ============================================ */
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--secondary-color);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color var(--transition-fast);
+}
+
+.footer-social-link:hover {
+  color: var(--accent-color);
+}
+
+.footer-social-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+  transition: transform var(--transition-fast);
+}
+
+.footer-social-link:hover .footer-social-icon {
+  transform: scale(1.1);
+}
+
+/* ============================================
+   Sections (Categories, Customer Service, Contact)
+   ============================================ */
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.footer-section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--secondary-color);
+}
+
+.footer-list,
+.footer-contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.footer-link {
+  color: var(--secondary-color);
+  text-decoration: none;
+  font-size: 0.875rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: color var(--transition-fast);
+}
+
+.footer-link:hover {
+  color: var(--accent-color);
+}
+
+.footer-link--muted {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ============================================
+   Contact items
+   ============================================ */
+.footer-contact-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.footer-contact-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.footer-contact-item:hover .footer-contact-icon {
+  transform: scale(1.1);
+}
+
+/* ============================================
+   Line + Copyright
+   ============================================ */
+.footer-line {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.15);
+  margin-top: var(--space-5);
+  width: 100%;
+  border: none;
+}
+
+.footer-copyright {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--secondary-color);
+  opacity: 0.7;
+  margin: var(--space-4) 0 0;
+}
+
+/* ============================================
+   📱 Responsive
+   ============================================ */
+@media (max-width: 64rem) {
+  .footer-inner {
+    gap: var(--space-5);
+  }
+
+  .footer-section {
+    flex: 1 1 calc(50% - var(--space-5));
+  }
+}
+
+@media (max-width: 48rem) {
+  .footer {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .footer-info {
+    max-width: 100%;
+  }
+
+  .footer-section {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 30rem) {
+  .footer {
+    padding: var(--space-4) var(--space-3);
+    font-size: 0.8125rem;
+  }
+
+  .footer-logo-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .footer-logo-name {
+    font-size: 1.25rem;
+  }
+
+  .footer-social {
+    gap: var(--space-3);
+  }
+}
