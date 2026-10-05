@@ -79,7 +79,11 @@
     gap: 8px;
   }
 
+<<<<<<< HEAD
   .subcategories-chip {
+=======
+  .subcategory-chip {
+>>>>>>> f671c87971f27c4de37097852ebcd0ff8d45f4ca
     flex-shrink: 0;
     font-size: 0.8125rem;
     padding: 8px 14px;

@@ -26,7 +26,24 @@ export default function OrderDetailsModal({
      ═══════════════════════════════════════════ */
   const sortedItems = useMemo(() => {
     if (!order?.order_items) return [];
+<<<<<<< HEAD:src/Pages/Admin dashboard/components/orders/modals/OrderDetailsModal.jsx
     return sortOrderItemsByPriority(order.order_items);
+=======
+
+    const priority = {
+      pending: 0,
+      scanned: 1,
+      substituted: 2,
+      removed: 3,
+    };
+
+    return [...(order?.order_items || [])].sort((a, b) => {
+      const aP = priority[a.status] ?? 4;
+      const bP = priority[b.status] ?? 4;
+      if (aP !== bP) return aP - bP;
+      return (b.total_weight || 0) - (a.total_weight || 0);
+    });
+>>>>>>> f671c87971f27c4de37097852ebcd0ff8d45f4ca:src/Pages/Admin dashboard/components/modals/OrderDetailsModal.jsx
   }, [order?.order_items]);
 
   /* ═══════════════════════════════════════════
@@ -39,12 +56,12 @@ export default function OrderDetailsModal({
      ═══════════════════════════════════════════ */
   const subtotal = sortedItems.reduce(
     (sum, item) => sum + parseFloat(item.total_price || 0),
-    0
+    0,
   );
 
   const totalWeight = sortedItems.reduce(
     (sum, item) => sum + parseFloat(item.total_weight || 0),
-    0
+    0,
   );
 
   const actualTotal = sortedItems.reduce((sum, item) => {
@@ -53,7 +70,7 @@ export default function OrderDetailsModal({
   }, 0);
 
   const hasActualValues = sortedItems.some(
-    (item) => item.actual_total != null || item.status !== "pending"
+    (item) => item.actual_total != null || item.status !== "pending",
   );
 
   /* ═══════════════════════════════════════════
@@ -90,11 +107,15 @@ export default function OrderDetailsModal({
     const deliveryDate = new Date(`${order.delivery_date}T00:00:00`);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+<<<<<<< HEAD:src/Pages/Admin dashboard/components/orders/modals/OrderDetailsModal.jsx
 
     const diffDays = Math.ceil(
       (deliveryDate - today) / (1000 * 60 * 60 * 24)
     );
 
+=======
+    const diffDays = Math.ceil((deliveryDate - today) / (1000 * 60 * 60 * 24));
+>>>>>>> f671c87971f27c4de37097852ebcd0ff8d45f4ca:src/Pages/Admin dashboard/components/modals/OrderDetailsModal.jsx
     if (diffDays < 0) return { label: "⚠️ Überfällig!", class: "overdue" };
     if (diffDays === 0) return { label: "🔥 Heute!", class: "today" };
     if (diffDays === 1) return { label: "⚡ Morgen", class: "tomorrow" };
@@ -131,9 +152,7 @@ export default function OrderDetailsModal({
                   {order.status}
                 </span>
                 {urgency && (
-                  <span
-                    className={`odm-urgency odm-urgency-${urgency.class}`}
-                  >
+                  <span className={`odm-urgency odm-urgency-${urgency.class}`}>
                     {urgency.label}
                   </span>
                 )}
@@ -201,6 +220,7 @@ export default function OrderDetailsModal({
               <span className="odm-info-label">Lieferung</span>
               <span className="odm-info-value">
                 {order.delivery_date
+<<<<<<< HEAD:src/Pages/Admin dashboard/components/orders/modals/OrderDetailsModal.jsx
                   ? new Date(
                     `${order.delivery_date}T00:00:00`
                   ).toLocaleDateString("de-DE", {
@@ -208,12 +228,16 @@ export default function OrderDetailsModal({
                     month: "2-digit",
                     year: "2-digit",
                   })
+=======
+                  ? new Date(order.delivery_date).toLocaleDateString("de-DE", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                    })
+>>>>>>> f671c87971f27c4de37097852ebcd0ff8d45f4ca:src/Pages/Admin dashboard/components/modals/OrderDetailsModal.jsx
                   : "—"}
                 {order.delivery_time && (
-                  <span className="odm-info-sub">
-                    {" "}
-                    · {order.delivery_time}
-                  </span>
+                  <span className="odm-info-sub"> · {order.delivery_time}</span>
                 )}
               </span>
             </div>
@@ -234,9 +258,7 @@ export default function OrderDetailsModal({
         <div className="odm-body">
           {order.shipping_address?.notes && (
             <div className="odm-notes-banner">
-              <span className="material-symbols-outlined">
-                sticky_note_2
-              </span>
+              <span className="material-symbols-outlined">sticky_note_2</span>
               <div>
                 <span className="odm-notes-label">Kundennotiz:</span>
                 <span className="odm-notes-text">
@@ -250,17 +272,11 @@ export default function OrderDetailsModal({
           <div className="odm-products-section">
             <div className="odm-products-header">
               <div className="odm-products-title">
-                <span className="material-symbols-outlined">
-                  shopping_bag
-                </span>
+                <span className="material-symbols-outlined">shopping_bag</span>
                 <h3>Produkte</h3>
-                <span className="odm-products-count">
-                  {sortedItems.length}
-                </span>
+                <span className="odm-products-count">{sortedItems.length}</span>
               </div>
-              <span className="odm-products-hint">
-                Nach Priorität sortiert
-              </span>
+              <span className="odm-products-hint">Nach Priorität sortiert</span>
             </div>
 
             <div className="odm-table-wrapper">
@@ -296,10 +312,7 @@ export default function OrderDetailsModal({
                       );
 
                       return (
-                        <tr
-                          key={item.id}
-                          className={`odm-row-${badge.class}`}
-                        >
+                        <tr key={item.id} className={`odm-row-${badge.class}`}>
                           <td>
                             <span className="odm-product-id">
                               #{item.product_number || "—"}
@@ -320,31 +333,37 @@ export default function OrderDetailsModal({
 
                           <td>
                             <span className="odm-qty-badge">
-                              {formatQuantity(
-                                item.quantity,
-                                item.weight_unit
-                              )}
+                              {formatQuantity(item.quantity, item.weight_unit)}
                             </span>
                           </td>
 
                           <td>
                             <span className="odm-weight-value">
+<<<<<<< HEAD:src/Pages/Admin dashboard/components/orders/modals/OrderDetailsModal.jsx
                               {item.weight != null &&
                                 item.weight !== ""
                                 ? formatQuantity(
                                   item.weight,
                                   item.weight_unit
                                 )
+=======
+                              {item.weight != null && item.weight !== ""
+                                ? formatQuantity(item.weight, item.weight_unit)
+>>>>>>> f671c87971f27c4de37097852ebcd0ff8d45f4ca:src/Pages/Admin dashboard/components/modals/OrderDetailsModal.jsx
                                 : "—"}
                             </span>
                           </td>
 
                           <td>
                             <span className="odm-price-value">
+<<<<<<< HEAD:src/Pages/Admin dashboard/components/orders/modals/OrderDetailsModal.jsx
                               €
                               {parseFloat(
                                 item.unit_price || 0
                               ).toFixed(2)}
+=======
+                              €{parseFloat(item.unit_price || 0).toFixed(2)}
+>>>>>>> f671c87971f27c4de37097852ebcd0ff8d45f4ca:src/Pages/Admin dashboard/components/modals/OrderDetailsModal.jsx
                               {weightBased && (
                                 <small className="odm-price-unit">
                                   /{unitLabel}
@@ -355,10 +374,14 @@ export default function OrderDetailsModal({
 
                           <td>
                             <span className="odm-total-value">
+<<<<<<< HEAD:src/Pages/Admin dashboard/components/orders/modals/OrderDetailsModal.jsx
                               €
                               {parseFloat(
                                 item.total_price || 0
                               ).toFixed(2)}
+=======
+                              €{parseFloat(item.total_price || 0).toFixed(2)}
+>>>>>>> f671c87971f27c4de37097852ebcd0ff8d45f4ca:src/Pages/Admin dashboard/components/modals/OrderDetailsModal.jsx
                             </span>
                           </td>
 
@@ -385,9 +408,7 @@ export default function OrderDetailsModal({
           <div className="odm-totals-compact">
             <div className="odm-total-item">
               <span className="odm-total-label">Zwischensumme</span>
-              <span className="odm-total-val">
-                €{subtotal.toFixed(2)}
-              </span>
+              <span className="odm-total-val">€{subtotal.toFixed(2)}</span>
             </div>
 
             <div className="odm-total-item">
@@ -411,6 +432,7 @@ export default function OrderDetailsModal({
               </span>
             </div>
 
+<<<<<<< HEAD:src/Pages/Admin dashboard/components/orders/modals/OrderDetailsModal.jsx
             {hasActualValues &&
               Math.abs(actualTotal - subtotal) > 0.01 && (
                 <div className="odm-total-item odm-total-adjusted">
@@ -423,6 +445,14 @@ export default function OrderDetailsModal({
                 </div>
               )}
 
+=======
+            {hasActualValues && Math.abs(actualTotal - subtotal) > 0.01 && (
+              <div className="odm-total-item odm-total-adjusted">
+                <span className="odm-total-label">⚖️ Angepasst</span>
+                <span className="odm-total-val">€{actualTotal.toFixed(2)}</span>
+              </div>
+            )}
+>>>>>>> f671c87971f27c4de37097852ebcd0ff8d45f4ca:src/Pages/Admin dashboard/components/modals/OrderDetailsModal.jsx
             <div className="odm-total-item odm-total-grand">
               <span className="odm-total-label">Gesamt</span>
               <span className="odm-total-val">
@@ -441,9 +471,7 @@ export default function OrderDetailsModal({
                 onClick={() => handleStatusUpdate("confirmed")}
                 disabled={updating}
               >
-                <span className="material-symbols-outlined">
-                  check_circle
-                </span>
+                <span className="material-symbols-outlined">check_circle</span>
                 Bestätigen
               </button>
             )}
