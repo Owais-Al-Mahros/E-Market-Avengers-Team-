@@ -12,8 +12,13 @@ export default function OrderManagementSection() {
   const inputRef = useRef(null);
 
   // ✅ كل شيء من السياق — لا state محلي
-  const { orders, loading, searchOrders, updateOrderStatus, fetchOrders } =
-    useOrders();
+  const {
+    orders,
+    loading,
+    searchOrders,
+    updateOrderStatus,
+    fetchOrders,
+  } = useOrders();
 
   // ============================================
   // Debounced Search
@@ -37,31 +42,6 @@ export default function OrderManagementSection() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-<<<<<<< HEAD:src/Pages/Admin dashboard/components/orders/OrderManagementSection.jsx
-    return (
-        <div className="orders-management-container">
-            {/* Search Bar */}
-            <div className="oms-search-bar">
-                <div className="oms-search-input-wrap">
-                    <span className="material-symbols-outlined">search</span>
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        placeholder="Bestellnummer suchen... (z.B. ORD-20260918-1234)"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    {searchTerm && (
-                        <button
-                            className="oms-search-clear"
-                            onClick={clearSearch}
-                            type="button"
-                        >
-                            ✕
-                        </button>
-                    )}
-                </div>
-=======
   const clearSearch = () => {
     setSearchTerm("");
     setHasSearched(false);
@@ -74,7 +54,6 @@ export default function OrderManagementSection() {
       await searchOrders(searchTerm.trim());
     }
   };
->>>>>>> f671c87971f27c4de37097852ebcd0ff8d45f4ca:src/Pages/Admin dashboard/components/OrderManagementSection.jsx
 
   // ============================================
   // Tabs
@@ -87,48 +66,6 @@ export default function OrderManagementSection() {
     { key: "cancelled", label: "❌ Cancelled", color: "#ef4444" },
   ];
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "pending":
-        return <NewOrders />;
-      case "confirmed":
-        return <ConfirmedOrders />;
-      case "shipped":
-        return <ShippedOrders />;
-      case "delivered":
-        return <DeliveredOrders />;
-      case "cancelled":
-        return <CancelledOrders />;
-      default:
-        return <NewOrders />;
-    }
-  };
-
-<<<<<<< HEAD:src/Pages/Admin dashboard/components/orders/OrderManagementSection.jsx
-            {/* Content */}
-            <div className="tabs-content">
-                {hasSearched ? (
-                    loading ? (
-                        <div className="loading-state">Suche läuft...</div>
-                    ) : orders.length > 0 ? (
-                        <OrdersTable
-                            orders={orders}
-                            status="search"
-                            onUpdateStatus={updateOrderStatus}   // ✅ الدالة الحقيقية مباشرة
-                            onRefresh={handleRefresh}
-                        />
-                    ) : (
-                        <div className="empty-state">
-                            <span className="material-symbols-outlined">search_off</span>
-                            <p>Keine Bestellung gefunden für "{searchTerm}"</p>
-                        </div>
-                    )
-                ) : (
-                    <OrdersTab status={activeTab} />
-
-                )}
-            </div>
-=======
   return (
     <div className="orders-management-container">
       {/* Search Bar */}
@@ -151,7 +88,6 @@ export default function OrderManagementSection() {
               ✕
             </button>
           )}
->>>>>>> f671c87971f27c4de37097852ebcd0ff8d45f4ca:src/Pages/Admin dashboard/components/OrderManagementSection.jsx
         </div>
 
         {hasSearched && !loading && (
@@ -189,7 +125,7 @@ export default function OrderManagementSection() {
             <OrdersTable
               orders={orders}
               status="search"
-              onUpdateStatus={updateOrderStatus} // ✅ الدالة الحقيقية مباشرة
+              onUpdateStatus={updateOrderStatus}
               onRefresh={handleRefresh}
             />
           ) : (
@@ -199,7 +135,7 @@ export default function OrderManagementSection() {
             </div>
           )
         ) : (
-          renderContent()
+          <OrdersTab status={activeTab} />
         )}
       </div>
     </div>

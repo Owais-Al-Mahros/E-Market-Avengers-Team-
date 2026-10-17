@@ -233,44 +233,57 @@ export default function ProductFormPage({ mode = "new", product = null, onBack, 
             </div>
 
             <form className="pf-form" onSubmit={handleSubmit} noValidate>
-                {/* ═══════════ Row 1: Image + Basic Info ═══════════ */}
-                <div className="pf-row pf-row-2">
+                {/* ═══════════ Row 1: Image (40%) + Basic Info (60%) ═══════════ */}
+                <div className="pf-row pf-row-wide-right">
                     {/* Image Card */}
-                    {/* ═══ Product Type — جديد ═══ */}
-                    <div className="pf-card">
+                    <div className="pf-card pf-card-image">
                         <h3 className="pf-card-title">
-                            <span className="material-symbols-outlined">tune</span>
-                            Produkt-Typ
+                            <span className="material-symbols-outlined">image</span>
+                            Produktbild
+                            <span className="pf-required">*</span>
                         </h3>
 
-                        <p className="pf-hint">
-                            Legt fest, wie der Preis berechnet wird.
-                        </p>
-
-                        <div className="pf-type-options">
-                            <button
-                                type="button"
-                                className={`pf-type-btn ${form.product_type === "unit_based" ? "active" : ""}`}
-                                onClick={() => setField("product_type", "unit_based")}
-                            >
-                                <span className="material-symbols-outlined">inventory_2</span>
-                                <div>
-                                    <strong>Stückware (Verpackt)</strong>
-                                    <small>Preis pro Stück/Verpackung</small>
-                                </div>
-                            </button>
+                        <div className="pf-image-area">
+                            <div className={`pf-image-box ${!hasImage ? "is-required" : ""}`}>
+                                {previewUrl ? (
+                                    <img src={previewUrl} alt="Vorschau" />
+                                ) : (
+                                    <span className="material-symbols-outlined pf-image-placeholder">
+                                        add_photo_alternate
+                                    </span>
+                                )}
+                            </div>
 
                             <button
                                 type="button"
-                                className={`pf-type-btn ${form.product_type === "weight_based" ? "active" : ""}`}
-                                onClick={() => setField("product_type", "weight_based")}
+                                className="pf-upload-btn"
+                                onClick={() => fileInputRef.current?.click()}
                             >
-                                <span className="material-symbols-outlined">scale</span>
-                                <div>
-                                    <strong>Gewichtsware</strong>
-                                    <small>Preis pro kg (Obst, Gemüse, Fleisch)</small>
-                                </div>
+                                <span className="material-symbols-outlined">photo_camera</span>
+                                {previewUrl ? "Bild ändern" : "Bild hochladen"}
                             </button>
+
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                style={{ display: "none" }}
+                            />
+
+                            <div className="pf-or">— ODER —</div>
+
+                            <input
+                                type="text"
+                                className="pf-input"
+                                placeholder="Bild-URL einfügen..."
+                                value={form.image}
+                                onChange={(e) => {
+                                    setField("image", e.target.value);
+                                    setPreviewUrl(e.target.value);
+                                    setSelectedFile(null);
+                                }}
+                            />
                         </div>
                     </div>
 
@@ -350,15 +363,53 @@ export default function ProductFormPage({ mode = "new", product = null, onBack, 
                                 className="pf-input pf-textarea"
                                 value={form.description}
                                 onChange={(e) => setField("description", e.target.value)}
-                                placeholder="Short description of the product (optional)..."
-                                rows={4}
+                                placeholder="Short description (optional)..."
+                                rows={3}
                             />
                         </div>
                     </div>
                 </div>
 
-                {/* ═══════════ Row 2: Pricing + Weight ═══════════ */}
-                <div className="pf-row pf-row-2">
+                {/* ═══════════ Row 2: Produkt-Typ (60%) + Pricing (40%) ═══════════ */}
+                <div className="pf-row pf-row-wide-left">
+                    {/* Product Type */}
+                    <div className="pf-card">
+                        <h3 className="pf-card-title">
+                            <span className="material-symbols-outlined">tune</span>
+                            Produkt-Typ
+                        </h3>
+
+                        <p className="pf-hint">
+                            Legt fest, wie der Preis berechnet wird.
+                        </p>
+
+                        <div className="pf-type-options">
+                            <button
+                                type="button"
+                                className={`pf-type-btn ${form.product_type === "unit_based" ? "active" : ""}`}
+                                onClick={() => setField("product_type", "unit_based")}
+                            >
+                                <span className="material-symbols-outlined">inventory_2</span>
+                                <div>
+                                    <strong>Stückware (Verpackt)</strong>
+                                    <small>Preis pro Stück/Verpackung</small>
+                                </div>
+                            </button>
+
+                            <button
+                                type="button"
+                                className={`pf-type-btn ${form.product_type === "weight_based" ? "active" : ""}`}
+                                onClick={() => setField("product_type", "weight_based")}
+                            >
+                                <span className="material-symbols-outlined">scale</span>
+                                <div>
+                                    <strong>Gewichtsware</strong>
+                                    <small>Preis pro kg (Obst, Gemüse, Fleisch)</small>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
                     {/* Pricing */}
                     <div className="pf-card">
                         <h3 className="pf-card-title">
@@ -379,7 +430,6 @@ export default function ProductFormPage({ mode = "new", product = null, onBack, 
                             />
                         </div>
 
-                        {/* ✅ Tax Rate — input حر */}
                         <div className="pf-field">
                             <label>Tax Rate (%)</label>
                             <div className="pf-tax-row">
@@ -413,7 +463,10 @@ export default function ProductFormPage({ mode = "new", product = null, onBack, 
                             <strong>€{totalPrice.toFixed(2)}</strong>
                         </div>
                     </div>
+                </div>
 
+                {/* ═══════════ Row 3: Weight + Nutrition ═══════════ */}
+                <div className="pf-row pf-row-2">
                     {/* Weight */}
                     <div className="pf-card">
                         <h3 className="pf-card-title">
@@ -451,125 +504,129 @@ export default function ProductFormPage({ mode = "new", product = null, onBack, 
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* ═══════════ Row 3: Nutrition ═══════════ */}
-                <div className="pf-card">
-                    <h3 className="pf-card-title">
-                        <span className="material-symbols-outlined">nutrition</span>
-                        Nutrition Facts
-                    </h3>
-                    <div className="pf-field">
-                        <label>Nutrition Basis (as displayed to customer)</label>
-                        <input
-                            type="text"
-                            className="pf-input"
-                            value={form.nutrition_basis || ""}
-                            onChange={(e) => setField("nutrition_basis", e.target.value)}
-                            placeholder="pro 100 g"
-                        />
-                        <small className="pf-hint">
-                            Example: "pro 100 g", "pro 100 ml", "pro Portion"
-                        </small>
-                    </div>
-                    {nutrition.fields.length === 0 ? (
-                        <p className="pf-empty-hint">
-                            No nutrition data. Add fields like "Energy", "Fat", "Protein".
-                        </p>
-                    ) : (
-                        <div className="pf-dynamic-list">
-                            {nutrition.fields.map((f, i) => (
-                                <div key={i} className="pf-dynamic-row">
-                                    <input
-                                        type="text"
-                                        className="pf-input"
-                                        placeholder="e.g., Energy"
-                                        value={f.key}
-                                        onChange={(e) => nutrition.updateField(i, "key", e.target.value)}
-                                    />
-                                    <input
-                                        type="text"
-                                        className="pf-input"
-                                        placeholder="e.g., 245 kcal"
-                                        value={f.value}
-                                        onChange={(e) => nutrition.updateField(i, "value", e.target.value)}
-                                    />
-                                    <button
-                                        type="button"
-                                        className="pf-remove-btn"
-                                        onClick={() => nutrition.removeField(i)}
-                                        aria-label="Remove"
-                                    >
-                                        <span className="material-symbols-outlined">close</span>
-                                    </button>
-                                </div>
-                            ))}
+                    {/* Nutrition */}
+                    <div className="pf-card">
+                        <h3 className="pf-card-title">
+                            <span className="material-symbols-outlined">nutrition</span>
+                            Nutrition Facts
+                        </h3>
+
+                        <div className="pf-field">
+                            <label>Nutrition Basis (as displayed to customer)</label>
+                            <input
+                                type="text"
+                                className="pf-input"
+                                value={form.nutrition_basis || ""}
+                                onChange={(e) => setField("nutrition_basis", e.target.value)}
+                                placeholder="pro 100 g"
+                            />
+                            <small className="pf-hint">
+                                Example: "pro 100 g", "pro 100 ml", "pro Portion"
+                            </small>
                         </div>
-                    )}
 
-                    <button type="button" className="pf-add-field-btn" onClick={nutrition.addField}>
-                        <span className="material-symbols-outlined">add</span>
-                        Add Nutrition Field
-                    </button>
+                        {nutrition.fields.length === 0 ? (
+                            <p className="pf-empty-hint">
+                                No nutrition data. Add fields like "Energy", "Fat", "Protein".
+                            </p>
+                        ) : (
+                            <div className="pf-dynamic-list">
+                                {nutrition.fields.map((f, i) => (
+                                    <div key={i} className="pf-dynamic-row">
+                                        <input
+                                            type="text"
+                                            className="pf-input"
+                                            placeholder="e.g., Energy"
+                                            value={f.key}
+                                            onChange={(e) => nutrition.updateField(i, "key", e.target.value)}
+                                        />
+                                        <input
+                                            type="text"
+                                            className="pf-input"
+                                            placeholder="e.g., 245 kcal"
+                                            value={f.value}
+                                            onChange={(e) => nutrition.updateField(i, "value", e.target.value)}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="pf-remove-btn"
+                                            onClick={() => nutrition.removeField(i)}
+                                            aria-label="Remove"
+                                        >
+                                            <span className="material-symbols-outlined">close</span>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
 
-                    <div className="pf-field pf-mt-2">
-                        <label>Ingredients</label>
-                        <textarea
-                            className="pf-input pf-textarea"
-                            value={form.ingredients}
-                            onChange={(e) => setField("ingredients", e.target.value)}
-                            placeholder="e.g., Apples, Vitamin C..."
-                            rows={3}
-                        />
+                        <button type="button" className="pf-add-field-btn" onClick={nutrition.addField}>
+                            <span className="material-symbols-outlined">add</span>
+                            Add Nutrition Field
+                        </button>
+
+                        <div className="pf-field pf-mt-2">
+                            <label>Ingredients</label>
+                            <textarea
+                                className="pf-input pf-textarea"
+                                value={form.ingredients}
+                                onChange={(e) => setField("ingredients", e.target.value)}
+                                placeholder="e.g., Apples, Vitamin C..."
+                                rows={3}
+                            />
+                        </div>
                     </div>
                 </div>
 
                 {/* ═══════════ Row 4: Storage ═══════════ */}
-                <div className="pf-card">
-                    <h3 className="pf-card-title">
-                        <span className="material-symbols-outlined">ac_unit</span>
-                        Storage Notes
-                    </h3>
+                <div className="pf-row pf-row-full">
+                    <div className="pf-card">
+                        <h3 className="pf-card-title">
+                            <span className="material-symbols-outlined">ac_unit</span>
+                            Storage Notes
+                        </h3>
 
-                    {storage.fields.length === 0 ? (
-                        <p className="pf-empty-hint">
-                            No storage notes. Add fields like "Storage", "Shelf Life".
-                        </p>
-                    ) : (
-                        <div className="pf-dynamic-list">
-                            {storage.fields.map((f, i) => (
-                                <div key={i} className="pf-dynamic-row">
-                                    <input
-                                        type="text"
-                                        className="pf-input"
-                                        placeholder="e.g., Storage"
-                                        value={f.key}
-                                        onChange={(e) => storage.updateField(i, "key", e.target.value)}
-                                    />
-                                    <input
-                                        type="text"
-                                        className="pf-input"
-                                        placeholder="e.g., Cool and dry"
-                                        value={f.value}
-                                        onChange={(e) => storage.updateField(i, "value", e.target.value)}
-                                    />
-                                    <button
-                                        type="button"
-                                        className="pf-remove-btn"
-                                        onClick={() => storage.removeField(i)}
-                                        aria-label="Remove"
-                                    >
-                                        <span className="material-symbols-outlined">close</span>
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                        {storage.fields.length === 0 ? (
+                            <p className="pf-empty-hint">
+                                No storage notes. Add fields like "Storage", "Shelf Life".
+                            </p>
+                        ) : (
+                            <div className="pf-dynamic-list">
+                                {storage.fields.map((f, i) => (
+                                    <div key={i} className="pf-dynamic-row">
+                                        <input
+                                            type="text"
+                                            className="pf-input"
+                                            placeholder="e.g., Storage"
+                                            value={f.key}
+                                            onChange={(e) => storage.updateField(i, "key", e.target.value)}
+                                        />
+                                        <input
+                                            type="text"
+                                            className="pf-input"
+                                            placeholder="e.g., Cool and dry"
+                                            value={f.value}
+                                            onChange={(e) => storage.updateField(i, "value", e.target.value)}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="pf-remove-btn"
+                                            onClick={() => storage.removeField(i)}
+                                            aria-label="Remove"
+                                        >
+                                            <span className="material-symbols-outlined">close</span>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
 
-                    <button type="button" className="pf-add-field-btn" onClick={storage.addField}>
-                        <span className="material-symbols-outlined">add</span>
-                        Add Storage Field
-                    </button>
+                        <button type="button" className="pf-add-field-btn" onClick={storage.addField}>
+                            <span className="material-symbols-outlined">add</span>
+                            Add Storage Field
+                        </button>
+                    </div>
                 </div>
 
                 {/* ═══════════ Sticky Footer ═══════════ */}
