@@ -1,16 +1,23 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { supabase } from "../../lib/supabase";
 import { fetchMyOrders, updateOrderStatusByDriver } from "../../api/drivers";
+import { updateBestSellers } from "../../lib/bestSellers";
+import { canDeliverOrder, canStartRound } from "../../api/haccp";
 import ShipOrderModal from "../../components/order/ShipOrderModal";
 import DriverOrderDetailsModal from "./Modal/DriverOrderDetailsModal";
+import ProductReceiptCheck from "./Haccp/ProductReceiptCheck";
+import HaccpPanel from "./Haccp/HaccpPanel";
+import RoundGateBanner from "./Haccp/RoundGateBanner";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import "./DriverDashboard.css";
 
 const TABS = [
-    { key: "confirmed", label: "Confirmed", icon: "✅", color: "#3b82f6" },
-    { key: "shipped", label: "Shipped", icon: "🚚", color: "#8b5cf6" },
-    { key: "delivered", label: "Delivered", icon: "🎉", color: "#10b981" },
+    { key: "haccp", label: "HACCP & Hygiene", icon: "🛡️" },
+    { key: "confirmed", label: "Confirmed", icon: "✅" },
+    { key: "shipped", label: "Shipped", icon: "🚚" },
+    { key: "delivered", label: "Delivered", icon: "🎉" },
 ];
 
 export default function DriverDashboard() {
@@ -24,6 +31,11 @@ export default function DriverDashboard() {
     const [processingId, setProcessingId] = useState(null);
     const [shipModalOrder, setShipModalOrder] = useState(null);
     const [detailsOrder, setDetailsOrder] = useState(null);
+    const [receiptCheckOrder, setReceiptCheckOrder] = useState(null);
+    const [pendingDeliveryOrder, setPendingDeliveryOrder] = useState(null);
+
+    // ✅ حالة الجولة — null = لم يُتحقق، false = محظور، true = مسموح
+    const [roundAllowed, setRoundAllowed] = useState(null);
 
     /* ═══ Load ═══ */
     const load = async () => {
@@ -40,7 +52,7 @@ export default function DriverDashboard() {
 
         const { data: profile } = await supabase
             .from("profiles")
-            .select("name, email, role")
+            .select("id, name, email, role")
             .eq("id", user.id)
             .single();
 
@@ -61,6 +73,18 @@ export default function DriverDashboard() {
 
     useEffect(() => {
         load();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    /* ═══ تحديث حالة الجولة ═══ */
+    const refreshRoundStatus = useCallback(async () => {
+        const res = await canStartRound();
+        if (res.success) {
+            setRoundAllowed(res.data.allowed === true);
+        } else {
+            // عند الفشل — احترازًا: اعتبر الجولة محظورة
+            setRoundAllowed(false);
+        }
     }, []);
 
     /* ═══ Logout ═══ */
@@ -79,11 +103,36 @@ export default function DriverDashboard() {
     /* ═══ Deliver ═══ */
     const handleDeliver = async (orderId) => {
         setProcessingId(orderId);
-        const toastId = toast.loading("Wird aktualisiert...");
+        const toastId = toast.loading("Prüfe HACCP-Status...");
 
+        const gate = await canDeliverOrder(orderId);
+
+        if (!gate.success) {
+            toast.error(gate.error || "Prüfung fehlgeschlagen", { id: toastId });
+            setProcessingId(null);
+            return;
+        }
+
+        if (!gate.data.allowed) {
+            toast.dismiss(toastId);
+            setPendingDeliveryOrder({
+                orderId,
+                reasons: gate.data.reasons,
+                violations: gate.data.violations,
+            });
+            setProcessingId(null);
+            return;
+        }
+
+        toast.loading("Wird aktualisiert...", { id: toastId });
         const res = await updateOrderStatusByDriver(orderId, "delivered");
 
         if (res.success) {
+            try {
+                await updateBestSellers(orderId);
+            } catch (err) {
+                console.warn("Best sellers update failed:", err);
+            }
             toast.success("Als zugestellt markiert", { id: toastId });
             await load();
         } else {
@@ -92,6 +141,37 @@ export default function DriverDashboard() {
 
         setProcessingId(null);
     };
+
+    /* ═══ فتح Modals — تحقق من الفحص ═══ */
+    const handleOpenShipModal = useCallback(
+        (order) => {
+            if (!roundAllowed) {
+                toast.error(
+                    "Bitte führen Sie zuerst den HACCP-Fahrzeugcheck durch.",
+                    { icon: "🚫", duration: 4000 }
+                );
+                setActiveTab("haccp");
+                return;
+            }
+            setShipModalOrder(order);
+        },
+        [roundAllowed]
+    );
+
+    const handleOpenReceiptCheck = useCallback(
+        (order) => {
+            if (!roundAllowed) {
+                toast.error(
+                    "Bitte führen Sie zuerst den HACCP-Fahrzeugcheck durch.",
+                    { icon: "🚫", duration: 4000 }
+                );
+                setActiveTab("haccp");
+                return;
+            }
+            setReceiptCheckOrder(order);
+        },
+        [roundAllowed]
+    );
 
     /* ═══ Derived ═══ */
     const filtered = useMemo(
@@ -110,7 +190,7 @@ export default function DriverDashboard() {
     /* ═══ Render ═══ */
     return (
         <div className="dd-page">
-            {/* ═══ Header ═══ */}
+            {/* Header */}
             <header className="dd-header">
                 <div className="dd-header-info">
                     <div className="dd-avatar">
@@ -127,20 +207,10 @@ export default function DriverDashboard() {
                 </button>
             </header>
 
-            {/* ═══ Stats ═══ */}
-            <div className="dd-stats">
-                {TABS.map((t) => (
-                    <div key={t.key} className="dd-stat">
-                        <span className="dd-stat-icon">{t.icon}</span>
-                        <div>
-                            <strong>{counts[t.key]}</strong>
-                            <span>{t.label}</span>
-                        </div>
-                    </div>
-                ))}
-            </div>
+            {/* Banner */}
+            <RoundGateBanner onStatusChange={(s) => setRoundAllowed(s.allowed === true)} />
 
-            {/* ═══ Tabs ═══ */}
+            {/* Tabs */}
             <nav className="dd-tabs">
                 {TABS.map((t) => (
                     <button
@@ -149,14 +219,21 @@ export default function DriverDashboard() {
                         onClick={() => setActiveTab(t.key)}
                     >
                         {t.label}
-                        <span className="dd-tab-count">{counts[t.key]}</span>
+                        {t.key !== "haccp" && (
+                            <span className="dd-tab-count">{counts[t.key]}</span>
+                        )}
                     </button>
                 ))}
             </nav>
 
-            {/* ═══ Content ═══ */}
+            {/* Content */}
             <main className="dd-content">
-                {loading ? (
+                {activeTab === "haccp" ? (
+                    <HaccpPanel
+                        driverId={driver?.id}
+                        onCheckCompleted={refreshRoundStatus}
+                    />
+                ) : loading ? (
                     <div className="dd-state">Lade Bestellungen...</div>
                 ) : filtered.length === 0 ? (
                     <div className="dd-state">
@@ -170,7 +247,9 @@ export default function DriverDashboard() {
                                 key={order.id}
                                 order={order}
                                 processing={processingId === order.id}
-                                onOpenShipModal={() => setShipModalOrder(order)}
+                                canAct={roundAllowed === true}
+                                onOpenReceiptCheck={() => handleOpenReceiptCheck(order)}
+                                onOpenShipModal={() => handleOpenShipModal(order)}
                                 onDeliver={() => handleDeliver(order.id)}
                                 onShowDetails={() => setDetailsOrder(order)}
                             />
@@ -179,7 +258,18 @@ export default function DriverDashboard() {
                 )}
             </main>
 
-            {/* ═══ Ship Modal ═══ */}
+            {/* Modals */}
+            {receiptCheckOrder && (
+                <ProductReceiptCheck
+                    order={receiptCheckOrder}
+                    onClose={() => setReceiptCheckOrder(null)}
+                    onSuccess={() => {
+                        setReceiptCheckOrder(null);
+                        toast.success("Produktprüfung gespeichert");
+                    }}
+                />
+            )}
+
             {shipModalOrder && (
                 <ShipOrderModal
                     order={shipModalOrder}
@@ -189,11 +279,45 @@ export default function DriverDashboard() {
                 />
             )}
 
-            {/* ═══ Details Modal ═══ */}
             {detailsOrder && (
                 <DriverOrderDetailsModal
                     order={detailsOrder}
                     onClose={() => setDetailsOrder(null)}
+                />
+            )}
+
+            {pendingDeliveryOrder && (
+                <ConfirmDialog
+                    isOpen={true}
+                    title="Lieferung blockiert"
+                    message={
+                        <>
+                            <p>
+                                <strong>HACCP-Sperre aktiv:</strong> Für diese Bestellung
+                                bestehen offene Verstöße. Die Lieferung kann erst nach Behebung
+                                freigegeben werden.
+                            </p>
+                            <p style={{ marginTop: 10 }}>
+                                <strong>Offene Verstöße:</strong>
+                            </p>
+                            <ul style={{ margin: "6px 0", paddingLeft: 20 }}>
+                                {pendingDeliveryOrder.reasons.map((r, i) => (
+                                    <li key={i}>{r}</li>
+                                ))}
+                            </ul>
+                            <p style={{ marginTop: 10, fontSize: 13, color: "#6b7a77" }}>
+                                Bitte wenden Sie sich an den Administrator, um die Verstöße zu
+                                klären.
+                            </p>
+                        </>
+                    }
+                    variant="danger"
+                    icon="block"
+                    confirmLabel="Verstanden"
+                    cancelLabel={null}
+                    isLoading={false}
+                    onConfirm={() => setPendingDeliveryOrder(null)}
+                    onCancel={() => setPendingDeliveryOrder(null)}
                 />
             )}
         </div>
@@ -201,11 +325,13 @@ export default function DriverDashboard() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   🚚 Order Card
+   🚚 Driver Order Card
    ══════════════════════════════════════════════════════════ */
 function DriverOrderCard({
     order,
     processing,
+    canAct,
+    onOpenReceiptCheck,
     onOpenShipModal,
     onDeliver,
     onShowDetails,
@@ -215,7 +341,7 @@ function DriverOrderCard({
 
     return (
         <article className="dd-card">
-            {/* ═══ Head ═══ */}
+            {/* Head */}
             <header className="dd-card-head">
                 <div>
                     <span className="dd-card-num">#{order.order_number}</span>
@@ -230,10 +356,7 @@ function DriverOrderCard({
                             <span className="material-symbols-outlined">event</span>
                             {new Date(`${order.delivery_date}T00:00:00`).toLocaleDateString(
                                 "de-DE",
-                                {
-                                    day: "2-digit",
-                                    month: "short",
-                                }
+                                { day: "2-digit", month: "short" }
                             )}
                             {order.delivery_time && ` · ${order.delivery_time}`}
                         </div>
@@ -243,7 +366,6 @@ function DriverOrderCard({
                         type="button"
                         className="dd-details-btn"
                         onClick={onShowDetails}
-                        aria-label="Details anzeigen"
                     >
                         <span className="material-symbols-outlined">visibility</span>
                         Details
@@ -251,7 +373,7 @@ function DriverOrderCard({
                 </div>
             </header>
 
-            {/* ═══ Customer ═══ */}
+            {/* Customer */}
             <div className="dd-card-section">
                 <h4>
                     <span className="material-symbols-outlined">person</span>
@@ -269,7 +391,7 @@ function DriverOrderCard({
                 )}
             </div>
 
-            {/* ═══ Address ═══ */}
+            {/* Address */}
             <div className="dd-card-section">
                 <h4>
                     <span className="material-symbols-outlined">location_on</span>
@@ -290,7 +412,7 @@ function DriverOrderCard({
                 {addr.notes && <p className="dd-card-note">📝 {addr.notes}</p>}
             </div>
 
-            {/* ═══ Items count ═══ */}
+            {/* Items count */}
             <div className="dd-card-section">
                 <h4>
                     <span className="material-symbols-outlined">inventory_2</span>
@@ -301,20 +423,29 @@ function DriverOrderCard({
                 </p>
             </div>
 
-            {/* ═══ Actions ═══ */}
+            {/* Actions */}
             <footer className="dd-card-actions">
-                {order.status === "confirmed" && (
-                    <button
-                        type="button"
-                        className="dd-btn dd-btn-ship"
-                        onClick={onOpenShipModal}
-                        disabled={processing}
-                    >
-                        <span className="material-symbols-outlined">local_shipping</span>
-                        Versand vorbereiten
-                    </button>
+                {/* ✅ Confirmed + فحص صالح → أزرار */}
+                {order.status === "confirmed" && canAct && (
+                    <>
+                        <button
+                            type="button"
+                            className="dd-btn dd-btn-ship"
+                            onClick={onOpenShipModal}
+                            disabled={processing}
+                        >
+                            <span className="material-symbols-outlined">
+                                local_shipping
+                            </span>
+                            Versand vorbereiten
+                        </button>
+                    </>
                 )}
 
+                {/* ✅ Confirmed + فحص غير صالح → لا شيء (لا أزرار، لا رسالة) */}
+                {/* (الفراغ مقصود) */}
+
+                {/* Shipped → زر التسليم */}
                 {order.status === "shipped" && (
                     <button
                         type="button"
@@ -329,7 +460,9 @@ function DriverOrderCard({
 
                 {order.status === "delivered" && (
                     <span className="dd-card-done">
-                        <span className="material-symbols-outlined">check_circle</span>
+                        <span className="material-symbols-outlined">
+                            check_circle
+                        </span>
                         Zugestellt
                     </span>
                 )}

@@ -5,8 +5,35 @@ import { fetchData } from "./fetchData";
 const TABLE = "products";
 const STORAGE_BUCKET = "upload-image";
 
+// ═══════════════════════════════════════════════════════════
+// 🎯 Public Columns — لا تحتوي على product_number
+// يُستخدم لكل الاستعلامات من واجهة العميل
+// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// 🎯 Public Columns — لا تحتوي على product_number
+// ═══════════════════════════════════════════════════════════
+const PUBLIC_COLUMNS = `
+    id,
+    name,
+    image,
+    price,
+    total_price,
+    tax_rate,
+    weight,
+    weight_unit,
+    category_id,
+    subcategory_id,
+    description,
+    ingredients,
+    nutrition_facts,
+    storage_notes,
+    nutrition_basis,
+    product_type,
+    total_sold
+`;
+
 // ============================================================
-// 1. CRUD
+// 1. CRUD — Admin فقط
 // ============================================================
 export async function addProduct(productData) {
     try {
@@ -47,29 +74,38 @@ export async function deleteProduct(id) {
 }
 
 // ============================================================
-// 2. Queries
+// 2. Queries — Customer-facing (بدون product_number)
 // ============================================================
+
 /**
- * بحث عن منتجات — يُستخدم للاقتراحات في الهيدر
+ * بحث عن منتجات — يُستخدم للاقتراحات في الهيدر والسلة
+ *
+ * ✅ تحديث: البحث بـ name فقط
+ *    لم يعد يبحث بـ product_number (خاص بالأدمن)
+ *
  * @param {string} searchItem - كلمة البحث
  * @param {number} limit - الحد الأقصى للنتائج (افتراضي 40)
  */
 export async function searchProduct(searchItem, limit = 40) {
     try {
         const term = String(searchItem || "").trim();
-        if (!term) return fetchData(TABLE);
-
-        let query = supabase.from(TABLE).select("*");
-
-        if (/^\d+$/.test(term)) {
-            query = query.eq("product_number", Number(term));
-        } else {
-            query = query.ilike("name", `%${term}%`);
+        if (!term) {
+            const { data, error } = await supabase
+                .from(TABLE)
+                .select(PUBLIC_COLUMNS)
+                .order("id", { ascending: true })
+                .limit(limit);
+            if (error) throw error;
+            return data || [];
         }
 
-        const { data, error } = await query
+        // ✅ بحث بـ name فقط — الأرقام أيضًا تُعامل كنص في name
+        const { data, error } = await supabase
+            .from(TABLE)
+            .select(PUBLIC_COLUMNS)
+            .ilike("name", `%${term}%`)
             .order("id", { ascending: true })
-            .limit(limit);                    // ← ✅ الحد الأقصى
+            .limit(limit);
 
         if (error) throw error;
         return data || [];
@@ -79,11 +115,15 @@ export async function searchProduct(searchItem, limit = 40) {
     }
 }
 
+/**
+ * جلب منتج واحد بالـ id — لواجهة العميل
+ * @param {number|string} productId
+ */
 export async function getProductById(productId) {
     try {
         const { data, error } = await supabase
             .from(TABLE)
-            .select("*, categories(name)")
+            .select(`${PUBLIC_COLUMNS}, categories(name)`)
             .eq("id", productId)
             .single();
         if (error) throw error;
@@ -94,11 +134,14 @@ export async function getProductById(productId) {
     }
 }
 
+/**
+ * منتجات من نفس الفئة — للـ "منتجات ذات صلة"
+ */
 export async function getProductsByCategory(categoryId, currentProductId) {
     try {
         const { data, error } = await supabase
             .from(TABLE)
-            .select("*")
+            .select(PUBLIC_COLUMNS)
             .eq("category_id", categoryId)
             .neq("id", currentProductId);
         if (error) throw error;
@@ -109,11 +152,14 @@ export async function getProductsByCategory(categoryId, currentProductId) {
     }
 }
 
+/**
+ * الأكثر مبيعًا — للـ HomePage
+ */
 export async function fetchBestSellers(limit = 8) {
     try {
         const { data, error } = await supabase
             .from(TABLE)
-            .select("*")
+            .select(PUBLIC_COLUMNS)
             .gt("total_sold", 0)
             .order("total_sold", { ascending: false })
             .limit(limit);

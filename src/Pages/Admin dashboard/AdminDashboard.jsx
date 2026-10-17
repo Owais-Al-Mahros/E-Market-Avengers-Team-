@@ -9,6 +9,7 @@ import AdminManagement from "./components/admin-management/AdminManagement";
 import MessagesSection from "./components/messages/MessagesSection";
 import FeaturedSection from "./components/featured/FeaturedSection";
 import FaqSection from "./components/faq/FaqSection"
+import HaccpSection from "./components/haccp/HaccpSection";
 import "./AdminDashboard.css";
 
 const SECTIONS = {
@@ -20,6 +21,7 @@ const SECTIONS = {
   faq: FaqSection,
   featured: FeaturedSection,
   admins: AdminManagement,
+  haccp: HaccpSection,
 };
 
 function AdminDashboard() {

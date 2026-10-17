@@ -1,4 +1,3 @@
-// src/Pages/DisplayProducts/components/ProductCard.jsx
 import "./ProductCard.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +5,7 @@ import toast from "react-hot-toast";
 import { useCart } from "../../context/CartContext.jsx";
 import { useFavorite } from "../../context/FavoriteContext.jsx";
 import { calculatePriceByKg } from "../../api/index.js";
+import { formatEuro, formatWeight } from "../../lib/format";
 
 export default function ProductCard({
   id,
@@ -20,7 +20,6 @@ export default function ProductCard({
   category,
   description,
   ingredients,
-  // ✅ DB field names → internal names
   nutrition_facts: nutritionObject,
   storage_notes: storageObject,
 }) {
@@ -55,7 +54,6 @@ export default function ProductCard({
     addToCart(
       {
         id,
-        product_number,
         name,
         image,
         price: parseFloat(price) || 0,
@@ -66,15 +64,15 @@ export default function ProductCard({
       },
       counter
     );
-    toast.success(`Added ${counter} × ${name} to cart!`, { duration: 2000 });
+    toast.success(`${counter} × ${name} zum Warenkorb hinzugefügt`, {
+      duration: 2000,
+    });
   };
 
   const handleToggleFavorite = (e) => {
     e.stopPropagation();
-    // ✅ نُخزّن بيانات كاملة — FavoriteList يستخدم <ProductCard {...product} />
     toggleFavorite({
       id,
-      product_number,
       name,
       image,
       price: parseFloat(price) || 0,
@@ -88,7 +86,7 @@ export default function ProductCard({
       nutrition_facts: nutritionObject,
       storage_notes: storageObject,
     });
-    toast(isFav ? "Removed from favorites" : "Added to favorites", {
+    toast(isFav ? "Aus Favoriten entfernt" : "Zu Favoriten hinzugefügt", {
       icon: isFav ? "💔" : "❤️",
     });
   };
@@ -100,14 +98,16 @@ export default function ProductCard({
           type="button"
           className={`product-card-fav-btn ${isFav ? "active" : ""}`}
           onClick={handleToggleFavorite}
-          aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+          aria-label={
+            isFav ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"
+          }
         >
           <span className="material-symbols-outlined">favorite</span>
         </button>
 
         <img
           src={image}
-          alt={name || "product"}
+          alt={name || "Produkt"}
           className="product-card-image"
           loading="lazy"
           onLoad={() => setIsImageLoaded(true)}
@@ -121,13 +121,13 @@ export default function ProductCard({
 
       <div className="product-card-weight">
         <span className="product-card-weight-value">
-          {weight} {weight_unit}
+          {formatWeight(weight, weight_unit)}
         </span>
         <div className="product-card-qty">
           <button
             type="button"
             onClick={decreaseCounter}
-            aria-label="Decrease quantity"
+            aria-label="Verringern"
           >
             −
           </button>
@@ -135,7 +135,7 @@ export default function ProductCard({
           <button
             type="button"
             onClick={increaseCounter}
-            aria-label="Increase quantity"
+            aria-label="Erhöhen"
           >
             +
           </button>
@@ -145,7 +145,7 @@ export default function ProductCard({
       <div className="product-card-action">
         <div className="product-card-price">
           <span className="product-card-main-price">
-            {(displayPrice * counter).toFixed(2)} €
+            {formatEuro(displayPrice * counter)}
           </span>
           {pricePerKg > 0 && (
             <span className="product-card-price-per-kg">
@@ -159,7 +159,7 @@ export default function ProductCard({
           className="product-card-add-btn"
           onClick={handleAddToCart}
         >
-          <span>Add to cart</span>
+          <span>In den Warenkorb</span>
         </button>
       </div>
     </div>

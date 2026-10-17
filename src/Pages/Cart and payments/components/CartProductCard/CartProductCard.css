@@ -233,7 +233,7 @@
 
   /* ✅ Label صغير قبل السعر */
   .cart-product-total::before {
-    content: "Total";
+    content: "Gesamt";
     font-size: 12px;
     font-weight: 600;
     color: var(--text-muted);

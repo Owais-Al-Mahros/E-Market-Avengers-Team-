@@ -9,6 +9,7 @@ import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import Subscribe from "../../components/layout/Subscribe";
 import ProductCard from "../../components/product/ProductCard";
+import { formatEuro, formatWeight } from "../../lib/format";
 
 const StaticHeader = memo(Header);
 const StaticFooter = memo(Footer);
@@ -99,7 +100,6 @@ export default function ProductCardDetails() {
   // ============================================
   const {
     id = "",
-    product_number = "",
     name = "",
     image = "",
     price = 0,
@@ -130,7 +130,6 @@ export default function ProductCardDetails() {
     addToCart(
       {
         id,
-        product_number,
         name,
         image,
         weight,
@@ -141,13 +140,12 @@ export default function ProductCardDetails() {
       quantity
     );
 
-    toast.success(`Added ${quantity} × ${name} to cart!`, { duration: 2000 });
+    toast.success(`${quantity} × ${name} zum Warenkorb hinzugefügt!`, { duration: 2000 });
   };
 
   const handleToggleFavorite = () => {
     toggleFavorite({
       id,
-      product_number,
       name,
       image,
       price: parseFloat(price) || 0,
@@ -159,7 +157,7 @@ export default function ProductCardDetails() {
       nutrition_facts: nutritionObject,
       storage_notes: storageObject,
     });
-    toast(isFav ? "Removed from favorites" : "Added to favorites", {
+    toast(isFav ? "Aus Favoriten entfernt" : "Zu Favoriten hinzugefügt", {
       icon: isFav ? "💔" : "❤️",
     });
   };
@@ -173,19 +171,11 @@ export default function ProductCardDetails() {
             Top action bar — Back + Go Home (side by side)
         ============================================ */}
         <div className="product-detail-actions">
-          <button
-            type="button"
-            className="product-back-btn"
-            onClick={() => navigate(-1)}
-          >
-            ← Back
+          <button className="product-back-btn" onClick={() => navigate(-1)}>
+            ← Zurück
           </button>
-          <button
-            type="button"
-            className="product-back-btn"
-            onClick={() => navigate("/")}
-          >
-            🏠 Go Home
+          <button className="product-back-btn" onClick={() => navigate("/")}>
+            🏠 Startseite
           </button>
         </div>
 
@@ -206,11 +196,11 @@ export default function ProductCardDetails() {
               </p>
             )}
 
-            <div className="main-product-price">{displayPrice.toFixed(2)} €</div>
+            <div className="main-product-price">{formatEuro(displayPrice)}</div>
 
             {weight && (
               <p className="product-unit-info">
-                {weight} {weight_unit}
+                {formatWeight(weight, weight_unit)}
                 {pricePerKg > 0 && ` (1 kg = ${pricePerKg} €)`}
               </p>
             )}
@@ -235,24 +225,18 @@ export default function ProductCardDetails() {
                 </button>
               </div>
 
-              <button
-                type="button"
-                className="checkout-add-btn"
-                onClick={handleAddToCart}
-              >
+              <button type="button" className="checkout-add-btn" onClick={handleAddToCart}>
                 <span className="material-symbols-outlined">shopping_cart</span>
-                Add to Cart ({(displayPrice * quantity).toFixed(2)} €)
+                In den Warenkorb ({formatEuro(displayPrice * quantity)})
               </button>
             </div>
           </div>
         </div>
 
-        {/* ============================================
-            Product description
-        ============================================ */}
+
         {description &&
           <section className="detail-section-card">
-            <h2 className="detail-section-title">Product description</h2>
+            <h2 className="detail-section-title">Produktbeschreibung</h2>
             <p className="product-description">{description}</p>
           </section>}
 
@@ -261,18 +245,18 @@ export default function ProductCardDetails() {
         ============================================ */}
         {(finalCategory || weight) && (
           <section className="detail-section-card">
-            <h2 className="detail-section-title">Article details</h2>
+            <h2 className="detail-section-title">Artikeldetails</h2>
 
             <dl className="article-details">
               {finalCategory && (
                 <>
-                  <dt>Category</dt>
+                  <dt>Kategorie</dt>
                   <dd>{finalCategory}</dd>
                 </>
               )}
               {weight && (
                 <>
-                  <dt>Weight</dt>
+                  <dt>Gewicht</dt>
                   <dd>
                     {weight} {weight_unit}
                   </dd>
@@ -288,14 +272,14 @@ export default function ProductCardDetails() {
         {hasNutrition && (
           <section className="detail-section-card">
             <h2 className="detail-section-title">
-              Nutritional values & ingredients
+              Nährwerte & Zutaten
             </h2>
 
             {Object.keys(nutritionObject).length > 0 && (
               <table className="page-nutrition-table">
                 <thead>
                   <tr>
-                    <th>Nutritional Value</th>
+                    <th>Nährwert</th>
                     <th>{product.nutrition_basis || "pro 100 g"}</th>
                   </tr>
                 </thead>
@@ -312,7 +296,7 @@ export default function ProductCardDetails() {
 
             {ingredients && (
               <div className="page-ingredients">
-                <h3>Ingredients</h3>
+                <h3>Zutaten</h3>
                 <p>{ingredients}</p>
               </div>
             )}
@@ -324,7 +308,7 @@ export default function ProductCardDetails() {
         ============================================ */}
         {hasStorage && (
           <section className="detail-section-card">
-            <h2 className="detail-section-title">Storage and notes</h2>
+            <h2 className="detail-section-title">Lagerung & Hinweise</h2>
             <ul className="storage-list-page">
               {Object.entries(storageObject).map(([key, value]) => (
                 <li key={key}>
@@ -344,7 +328,7 @@ export default function ProductCardDetails() {
       {relatedProducts.length > 0 && (
         <div className="related-products-section">
           <h2 className="related-products-title">
-            Products in the same category
+            Produkte aus derselben Kategorie
           </h2>
           <div className="related-products">
             {relatedProducts.map((item) => (

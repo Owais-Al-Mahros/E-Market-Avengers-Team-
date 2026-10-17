@@ -11,6 +11,7 @@ const BASE_MENU = [
   { icon: "inventory_2", label: "Product Management", section: "products" },
   { icon: "shopping_cart", label: "Order Management", section: "orders" },
   { icon: "local_shipping", label: "Shipping Settings", section: "shipping" },
+  { icon: "health_and_safety", label: "HACCP & Hygiene", section: "haccp" },
   { icon: "mail", label: "Messages", section: "messages" },
   { icon: "quiz", label: "FAQ", section: "faq" },
   { icon: "star", label: "Featured Products", section: "featured" },

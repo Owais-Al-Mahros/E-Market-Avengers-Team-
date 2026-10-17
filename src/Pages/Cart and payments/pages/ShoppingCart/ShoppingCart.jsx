@@ -11,7 +11,7 @@ import "./ShoppingCart.css";
 import CartHeader from "./components/CartHeader";
 import OrderSummary from "../../components/OrderSummary/OrderSummary";
 import Footer from "../../../../components/layout/Footer"
-
+import { formatEuro } from "../../../../lib/format";
 
 export default function ShoppingCart() {
   const navigate = useNavigate();
@@ -104,7 +104,6 @@ export default function ShoppingCart() {
     addToCart(
       {
         id: product.id,
-        product_number: product.product_number,
         name: product.name,
         image: product.image,
         price: parseFloat(product.price) || 0,
@@ -116,7 +115,7 @@ export default function ShoppingCart() {
       1
     );
 
-    toast.success(`Added "${product.name}" to cart`, { duration: 1500 });
+    toast.success(`„${product.name}" zum Warenkorb hinzugefügt`, { duration: 1500 });
     setSearchTerm("");
     setSearchResults([]);
     setShowDropdown(false);
@@ -137,8 +136,8 @@ export default function ShoppingCart() {
       <div className="cart-page">
         <CartHeader />
         <div className="cart-empty">
-          <p className="cart-empty-title">Your cart is empty.</p>
-          <Link to="/" className="cart-empty-btn">Start Shopping</Link>
+          <p className="cart-empty-title">Ihr Warenkorb ist leer.</p>
+          <Link to="/" className="cart-empty-btn">Jetzt einkaufen</Link>
         </div>
         <Footer />
       </div>
@@ -149,18 +148,18 @@ export default function ShoppingCart() {
     <div className="cart-page">
       <CartHeader currentStep={1} />
       <main className="cart-main">
-        <h1 className="cart-title">Shopping Cart</h1>
+        <h1 className="cart-title">Warenkorb</h1>
 
         {/* ===== Search ===== */}
         <div className="cart-search-wrapper" ref={searchRef}>
           <p className="cart-search-text">
-            Did you forget something? Search for products and add them to your cart.
+            Etwas vergessen? Suchen Sie nach Produkten und fügen Sie sie hinzu.
           </p>
 
           <div className="cart-search">
             <input
               type="text"
-              placeholder="Search products..."
+              placeholder="Produkte suchen..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onFocus={() => searchTerm.trim() && setShowDropdown(true)}
@@ -190,10 +189,10 @@ export default function ShoppingCart() {
               {isSearching ? (
                 <div className="cart-search-state">
                   <div className="cart-search-spinner" />
-                  Searching...
+                  Wird gesucht...
                 </div>
               ) : searchResults.length === 0 ? (
-                <div className="cart-search-state">No products found.</div>
+                <div className="cart-search-state">Keine Produkte gefunden.</div>
               ) : (
                 searchResults.slice(0, 8).map((product) => {
                   const displayPrice =
@@ -216,7 +215,7 @@ export default function ShoppingCart() {
                       <div className="cart-search-result-info">
                         <span className="cart-search-result-name">{product.name}</span>
                         <span className="cart-search-result-price">
-                          €{displayPrice.toFixed(2)}
+                          {formatEuro(displayPrice)}
                         </span>
                       </div>
 
@@ -237,7 +236,7 @@ export default function ShoppingCart() {
           <div className="cart-products-col">
             {/* Delivery Info */}
             <div className="cart-delivery-info">
-              <h3>Pick-up service</h3>
+              <h3>Abholservice</h3>
             </div>
 
             {/* Products by Category */}
@@ -246,8 +245,8 @@ export default function ShoppingCart() {
                 <div className="cart-category-header">
                   <h3 className="cart-category-name">{categoryName}</h3>
                   <div className="cart-category-cols">
-                    <span>Unit Price</span>
-                    <span>Total</span>
+                    <span>Einzelpreis</span>
+                    <span>Gesamt</span>
                   </div>
                 </div>
                 <div className="cart-category-items">
@@ -278,7 +277,7 @@ export default function ShoppingCart() {
                   <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor"
                     strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                Back
+                Zurück
               </button>
             </div>
           </div>

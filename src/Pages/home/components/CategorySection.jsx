@@ -25,7 +25,7 @@ export default function CategorySection({ categoryId, categoryName }) {
     return (
       <div className="cat-loading">
         <div className="cat-spinner"></div>
-        <p>Loading...</p>
+        <p>Wird geladen...</p>
       </div>
     );
   }
@@ -34,7 +34,7 @@ export default function CategorySection({ categoryId, categoryName }) {
     return (
       <div className="cat-empty">
         <span className="material-symbols-outlined">inbox</span>
-        <p>No products in this category.</p>
+        <p>Keine Produkte in dieser Kategorie.</p>
       </div>
     );
   }

@@ -188,13 +188,13 @@
 }
 
 /* ═══════════════════════════════════════════
-   INFO STRIP (Compact)
+   INFO STRIP — Compact
    ═══════════════════════════════════════════ */
 .odm-info-strip {
   display: grid;
-  grid-template-columns: auto auto 1fr auto auto;
+  grid-template-columns: auto auto 1fr auto;
   gap: var(--space-2);
-  align-items: center;
+  align-items: stretch;
   padding: var(--space-3) var(--space-5);
   background: #fff;
   border-bottom: 2px solid var(--secondary-color);
@@ -206,10 +206,11 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 8px 14px;
+  padding: 10px 16px;
   background: var(--bg-color);
   border-radius: var(--radius-md);
   min-width: 0;
+  min-height: 52px;
 }
 
 .odm-info-wide {
@@ -226,8 +227,9 @@
 .odm-info-block>div {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   min-width: 0;
+  justify-content: center;
 }
 
 .odm-info-label {
@@ -235,7 +237,7 @@
   font-weight: 800;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
   white-space: nowrap;
 }
 
@@ -246,6 +248,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.3;
 }
 
 .odm-info-sub {
@@ -261,6 +264,179 @@
 
 .odm-link:hover {
   text-decoration: underline;
+}
+
+/* ✅ توسيط وزن الطلب — رقم منفرد */
+.odm-info-block:last-child {
+  text-align: center;
+  justify-content: center;
+}
+
+.odm-info-block:last-child>div {
+  align-items: center;
+}
+
+.odm-info-block:last-child .odm-info-value {
+  font-size: var(--font-md);
+  font-weight: 800;
+}
+
+/* ═══════════════════════════════════════════
+   ✅ PROMINENT DELIVERY BANNER
+   ═══════════════════════════════════════════ */
+.odm-delivery-banner {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  background: linear-gradient(135deg, rgba(20, 92, 74, 0.06), #fff);
+  border-bottom: 2px solid var(--secondary-color);
+  border-left: 4px solid var(--primary-color);
+  flex-shrink: 0;
+}
+
+.odm-delivery-banner-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.odm-delivery-banner-icon {
+  font-size: 28px;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.odm-delivery-banner-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.odm-delivery-banner-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.odm-delivery-banner-date {
+  font-size: var(--font-md);
+  font-weight: 800;
+  color: var(--primary-color);
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+}
+
+/* ✅ الوقت — موسّط داخل الصندوق */
+.odm-delivery-banner-time {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: var(--primary-color);
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-family: "Courier New", monospace;
+  font-size: var(--font-md);
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+.odm-delivery-banner-time .material-symbols-outlined {
+  font-size: 18px;
+  color: var(--accent-color);
+}
+
+/* ✅ Badge — موسّط داخل الصندوق */
+.odm-delivery-banner-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  min-width: 90px;
+}
+
+.odm-delivery-banner-badge-overdue {
+  background: var(--status-cancelled-bg);
+  color: var(--status-cancelled-text);
+  animation: pulseDelivery 1.5s ease-in-out infinite;
+}
+
+.odm-delivery-banner-badge-today {
+  background: var(--status-pending-bg);
+  color: var(--status-pending-text);
+  animation: pulseDelivery 1.8s ease-in-out infinite;
+}
+
+.odm-delivery-banner-badge-tomorrow {
+  background: var(--status-confirmed-bg);
+  color: var(--status-confirmed-text);
+}
+
+.odm-delivery-banner-badge-soon {
+  background: var(--status-shipped-bg);
+  color: var(--status-shipped-text);
+}
+
+.odm-delivery-banner-badge-later {
+  background: var(--gray-100);
+  color: var(--text-muted);
+}
+
+@keyframes pulseDelivery {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Variant: Overdue */
+.odm-delivery-banner-overdue {
+  background: linear-gradient(135deg, rgba(217, 79, 79, 0.06), #fff);
+  border-left-color: var(--danger-color);
+}
+
+.odm-delivery-banner-overdue .odm-delivery-banner-icon,
+.odm-delivery-banner-overdue .odm-delivery-banner-date {
+  color: var(--danger-color);
+}
+
+.odm-delivery-banner-overdue .odm-delivery-banner-time {
+  background: var(--danger-color);
+}
+
+/* Variant: Today */
+.odm-delivery-banner-today {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), #fff);
+  border-left-color: var(--warning-border);
+}
+
+.odm-delivery-banner-today .odm-delivery-banner-icon,
+.odm-delivery-banner-today .odm-delivery-banner-date {
+  color: #b45309;
+}
+
+.odm-delivery-banner-today .odm-delivery-banner-time {
+  background: var(--warning-border);
 }
 
 /* ═══════════════════════════════════════════
@@ -321,11 +497,9 @@
   background: #fff;
   border-radius: var(--radius-lg);
   border: 2px solid var(--secondary-color);
-  /* ✅ لا overflow:hidden — يكسر sticky ويسبب مشاكل القص */
   box-shadow: var(--shadow-md);
 }
 
-/* ═══ حفاظ على الزوايا الدائرية بدون overflow:hidden ═══ */
 .odm-products-header {
   border-top-left-radius: calc(var(--radius-lg) - 2px);
   border-top-right-radius: calc(var(--radius-lg) - 2px);
@@ -338,7 +512,6 @@
 .odm-table tbody tr:last-child td:last-child {
   border-bottom-right-radius: calc(var(--radius-lg) - 2px);
 }
-
 
 .odm-products-title {
   display: flex;
@@ -384,7 +557,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   TABLE (Desktop)
+   TABLE
    ═══════════════════════════════════════════ */
 .odm-table-wrapper {
   overflow-x: auto;
@@ -396,6 +569,7 @@
   border-collapse: collapse;
   font-size: var(--font-sm);
   min-width: 800px;
+  font-family: "IBM Plex Sans Arabic", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .odm-table thead {
@@ -405,8 +579,8 @@
 }
 
 .odm-table th {
-  padding: 12px;
-  text-align: left;
+  padding: 12px 10px;
+  text-align: center;
   font-size: 10.5px;
   font-weight: 800;
   color: #fff;
@@ -422,9 +596,21 @@
   text-align: center !important;
 }
 
+.odm-th-product {
+  text-align: left !important;
+}
+
 .odm-th-qty {
   width: 60px;
   text-align: center !important;
+}
+
+.odm-th-price {
+  text-align: right !important;
+}
+
+.odm-th-total {
+  text-align: right !important;
 }
 
 .odm-th-status {
@@ -445,6 +631,31 @@
 
 .odm-table tbody tr:hover {
   background: rgba(20, 92, 74, 0.03);
+}
+
+/* ✅ محاذاة الأعمدة */
+.odm-table td:nth-child(1) {
+  text-align: center;
+}
+
+.odm-table td:nth-child(2) {
+  text-align: left;
+}
+
+.odm-table td:nth-child(3) {
+  text-align: center;
+}
+
+.odm-table td:nth-child(4) {
+  text-align: right;
+}
+
+.odm-table td:nth-child(5) {
+  text-align: right;
+}
+
+.odm-table td:nth-child(6) {
+  text-align: center;
 }
 
 /* Row status colors */
@@ -506,19 +717,21 @@
   margin-top: 2px;
 }
 
-/* Qty Badge */
+/* Qty Badge — number only */
 .odm-qty-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 38px;
-  padding: 4px 8px;
+  min-width: 42px;
+  padding: 5px 10px;
   background: var(--bg-color);
   border: 1.5px solid var(--secondary-color);
   border-radius: var(--radius-sm);
   font-size: var(--font-base);
   font-weight: 800;
   color: var(--primary-color);
+  font-family: "Courier New", monospace;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Weight / Price / Total */
@@ -529,11 +742,24 @@
   white-space: nowrap;
 }
 
+/* ✅ Unit Price — inline row */
 .odm-price-value {
-  font-size: var(--font-sm);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: var(--font-base);
   font-weight: 700;
   color: var(--text);
   white-space: nowrap;
+  font-family: "Courier New", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.odm-price-weight {
+  font-size: var(--font-xs);
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.2px;
 }
 
 .odm-price-unit {
@@ -543,11 +769,14 @@
   margin-left: 2px;
 }
 
+/* Total */
 .odm-total-value {
   font-size: var(--font-base);
   font-weight: 800;
   color: var(--primary-color);
   white-space: nowrap;
+  font-family: "Courier New", monospace;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Item Status Badge */
@@ -598,12 +827,12 @@
 }
 
 /* ═══════════════════════════════════════════
-   TOTALS
+   TOTALS — موحّد الارتفاع
    ═══════════════════════════════════════════ */
 .odm-totals-compact {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-3);
   padding: var(--space-4) var(--space-5);
   background: linear-gradient(135deg, #fff, #f0f7f4);
   border: 2px solid var(--secondary-color);
@@ -613,25 +842,44 @@
 .odm-total-item {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 10px 12px;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 14px 16px;
   background: #fff;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(20, 92, 74, 0.06);
+  border: 1px solid rgba(20, 92, 74, 0.08);
+  min-height: 72px;
 }
 
 .odm-total-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   font-size: 10.5px;
   font-weight: 800;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+}
+
+.odm-total-sub {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--gray-400);
+  text-transform: none;
+  letter-spacing: 0;
+  font-style: italic;
 }
 
 .odm-total-val {
-  font-size: var(--font-base);
+  font-size: var(--font-lg);
   font-weight: 800;
   color: var(--text);
+  font-family: "Courier New", monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
 }
 
 .odm-total-adjusted {
@@ -647,6 +895,27 @@
   color: var(--warning-text);
 }
 
+.odm-total-tax .odm-total-val {
+  color: #78350f;
+  font-weight: 700;
+}
+
+/* ✅ Badge "adjusted" */
+.odm-total-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 9.5px;
+  font-weight: 800;
+  background: var(--warning-border);
+  color: #78350f;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  vertical-align: middle;
+}
+
+/* Grand Total — بارز */
 .odm-total-grand {
   background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
   border-color: var(--primary-color);
@@ -659,8 +928,7 @@
 
 .odm-total-grand .odm-total-val {
   color: #fff;
-  font-size: 20px;
-  letter-spacing: -0.3px;
+  font-size: 22px;
 }
 
 /* ═══════════════════════════════════════════
@@ -796,7 +1064,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   RESPONSIVE — MOBILE (Card View)
+   RESPONSIVE — MOBILE
    ═══════════════════════════════════════════ */
 @media (max-width: 48rem) {
   .odm-overlay {
@@ -836,8 +1104,8 @@
   /* ═══ Info Strip — 2 columns ═══ */
   .odm-info-strip {
     grid-template-columns: 1fr 1fr;
-    padding: var(--space-2) var(--space-4);
     gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
   }
 
   .odm-info-wide {
@@ -845,11 +1113,53 @@
   }
 
   .odm-info-block {
-    padding: 6px 10px;
+    padding: 8px 12px;
+    min-height: 48px;
+  }
+
+  .odm-info-block:last-child {
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .odm-info-block:last-child>div {
+    align-items: flex-start;
   }
 
   .odm-info-value {
     font-size: var(--font-xs);
+  }
+
+  /* ═══ Delivery Banner — عمودي ═══ */
+  .odm-delivery-banner {
+    grid-template-columns: 1fr;
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-2);
+  }
+
+  .odm-delivery-banner-left {
+    width: 100%;
+  }
+
+  .odm-delivery-banner-icon {
+    font-size: 24px;
+  }
+
+  .odm-delivery-banner-date {
+    font-size: var(--font-base);
+  }
+
+  .odm-delivery-banner-time {
+    padding: 8px 12px;
+    font-size: var(--font-sm);
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .odm-delivery-banner-badge {
+    justify-self: flex-start;
+    min-width: 0;
   }
 
   /* ═══ Body ═══ */
@@ -858,7 +1168,7 @@
     gap: var(--space-3);
   }
 
-  /* ═══ Products Section ═══ */
+  /* ═══ Products ═══ */
   .odm-products-header {
     padding: var(--space-2) var(--space-4);
   }
@@ -872,8 +1182,93 @@
   }
 
   /* ═══════════════════════════════════════════
-     🔥 الجدول يتحوّل إلى Cards على الجوال
-     ═══════════════════════════════════════════ */
+   ✅ FIX #21: STATUS BADGE — معزول تحت .odm-modal
+   يمنع التعارض مع OrdersTable.css و OrderStatusTracker.css
+   ═══════════════════════════════════════════ */
+  .odm-modal .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    border: 1.5px solid transparent;
+  }
+
+  .odm-modal .status-badge::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .odm-modal .status-badge.status-awaiting_payment {
+    background: var(--status-pending-bg);
+    color: var(--status-pending-text);
+    border-color: var(--status-pending-border);
+  }
+
+  .odm-modal .status-badge.status-awaiting_payment::before {
+    background: var(--status-pending-border);
+  }
+
+  .odm-modal .status-badge.status-pending {
+    background: var(--status-pending-bg);
+    color: var(--status-pending-text);
+    border-color: var(--status-pending-border);
+  }
+
+  .odm-modal .status-badge.status-pending::before {
+    background: var(--status-pending-border);
+  }
+
+  .odm-modal .status-badge.status-confirmed {
+    background: var(--status-confirmed-bg);
+    color: var(--status-confirmed-text);
+    border-color: var(--status-confirmed-border);
+  }
+
+  .odm-modal .status-badge.status-confirmed::before {
+    background: var(--status-confirmed-border);
+  }
+
+  .odm-modal .status-badge.status-shipped {
+    background: var(--status-shipped-bg);
+    color: var(--status-shipped-text);
+    border-color: var(--status-shipped-border);
+  }
+
+  .odm-modal .status-badge.status-shipped::before {
+    background: var(--status-shipped-border);
+  }
+
+  .odm-modal .status-badge.status-delivered {
+    background: var(--status-delivered-bg);
+    color: var(--status-delivered-text);
+    border-color: var(--status-delivered-border);
+  }
+
+  .odm-modal .status-badge.status-delivered::before {
+    background: var(--status-delivered-border);
+  }
+
+  .odm-modal .status-badge.status-cancelled {
+    background: var(--status-cancelled-bg);
+    color: var(--status-cancelled-text);
+    border-color: var(--status-cancelled-border);
+  }
+
+  .odm-modal .status-badge.status-cancelled::before {
+    background: var(--status-cancelled-border);
+  }
+
+  /* ═══ Table → Cards ═══ */
   .odm-table-wrapper {
     max-height: none;
     overflow: visible;
@@ -897,7 +1292,6 @@
     gap: var(--space-3);
   }
 
-  /* ═══ كل صف = كارد ═══ */
   .odm-table tbody tr {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -916,7 +1310,6 @@
     transform: translateY(-1px);
   }
 
-  /* Border-left حسب الحالة */
   .odm-table tbody tr.odm-row-pending {
     border-left: 4px solid var(--status-pending-border);
   }
@@ -933,7 +1326,7 @@
     border-left: 4px solid var(--status-cancelled-border);
   }
 
-  /* ═══ كل خلية ═══ */
+  /* كل خلية */
   .odm-table td {
     display: flex;
     flex-direction: column;
@@ -945,7 +1338,6 @@
     min-width: 0;
   }
 
-  /* Label تلقائي لكل خلية */
   .odm-table td::before {
     font-size: 9.5px;
     font-weight: 800;
@@ -955,29 +1347,29 @@
     margin-bottom: 2px;
   }
 
-  /* ═══ ترتيب الحقول ═══ */
   /* 1. Art.-Nr. */
   .odm-table td:nth-child(1) {
     grid-column: 1 / 2;
     align-items: flex-start;
+    text-align: left !important;
   }
 
   .odm-table td:nth-child(1)::before {
-    content: "Art.-Nr.";
+    content: "Art. No.";
   }
 
-  /* 2. Produktname (full width) */
+  /* 2. Product (full width, first) */
   .odm-table td:nth-child(2) {
     grid-column: 1 / -1;
     order: -1;
-    /* يظهر أولاً */
     padding-bottom: var(--space-2);
     border-bottom: 1px dashed var(--secondary-color);
     margin-bottom: var(--space-1);
+    text-align: left !important;
   }
 
   .odm-table td:nth-child(2)::before {
-    content: "Produkt";
+    content: "Product";
   }
 
   .odm-product-name {
@@ -986,40 +1378,52 @@
     color: var(--primary-color);
   }
 
-  /* 3. Menge */
+  /* 3. Qty */
   .odm-table td:nth-child(3) {
     grid-column: 2 / 3;
+    align-items: flex-end;
+    text-align: right !important;
   }
 
   .odm-table td:nth-child(3)::before {
-    content: "Menge";
+    content: "Qty";
   }
 
-  /* 4. Gewicht */
+  /* 4. Unit Price */
   .odm-table td:nth-child(4) {
     grid-column: 1 / 2;
+    align-items: flex-start;
+    text-align: left !important;
   }
 
   .odm-table td:nth-child(4)::before {
-    content: "Gewicht";
+    content: "Unit Price";
   }
 
-  /* 5. Einzelpreis */
+  /* 5. Total */
   .odm-table td:nth-child(5) {
     grid-column: 2 / 3;
+    align-items: flex-end;
+    text-align: right !important;
   }
 
   .odm-table td:nth-child(5)::before {
-    content: "Einzelpreis";
+    content: "Total";
   }
 
-  /* 6. Gesamt (full width, prominent) */
+  /* 6. Status */
   .odm-table td:nth-child(6) {
-    grid-column: 1 / 2;
+    grid-column: 1 / -1;
+    align-items: center;
+    padding-top: var(--space-2);
+    border-top: 1px dashed var(--secondary-color);
+    margin-top: var(--space-1);
   }
 
   .odm-table td:nth-child(6)::before {
-    content: "Gesamt";
+    content: "Status";
+    text-align: center;
+    width: 100%;
   }
 
   .odm-total-value {
@@ -1027,17 +1431,6 @@
     color: var(--primary-color);
   }
 
-  /* 7. Status (يمين Gesamt) */
-  .odm-table td:nth-child(7) {
-    grid-column: 2 / 3;
-    align-items: flex-end;
-  }
-
-  .odm-table td:nth-child(7)::before {
-    content: "Status";
-  }
-
-  /* تحسينات لكل عنصر */
   .odm-product-id {
     min-width: auto;
     padding: 4px 8px;
@@ -1054,7 +1447,7 @@
     padding: 3px 8px;
   }
 
-  .odm-price-unit {
+  .odm-price-weight {
     font-size: 10px;
   }
 
@@ -1070,7 +1463,8 @@
   }
 
   .odm-total-item {
-    padding: 8px 10px;
+    padding: 12px 14px;
+    min-height: 64px;
   }
 
   .odm-total-label {
@@ -1078,7 +1472,7 @@
   }
 
   .odm-total-val {
-    font-size: var(--font-sm);
+    font-size: var(--font-base);
   }
 
   .odm-total-grand .odm-total-val {
@@ -1103,7 +1497,6 @@
     font-size: var(--font-base);
   }
 
-  /* Empty state */
   .odm-empty-row {
     grid-column: 1 / -1 !important;
     padding: 30px 14px !important;

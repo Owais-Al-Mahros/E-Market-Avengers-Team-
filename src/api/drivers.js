@@ -10,7 +10,7 @@ import { supabase } from "../lib/supabase";
 export async function fetchAllDrivers() {
     const { data, error } = await supabase
         .from("profiles")
-        .select("id, name, email, is_active")
+        .select("id, name, email, phone, is_active")
         .eq("role", "driver")
         .eq("is_active", true)
         .order("name");

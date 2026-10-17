@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import CartHeader from "../Cart and payments/pages/ShoppingCart/components/CartHeader";
 import Footer from "../../components/layout/Footer";
 import "./LegalLayout.css";
 
@@ -55,8 +54,6 @@ export default function LegalLayout({ title, subtitle, children, sections = [] }
 
     return (
         <div className="legal-page">
-            <CartHeader currentStep={null} />
-
             <main className="legal-main">
                 {/* ===== Hero ===== */}
                 <div className="legal-hero">

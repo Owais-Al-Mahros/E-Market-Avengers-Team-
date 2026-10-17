@@ -17,7 +17,6 @@ function getWiderrufInfo(order) {
         return { canWiderruf: false, daysSince: 0, daysLeft: 0 };
     }
 
-    // ✅ نستخدم delivered_at إن وُجد، وإلا updated_at
     const refDate = order.delivered_at || order.updated_at;
     if (!refDate) {
         return { canWiderruf: false, daysSince: 0, daysLeft: 0 };
@@ -69,7 +68,6 @@ export default function OrderActionsPanel({ order, onRefresh }) {
                 return;
             }
 
-            // رسالة نجاح حسب نوع الاسترداد
             let successMsg = "✅ Bestellung erfolgreich storniert!";
             if (result.refund_type === "refunded") {
                 successMsg += `\n💰 €${result.refund_amount?.toFixed(2)} werden innerhalb von 3-5 Werktagen erstattet.`;
@@ -95,9 +93,6 @@ export default function OrderActionsPanel({ order, onRefresh }) {
         }
     };
 
-    // ============================================
-    // === PENDING أو CONFIRMED ===
-    // ============================================
     // ============================================
     // === AWAITING_PAYMENT ===
     // ============================================
@@ -152,7 +147,6 @@ export default function OrderActionsPanel({ order, onRefresh }) {
                     </button>
                 </div>
 
-                {/* Confirm Dialog */}
                 <ConfirmDialog
                     isOpen={showCancelConfirm}
                     title={`Bestellung #${order.order_number} wirklich stornieren?`}
@@ -173,6 +167,7 @@ export default function OrderActionsPanel({ order, onRefresh }) {
             </div>
         );
     }
+
     /* ═══ PENDING — كل الإجراءات متاحة ═══ */
     if (status === "pending") {
         return (
@@ -206,7 +201,37 @@ export default function OrderActionsPanel({ order, onRefresh }) {
                     </button>
                 </div>
 
-                {/* ... Amendment Modal + Confirm Dialog (كما هي) ... */}
+                {/* ✅ FIX #3: Amendment Modal — كان مفقودًا */}
+                {showAmendment && (
+                    <AmendmentModal
+                        order={order}
+                        onClose={() => setShowAmendment(false)}
+                        onSuccess={() => {
+                            setShowAmendment(false);
+                            onRefresh?.();
+                        }}
+                    />
+                )}
+
+                {/* ✅ FIX #3: Confirm Dialog — كان مفقودًا */}
+                <ConfirmDialog
+                    isOpen={showCancelConfirm}
+                    title={`Bestellung #${order.order_number} wirklich stornieren?`}
+                    message={
+                        <p>
+                            Die Bestellung wird vollständig storniert. Bei
+                            bereits autorisierter Zahlung wird der Betrag
+                            freigegeben.
+                        </p>
+                    }
+                    variant="danger"
+                    icon="cancel"
+                    confirmLabel="Ja, stornieren"
+                    cancelLabel="Nein, behalten"
+                    isLoading={isCancelling}
+                    onConfirm={performCancel}
+                    onCancel={() => setShowCancelConfirm(false)}
+                />
             </div>
         );
     }
@@ -266,7 +291,6 @@ export default function OrderActionsPanel({ order, onRefresh }) {
     // === DELIVERED ===
     // ============================================
     if (status === "delivered") {
-        // ✅ حساب معلومات Widerruf محليًا
         const { canWiderruf, daysSince, daysLeft } = getWiderrufInfo(order);
 
         return (
@@ -322,7 +346,6 @@ export default function OrderActionsPanel({ order, onRefresh }) {
                     </div>
                 )}
 
-                {/* ============ Widerruf Modal ============ */}
                 {showWiderruf && (
                     <WiderrufModal
                         order={order}

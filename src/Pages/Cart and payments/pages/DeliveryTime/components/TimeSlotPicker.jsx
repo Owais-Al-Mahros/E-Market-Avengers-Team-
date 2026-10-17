@@ -42,7 +42,8 @@ export default function TimeSlotPicker({
                 setOrdersCount(counts);
             } catch (err) {
                 console.error("Failed to count orders:", err);
-                setOrdersCount({}); // fallback: جميع الساعات متاحة
+                // ✅ FIX: عطّل كل الساعات عند الفشل (آمن)
+                setOrdersCount(null);
             } finally {
                 setLoadingOrders(false);
             }
@@ -88,10 +89,15 @@ export default function TimeSlotPicker({
             const startStr = `${String(start).padStart(2, "0")}:00`;
             const endStr = `${String(end).padStart(2, "0")}:00`;
 
-            // ✅ هل الساعة ممتلئة؟
-            const booked = ordersCount[startStr] || 0;
+            // ✅ FIX: إذا فشل جلب العدّاد (null)، عطّل الساعة احترازيًا
+            const canCheck = ordersCount !== null;
+            const booked = canCheck ? (ordersCount[startStr] || 0) : 0;
             const maxOrders = settings.maxOrdersPerHour || 0;
-            const isFull = maxOrders > 0 && booked >= maxOrders;
+
+            // ساعة ممتلئة إذا:
+            // - RPC فشل (canCheck = false) → عطّل احترازيًا
+            // - أو تجاوز maxOrders
+            const isFull = !canCheck || (maxOrders > 0 && booked >= maxOrders);
 
             // كل الساعات المتتالية ضمن النطاق
             if (availableHours.includes(end)) {
@@ -134,6 +140,19 @@ export default function TimeSlotPicker({
                     Mindestdauer: {settings.minDurationHours || 2}{" "}
                     {(settings.minDurationHours || 2) === 1 ? "Stunde" : "Stunden"}
                 </p>
+                {ordersCount === null && (
+                    <div className="tsp-error-banner">
+                        <span className="material-symbols-outlined">error</span>
+                        <span>Verfügbarkeit konnte nicht geladen werden.</span>
+                        <button
+                            type="button"
+                            onClick={() => window.location.reload()}
+                            className="tsp-retry-btn"
+                        >
+                            Neu laden
+                        </button>
+                    </div>
+                )}
             </div>
 
             {loadingOrders ? (

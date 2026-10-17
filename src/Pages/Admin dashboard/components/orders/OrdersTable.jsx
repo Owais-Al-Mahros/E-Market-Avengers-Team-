@@ -80,9 +80,7 @@ export default function OrdersTable({
 
         await onUpdateStatus(order.id, "cancelled");
 
-        sendOrderEmail(order.id, "cancelled").catch((err) =>
-          console.error("Cancellation email failed:", err)
-        );
+
 
         if (refundResult.type === "refunded") {
           toast.success(
@@ -253,7 +251,7 @@ export default function OrdersTable({
               <th>Order #</th>
               <th>Customer</th>
               <th>Address</th>
-              {/* <th>🚗 Fahrer</th> */}
+              <th>🚗 Fahrer</th>
               <th className="th-delivery">🚚 Lieferung</th>
               <th>Weight</th>
               <th>Total</th>
@@ -321,7 +319,7 @@ export default function OrdersTable({
                       )}
                     </div>
                   </td>
-                  {/* <td>
+                  <td>
                     {order.driver ? (
                       <div className="driver-cell">
                         <div className="driver-cell-head">
@@ -347,7 +345,7 @@ export default function OrdersTable({
                         Nicht zugewiesen
                       </span>
                     )}
-                  </td> */}
+                  </td>
                   {/* Delivery */}
                   <td className="td-delivery">
                     <div className="delivery-info">
@@ -406,11 +404,7 @@ export default function OrdersTable({
                           <>
                             <button
                               className="btn-action btn-confirm"
-                              // onClick={() => setAssignDriverOrder(order)}  // ← جديد: افتح Modal
-                              onClick={() =>
-                                changeStatus(order.id, "Confirm")
-                              }
-                              dis
+                              onClick={() => setAssignDriverOrder(order)}
                               disabled={isBusy}
                             >
                               ✅ Confirm
@@ -475,15 +469,6 @@ export default function OrdersTable({
                               disabled={isBusy}
                             >
                               ✅ Deliver
-                            </button>
-                            <button
-                              className="btn-action btn-undo"
-                              onClick={() =>
-                                changeStatus(order.id, "confirmed")
-                              }
-                              disabled={isBusy}
-                            >
-                              ↩️ Undo
                             </button>
                             <button
                               className="btn-action btn-cancel"
@@ -558,14 +543,14 @@ export default function OrdersTable({
           }}
         />
       )}
-      {/* {assignDriverOrder && (
+      {assignDriverOrder && (
         <AssignDriverModal
           order={assignDriverOrder}
           onClose={() => setAssignDriverOrder(null)}
           onConfirm={handleAssignDriver}
           isConfirming={assigningDriver}
         />
-      )} */}
+      )}
 
       {shipOrderModal && (
         <ShipOrderModal

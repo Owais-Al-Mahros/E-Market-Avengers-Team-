@@ -1,26 +1,26 @@
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../../../context/CartContext";
 import { useLocalStorage } from "../../../../hooks/useLocalStorage";
+import { formatEuro } from "../../../../lib/format";
 import "./OrderSummary.css";
 
 export default function OrderSummary() {
   const navigate = useNavigate();
   const { totalItems, totalPrice } = useCart();
 
-  // ✅ حفظ الموافقة في localStorage
   const [allowSubstitution, setAllowSubstitution] = useLocalStorage(
     "allowSubstitution",
-    true  // ✅ افتراضياً موافق
+    true
   );
 
   return (
     <aside className="order-summary">
-      {/* Complete Purchase Button */}
+      {/* ═══ Complete Purchase Button ═══ */}
       <button
         className="order-complete-btn"
         onClick={() => navigate("/Cart&Payments/Checkout")}
       >
-        Complete Purchase
+        Zur Kasse gehen
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path
             d="M5 12h14M12 5l7 7-7 7"
@@ -32,23 +32,30 @@ export default function OrderSummary() {
         </svg>
       </button>
 
-      {/* Total Card */}
+      {/* ═══ Total Card ═══ */}
       <div className="order-summary-card">
         <div className="order-summary-total">
-          <span className="order-total-label">Total</span>
-          <span className="order-total-value">€{totalPrice.toFixed(2)}</span>
+          <span className="order-total-label">Gesamt</span>
+          <span className="order-total-value">
+            {formatEuro(totalPrice)}
+          </span>
         </div>
-        <p className="order-summary-vat">Prices include VAT</p>
+        <p className="order-summary-vat">
+          Preise inkl. MwSt.
+        </p>
 
         <div className="order-summary-divider" />
 
         <div className="order-summary-row">
-          <span>({totalItems} products)</span>
-          <span>€{totalPrice.toFixed(2)}</span>
+          <span>
+            ({totalItems}{" "}
+            {totalItems === 1 ? "Produkt" : "Produkte"})
+          </span>
+          <span>{formatEuro(totalPrice)}</span>
         </div>
       </div>
 
-      {/* ✅ Substitution Agreement Checkbox */}
+      {/* ═══ Substitution Checkbox ═══ */}
       <label
         className={`order-substitution-box ${allowSubstitution ? "checked" : ""
           }`}
@@ -60,19 +67,25 @@ export default function OrderSummary() {
         />
         <div className="order-substitution-content">
           <span className="order-substitution-title">
-            {allowSubstitution ? "✓ " : ""}Allow similar substitutes
+            {allowSubstitution ? "✓ " : ""}
+            Ersatzartikel erlauben
           </span>
           <span className="order-substitution-desc">
-            If a product is unavailable, we'll offer a similar item from the
-            same category.
+            Falls ein Produkt nicht verfügbar ist, bieten wir einen
+            ähnlichen Artikel aus derselben Kategorie an.
           </span>
         </div>
       </label>
 
-      {/* Info Box */}
+      {/* ═══ Info Box ═══ */}
       <div className="order-info-box">
         <div className="order-info-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
             <circle
               cx="12"
               cy="12"
@@ -91,8 +104,8 @@ export default function OrderSummary() {
         <div className="order-info-text">
           <p>
             {allowSubstitution
-              ? "✅ If a product is unavailable, we'll suggest a similar one."
-              : "⚠️ We won't substitute any product without contacting you first."}
+              ? "✅ Falls ein Produkt nicht verfügbar ist, schlagen wir ein ähnliches vor."
+              : "⚠️ Wir ersetzen keine Produkte ohne Ihre Zustimmung."}
           </p>
         </div>
       </div>

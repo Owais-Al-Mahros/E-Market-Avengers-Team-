@@ -78,16 +78,17 @@ export default function ConfirmDialog({
                     </div>
                 )}
 
-                <div className="cd-actions">
-                    <button
-                        type="button"
-                        className="cd-btn cd-btn-cancel"
-                        onClick={onCancel}
-                        disabled={isLoading}
-                    >
-                        {cancelLabel}
-                    </button>
-
+                <div className="cd-actions" style={!cancelLabel ? { gridTemplateColumns: "1fr" } : undefined}>
+                    {cancelLabel && (
+                        <button
+                            type="button"
+                            className="cd-btn cd-btn-cancel"
+                            onClick={onCancel}
+                            disabled={isLoading}
+                        >
+                            {cancelLabel}
+                        </button>
+                    )}
                     <button
                         type="button"
                         className={`cd-btn cd-btn-confirm cd-btn-confirm-${variant}`}

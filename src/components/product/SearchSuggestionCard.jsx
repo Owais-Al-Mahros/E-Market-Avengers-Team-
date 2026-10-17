@@ -1,8 +1,8 @@
-// src/Pages/Home page/components/SearchSuggestionCard.jsx
 import "./SearchSuggestionCard.css";
 import toast from "react-hot-toast";
 import { useCart } from "../../context/CartContext.jsx";
 import { calculatePriceByKg } from "../../api";
+import { formatEuro, formatWeight } from "../../lib/format";
 
 export default function SearchSuggestionCard({ product, onClick }) {
     const { id, name, image, price, total_price, weight, weight_unit } = product;
@@ -34,7 +34,7 @@ export default function SearchSuggestionCard({ product, onClick }) {
             },
             1
         );
-        toast.success(`Added ${name} to cart`, { duration: 1500 });
+        toast.success(`${name} zum Warenkorb hinzugefügt`, { duration: 1500 });
     };
 
     return (
@@ -44,9 +44,8 @@ export default function SearchSuggestionCard({ product, onClick }) {
             role="button"
             tabIndex={0}
             onKeyDown={handleKeyDown}
-            aria-label={`View ${name}`}
+            aria-label={`${name} anzeigen`}
         >
-            {/* Image */}
             <div className="search-suggestion-image-box">
                 {image ? (
                     <img
@@ -62,29 +61,30 @@ export default function SearchSuggestionCard({ product, onClick }) {
                 )}
             </div>
 
-            {/* Info */}
             <div className="search-suggestion-info">
                 <span className="search-suggestion-name">{name}</span>
                 {weight && (
                     <span className="search-suggestion-meta">
-                        {weight} {weight_unit}
-                        {pricePerKg > 0 && ` (1 ${weight_unit} = ${pricePerKg} €)`}
+                        {formatWeight(weight, weight_unit)}
+                        {pricePerKg > 0 &&
+                            ` (1 ${weight_unit} = ${pricePerKg} €)`}
                     </span>
                 )}
             </div>
 
-            {/* Price + Add */}
             <div className="search-suggestion-price-box">
                 <span className="search-suggestion-price">
-                    {displayPrice.toFixed(2)} €
+                    {formatEuro(displayPrice)}
                 </span>
                 <button
                     type="button"
                     className="search-suggestion-add-btn"
                     onClick={handleAddToCart}
-                    aria-label={`Add ${name} to cart`}
+                    aria-label={`${name} zum Warenkorb hinzufügen`}
                 >
-                    <span className="material-symbols-outlined">add_shopping_cart</span>
+                    <span className="material-symbols-outlined">
+                        add_shopping_cart
+                    </span>
                 </button>
             </div>
         </div>

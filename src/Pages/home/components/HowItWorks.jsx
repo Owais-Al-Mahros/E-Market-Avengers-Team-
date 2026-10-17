@@ -35,7 +35,7 @@ function PricingCard({ id, isOpen, onToggle, children, header, image, highlight 
                 aria-expanded={isOpen}
                 aria-label={isOpen ? "Show less" : "Show more"}
             >
-                <span>{isOpen ? "Show less" : "Show more"}</span>
+                <span>{isOpen ? "Weniger anzeigen" : "Mehr anzeigen"}</span>
                 <span className="material-symbols-outlined">
                     {isOpen ? "expand_less" : "expand_more"}
                 </span>
@@ -115,11 +115,11 @@ export default function HowItWorks() {
         <section className="hiw-section" id="how-it-works">
             <div className="hiw-container">
                 <div className="hiw-header">
-                    <span className="hiw-badge">💡 Transparent Pricing</span>
-                    <h2 className="hiw-title">How We Calculate Your Delivery</h2>
+                    <span className="hiw-badge">💡 Transparente Preise</span>
+                    <h2 className="hiw-title">So berechnen wir Ihre Lieferung</h2>
                     <p className="hiw-subtitle">
-                        No hidden fees. Just clear, honest pricing based on distance,
-                        weight, floors, and coverage.
+                        Keine versteckten Gebühren. Nur klare, ehrliche Preise basierend auf
+                        Entfernung, Gewicht, Etagen und Liefergebiet.
                     </p>
                 </div>
 

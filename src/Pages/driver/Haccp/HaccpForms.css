@@ -1,0 +1,309 @@
+/* ============================================
+   📋 HACCP FORMS — أنماط موحّدة
+   ============================================ */
+
+.hf-form {
+    background: #fff;
+    border: 2px solid #ddf4ea;
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.hf-form-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #ddf4ea;
+}
+
+.hf-form-header .material-symbols-outlined {
+    font-size: 26px;
+    color: #145c4a;
+}
+
+.hf-form-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: #145c4a;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+/* Fields */
+.hf-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.hf-field label {
+    font-size: 12px;
+    font-weight: 800;
+    color: #15312b;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.hf-field input,
+.hf-field select,
+.hf-field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid #e1ebe7;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #15312b;
+    background: #f7faf8;
+    outline: none;
+    transition: 0.2s;
+    box-sizing: border-box;
+}
+
+.hf-field input:focus,
+.hf-field select:focus,
+.hf-field textarea:focus {
+    border-color: #145c4a;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(20, 92, 74, 0.1);
+}
+
+.hf-field textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+}
+
+.hf-field-hint {
+    font-size: 11.5px;
+    color: #6b7a77;
+    font-style: italic;
+    margin-top: -2px;
+}
+
+.hf-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+/* Checklist */
+.hf-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.hf-checklist-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #6b7a77;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #e1ebe7;
+    margin-bottom: 6px;
+}
+
+.hf-check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #15312b;
+    line-height: 1.5;
+    transition: 0.15s;
+}
+
+.hf-check-item:hover {
+    background: #f7faf8;
+}
+
+.hf-check-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #145c4a;
+    cursor: pointer;
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+.hf-check-item.is-failed {
+    background: rgba(220, 38, 38, 0.05);
+    color: #991b1b;
+}
+
+/* Fail section */
+.hf-fail-section {
+    background: #fff;
+    border: 2px solid #dc2626;
+    border-left: 5px solid #dc2626;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    animation: hfSlide 0.2s ease;
+}
+
+@keyframes hfSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hf-fail-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #991b1b;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.hf-fail-title .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* Chips */
+.hf-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.hf-chip {
+    padding: 8px 14px;
+    background: #f7faf8;
+    border: 1.5px solid #ddf4ea;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #15312b;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.hf-chip:hover {
+    border-color: #145c4a;
+}
+
+.hf-chip.is-active {
+    background: #145c4a;
+    color: #fff;
+    border-color: #145c4a;
+}
+
+/* Status banner (auto-computed) */
+.hf-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.hf-status-passed {
+    background: rgba(16, 185, 129, 0.1);
+    color: #047857;
+    border-left: 4px solid #10b981;
+}
+
+.hf-status-failed {
+    background: rgba(220, 38, 38, 0.08);
+    color: #991b1b;
+    border-left: 4px solid #dc2626;
+}
+
+.hf-status-info {
+    background: rgba(59, 130, 246, 0.08);
+    color: #1d4ed8;
+    border-left: 4px solid #3b82f6;
+}
+
+.hf-status .material-symbols-outlined {
+    font-size: 22px;
+}
+
+/* Submit */
+.hf-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #145c4a, #0f4a3b);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.25s;
+    box-shadow: 0 6px 20px rgba(20, 92, 74, 0.3);
+    min-height: 50px;
+}
+
+.hf-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(20, 92, 74, 0.45);
+}
+
+.hf-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.hf-submit .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.hf-spinner {
+    width: 16px;
+    height: 16px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: hfSpin 0.7s linear infinite;
+}
+
+@keyframes hfSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+    .hf-row {
+        grid-template-columns: 1fr;
+    }
+
+    .hf-form {
+        padding: 16px;
+        border-radius: 12px;
+    }
+}

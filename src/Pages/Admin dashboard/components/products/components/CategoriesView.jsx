@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useProducts } from "../../../../../context/ProductContext";
 import { useCategories } from "../../../../../context/CategoryContext";
@@ -19,6 +19,7 @@ function CategoryAccordionItem({
     addSubcategory,
     updateSubCategory,
     deleteSubcategory,
+    highlightedTerm,
 }) {
     const { fetchSubcategoriesWithCounts } = useProducts();
 
@@ -56,7 +57,9 @@ function CategoryAccordionItem({
             if (!cancelled) setSubs(data);
             setSubsLoading(false);
         })();
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
     }, [isExpanded, category.id, fetchSubcategoriesWithCounts]);
 
     // Reset internal state on collapse
@@ -101,7 +104,6 @@ function CategoryAccordionItem({
         if (!name) return toast.error("Name required");
         setSaving(true);
         try {
-            // ⚠️ نحفظ الصورة القديمة إن لم يُرفع جديد
             const res = await updateCategory(
                 category.id,
                 { name, image: category.image },
@@ -211,38 +213,65 @@ function CategoryAccordionItem({
         }
     };
 
+    /* ═══════ Highlight helper ═══════ */
+    const renderHighlighted = (text) => {
+        if (!highlightedTerm?.trim()) return text;
+        const term = highlightedTerm.trim();
+        const idx = text.toLowerCase().indexOf(term.toLowerCase());
+        if (idx === -1) return text;
+        return (
+            <>
+                {text.slice(0, idx)}
+                <mark className="cv-highlight">
+                    {text.slice(idx, idx + term.length)}
+                </mark>
+                {text.slice(idx + term.length)}
+            </>
+        );
+    };
+
     /* ═══════ Render ═══════ */
     return (
         <div className={`cv-acc-item ${isExpanded ? "is-expanded" : ""}`}>
-            {/* ═══ Header Row (View or Edit) ═══ */}
             {!isEditing ? (
                 <div className="cv-acc-header" onClick={onToggle}>
                     <div className="cv-thumb">
                         {category.image ? (
                             <img src={category.image} alt={category.name} />
                         ) : (
-                            <span className="material-symbols-outlined">folder</span>
+                            <span className="material-symbols-outlined">
+                                folder
+                            </span>
                         )}
                     </div>
 
                     <div className="cv-acc-info">
-                        <span className="cv-acc-name">{category.name}</span>
+                        <span className="cv-acc-name">
+                            {renderHighlighted(category.name)}
+                        </span>
                         <div className="cv-acc-meta">
-                            <span className="cv-badge">{category.subcategory_count} sub</span>
+                            <span className="cv-badge">
+                                {category.subcategory_count} sub
+                            </span>
                             <span className="cv-badge cv-badge-alt">
                                 {category.product_count} products
                             </span>
                         </div>
                     </div>
 
-                    <div className="cv-acc-actions" onClick={(e) => e.stopPropagation()}>
+                    <div
+                        className="cv-acc-actions"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <button
                             type="button"
                             className="cv-icon-btn"
                             onClick={startEditCategory}
                             aria-label="Edit category"
                         >
-                            <span className="material-symbols-outlined">edit</span>
+                            <span className="material-symbols-outlined">
+                                edit
+                            </span>
                         </button>
                         <button
                             type="button"
@@ -250,7 +279,9 @@ function CategoryAccordionItem({
                             onClick={() => onDeleteClick(category)}
                             aria-label="Delete category"
                         >
-                            <span className="material-symbols-outlined">delete</span>
+                            <span className="material-symbols-outlined">
+                                delete
+                            </span>
                         </button>
                     </div>
 
@@ -259,13 +290,17 @@ function CategoryAccordionItem({
                     </span>
                 </div>
             ) : (
-                /* ═══ Edit Category Inline ═══ */
-                <div className="cv-acc-edit" onClick={(e) => e.stopPropagation()}>
+                <div
+                    className="cv-acc-edit"
+                    onClick={(e) => e.stopPropagation()}
+                >
                     <div className="cv-acc-edit-image">
                         {editPreview ? (
                             <img src={editPreview} alt="Preview" />
                         ) : (
-                            <span className="material-symbols-outlined">image</span>
+                            <span className="material-symbols-outlined">
+                                image
+                            </span>
                         )}
                         <button
                             type="button"
@@ -273,7 +308,9 @@ function CategoryAccordionItem({
                             onClick={() => editFileRef.current?.click()}
                             aria-label="Change image"
                         >
-                            <span className="material-symbols-outlined">photo_camera</span>
+                            <span className="material-symbols-outlined">
+                                photo_camera
+                            </span>
                         </button>
                         <input
                             ref={editFileRef}
@@ -304,7 +341,9 @@ function CategoryAccordionItem({
                             disabled={saving}
                             aria-label="Save"
                         >
-                            <span className="material-symbols-outlined">check</span>
+                            <span className="material-symbols-outlined">
+                                check
+                            </span>
                         </button>
                         <button
                             className="cv-icon-btn"
@@ -312,16 +351,16 @@ function CategoryAccordionItem({
                             disabled={saving}
                             aria-label="Cancel"
                         >
-                            <span className="material-symbols-outlined">close</span>
+                            <span className="material-symbols-outlined">
+                                close
+                            </span>
                         </button>
                     </div>
                 </div>
             )}
 
-            {/* ═══ Expanded Body ═══ */}
             {isExpanded && !isEditing && (
                 <div className="cv-acc-body">
-                    {/* Add Subcategory */}
                     <div className="cv-sub-add">
                         <div className="cv-sub-add-image">
                             {newSubPreview ? (
@@ -337,7 +376,9 @@ function CategoryAccordionItem({
                                 onClick={() => newSubFileRef.current?.click()}
                                 aria-label="Upload image"
                             >
-                                <span className="material-symbols-outlined">photo_camera</span>
+                                <span className="material-symbols-outlined">
+                                    photo_camera
+                                </span>
                             </button>
                             <input
                                 ref={newSubFileRef}
@@ -354,7 +395,9 @@ function CategoryAccordionItem({
                             placeholder={`New subcategory for "${category.name}"...`}
                             value={newSubName}
                             onChange={(e) => setNewSubName(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && addNewSub()}
+                            onKeyDown={(e) =>
+                                e.key === "Enter" && addNewSub()
+                            }
                         />
 
                         <button
@@ -362,12 +405,13 @@ function CategoryAccordionItem({
                             onClick={addNewSub}
                             disabled={addingSub || !newSubName.trim()}
                         >
-                            <span className="material-symbols-outlined">add</span>
+                            <span className="material-symbols-outlined">
+                                add
+                            </span>
                             {addingSub ? "Adding..." : "Add Sub"}
                         </button>
                     </div>
 
-                    {/* Subcategories List */}
                     <div className="cv-subs-list">
                         {subsLoading ? (
                             <p className="cv-empty cv-empty-sm">Loading...</p>
@@ -377,21 +421,32 @@ function CategoryAccordionItem({
                             </p>
                         ) : (
                             subs.map((sub) => {
-                                const isSubEditing = editingSub?.id === sub.id;
+                                const isSubEditing =
+                                    editingSub?.id === sub.id;
 
                                 if (isSubEditing) {
                                     return (
-                                        <div key={sub.id} className="cv-sub-item cv-sub-edit">
+                                        <div
+                                            key={sub.id}
+                                            className="cv-sub-item cv-sub-edit"
+                                        >
                                             <div className="cv-sub-thumb">
                                                 {editingSub.preview ? (
-                                                    <img src={editingSub.preview} alt="Preview" />
+                                                    <img
+                                                        src={editingSub.preview}
+                                                        alt="Preview"
+                                                    />
                                                 ) : (
-                                                    <span className="material-symbols-outlined">image</span>
+                                                    <span className="material-symbols-outlined">
+                                                        image
+                                                    </span>
                                                 )}
                                                 <button
                                                     type="button"
                                                     className="cv-img-upload-btn cv-img-upload-xs"
-                                                    onClick={() => editSubFileRef.current?.click()}
+                                                    onClick={() =>
+                                                        editSubFileRef.current?.click()
+                                                    }
                                                     aria-label="Change image"
                                                 >
                                                     <span className="material-symbols-outlined">
@@ -402,7 +457,9 @@ function CategoryAccordionItem({
                                                     ref={editSubFileRef}
                                                     type="file"
                                                     accept="image/*"
-                                                    onChange={handleEditSubFileChange}
+                                                    onChange={
+                                                        handleEditSubFileChange
+                                                    }
                                                     style={{ display: "none" }}
                                                 />
                                             </div>
@@ -412,11 +469,16 @@ function CategoryAccordionItem({
                                                 className="cv-input"
                                                 value={editingSub.name}
                                                 onChange={(e) =>
-                                                    setEditingSub({ ...editingSub, name: e.target.value })
+                                                    setEditingSub({
+                                                        ...editingSub,
+                                                        name: e.target.value,
+                                                    })
                                                 }
                                                 onKeyDown={(e) => {
-                                                    if (e.key === "Enter") saveEditSub();
-                                                    if (e.key === "Escape") cancelEditSub();
+                                                    if (e.key === "Enter")
+                                                        saveEditSub();
+                                                    if (e.key === "Escape")
+                                                        cancelEditSub();
                                                 }}
                                                 autoFocus
                                             />
@@ -428,7 +490,9 @@ function CategoryAccordionItem({
                                                     disabled={saving}
                                                     aria-label="Save"
                                                 >
-                                                    <span className="material-symbols-outlined">check</span>
+                                                    <span className="material-symbols-outlined">
+                                                        check
+                                                    </span>
                                                 </button>
                                                 <button
                                                     className="cv-icon-btn"
@@ -436,7 +500,9 @@ function CategoryAccordionItem({
                                                     disabled={saving}
                                                     aria-label="Cancel"
                                                 >
-                                                    <span className="material-symbols-outlined">close</span>
+                                                    <span className="material-symbols-outlined">
+                                                        close
+                                                    </span>
                                                 </button>
                                             </div>
                                         </div>
@@ -447,7 +513,10 @@ function CategoryAccordionItem({
                                     <div key={sub.id} className="cv-sub-item">
                                         <div className="cv-sub-thumb">
                                             {sub.image ? (
-                                                <img src={sub.image} alt={sub.name} />
+                                                <img
+                                                    src={sub.image}
+                                                    alt={sub.name}
+                                                />
                                             ) : (
                                                 <span className="material-symbols-outlined">
                                                     subdirectory_arrow_right
@@ -456,7 +525,9 @@ function CategoryAccordionItem({
                                         </div>
 
                                         <div className="cv-sub-info">
-                                            <span className="cv-sub-name">{sub.name}</span>
+                                            <span className="cv-sub-name">
+                                                {sub.name}
+                                            </span>
                                             <span className="cv-badge cv-badge-alt">
                                                 {sub.product_count} products
                                             </span>
@@ -465,17 +536,25 @@ function CategoryAccordionItem({
                                         <div className="cv-sub-actions">
                                             <button
                                                 className="cv-icon-btn"
-                                                onClick={() => startEditSub(sub)}
+                                                onClick={() =>
+                                                    startEditSub(sub)
+                                                }
                                                 aria-label="Edit subcategory"
                                             >
-                                                <span className="material-symbols-outlined">edit</span>
+                                                <span className="material-symbols-outlined">
+                                                    edit
+                                                </span>
                                             </button>
                                             <button
                                                 className="cv-icon-btn cv-danger"
-                                                onClick={() => handleDeleteSub(sub)}
+                                                onClick={() =>
+                                                    handleDeleteSub(sub)
+                                                }
                                                 aria-label="Delete subcategory"
                                             >
-                                                <span className="material-symbols-outlined">delete</span>
+                                                <span className="material-symbols-outlined">
+                                                    delete
+                                                </span>
                                             </button>
                                         </div>
                                     </div>
@@ -490,7 +569,7 @@ function CategoryAccordionItem({
 }
 
 /* ══════════════════════════════════════════════════════
-   🎯 Main View
+   🎯 Main View — with Search + Grouping
 ══════════════════════════════════════════════════════ */
 export default function CategoriesView() {
     const { fetchCategoriesWithCounts, categoriesWithCounts } = useProducts();
@@ -499,6 +578,11 @@ export default function CategoriesView() {
         useSubcategories();
 
     const [expandedId, setExpandedId] = useState(null);
+
+    // ✅ A1: Search
+    const [searchTerm, setSearchTerm] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const searchRef = useRef(null);
 
     // Add category form
     const [newCatName, setNewCatName] = useState("");
@@ -515,6 +599,54 @@ export default function CategoriesView() {
         fetchCategoriesWithCounts();
     }, [fetchCategoriesWithCounts]);
 
+    // ✅ A1: Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchTerm.trim());
+        }, 250);
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
+
+    // ✅ A2: Filtered + Grouped
+    const filteredCategories = useMemo(() => {
+        if (!debouncedSearch) return categoriesWithCounts;
+        const term = debouncedSearch.toLowerCase();
+        return categoriesWithCounts.filter((cat) =>
+            cat.name.toLowerCase().includes(term)
+        );
+    }, [categoriesWithCounts, debouncedSearch]);
+
+    const groupedCategories = useMemo(() => {
+        const groups = {};
+        filteredCategories.forEach((cat) => {
+            const firstChar = cat.name.trim().charAt(0).toUpperCase();
+            // ✅ حوّل الأرقام والرموز إلى "#"
+            const letter = /[A-ZÄÖÜ]/.test(firstChar) ? firstChar : "#";
+            if (!groups[letter]) groups[letter] = [];
+            groups[letter].push(cat);
+        });
+        return groups;
+    }, [filteredCategories]);
+
+    const sortedLetters = useMemo(
+        () => Object.keys(groupedCategories).sort((a, b) => a.localeCompare(b)),
+        [groupedCategories]
+    );
+
+    // ✅ A3: Counters
+    const totals = useMemo(() => {
+        return categoriesWithCounts.reduce(
+            (acc, c) => ({
+                subcategories: acc.subcategories + (c.subcategory_count || 0),
+                products: acc.products + (c.product_count || 0),
+            }),
+            { subcategories: 0, products: 0 }
+        );
+    }, [categoriesWithCounts]);
+
+    const isSearching = Boolean(debouncedSearch);
+
+    /* ═══════ Add Category ═══════ */
     const handleNewCatFileChange = (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -541,6 +673,7 @@ export default function CategoriesView() {
         }
     };
 
+    /* ═══════ Delete ═══════ */
     const performDelete = async () => {
         if (!pendingDelete) return;
         setDeleting(true);
@@ -557,13 +690,21 @@ export default function CategoriesView() {
         }
     };
 
+    /* ═══════ Clear Search ═══════ */
+    const clearSearch = () => {
+        setSearchTerm("");
+        searchRef.current?.focus();
+    };
+
     return (
         <div className="cv-wrap">
             {/* ═══ Add New Category ═══ */}
             <section className="cv-section">
                 <header className="cv-section-header">
                     <h3>
-                        <span className="material-symbols-outlined">create_new_folder</span>
+                        <span className="material-symbols-outlined">
+                            create_new_folder
+                        </span>
                         Add New Category
                     </h3>
                 </header>
@@ -583,7 +724,9 @@ export default function CategoriesView() {
                             onClick={() => newCatFileRef.current?.click()}
                             aria-label="Upload image"
                         >
-                            <span className="material-symbols-outlined">photo_camera</span>
+                            <span className="material-symbols-outlined">
+                                photo_camera
+                            </span>
                         </button>
                         <input
                             ref={newCatFileRef}
@@ -600,7 +743,9 @@ export default function CategoriesView() {
                         placeholder="Category name..."
                         value={newCatName}
                         onChange={(e) => setNewCatName(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleAddCategory()}
+                        onKeyDown={(e) =>
+                            e.key === "Enter" && handleAddCategory()
+                        }
                     />
 
                     <button
@@ -614,37 +759,136 @@ export default function CategoriesView() {
                 </div>
             </section>
 
-            {/* ═══ Categories Accordion ═══ */}
+            {/* ═══ Categories List ═══ */}
             <section className="cv-section">
                 <header className="cv-section-header">
                     <h3>
                         <span className="material-symbols-outlined">folder</span>
                         Categories
-                        <span className="cv-count">{categoriesWithCounts.length}</span>
+                        <span className="cv-count">
+                            {categoriesWithCounts.length}
+                        </span>
                     </h3>
+
+                    {/* ✅ A3: Totals في الرأس */}
+                    {!isSearching && categoriesWithCounts.length > 0 && (
+                        <div className="cv-section-totals">
+                            <span className="cv-total-pill">
+                                <span className="material-symbols-outlined">
+                                    subdirectory_arrow_right
+                                </span>
+                                {totals.subcategories} subcategories
+                            </span>
+                            <span className="cv-total-pill">
+                                <span className="material-symbols-outlined">
+                                    inventory_2
+                                </span>
+                                {totals.products} products
+                            </span>
+                        </div>
+                    )}
                 </header>
 
+                {/* ✅ A1: Search Bar */}
+                <div className="cv-search-bar">
+                    <span className="material-symbols-outlined cv-search-icon">
+                        search
+                    </span>
+                    <input
+                        ref={searchRef}
+                        type="text"
+                        className="cv-search-input"
+                        placeholder="Search categories..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    {searchTerm && (
+                        <button
+                            type="button"
+                            className="cv-search-clear"
+                            onClick={clearSearch}
+                            aria-label="Clear search"
+                        >
+                            <span className="material-symbols-outlined">
+                                close
+                            </span>
+                        </button>
+                    )}
+                    {isSearching && (
+                        <span className="cv-search-count">
+                            {filteredCategories.length} /{" "}
+                            {categoriesWithCounts.length}
+                        </span>
+                    )}
+                </div>
+
+                {/* Content */}
                 {categoriesWithCounts.length === 0 ? (
                     <p className="cv-empty">
                         No categories yet. Add the first one above.
                     </p>
+                ) : filteredCategories.length === 0 ? (
+                    <div className="cv-empty">
+                        <span className="material-symbols-outlined">
+                            search_off
+                        </span>
+                        <p>
+                            No categories match "<strong>{searchTerm}</strong>"
+                        </p>
+                        <button
+                            type="button"
+                            className="cv-empty-clear"
+                            onClick={clearSearch}
+                        >
+                            Clear search
+                        </button>
+                    </div>
                 ) : (
                     <div className="cv-accordion">
-                        {categoriesWithCounts.map((cat) => (
-                            <CategoryAccordionItem
-                                key={cat.id}
-                                category={cat}
-                                isExpanded={expandedId === cat.id}
-                                onToggle={() =>
-                                    setExpandedId(expandedId === cat.id ? null : cat.id)
-                                }
-                                onRefreshCategories={fetchCategoriesWithCounts}
-                                onDeleteClick={(c) => setPendingDelete(c)}
-                                updateCategory={updateCategory}
-                                addSubcategory={addSubcategory}
-                                updateSubCategory={updateSubCategory}
-                                deleteSubcategory={deleteSubcategory}
-                            />
+                        {sortedLetters.map((letter) => (
+                            <div key={letter} className="cv-letter-group">
+                                <div className="cv-letter-header">
+                                    <span className="cv-letter">
+                                        {letter}
+                                    </span>
+                                    <span className="cv-letter-count">
+                                        {groupedCategories[letter].length}
+                                    </span>
+                                </div>
+                                <div className="cv-letter-items">
+                                    {groupedCategories[letter].map((cat) => (
+                                        <CategoryAccordionItem
+                                            key={cat.id}
+                                            category={cat}
+                                            isExpanded={
+                                                expandedId === cat.id
+                                            }
+                                            onToggle={() =>
+                                                setExpandedId(
+                                                    expandedId === cat.id
+                                                        ? null
+                                                        : cat.id
+                                                )
+                                            }
+                                            onRefreshCategories={
+                                                fetchCategoriesWithCounts
+                                            }
+                                            onDeleteClick={(c) =>
+                                                setPendingDelete(c)
+                                            }
+                                            updateCategory={updateCategory}
+                                            addSubcategory={addSubcategory}
+                                            updateSubCategory={
+                                                updateSubCategory
+                                            }
+                                            deleteSubcategory={
+                                                deleteSubcategory
+                                            }
+                                            highlightedTerm={debouncedSearch}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
                         ))}
                     </div>
                 )}

@@ -1,19 +1,16 @@
 import Invoice from "../../../../components/invoice/Invoice";
+import Vorinformation from "../../../../components/invoice/Vorinformation";
 
 export default function OrderDetailsView({ order }) {
     if (!order) return null;
 
     const rawItems = order.order_items || [];
 
-    // ============================================
-    // ✅ Normalize: استخدم القيم الفعلية إن وُجدت
-    // ============================================
     const items = rawItems.map((item) => {
         const isRemoved = item.status === "removed";
         const isProcessed =
             item.status === "scanned" || item.status === "substituted";
 
-        // --- منتج مُزال ---
         if (isRemoved) {
             return {
                 ...item,
@@ -21,11 +18,9 @@ export default function OrderDetailsView({ order }) {
                 _displayQuantity: 0,
                 _isRemoved: true,
                 _isAdjusted: true,
-                _originalTotal: parseFloat(item.total_price) || 0,
             };
         }
 
-        // --- منتج تم مسحه/استبداله ---
         if (isProcessed && item.actual_total != null) {
             const isWeightBased =
                 !item.weight_unit ||
@@ -41,14 +36,11 @@ export default function OrderDetailsView({ order }) {
                 ...item,
                 total_price: parseFloat(item.actual_total) || 0,
                 _displayQuantity: finalQty,
-                _finalUnitPrice: parseFloat(item.actual_unit_price) || 0,
                 _isRemoved: false,
                 _isAdjusted: true,
-                _originalTotal: parseFloat(item.total_price) || 0,
             };
         }
 
-        // --- منتج لم يُلمس ---
         return {
             ...item,
             _displayQuantity: item.quantity,
@@ -57,19 +49,31 @@ export default function OrderDetailsView({ order }) {
         };
     });
 
-    // ============================================
-    // ✅ استخدم Invoice component الموحّد
-    // ============================================
+    /* ✅ اختيار المكوّن حسب الحالة */
+    const isDelivered = order.status === "delivered";
+
+    if (isDelivered) {
+        return <Invoice order={order} items={items} />;
+    }
+
     return (
-        <Invoice
+        <Vorinformation
             order={order}
             items={items}
-            variant={order.status === "delivered" ? "receipt" : "preview"}
-            showTaxBreakdown={true}
-            showAdjustmentNotice={true}
-            showWarningBanner={true}
             showPaymentInfo={true}
-            showBufferInfo={false}
+            showBufferInfo={
+                order.authorized_amount > 0 &&
+                order.authorized_amount > parseFloat(order.total_price || 0)
+            }
+            bufferAmount={
+                order.authorized_amount
+                    ? Math.max(
+                        0,
+                        order.authorized_amount -
+                        parseFloat(order.total_price || 0)
+                    )
+                    : 0
+            }
         />
     );
 }

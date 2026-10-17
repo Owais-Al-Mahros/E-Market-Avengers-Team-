@@ -107,16 +107,6 @@
     white-space: nowrap;
 }
 
-.ship-cod-badge {
-    background: #ffd166;
-    color: #072917;
-    padding: 4px 10px;
-    border-radius: var(--radius-sm);
-    font-size: 10.5px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-
 .ship-modal-close {
     width: 34px;
     height: 34px;

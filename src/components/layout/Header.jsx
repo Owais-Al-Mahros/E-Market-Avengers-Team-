@@ -114,7 +114,7 @@ export default function HomePageHeader() {
         <form onSubmit={handleSubmit} className="header-search">
           <input
             type="text"
-            placeholder="Search Products ..."
+            placeholder="Produkte suchen..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -149,7 +149,7 @@ export default function HomePageHeader() {
             <div className="search-dropdown-list">
               {loadingProducts ? (
                 <div className="search-loading-state">
-                  <span>Searching...</span>
+                  <span>Wird gesucht...</span>
                 </div>
               ) : searchResult.length > 0 ? (
                 searchResult.map((item) => (
@@ -161,7 +161,7 @@ export default function HomePageHeader() {
                 ))
               ) : (
                 <div className="search-loading-state">
-                  <span>No Product Found</span>
+                  <span>Keine Produkte gefunden</span>
                 </div>
               )}
             </div>
@@ -173,7 +173,7 @@ export default function HomePageHeader() {
                   className="search-dropdown-show-all"
                   onClick={handleShowAll}
                 >
-                  Show all search results
+                  Alle Ergebnisse anzeigen
                 </button>
               </div>
             )}

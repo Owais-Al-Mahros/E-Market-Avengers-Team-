@@ -9,7 +9,7 @@
 }
 
 /* ==========================================
-   🚗 DRIVER CELL
+   🚗 DRIVER CELL (مُعطَّل حاليًا — محفوظ للمستقبل)
    ========================================== */
 .driver-cell {
     display: flex;
@@ -87,91 +87,6 @@
 
 .driver-unassigned .material-symbols-outlined {
     font-size: 14px;
-}
-
-/* ==========================================
-   📱 Update Mobile nth-child (بعد إضافة عمود Fahrer)
-   ========================================== */
-@media (max-width: 48rem) {
-
-    /* Order # */
-    .orders-table td:nth-child(1) {
-        grid-column: 1 / 2;
-    }
-
-    .orders-table td:nth-child(1)::before {
-        content: "Bestellung";
-    }
-
-    /* Customer */
-    .orders-table td:nth-child(2) {
-        grid-column: 1 / -1;
-    }
-
-    .orders-table td:nth-child(2)::before {
-        content: "Kunde";
-    }
-
-    /* Address */
-    .orders-table td:nth-child(3) {
-        grid-column: 1 / -1;
-    }
-
-    .orders-table td:nth-child(3)::before {
-        content: "Adresse";
-    }
-
-    /* Driver — جديد */
-    .orders-table td:nth-child(4) {
-        grid-column: 1 / -1;
-        padding: var(--space-2) 0;
-        border-top: 1px dashed var(--secondary-color);
-        border-bottom: 1px dashed var(--secondary-color);
-    }
-
-    .orders-table td:nth-child(4)::before {
-        content: "🚗 Fahrer";
-        color: var(--primary-color);
-    }
-
-    /* Delivery — كان 4 الآن 5 */
-    .orders-table td.td-delivery {
-        grid-column: 1 / -1;
-    }
-
-    /* Weight — كان 5 الآن 6 */
-    .orders-table td:nth-child(6) {
-        grid-column: 1 / 2;
-    }
-
-    .orders-table td:nth-child(6)::before {
-        content: "Gewicht";
-    }
-
-    /* Total — كان 6 الآن 7 */
-    .orders-table td:nth-child(7) {
-        grid-column: 2 / 3;
-        align-items: flex-end;
-    }
-
-    .orders-table td:nth-child(7)::before {
-        content: "Gesamt";
-    }
-
-    /* Status — كان 7 الآن 8 */
-    .orders-table td:nth-child(8) {
-        grid-column: 2 / 3;
-        align-items: flex-end;
-    }
-
-    .orders-table td:nth-child(8)::before {
-        content: "Status";
-    }
-
-    /* Actions — كان 8 الآن 9 */
-    .orders-table td:nth-child(9) {
-        grid-column: 1 / -1;
-    }
 }
 
 /* ═══════════════════════════════════════════
@@ -261,7 +176,6 @@
     border-bottom: 2px solid var(--primary-color);
 }
 
-/* Header — Delivery column highlight */
 .orders-table th.th-delivery {
     background: rgba(255, 255, 255, 0.08);
 }
@@ -344,7 +258,6 @@
     color: var(--dark-green);
 }
 
-/* Customer */
 .customer-info {
     display: flex;
     flex-direction: column;
@@ -362,7 +275,6 @@
     color: var(--secondary-text);
 }
 
-/* Address */
 .address-info {
     display: flex;
     flex-direction: column;
@@ -380,7 +292,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   🚚 Delivery Column — مميّز!
+   🚚 Delivery Column
    ═══════════════════════════════════════════ */
 .td-delivery {
     background: rgba(20, 92, 74, 0.03) !important;
@@ -429,7 +341,6 @@
     color: var(--text-muted);
 }
 
-/* ═══ Urgency Badges ═══ */
 .delivery-badge {
     display: inline-flex;
     align-items: center;
@@ -486,7 +397,6 @@
     }
 }
 
-/* Weight & Total */
 .order-weight {
     font-weight: 600;
     color: var(--secondary-text);
@@ -502,7 +412,10 @@
 /* ═══════════════════════════════════════════
    🏷️ Status Badges
    ═══════════════════════════════════════════ */
-.status-badge {
+/* ═══════════════════════════════════════════
+   🏷️ Status Badges — Scoped to .orders-table
+   ═══════════════════════════════════════════ */
+.orders-table .status-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -515,7 +428,7 @@
     border: 2px solid transparent;
 }
 
-.status-badge::before {
+.orders-table .status-badge::before {
     content: "";
     width: 8px;
     height: 8px;
@@ -523,53 +436,53 @@
     display: inline-block;
 }
 
-.status-pending {
+.orders-table .status-pending {
     background: var(--status-pending-bg);
     color: var(--status-pending-text);
     border-color: var(--status-pending-border);
 }
 
-.status-pending::before {
+.orders-table .status-pending::before {
     background: var(--status-pending-border);
 }
 
-.status-confirmed {
+.orders-table .status-confirmed {
     background: var(--status-confirmed-bg);
     color: var(--status-confirmed-text);
     border-color: var(--status-confirmed-border);
 }
 
-.status-confirmed::before {
+.orders-table .status-confirmed::before {
     background: var(--status-confirmed-border);
 }
 
-.status-shipped {
+.orders-table .status-shipped {
     background: var(--status-shipped-bg);
     color: var(--status-shipped-text);
     border-color: var(--status-shipped-border);
 }
 
-.status-shipped::before {
+.orders-table .status-shipped::before {
     background: var(--status-shipped-border);
 }
 
-.status-delivered {
+.orders-table .status-delivered {
     background: var(--status-delivered-bg);
     color: var(--status-delivered-text);
     border-color: var(--status-delivered-border);
 }
 
-.status-delivered::before {
+.orders-table .status-delivered::before {
     background: var(--status-delivered-border);
 }
 
-.status-cancelled {
+.orders-table .status-cancelled {
     background: var(--status-cancelled-bg);
     color: var(--status-cancelled-text);
     border-color: var(--status-cancelled-border);
 }
 
-.status-cancelled::before {
+.orders-table .status-cancelled::before {
     background: var(--status-cancelled-border);
 }
 
@@ -715,9 +628,14 @@
 }
 
 /* ==========================================
-   📱 MOBILE — Card View
+   📱 MOBILE — Card View (9 columns with Fahrer)
+   ==========================================
+   1. Order #    2. Customer    3. Address
+   4. Fahrer     5. Delivery    6. Weight
+   7. Total      8. Status      9. Actions
    ========================================== */
 @media (max-width: 48rem) {
+
     .orders-header h2 {
         font-size: var(--font-lg);
     }
@@ -782,8 +700,7 @@
         margin-bottom: 2px;
     }
 
-    /* ═══ ترتيب خلايا الكارد ═══ */
-    /* 1. Order # + Status */
+    /* ═══ 1. Order # ═══ */
     .orders-table td:nth-child(1) {
         grid-column: 1 / 2;
     }
@@ -792,16 +709,7 @@
         content: "Bestellung";
     }
 
-    .orders-table td:nth-child(7) {
-        grid-column: 2 / 3;
-        align-items: flex-end;
-    }
-
-    .orders-table td:nth-child(7)::before {
-        content: "Status";
-    }
-
-    /* 2. Customer (full width) */
+    /* ═══ 2. Customer (full width) ═══ */
     .orders-table td:nth-child(2) {
         grid-column: 1 / -1;
         padding: var(--space-2) 0;
@@ -814,7 +722,7 @@
         content: "Kunde";
     }
 
-    /* 3. Address (full width) */
+    /* ═══ 3. Address (full width) ═══ */
     .orders-table td:nth-child(3) {
         grid-column: 1 / -1;
     }
@@ -823,7 +731,21 @@
         content: "Adresse";
     }
 
-    /* 4. DELIVERY — مهم! full width، مميّز */
+    /* ═══ 4. Fahrer (full width, بين خطين) ═══ */
+    .orders-table td:nth-child(4) {
+        grid-column: 1 / -1;
+        padding: var(--space-2) 0;
+        border-top: 1px dashed var(--secondary-color);
+        border-bottom: 1px dashed var(--secondary-color);
+        margin: var(--space-1) 0;
+    }
+
+    .orders-table td:nth-child(4)::before {
+        content: "🚗 Fahrer";
+        color: var(--primary-color);
+    }
+
+    /* ═══ 5. Delivery (full width, مميّز) ═══ */
     .orders-table td.td-delivery {
         grid-column: 1 / -1;
         background: rgba(20, 92, 74, 0.04) !important;
@@ -851,26 +773,37 @@
         font-size: var(--font-md);
     }
 
-    /* 5. Weight + Total */
-    .orders-table td:nth-child(5) {
+    /* ═══ 6. Weight ═══ */
+    .orders-table td:nth-child(6) {
         grid-column: 1 / 2;
     }
 
-    .orders-table td:nth-child(5)::before {
+    .orders-table td:nth-child(6)::before {
         content: "Gewicht";
     }
 
-    .orders-table td:nth-child(6) {
+    /* ═══ 7. Total ═══ */
+    .orders-table td:nth-child(7) {
         grid-column: 2 / 3;
         align-items: flex-end;
     }
 
-    .orders-table td:nth-child(6)::before {
+    .orders-table td:nth-child(7)::before {
         content: "Gesamt";
     }
 
-    /* 8. Actions (full width) */
+    /* ═══ 8. Status ═══ */
     .orders-table td:nth-child(8) {
+        grid-column: 2 / 3;
+        align-items: flex-end;
+    }
+
+    .orders-table td:nth-child(8)::before {
+        content: "Status";
+    }
+
+    /* ═══ 9. Actions (full width) ═══ */
+    .orders-table td:nth-child(9) {
         grid-column: 1 / -1;
         padding-top: var(--space-3) !important;
         border-top: 1px dashed var(--secondary-color);
@@ -898,5 +831,18 @@
 
     .order-total {
         font-size: var(--font-base);
+    }
+
+    /* ═══ Driver cell in mobile ═══ */
+    .driver-cell {
+        min-width: 0;
+    }
+
+    .driver-cell-head strong {
+        font-size: var(--font-base);
+    }
+
+    .driver-unassigned {
+        font-size: var(--font-xs);
     }
 }

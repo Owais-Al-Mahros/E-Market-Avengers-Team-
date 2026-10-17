@@ -45,21 +45,17 @@ export default function DisplayProducts() {
   // ============================================
   // Filtered products — search mode OR category mode
   // ============================================
+  // ============================================
+  // Filtered products — search mode OR category mode
+  // ============================================
   const filteredProducts = useMemo(() => {
-    // 🎯 Search mode — حد 100 منتج
+    // 🎯 Search mode — name فقط (لا product_number)
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      const isNumeric = /^\d+$/.test(term);
-
       return products
-        .filter((p) => {
-          if (isNumeric) {
-            return String(p.product_number || "").includes(term);
-          }
-          return (p.name || "").toLowerCase().includes(term);
-        })
+        .filter((p) => (p.name || "").toLowerCase().includes(term))
         .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
-        .slice(0, 100);            // ← ✅ الحد الأقصى
+        .slice(0, 100); // الحد الأقصى
     }
 
     // 📂 Category mode — لا حد
@@ -118,7 +114,7 @@ export default function DisplayProducts() {
           onClick={() => navigate(-1)}
         >
           <span className="material-symbols-outlined">arrow_back</span>
-          <span>Back</span>
+          <span>Zurück</span>
         </button>
       </div>
 
@@ -135,9 +131,9 @@ export default function DisplayProducts() {
 
         <div className="products-area">
           {isLoading ? (
-            <div className="products-state">Loading products...</div>
+            <div className="products-state">Produkte werden geladen...</div>
           ) : filteredProducts.length === 0 ? (
-            <div className="products-state">No products found.</div>
+            <div className="products-state">Keine Produkte gefunden.</div>
           ) : (
             <div className="products-grid">
               {filteredProducts.map((product) => (
@@ -151,10 +147,10 @@ export default function DisplayProducts() {
       <StaticSubscribe />
 
       <div className="category-sections-display">
-        <h2 className="category-sections-display-title">Categories</h2>
+        <h2 className="category-sections-display-title">Kategorien</h2>
 
         {categoriesLoading ? (
-          <div className="products-state">Loading categories...</div>
+          <div className="products-state">Kategorien werden geladen...</div>
         ) : (
           <div className="display-categories-grid">
             {categories.map((cat) => (

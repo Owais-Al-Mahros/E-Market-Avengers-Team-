@@ -21,17 +21,16 @@ function SubHomeHeader() {
       navigate("/track-order");
       return;
     }
-    const activeStatuses = ["pending", "confirmed", "shipped"];
-    if (activeStatuses.includes(lastOrder.status)) {
-      navigate(`/Cart&Payments/order-confirmation/${lastOrder.id}`);
-    } else {
-      navigate("/track-order", {
-        state: {
-          message: `Your previous order (${lastOrder.order_number}) was ${lastOrder.status === "delivered" ? "delivered" : "cancelled"
-            }. You can place a new order now!`,
+    // ✅ FIX #37: كل الحالات تذهب إلى track-order
+    navigate("/track-order", {
+      state: {
+        autoSearch: false,
+        prefilledOrder: {
+          order_number: lastOrder.order_number,
+          email: lastOrder.email,
         },
-      });
-    }
+      },
+    });
   };
 
   useEffect(() => {
@@ -54,7 +53,7 @@ function SubHomeHeader() {
             onClick={() => setCatListOpen((prev) => !prev)}
           >
             <span className="material-symbols-outlined">grid_view</span>
-            <span>All Categories</span>
+            <span>Alle Kategorien</span>
             <span className={`chevron ${isCatListOpen ? "rotated" : ""}`}>
               <span className="material-symbols-outlined">expand_more</span>
             </span>
@@ -65,7 +64,7 @@ function SubHomeHeader() {
             <div className="categories-dropdown">
               <div className="categories-dropdown-header">
                 <span className="material-symbols-outlined">category</span>
-                <span>Browse Categories ({categories.length})</span>
+                <span>Kategorien durchsuchen ({categories.length})</span>
               </div>
 
               {categoriesLoading ? (
@@ -106,12 +105,12 @@ function SubHomeHeader() {
             }
           >
             <span className="material-symbols-outlined">home</span>
-            <span>Home</span>
+            <span>Startseite</span>
           </NavLink>
 
           <button className="nav-item" onClick={handleTrackOrder}>
             <span className="material-symbols-outlined">local_shipping</span>
-            <span>Track Order</span>
+            <span>Bestellung verfolgen</span>
           </button>
 
           <NavLink
@@ -121,7 +120,7 @@ function SubHomeHeader() {
             }
           >
             <span className="material-symbols-outlined">help</span>
-            <span>Help</span>
+            <span>Hilfe</span>
           </NavLink>
         </div>
       </div>

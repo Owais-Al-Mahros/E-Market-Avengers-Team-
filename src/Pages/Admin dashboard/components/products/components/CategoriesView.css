@@ -516,6 +516,256 @@
 }
 
 /* ==========================================
+   ✅ A: SEARCH BAR
+   ========================================== */
+.cv-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--bg-color);
+    border: 2px solid var(--secondary-color);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-3);
+    transition: var(--transition-fast);
+}
+
+.cv-search-bar:focus-within {
+    border-color: var(--primary-color);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(20, 92, 74, 0.08);
+}
+
+.cv-search-icon {
+    font-size: 20px;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.cv-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f1c18;
+    min-width: 0;
+}
+
+.cv-search-input::placeholder {
+    color: #8a9a95;
+    font-weight: 500;
+}
+
+.cv-search-clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: #4a5b56;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.cv-search-clear:hover {
+    background: rgba(217, 79, 79, 0.1);
+    color: var(--danger-color);
+}
+
+.cv-search-clear .material-symbols-outlined {
+    font-size: 16px;
+}
+
+.cv-search-count {
+    padding: 3px 10px;
+    background: var(--primary-color);
+    color: #fff;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ==========================================
+   ✅ A3: TOTALS IN HEADER
+   ========================================== */
+.cv-section-totals {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cv-total-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background: var(--bg-color);
+    border: 1.5px solid var(--secondary-color);
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f2a22;
+    white-space: nowrap;
+}
+
+.cv-total-pill .material-symbols-outlined {
+    font-size: 16px;
+    color: var(--primary-color);
+}
+
+/* ==========================================
+   ✅ A2: ALPHABETICAL GROUPING
+   ========================================== */
+.cv-letter-group {
+    margin-bottom: var(--space-3);
+}
+
+.cv-letter-group:last-child {
+    margin-bottom: 0;
+}
+
+.cv-letter-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0 6px;
+    margin-bottom: 6px;
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.cv-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 8px;
+    background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.cv-letter-count {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.cv-letter-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-left: 4px;
+}
+
+/* ==========================================
+   ✅ A1: HIGHLIGHT MATCH
+   ========================================== */
+.cv-highlight {
+    background: rgba(182, 245, 0, 0.4);
+    color: #0f1c18;
+    padding: 0 2px;
+    border-radius: 3px;
+    font-weight: 800;
+}
+
+/* ==========================================
+   ✅ A1: EMPTY SEARCH STATE
+   ========================================== */
+.cv-empty {
+    text-align: center;
+    padding: var(--space-6) var(--space-4);
+    color: #4a5b56;
+    background: var(--bg-color);
+    border-radius: var(--radius-md);
+}
+
+.cv-empty .material-symbols-outlined {
+    font-size: 48px;
+    color: var(--secondary-color);
+    display: block;
+    margin-bottom: var(--space-3);
+}
+
+.cv-empty p {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 var(--space-3);
+    font-style: normal;
+}
+
+.cv-empty p strong {
+    color: var(--primary-color);
+    font-weight: 800;
+}
+
+.cv-empty-clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.cv-empty-clear:hover {
+    background: var(--dark-green);
+    transform: translateY(-1px);
+}
+
+/* ==========================================
+   ✅ MOBILE IMPROVEMENTS
+   ========================================== */
+@media (max-width: 48rem) {
+    .cv-search-bar {
+        padding: 8px 12px;
+    }
+
+    .cv-search-input {
+        font-size: 13px;
+    }
+
+    .cv-section-totals {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .cv-total-pill {
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+
+    .cv-letter-items {
+        padding-left: 0;
+    }
+
+    .cv-letter-header {
+        padding-top: 6px;
+    }
+}
+
+/* ==========================================
    📱 MOBILE (max-width: 48rem)
    ========================================== */
 @media (max-width: 48rem) {

@@ -78,9 +78,16 @@ export default function OrderSearch({
     // متابعة آخر طلب محفوظ
     // ============================================
     const handleLastOrderClick = () => {
-        if (!lastOrder) return;
+        // ✅ FIX #20: حماية إضافية
+        if (!lastOrder?.order_number || !lastOrder?.email) {
+            toast.error("Gespeicherte Bestellung unvollständig.");
+            return;
+        }
+
         setOrderNumber(lastOrder.order_number);
-        setEmail(lastOrder.email || "");
+        setEmail(lastOrder.email);
+
+        // ✅ البحث الآن ببيانات كاملة
         setTimeout(() => {
             performSearch(lastOrder.order_number, lastOrder.email);
         }, 100);

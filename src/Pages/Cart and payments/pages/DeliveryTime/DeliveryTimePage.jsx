@@ -138,15 +138,26 @@ export default function DeliveryTimePage() {
             const shipping = checkoutData.shippingDetails.totalShipping || 0;
             const total = productsTotal + shipping;
 
+            // ✅ FIX #5b: حساب الضريبة عند إنشاء الطلب
+            const totalTax = cartItems.reduce((sum, item) => {
+                const rate = parseFloat(item.tax_rate) || 0;
+                if (rate <= 0) return sum;
+
+                const itemBrutto =
+                    (parseFloat(item.total_price || item.price) || 0) *
+                    (parseFloat(item.quantity) || 1);
+
+                const netto = itemBrutto / (1 + rate / 100);
+                return sum + (itemBrutto - netto);
+            }, 0);
+
             // ══════════════════════════════════════════════════════
             // 3. توليد المعرّفات من جهة العميل (لتفادي مشكلة RLS)
             // ══════════════════════════════════════════════════════
             const orderId = generateOrderId();
             const orderNumber = generateOrderNumber();
 
-            // ══════════════════════════════════════════════════════
-            // 4. تحضير بيانات الطلب
-            // ══════════════════════════════════════════════════════
+
             // ══════════════════════════════════════════════════════
             // 4. تحضير بيانات الطلب
             // ══════════════════════════════════════════════════════
@@ -169,10 +180,12 @@ export default function DeliveryTimePage() {
                 order_number: orderNumber,
                 status: "awaiting_payment",
                 subtotal: productsTotal,
-                tax: 0,
+                tax: +totalTax.toFixed(2),
                 total_price: total,
                 current_total: total,
                 order_date: new Date().toISOString(),
+                created_at: new Date().toISOString(),   // ✅ جديد
+                updated_at: new Date().toISOString(),   // ✅ جديد
                 allow_substitution: allowSubstitution,
 
                 customer_info: {
@@ -213,16 +226,8 @@ export default function DeliveryTimePage() {
             // ══════════════════════════════════════════════════════
             // 5. إدراج الطلب — بدون .select() (RLS يمنع القراءة)
             // ══════════════════════════════════════════════════════
-            const { error: orderError } = await supabase
-                .from("orders")
-                .insert([orderData]);
-
-            if (orderError) {
-                throw new Error(orderError.message);
-            }
-
             // ══════════════════════════════════════════════════════
-            // 6. إدراج بنود الطلب — نستخدم orderId المعروف
+            // 5. ✅ FIX: إدراج الطلب + البنود ذريًا عبر RPC
             // ══════════════════════════════════════════════════════
             const orderItems = cartItems.map((item) => ({
                 order_id: orderId,
@@ -237,17 +242,29 @@ export default function DeliveryTimePage() {
                 weight_unit: item.weight_unit || "kg",
                 total_weight:
                     toBaseUnit(item.weight, item.weight_unit) * item.quantity,
+                product_type: item.product_type || "unit_based",
             }));
 
-            const { error: itemsError } = await supabase
-                .from("order_items")
-                .insert(orderItems);
+            const { data: rpcResult, error: rpcError } = await supabase.rpc(
+                "create_guest_order",
+                {
+                    p_order: orderData,
+                    p_items: orderItems,
+                }
+            );
 
-            if (itemsError) {
-                // فشل البنود → نحاول حذف الطلب (best-effort) ونُبلّغ
-                console.error("❌ Order items insert failed:", itemsError);
-                throw new Error(itemsError.message);
+            if (rpcError) {
+                console.error("❌ create_guest_order failed:", rpcError);
+                throw new Error(rpcError.message);
             }
+
+            if (!rpcResult?.success) {
+                throw new Error("Bestellung konnte nicht erstellt werden.");
+            }
+
+            console.log(
+                `✅ Order created: ${rpcResult.order_id} (${rpcResult.items_count} items)`
+            );
 
             // ══════════════════════════════════════════════════════
             // 7. حفظ آخر طلب

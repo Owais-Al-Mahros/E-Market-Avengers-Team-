@@ -6,9 +6,10 @@
    Status Flow — ما هي الانتقالات المسموحة
    ═══════════════════════════════════════════ */
 export const STATUS_FLOW = {
+    awaiting_payment: ["pending", "cancelled"],
     pending: ["confirmed", "cancelled"],
     confirmed: ["shipped", "pending", "cancelled"],
-    shipped: ["delivered", "confirmed", "cancelled"],
+    shipped: ["delivered", "cancelled"],
     delivered: ["shipped"],
     cancelled: ["confirmed"],
 };
@@ -21,6 +22,7 @@ export function canUpdateTo(currentStatus, targetStatus) {
    Status Labels & Classes
    ═══════════════════════════════════════════ */
 export const STATUS_LABELS = {
+    awaiting_payment: "Awaiting Payment",   // ✅ FIX #12
     pending: "Pending",
     confirmed: "Confirmed",
     shipped: "Shipped",

@@ -4,7 +4,7 @@ import { useCart } from "../../../../context/CartContext";
 import toast from "react-hot-toast";
 import CartHeader from "../ShoppingCart/components/CartHeader";
 import Footer from "../../../../components/layout/Footer";
-import Invoice from "../../../../components/invoice/Invoice";
+import Vorinformation from "../../../../components/invoice/Vorinformation";
 import {
     Elements,
     PaymentElement,
@@ -77,6 +77,7 @@ function CheckoutForm({ orderId, clientSecret, onSuccess }) {
                 setIsProcessing(false);
                 return;
             }
+
 
             const { error, paymentIntent } = await stripe.confirmPayment({
                 elements,
@@ -333,17 +334,14 @@ export default function BillAndPayment() {
                     {/* ============================================
                         LEFT: Invoice
                     ============================================ */}
-                    <Invoice
+                    <Vorinformation
                         order={order}
                         items={invoiceItems}
-                        variant="preview"
-                        showTaxBreakdown={true}
-                        showAdjustmentNotice={false}
-                        showWarningBanner={false}
                         showPaymentInfo={false}
                         showBufferInfo={true}
                         bufferAmount={WEIGHT_BUFFER}
-                        afterTotalsSlot={
+                        afterTotalsSlot=
+                        {
                             <div className="bill-explanation">
                                 <div className="bill-explanation-icon">ℹ️</div>
                                 <div>
@@ -421,6 +419,7 @@ export default function BillAndPayment() {
                                     stripe={stripePromise}
                                     options={{
                                         clientSecret,
+                                        locale: "de",                    // ✅ جديد
                                         appearance: {
                                             theme: "stripe",
                                             variables: {

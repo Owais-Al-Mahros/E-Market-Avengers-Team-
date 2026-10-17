@@ -108,7 +108,7 @@ function Footer() {
 
         {/* ========== Customer Service ========== */}
         <div className="footer-section">
-          <h3 className="footer-section-title">Customer Service</h3>
+          <h3 className="footer-section-title">Kundenservice</h3>
           <ul className="footer-list">
             <li><Link to="/faq" className="footer-link">FAQ</Link></li>
             <li><Link to="/help" className="footer-link">Kontakt</Link></li>
@@ -117,36 +117,6 @@ function Footer() {
             <li><Link to="/agb" className="footer-link">AGB</Link></li>
             <li><Link to="/datenschutz" className="footer-link">Datenschutz</Link></li>
             <li><Link to="/impressum" className="footer-link">Impressum</Link></li>
-          </ul>
-        </div>
-
-        {/* ========== Contact ========== */}
-        <div className="footer-section">
-          <h3 className="footer-section-title">Contact</h3>
-          <ul className="footer-contact-list">
-            <li className="footer-contact-item">
-              <img className="footer-contact-icon" src="/phone-call.png" alt="" />
-              <a href="tel:+9639851678464" className="footer-link">
-                +963-985-178-464
-              </a>
-            </li>
-            <li className="footer-contact-item">
-              <img className="footer-contact-icon" src="/email.png" alt="" />
-              <a href="mailto:mdrslannwelaty@gmail.com" className="footer-link">
-                mdrslannwelaty@gmail.com
-              </a>
-            </li>
-            <li className="footer-contact-item">
-              <img className="footer-contact-icon" src="/location-pin.png" alt="" />
-              <a
-                href="https://maps.app.goo.gl/2soetBmTHDYJ4ms89?g_st=ic"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="footer-link"
-              >
-                ITE College, Damascus, Syria
-              </a>
-            </li>
           </ul>
         </div>
       </div>

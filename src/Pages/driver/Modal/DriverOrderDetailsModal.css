@@ -5,8 +5,8 @@
 .dod-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(21, 49, 43, 0.65);
-    backdrop-filter: blur(6px);
+    background: rgba(21, 49, 43, 0.7);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -29,12 +29,12 @@
     background: #fff;
     border-radius: 20px;
     width: 100%;
-    max-width: 560px;
+    max-width: 640px;
     max-height: 92vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
     animation: dodSlide 0.25s ease;
 }
 
@@ -56,24 +56,94 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 12px;
-    padding: 20px 24px;
+    padding: 18px 22px;
     background: linear-gradient(135deg, #145c4a, #0f4a3b);
     color: #fff;
+    flex-shrink: 0;
+}
+
+.dod-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex: 1;
+}
+
+.dod-header-icon {
+    font-size: 32px;
+    color: #b9e769;
+    flex-shrink: 0;
 }
 
 .dod-header h2 {
-    font-size: 18px;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 2px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.85;
+}
+
+.dod-order-number {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    font-family: "Courier New", monospace;
+    font-size: 16px;
+    color: #b9e769;
     font-weight: 800;
-    margin: 0 0 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+}
+
+.dod-order-number:hover {
     color: #fff;
 }
 
-.dod-header p {
-    margin: 0;
-    font-family: "Courier New", monospace;
-    font-size: 13px;
-    color: #b9e769;
-    font-weight: 700;
+.dod-order-number .material-symbols-outlined {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.dod-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.dod-status {
+    padding: 5px 12px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+}
+
+.dod-status-confirmed {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    border: 1px solid rgba(147, 197, 253, 0.4);
+}
+
+.dod-status-shipped {
+    background: rgba(139, 92, 246, 0.2);
+    color: #c4b5fd;
+    border: 1px solid rgba(196, 181, 253, 0.4);
+}
+
+.dod-status-delivered {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    border: 1px solid rgba(110, 231, 183, 0.4);
 }
 
 .dod-close {
@@ -92,7 +162,7 @@
 }
 
 .dod-close:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.28);
     transform: rotate(90deg);
 }
 
@@ -104,56 +174,237 @@
 .dod-body {
     flex: 1;
     overflow-y: auto;
-    padding: 20px 24px;
+    padding: 20px 22px;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
     background: #f7faf8;
 }
 
 /* ═══ Delivery Banner ═══ */
-.dod-section.dod-delivery {
-    display: flex;
-    align-items: center;
+.dod-banner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     gap: 14px;
+    align-items: center;
     padding: 16px 18px;
-    background: linear-gradient(135deg, rgba(185, 231, 105, 0.15), #fff);
+    background: linear-gradient(135deg, rgba(20, 92, 74, 0.06), #fff);
     border: 2px solid #145c4a;
+    border-left: 5px solid #145c4a;
     border-radius: 14px;
 }
 
-.dod-section.dod-delivery .material-symbols-outlined {
-    font-size: 32px;
-    color: #145c4a;
-    flex-shrink: 0;
+.dod-banner-today {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), #fff);
+    border-color: #f59e0b;
+    border-left-color: #f59e0b;
 }
 
-.dod-delivery>div {
+.dod-banner-overdue {
+    background: linear-gradient(135deg, rgba(217, 79, 79, 0.08), #fff);
+    border-color: #d94f4f;
+    border-left-color: #d94f4f;
+    animation: pulseBanner 2s ease-in-out infinite;
+}
+
+@keyframes pulseBanner {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(217, 79, 79, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(217, 79, 79, 0);
+    }
+}
+
+.dod-banner-icon .material-symbols-outlined {
+    font-size: 32px;
+    color: #145c4a;
+}
+
+.dod-banner-today .dod-banner-icon .material-symbols-outlined {
+    color: #b45309;
+}
+
+.dod-banner-overdue .dod-banner-icon .material-symbols-outlined {
+    color: #b91c1c;
+}
+
+.dod-banner-content {
     display: flex;
     flex-direction: column;
     gap: 3px;
     min-width: 0;
 }
 
-.dod-label {
-    font-size: 11px;
+.dod-banner-label {
+    font-size: 10.5px;
     font-weight: 800;
     color: #6b7a77;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
 }
 
-.dod-delivery strong {
+.dod-banner-date {
     font-size: 16px;
     font-weight: 800;
     color: #15312b;
+    line-height: 1.2;
 }
 
-.dod-delivery em {
-    font-size: 13px;
+.dod-banner-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+    font-weight: 800;
     color: #145c4a;
+    margin-top: 2px;
+}
+
+.dod-banner-time .material-symbols-outlined {
+    font-size: 16px;
+}
+
+.dod-banner-badge {
+    padding: 5px 12px;
+    border-radius: 9999px;
+    font-size: 10.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+}
+
+.dod-banner-badge-today {
+    background: #f59e0b;
+    color: #fff;
+}
+
+.dod-banner-badge-overdue {
+    background: #d94f4f;
+    color: #fff;
+}
+
+.dod-banner-badge-tomorrow {
+    background: #3b82f6;
+    color: #fff;
+}
+
+.dod-banner-badge-soon,
+.dod-banner-badge-later {
+    background: #ddf4ea;
+    color: #145c4a;
+}
+
+/* ═══ Quick Actions Grid ═══ */
+.dod-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.dod-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    min-height: 52px;
+    white-space: nowrap;
+}
+
+.dod-action-btn .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.dod-action-call {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+}
+
+.dod-action-call:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(59, 130, 246, 0.45);
+}
+
+.dod-action-nav {
+    background: linear-gradient(135deg, #145c4a, #0f4a3b);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(20, 92, 74, 0.3);
+}
+
+.dod-action-nav:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(20, 92, 74, 0.45);
+}
+
+.dod-action-copy {
+    background: #fff;
+    color: #145c4a;
+    border: 2px solid #ddf4ea;
+}
+
+.dod-action-copy:hover {
+    background: #ddf4ea;
+    border-color: #145c4a;
+}
+
+/* ═══ Summary Grid ═══ */
+.dod-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.dod-summary-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #ddf4ea;
+}
+
+.dod-summary-icon {
+    font-size: 22px;
+    color: #145c4a;
+    flex-shrink: 0;
+}
+
+.dod-summary-card>div {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+
+.dod-summary-card strong {
+    font-size: 15px;
+    font-weight: 800;
+    color: #15312b;
+    line-height: 1.1;
+}
+
+.dod-summary-card span {
+    font-size: 10.5px;
     font-weight: 700;
-    font-style: normal;
+    color: #6b7a77;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 /* ═══ Sections ═══ */
@@ -221,8 +472,8 @@
 /* ═══ Meta Grid ═══ */
 .dod-meta-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
     margin-top: 8px;
 }
 
@@ -302,7 +553,7 @@
     line-height: 1.5;
 }
 
-/* ═══ Items ═══ */
+/* ═══ Items List ═══ */
 .dod-items {
     display: flex;
     flex-direction: column;
@@ -311,32 +562,47 @@
 
 .dod-item {
     display: grid;
-    grid-template-columns: 28px 1fr auto;
-    gap: 10px;
+    grid-template-columns: 32px 1fr auto;
+    gap: 12px;
     align-items: center;
-    padding: 10px 12px;
+    padding: 12px 14px;
     background: #f7faf8;
     border-radius: 10px;
     border: 1px solid #ddf4ea;
+    border-left: 4px solid #f59e0b;
     transition: 0.2s;
 }
 
-.dod-item.is-removed {
-    opacity: 0.55;
+.dod-item-scanned {
+    border-left-color: #10b981;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.04), #fff);
+}
+
+.dod-item-substituted {
+    border-left-color: #8b5cf6;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.04), #fff);
+}
+
+.dod-item-removed {
+    border-left-color: #d94f4f;
     background: #f5f5f5;
-    border-style: dashed;
+    opacity: 0.7;
+}
+
+.dod-item-pending {
+    border-left-color: #f59e0b;
 }
 
 .dod-item-num {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 26px;
+    width: 32px;
+    height: 32px;
     background: #145c4a;
     color: #fff;
     border-radius: 50%;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
     font-family: "Courier New", monospace;
     flex-shrink: 0;
@@ -345,73 +611,139 @@
 .dod-item-info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
+    min-width: 0;
+}
+
+.dod-item-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     min-width: 0;
 }
 
 .dod-item-name {
-    font-size: 14px;
+    font-size: 14.5px;
     font-weight: 700;
     color: #15312b;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.dod-item-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.dod-item-status-pending {
+    background: rgba(245, 158, 11, 0.15);
+    color: #b45309;
+}
+
+.dod-item-status-scanned {
+    background: rgba(16, 185, 129, 0.15);
+    color: #047857;
+}
+
+.dod-item-status-substituted {
+    background: rgba(139, 92, 246, 0.15);
+    color: #6d28d9;
+}
+
+.dod-item-status-removed {
+    background: rgba(217, 79, 79, 0.15);
+    color: #b91c1c;
 }
 
 .dod-item-sub {
     font-size: 11.5px;
-    color: #5b21b6;
+    color: #6d28d9;
     font-style: italic;
     font-weight: 600;
 }
 
-.dod-item-removed {
-    font-size: 11.5px;
-    color: #dc2626;
-    font-weight: 700;
-    text-decoration: line-through;
+.dod-item-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: #6b7a77;
+    font-weight: 600;
+    font-family: "Courier New", monospace;
 }
 
 .dod-item-qty {
-    font-size: 13px;
+    padding: 2px 8px;
+    background: #ddf4ea;
+    color: #145c4a;
+    border-radius: 6px;
+    font-weight: 800;
+}
+
+.dod-item-weight {
+    font-weight: 700;
+}
+
+.dod-item-total {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.dod-item-total-label {
+    font-size: 9.5px;
+    font-weight: 800;
+    color: #6b7a77;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.dod-item-total strong {
+    font-size: 13.5px;
     font-weight: 800;
     color: #145c4a;
     font-family: "Courier New", monospace;
     white-space: nowrap;
+}
+
+.dod-item-removed-label {
     padding: 4px 10px;
-    background: #ddf4ea;
-    border-radius: 8px;
+    background: rgba(217, 79, 79, 0.12);
+    color: #b91c1c;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
 }
 
 .dod-empty {
     text-align: center;
-    padding: 20px;
+    padding: 24px;
     color: #6b7a77;
     font-style: italic;
     margin: 0;
-}
-
-/* ═══ COD Amount ═══ */
-.dod-cod-amount {
-    margin: 8px 0 0;
-    padding: 12px 14px;
-    background: linear-gradient(135deg, rgba(185, 231, 105, 0.2), #fff);
-    border: 2px dashed #145c4a;
-    border-radius: 10px;
-    font-size: 15px;
-    color: #145c4a;
-    text-align: center;
-}
-
-.dod-cod-amount strong {
-    font-size: 18px;
-    font-weight: 800;
 }
 
 /* ═══ Footer ═══ */
 .dod-footer {
     display: flex;
     gap: 12px;
-    padding: 16px 24px;
+    padding: 16px 22px;
     background: #fff;
     border-top: 2px solid #ddf4ea;
     flex-shrink: 0;
@@ -473,21 +805,87 @@
         border-radius: 0;
     }
 
-    .dod-body {
-        padding: 14px;
-        gap: 14px;
+    .dod-header {
+        padding: 14px 16px;
     }
 
-    .dod-header {
-        padding: 16px;
+    .dod-header-icon {
+        font-size: 26px;
+    }
+
+    .dod-order-number {
+        font-size: 14px;
+    }
+
+    .dod-body {
+        padding: 14px;
+        gap: 12px;
+    }
+
+    .dod-banner {
+        padding: 14px;
+        grid-template-columns: auto 1fr;
+    }
+
+    .dod-banner-badge {
+        grid-column: 1 / -1;
+        justify-self: flex-start;
+        margin-top: 6px;
+    }
+
+    .dod-banner-date {
+        font-size: 14px;
+    }
+
+    .dod-actions-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .dod-action-copy {
+        grid-column: 1 / -1;
+    }
+
+    .dod-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dod-item {
+        grid-template-columns: 28px 1fr;
+        padding: 10px 12px;
+    }
+
+    .dod-item-total {
+        grid-column: 2 / 3;
+        align-items: flex-start;
+        margin-top: 4px;
+    }
+
+    .dod-item-removed-label {
+        grid-column: 2 / 3;
     }
 
     .dod-footer {
         flex-direction: column-reverse;
-        padding: 14px;
+        padding: 14px 16px;
     }
 
-    .dod-meta-grid {
-        grid-template-columns: 1fr 1fr;
+    .dod-btn {
+        width: 100%;
     }
+}
+
+/* ✅ FIX: رقم المنتج في بطاقة البند */
+.dod-item-artnr {
+    display: inline-flex;
+    align-items: center;
+    font-family: "Courier New", monospace;
+    font-size: 11px;
+    font-weight: 800;
+    color: #6b7a77;
+    background: #ddf4ea;
+    padding: 2px 8px;
+    border-radius: 6px;
+    width: fit-content;
+    letter-spacing: 0.3px;
+    margin-top: 2px;
 }

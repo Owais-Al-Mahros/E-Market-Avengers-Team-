@@ -141,7 +141,7 @@ function App() {
           <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/help" element={<HelpPage />} />
-          {/* <Route path="/driver" element={<DriverDashboard />} /> */}
+          <Route path="/driver" element={<DriverDashboard />} />
         </Routes>
       </Suspense>
     </>

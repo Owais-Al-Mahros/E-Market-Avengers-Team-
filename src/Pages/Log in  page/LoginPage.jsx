@@ -21,32 +21,26 @@ export default function LoginPage({ setIsAdmin }) {
     setIsLoading(true);
 
     try {
-      // ══════════════════════════════════════════════
-      // 1. تسجيل الدخول
-      // ══════════════════════════════════════════════
+      // ═══ 1. تسجيل الدخول ═══
       const { data, error } = await supabase.auth.signInWithPassword({
         email: credentials.email.trim().toLowerCase(),
         password: credentials.password,
       });
 
       if (error) {
-        toast.error("Invalid email or password.");
+        toast.error("Ungültige E-Mail oder Passwort.");
         setCredentials({ email: "", password: "" });
         return;
       }
 
-      // ══════════════════════════════════════════════
-      // 2. تأكيد الإيميل
-      // ══════════════════════════════════════════════
+      // ═══ 2. تأكيد الإيميل ═══
       if (!data.user?.email_confirmed_at) {
-        toast.error("Please confirm your email first.");
+        toast.error("Bitte bestätigen Sie zuerst Ihre E-Mail-Adresse.");
         await supabase.auth.signOut();
         return;
       }
 
-      // ══════════════════════════════════════════════
-      // 3. جلب البروفايل الكامل
-      // ══════════════════════════════════════════════
+      // ═══ 3. جلب البروفايل ═══
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("is_admin, role, is_active")
@@ -54,43 +48,49 @@ export default function LoginPage({ setIsAdmin }) {
         .single();
 
       if (profileError || !profile) {
-        toast.error("Access denied.");
+        toast.error(
+          "Profil nicht gefunden. Bitte kontaktieren Sie den Support."
+        );
         await supabase.auth.signOut();
+        navigate("/", { replace: true });
         return;
       }
 
-      // ══════════════════════════════════════════════
-      // 4. فحص الحساب المعطّل
-      // ══════════════════════════════════════════════
+      // ═══ 4. حساب معطَّل ═══
       if (profile.is_active === false) {
-        toast.error("Ihr Konto ist deaktiviert.");
+        toast.error(
+          "Ihr Konto ist deaktiviert. Bitte kontaktieren Sie den Support.",
+          { duration: 5000 }
+        );
         await supabase.auth.signOut();
+        navigate("/", { replace: true });
         return;
       }
 
-      // ══════════════════════════════════════════════
-      // 5. التوجيه حسب الدور (مرة واحدة فقط!)
-      // ══════════════════════════════════════════════
+      // ═══ 5. التوجيه حسب الدور ═══
       if (profile.is_admin) {
-        toast.success("Login successful");
+        toast.success("Login erfolgreich");
         setIsAdmin(true);
         navigate("/dashboard", { replace: true });
       } else if (profile.role === "driver") {
         toast.success("Willkommen, Fahrer!");
         navigate("/driver", { replace: true });
       } else {
-        toast.error("Access denied.");
+        toast.error("Zugriff verweigert. Nur für Administratoren.");
         await supabase.auth.signOut();
         setCredentials({ email: "", password: "" });
+        navigate("/", { replace: true });
       }
     } catch (err) {
       console.error("Login error:", err?.message || err);
-      toast.error("Something went wrong. Please try again.");
+      toast.error("Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.");
       await supabase.auth.signOut();
     } finally {
       setIsLoading(false);
     }
   };
+
+
 
   return (
     <div className="login-container">

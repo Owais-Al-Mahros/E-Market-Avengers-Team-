@@ -6,6 +6,7 @@ import {
     useCallback,
     useMemo,
 } from "react";
+import { supabase } from "../lib/supabase";
 import {
     fetchWiderrufRequests as fetchAPI,
     processWiderrufRequest as processAPI,
@@ -37,7 +38,6 @@ export function WiderrufProvider({ children }) {
     const processRequest = useCallback(async (payload) => {
         const result = await processAPI(payload);
         if (result.success) {
-            // حدّث الطلب محليًا
             setRequests((prev) =>
                 prev.map((r) =>
                     r.id === payload.amendmentId
@@ -58,11 +58,50 @@ export function WiderrufProvider({ children }) {
         return result;
     }, []);
 
+    /* ═══ Initial load ═══ */
     useEffect(() => {
         fetchRequests();
     }, [fetchRequests]);
 
-    /* ═══ Counts (memoized) ═══ */
+    /* ═══ 🔴 Realtime subscription ═══ */
+    useEffect(() => {
+        const channel = supabase
+            .channel("order_amendments_widerruf")
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "order_amendments",
+                    filter: "amendment_type=eq.widerruf",
+                },
+                (payload) => {
+                    if (payload.eventType === "INSERT") {
+                        // أعد الجلب الكامل لضمان وصول join الـ orders
+                        fetchRequests();
+                    } else if (payload.eventType === "UPDATE") {
+                        setRequests((prev) =>
+                            prev.map((r) =>
+                                r.id === payload.new.id
+                                    ? { ...r, ...payload.new }
+                                    : r
+                            )
+                        );
+                    } else if (payload.eventType === "DELETE") {
+                        setRequests((prev) =>
+                            prev.filter((r) => r.id !== payload.old.id)
+                        );
+                    }
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [fetchRequests]);
+
+    /* ═══ Counts ═══ */
     const counts = useMemo(() => {
         return {
             all: requests.length,

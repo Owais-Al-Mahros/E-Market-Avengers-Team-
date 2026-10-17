@@ -29,7 +29,7 @@ export default function HomePage() {
       <FeaturesBar />
       <FeaturedProducts />
       <div className="category-sections" id="category-sections">
-        <h2 className="title-cate">Categories</h2>
+        <h2 className="title-cate">Kategorien</h2>
         <CategoriesGrid
           categories={categories}
           loading={categoriesLoading}

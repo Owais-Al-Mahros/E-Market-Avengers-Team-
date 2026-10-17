@@ -49,17 +49,27 @@ export function ProductProvider({ children }) {
     // ═══════════════════════════════════════════
     // الجديد — Pagination
     // ═══════════════════════════════════════════
+    // ═══════════════════════════════════════════
+    // ✅ Pagination — Public + Admin
+    // ═══════════════════════════════════════════
     const fetchProductsPaginated = useCallback(async ({
         categoryId = null,
         subcategoryId = null,
         search = null,
         page = 1,
         limit = 40,
+        isAdmin = false,   // ← جديد
     } = {}) => {
         setPaginationLoading(true);
         try {
             const offset = (page - 1) * limit;
-            const { data, error } = await supabase.rpc("get_products_paginated", {
+
+            // ✅ اختر RPC حسب الدور
+            const rpcName = isAdmin
+                ? "get_products_paginated_admin"
+                : "get_products_paginated";
+
+            const { data, error } = await supabase.rpc(rpcName, {
                 p_category_id: categoryId,
                 p_subcategory_id: subcategoryId,
                 p_search: search,
@@ -75,7 +85,13 @@ export function ProductProvider({ children }) {
             setPaginationMeta({ total, page, limit });
             return { success: true, products: rows, total };
         } catch (err) {
-            console.error("fetchProductsPaginated error:", err);
+            console.error("fetchProductsPaginated error:", {
+                message: err?.message,
+                details: err?.details,
+                hint: err?.hint,
+                code: err?.code,
+                raw: err,
+            });
             return { success: false, error: err.message };
         } finally {
             setPaginationLoading(false);

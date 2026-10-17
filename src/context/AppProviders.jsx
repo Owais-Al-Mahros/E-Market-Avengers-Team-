@@ -14,6 +14,7 @@ import { WiderrufProvider } from "./WiderrufContext";
 import { FaqProvider } from "./FaqContext";
 import { MessagesProvider } from "./MessagesContext";
 import { FeaturedProvider } from "./FeaturedContext";
+import { HaccpProvider } from "./HaccpContext";
 
 //  الترتيب مهم! من الخارج للداخل
 const providers = [
@@ -32,6 +33,7 @@ const providers = [
   MessagesProvider,
   WiderrufProvider,
   FeaturedProvider,
+  HaccpProvider,
 ];
 
 export function AppProviders({ children }) {

@@ -22,6 +22,14 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
 
     const items_list = order.order_items || [];
 
+    /* ✅ FIX #6: المبلغ الفعلي إذا وُجد، وإلا الأصلي */
+    const getEffectivePrice = (item) => {
+        if (item.actual_total != null && item.actual_total !== "") {
+            return parseFloat(item.actual_total);
+        }
+        return parseFloat(item.total_price || 0);
+    };
+
     // ============================================
     // تحديد المنتجات القابلة للإرجاع
     // ============================================
@@ -80,15 +88,16 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
     const returnableCount = items.filter((i) => i.canReturn).length;
     const selectedCount = selectedItemsList.length;
 
-    const subtotal = selectedItemsList.reduce((sum, i) => sum + parseFloat(i.total_price || 0), 0);
-    // استرداد = مجموع Brutto مباشرة (الضريبة مُضمّنة أصلًا)
-    const totalRefund = subtotal; // لا تُضف ضريبة!
-
+    /* ✅ FIX #6: احسب من القيمة الفعلية */
+    const subtotal = selectedItemsList.reduce(
+        (sum, i) => sum + getEffectivePrice(i),
+        0
+    );
+    const totalRefund = subtotal;
 
     // ============================================
     // Submit (فتح Confirm Dialog)
     // ============================================
-
     const handleSubmitClick = () => {
         if (selectedCount === 0) {
             toast.error("Bitte wählen Sie mindestens ein Produkt aus.");
@@ -115,7 +124,8 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
                     product_name: i.product_name,
                     quantity: i.quantity,
                     unit_price: parseFloat(i.unit_price),
-                    total_price: parseFloat(i.total_price),
+                    /* ✅ FIX #6: أرسل السعر الفعلي للـ backend */
+                    total_price: getEffectivePrice(i),
                     weight: parseFloat(i.weight) || 0,
                 })),
                 reason: reason.trim() || null,
@@ -154,7 +164,6 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
         <>
             <div className="wm-overlay" onClick={onClose}>
                 <div className="wm-modal" onClick={(e) => e.stopPropagation()}>
-                    {/* Header */}
                     <div className="wm-header">
                         <div>
                             <h2>
@@ -170,7 +179,6 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
                         </button>
                     </div>
 
-                    {/* Body */}
                     <div className="wm-body">
                         {loadingItems ? (
                             <div className="wm-loading">
@@ -179,7 +187,6 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
                             </div>
                         ) : (
                             <>
-                                {/* Info Box */}
                                 <div className="wm-info">
                                     <span className="material-symbols-outlined">
                                         info
@@ -194,7 +201,6 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
                                     </div>
                                 </div>
 
-                                {/* Warning */}
                                 <div className="wm-warning">
                                     <span className="material-symbols-outlined">
                                         warning
@@ -207,7 +213,6 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
                                     </p>
                                 </div>
 
-                                {/* Select All */}
                                 {returnableCount > 0 && (
                                     <div className="wm-select-all">
                                         <label>
@@ -234,13 +239,13 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
                                     </div>
                                 )}
 
-                                {/* Items */}
                                 <div className="wm-items">
                                     {items.map((item) => {
                                         const isSelected = selectedItems[item.id];
-                                        const itemTotal = parseFloat(
-                                            item.total_price || 0
-                                        );
+                                        /* ✅ FIX #6 */
+                                        const itemTotal = getEffectivePrice(item);
+                                        const displayQty =
+                                            item.actual_quantity ?? item.quantity;
 
                                         return (
                                             <div
@@ -279,12 +284,13 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
                                                         {item.product_name}
                                                     </span>
                                                     <span className="wm-item-meta">
-                                                        {item.quantity}× €
-                                                        {parseFloat(
-                                                            item.unit_price || 0
+                                                        {displayQty}× €
+                                                        {(
+                                                            itemTotal /
+                                                            (parseFloat(displayQty) || 1)
                                                         ).toFixed(2)}
-                                                        {item.weight > 0 &&
-                                                            ` · ${item.weight} kg`}
+                                                        {item.actual_weight > 0 &&
+                                                            ` · ${item.actual_weight} kg`}
                                                     </span>
                                                     {!item.canReturn && (
                                                         <span className="wm-item-excluded">
@@ -301,7 +307,6 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
                                     })}
                                 </div>
 
-                                {/* Reason */}
                                 <div className="wm-field">
                                     <label>Grund (optional)</label>
                                     <textarea
@@ -313,7 +318,6 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
                                     />
                                 </div>
 
-                                {/* Summary */}
                                 {selectedCount > 0 && (
                                     <div className="wm-summary">
                                         <div className="wm-summary-row">
@@ -330,7 +334,6 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
                         )}
                     </div>
 
-                    {/* Footer */}
                     <div className="wm-footer">
                         <button
                             className="wm-btn wm-btn-cancel"
@@ -362,7 +365,6 @@ export default function WiderrufModal({ order, onClose, onSuccess }) {
                 </div>
             </div>
 
-            {/* Confirm Dialog */}
             <ConfirmDialog
                 isOpen={showConfirm}
                 title="Widerruf bestätigen?"

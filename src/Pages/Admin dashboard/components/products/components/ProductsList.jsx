@@ -40,6 +40,7 @@ export default function ProductsList({ onEditProduct, onAddProduct }) {
     }, [categoryId, subcategoryId, debouncedSearch]);
 
     // Fetch when filters/page change
+    // Fetch when filters/page change
     useEffect(() => {
         fetchProductsPaginated({
             categoryId: categoryId ? Number(categoryId) : null,
@@ -47,6 +48,7 @@ export default function ProductsList({ onEditProduct, onAddProduct }) {
             search: debouncedSearch || null,
             page,
             limit: PAGE_SIZE,
+            isAdmin: true,   // ✅ Admin Dashboard
         });
     }, [fetchProductsPaginated, categoryId, subcategoryId, debouncedSearch, page]);
 
@@ -73,6 +75,7 @@ export default function ProductsList({ onEditProduct, onAddProduct }) {
                 search: debouncedSearch || null,
                 page,
                 limit: PAGE_SIZE,
+                isAdmin: true,   // ✅
             });
         } catch (err) {
             toast.error(err.message);

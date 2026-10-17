@@ -15,10 +15,10 @@ const HERO_IMAGES = [
 ];
 
 const HERO_FEATURES = [
-  { icon: "🌿", title: "Vegetables", subtitle: "Fresh daily" },
-  { icon: "🍓", title: "Fruits", subtitle: "Sweet & ripe" },
-  { icon: "🥤", title: "Drinks", subtitle: "Cold & fresh" },
-  { icon: "🥜", title: "Nuts", subtitle: "Premium quality" },
+  { icon: "🌿", title: "Gemüse", subtitle: "Täglich frisch" },
+  { icon: "🍓", title: "Obst", subtitle: "Süß & reif" },
+  { icon: "🥤", title: "Getränke", subtitle: "Kalt & frisch" },
+  { icon: "🥜", title: "Nüsse", subtitle: "Premium-Qualität" },
 ];
 
 export default function Hero() {
@@ -88,17 +88,17 @@ export default function Hero() {
         <div className="hero-text">
           <div className="hero-badge">
             <span className="material-symbols-outlined">shopping_cart</span>
-            <span>Groceries, Drinks & More</span>
+            <span>Lebensmittel, Getränke & mehr</span>
           </div>
 
           <h1 className="hero-title">
-            <span className="hero-title-dark">Your Fresh</span>
-            <span className="hero-title-green">Groceries Delivered</span>
+            <span className="hero-title-dark">Ihre frischen</span>
+            <span className="hero-title-green">Lebensmittel geliefert</span>
           </h1>
 
           <p className="hero-description">
-            Premium quality fresh produce, delivered straight to your
-            doorstep.
+            Frische Produkte in Premium-Qualität — direkt vor Ihre
+            Haustür geliefert.
           </p>
 
           <button
@@ -106,7 +106,7 @@ export default function Hero() {
             className="hero-cta"
             onClick={handleShopNowClick}
           >
-            <span>Shop Now</span>
+            <span>Jetzt einkaufen</span>
             <span className="material-symbols-outlined">arrow_forward</span>
           </button>
 
