@@ -14,6 +14,7 @@ const STORAGE_BUCKET = "upload-image";
 // ═══════════════════════════════════════════════════════════
 const PUBLIC_COLUMNS = `
     id,
+    product_number,
     name,
     image,
     price,
@@ -29,7 +30,7 @@ const PUBLIC_COLUMNS = `
     storage_notes,
     nutrition_basis,
     product_type,
-    total_sold
+    total_sold,
 `;
 
 // ============================================================

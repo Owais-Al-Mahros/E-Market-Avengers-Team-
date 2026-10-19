@@ -11,7 +11,7 @@ import { supabase } from "../lib/supabase";
 const OrdersContext = createContext();
 
 /* ═══════════════════════════════════════════
-   SELECT Templates — تعريف واحد
+   SELECT Templates
    ═══════════════════════════════════════════ */
 const ORDER_ITEMS_SELECT = `
   id, product_id, product_number, product_name,
@@ -41,6 +41,42 @@ export function OrdersProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  /* ✅ الدالة الذكية لجلب أرقام المنتجات من قاعدة البيانات */
+  const enrichOrders = useCallback(async (ordersData) => {
+    const productIds = [
+      ...new Set(
+        (ordersData || [])
+          .flatMap((o) => o.order_items || [])
+          .map((item) => item.product_id)
+          .filter(Boolean)
+      ),
+    ];
+
+    let productMap = {};
+    if (productIds.length > 0) {
+      const { data: productsData } = await supabase
+        .from("products")
+        .select("id, product_number")
+        .in("id", productIds);
+
+      if (productsData) {
+        productMap = productsData.reduce((acc, p) => {
+          acc[p.id] = p.product_number;
+          return acc;
+        }, {});
+      }
+    }
+
+    return (ordersData || []).map((order) => ({
+      ...order,
+      order_items: (order.order_items || []).map((item) => ({
+        ...item,
+        // نستخدم الرقم المحفوظ في الطلب، وإذا كان فارغاً نجيبه من جدول المنتجات
+        product_number: item.product_number || productMap[item.product_id] || null,
+      })),
+    }));
+  }, []);
+
   /* ═══ Fetch All ═══ */
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -52,14 +88,15 @@ export function OrdersProvider({ children }) {
         .order("created_at", { ascending: true });
 
       if (error) throw error;
-      setOrders(data || []);
+      const enriched = await enrichOrders(data);
+      setOrders(enriched);
     } catch (err) {
       setError(err.message || "Failed to load orders.");
       console.error("Error fetching orders:", err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [enrichOrders]);
 
   /* ═══ Fetch By Status ═══ */
   const fetchOrdersByStatus = useCallback(async (status) => {
@@ -74,13 +111,14 @@ export function OrdersProvider({ children }) {
         .order("created_at", { ascending: true });
 
       if (error) throw error;
-      setOrders(data || []);
+      const enriched = await enrichOrders(data);
+      setOrders(enriched);
     } catch (err) {
       setError(err.message || "Failed to load orders.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [enrichOrders]);
 
   /* ═══ Search ═══ */
   const searchOrders = useCallback(
@@ -102,8 +140,9 @@ export function OrdersProvider({ children }) {
           .limit(50);
 
         if (error) throw error;
-        setOrders(data || []);
-        return { success: true, data: data || [] };
+        const enriched = await enrichOrders(data);
+        setOrders(enriched);
+        return { success: true, data: enriched };
       } catch (err) {
         setError(err.message || "Search failed");
         setOrders([]);
@@ -112,7 +151,7 @@ export function OrdersProvider({ children }) {
         setLoading(false);
       }
     },
-    [fetchOrders],
+    [fetchOrders, enrichOrders],
   );
 
   /* ═══ Update Status ═══ */
@@ -136,22 +175,22 @@ export function OrdersProvider({ children }) {
 
       if (fetchError) throw fetchError;
 
+      const [enrichedOrder] = await enrichOrders([updatedOrder]);
+
       setOrders((prev) =>
-        prev.map((o) => (o.id === orderId ? updatedOrder : o)),
+        prev.map((o) => (o.id === orderId ? enrichedOrder : o)),
       );
 
-      return { success: true, data: updatedOrder };
+      return { success: true, data: enrichedOrder };
     } catch (err) {
       console.error("Error updating order:", err);
       return { success: false, error: err.message };
     }
-  }, []);
+  }, [enrichOrders]);
 
   /* ═══════════════════════════════════════════
-     Helpers لـ ShipOrderModal
+     Helpers لـ ShipOrderModal (بدون تغيير)
      ═══════════════════════════════════════════ */
-
-  /* ═══ جلب بنود طلب (للشحن) ═══ */
   const getOrderItemsForShip = useCallback(async (orderId) => {
     const { data, error } = await supabase
       .from("order_items")
@@ -165,7 +204,6 @@ export function OrdersProvider({ children }) {
     return data || [];
   }, []);
 
-  /* ═══ جلب منتجات للاستبدال ═══ */
   const getProductsForSubstitution = useCallback(async () => {
     const { data, error } = await supabase
       .from("products")
@@ -179,11 +217,8 @@ export function OrdersProvider({ children }) {
     return data || [];
   }, []);
 
-  /* ═══ حفظ نتائج الشحن (batch) — مع Rollback حقيقي ═══ */
   const saveShippedItems = useCallback(async (items, orderUpdate) => {
     const touched = [];
-
-    // ✅ FIX #13: اجلب القيم الأصلية من DB قبل أي تعديل (snapshot)
     const itemIds = items.map((i) => i.id);
 
     const { data: originalSnapshot, error: snapshotErr } = await supabase
@@ -198,17 +233,13 @@ export function OrdersProvider({ children }) {
 
     if (snapshotErr) {
       console.error("saveShippedItems snapshot failed:", snapshotErr);
-      return {
-        success: false,
-        error: `Snapshot failed: ${snapshotErr.message}`,
-      };
+      return { success: false, error: `Snapshot failed: ${snapshotErr.message}` };
     }
 
     const originalMap = new Map(
       (originalSnapshot || []).map((row) => [row.id, row])
     );
 
-    // ✅ حفظ لقطة من الطلب نفسه (للrollback)
     const { data: originalOrder } = await supabase
       .from("orders")
       .select(
@@ -228,15 +259,10 @@ export function OrdersProvider({ children }) {
             unit_price: item.unit_price,
             weight: item.weight,
             weight_unit: item.weight_unit,
-
-            // ✅ FIX #25: مدخلات الأدمن الأصلية
             actual_piece_weight: parseFloat(item.actual_piece_weight) || null,
             actual_piece_price: parseFloat(item.actual_piece_price) || null,
             actual_total_weight: parseFloat(item.actual_total_weight) || null,
-
-            // ✅ FIX #1: الوزن الكلي الفعلي
             actual_weight: parseFloat(item.actual_total_weight) || null,
-
             actual_quantity: parseFloat(item.actual_quantity) || null,
             actual_unit_price: parseFloat(item.actual_unit_price) || null,
             actual_total: item.actual_total,
@@ -250,107 +276,30 @@ export function OrdersProvider({ children }) {
           .eq("id", item.id);
 
         if (error) {
-          // ✅ FIX #13: Rollback حقيقي من الـ snapshot
           console.error(`❌ Item ${item.id} failed:`, error.message);
-          console.log(`🔄 Rolling back ${touched.length} item(s)...`);
-
           for (const prevId of touched) {
             const original = originalMap.get(prevId);
-            if (!original) {
-              console.warn(`⚠️ No snapshot for ${prevId} — skipping rollback`);
-              continue;
-            }
-
-            const { error: rollbackErr } = await supabase
-              .from("order_items")
-              .update({
-                product_id: original.product_id,
-                product_name: original.product_name,
-                unit_price: original.unit_price,
-                weight: original.weight,
-                weight_unit: original.weight_unit,
-                actual_piece_weight: original.actual_piece_weight,
-                actual_piece_price: original.actual_piece_price,
-                actual_total_weight: original.actual_total_weight,
-                actual_weight: original.actual_weight,
-                actual_quantity: original.actual_quantity,
-                actual_unit_price: original.actual_unit_price,
-                actual_total: original.actual_total,
-                price_difference: original.price_difference,
-                status: original.status,
-                substitution_note: original.substitution_note,
-                scanned_at: original.scanned_at,
-              })
-              .eq("id", prevId);
-
-            if (rollbackErr) {
-              console.error(`⚠️ Rollback failed for ${prevId}:`, rollbackErr);
-            }
+            if (!original) continue;
+            await supabase.from("order_items").update(original).eq("id", prevId);
           }
-
-          throw new Error(
-            `Rollback complete — failed on ${item.product_name}: ${error.message}`
-          );
+          throw new Error(`Rollback complete — failed on ${item.product_name}: ${error.message}`);
         }
-
         touched.push(item.id);
       }
 
-      // ✅ تحديث الطلب (بعد نجاح كل البنود)
       const { error: orderError } = await supabase
         .from("orders")
         .update(orderUpdate)
         .eq("id", orderUpdate.id);
 
       if (orderError) {
-        // ✅ FIX #13: Rollback للبنود إذا فشل تحديث الطلب
-        console.error(`❌ Order update failed:`, orderError.message);
-        console.log(`🔄 Rolling back all ${touched.length} items...`);
-
         for (const prevId of touched) {
           const original = originalMap.get(prevId);
-          if (!original) continue;
-
-          await supabase
-            .from("order_items")
-            .update({
-              product_id: original.product_id,
-              product_name: original.product_name,
-              unit_price: original.unit_price,
-              weight: original.weight,
-              weight_unit: original.weight_unit,
-              actual_piece_weight: original.actual_piece_weight,
-              actual_piece_price: original.actual_piece_price,
-              actual_total_weight: original.actual_total_weight,
-              actual_weight: original.actual_weight,
-              actual_quantity: original.actual_quantity,
-              actual_unit_price: original.actual_unit_price,
-              actual_total: original.actual_total,
-              price_difference: original.price_difference,
-              status: original.status,
-              substitution_note: original.substitution_note,
-              scanned_at: original.scanned_at,
-            })
-            .eq("id", prevId);
+          if (original) await supabase.from("order_items").update(original).eq("id", prevId);
         }
-
-        // ✅ Rollback للطلب أيضًا
         if (originalOrder) {
-          await supabase
-            .from("orders")
-            .update({
-              status: originalOrder.status,
-              subtotal: originalOrder.subtotal,
-              tax: originalOrder.tax,
-              total_price: originalOrder.total_price,
-              current_total: originalOrder.current_total,
-              shipping_cost: originalOrder.shipping_cost,
-              payment_status: originalOrder.payment_status,
-              updated_at: originalOrder.updated_at,
-            })
-            .eq("id", orderUpdate.id);
+          await supabase.from("orders").update(originalOrder).eq("id", orderUpdate.id);
         }
-
         throw new Error(`Order update failed: ${orderError.message}`);
       }
 

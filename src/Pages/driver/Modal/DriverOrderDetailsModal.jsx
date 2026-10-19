@@ -461,11 +461,11 @@ export default function DriverOrderDetailsModal({ order, onClose }) {
                                                 </div>
 
                                                 {/* ✅ FIX: رقم المنتج */}
-                                                {item.product_number && (
+                                                {item.product_number || item.product?.product_number ? (
                                                     <span className="dod-item-artnr">
-                                                        Art.-Nr. {item.product_number}
+                                                        Art.-Nr. {item.product_number || item.product?.product_number}
                                                     </span>
-                                                )}
+                                                ) : null}
 
                                                 {item.substitution_note && (
                                                     <span className="dod-item-sub">

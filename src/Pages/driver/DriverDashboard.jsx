@@ -15,9 +15,9 @@ import "./DriverDashboard.css";
 
 const TABS = [
     { key: "haccp", label: "HACCP & Hygiene", icon: "🛡️" },
-    { key: "confirmed", label: "Confirmed", icon: "✅" },
-    { key: "shipped", label: "Shipped", icon: "🚚" },
-    { key: "delivered", label: "Delivered", icon: "🎉" },
+    { key: "confirmed", label: "Bestätigt", icon: "✅" },
+    { key: "shipped", label: "Unterwegs", icon: "🚚" },
+    { key: "delivered", label: "Zugestellt", icon: "🎉" },
 ];
 
 export default function DriverDashboard() {

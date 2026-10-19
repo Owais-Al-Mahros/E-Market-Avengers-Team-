@@ -54,6 +54,7 @@ export default function ProductCard({
     addToCart(
       {
         id,
+        product_number,
         name,
         image,
         price: parseFloat(price) || 0,

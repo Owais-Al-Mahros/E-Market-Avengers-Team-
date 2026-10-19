@@ -338,7 +338,7 @@ export default function OrderDetailsModal({
                         <tr key={item.id} className={`odm-row-${badge.class}`}>
                           <td>
                             <span className="odm-product-id">
-                              #{item.product_number || "—"}
+                              #{item.product_number || item.products?.product_number || "—"}
                             </span>
                           </td>
                           <td>

@@ -130,6 +130,7 @@ export default function ProductCardDetails() {
     addToCart(
       {
         id,
+        product_number,
         name,
         image,
         weight,

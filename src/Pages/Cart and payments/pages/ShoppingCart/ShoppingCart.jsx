@@ -104,6 +104,7 @@ export default function ShoppingCart() {
     addToCart(
       {
         id: product.id,
+        product_number: product.product_number,
         name: product.name,
         image: product.image,
         price: parseFloat(product.price) || 0,
