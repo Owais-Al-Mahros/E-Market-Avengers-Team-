@@ -182,3 +182,22 @@
     font-size: var(--font-sm);
   }
 }
+
+.oms-search-mode {
+  padding: 10px 14px;
+  border: 2px solid var(--secondary-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-color);
+  font-family: inherit;
+  font-size: var(--font-sm);
+  font-weight: 700;
+  color: var(--primary-color);
+  cursor: pointer;
+  outline: none;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.oms-search-mode:focus {
+  border-color: var(--primary-color);
+}

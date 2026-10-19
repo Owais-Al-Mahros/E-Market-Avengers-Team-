@@ -6,12 +6,14 @@ import {
 } from "../../lib/faqHelpers";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
-import Subscribe from "../../components/layout/Subscribe";
 import "./FaqPage.css";
+import { useSearchParams } from "react-router-dom"; // <--- أضف هذا السطر
 
 export default function FaqPage() {
     const { items, loading, error } = useFaq();
-    const [search, setSearch] = useState("");
+    const [searchParams] = useSearchParams();
+    const initialSearch = searchParams.get("search") || "";
+    const [search, setSearch] = useState(initialSearch);
     const [openId, setOpenId] = useState(null);
 
     /* ═══════════════════════════════════════════
@@ -172,7 +174,6 @@ export default function FaqPage() {
                 </section>
             </main>
 
-            <Subscribe />
             <Footer />
         </>
     );

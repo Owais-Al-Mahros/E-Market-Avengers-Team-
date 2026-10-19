@@ -1,29 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Subscribe.css";
 
 function Subscribe() {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      // ينقل المستخدم لصفحة الأسئلة الشائعة مع كلمة البحث
+      navigate(`/faq?search=${encodeURIComponent(searchTerm.trim())}`);
+    } else {
+      navigate("/faq");
+    }
+  };
 
   return (
     <section className="signin-banner-container">
       <div className="signin-banner-content">
-        <div className="signin-banner-text">
-          <span className="signin-badge">🎁 Exclusive Offers Await</span>
-          <h2>Join Shopora Today & Unlock Special Perks!</h2>
-          <p>
-            Create an account or sign in to get access to personalized discounts, 
-            fast checkout, and instant order tracking.
-          </p>
-        </div>
+        {/* طبقة التدرج الأخضر فوق الصورة لضمان وضوح النص */}
+        <div className="signin-banner-overlay"></div>
 
-        <div className="signin-banner-actions">
-          <button 
-            className="btn-banner-login" 
-            onClick={() => navigate("/login")}
-          >
-            Sign In / Register &rarr;
-          </button>
+        {/* المحتوى الذي يظهر فوق الصورة */}
+        <div className="signin-banner-text">
+          <h2>Wir sind für dich da!</h2>
+          <p>
+            Hier findest du schnell Antworten, hilfreiche Informationen und
+            kannst uns direkt kontaktieren.
+          </p>
+
+          <form className="signin-banner-search" onSubmit={handleSearch}>
+            <span className="material-symbols-outlined search-icon">search</span>
+            <input
+              type="text"
+              placeholder="Thema oder Frage eingeben..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button type="submit" className="search-btn">
+              <span className="material-symbols-outlined">search</span>
+            </button>
+          </form>
         </div>
       </div>
     </section>

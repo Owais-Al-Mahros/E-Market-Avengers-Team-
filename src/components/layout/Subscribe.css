@@ -1,87 +1,156 @@
 .signin-banner-container {
   margin: 60px auto 40px;
-  padding: 0 8%;
+  padding: 0 5%;
+  max-width: 1400px;
 }
 
 .signin-banner-content {
-  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+  position: relative;
+  background-image: url('/subscribe-bg.jpg');
+  background-size: cover;
+  background-position: center right;
   border-radius: 24px;
-  padding: 45px 50px;
+  min-height: 350px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  color: #ffffff;
-  box-shadow: 0 10px 25px rgba(22, 101, 52, 0.2);
-  gap: 30px;
-  flex-wrap: wrap;
+  padding: 50px 60px;
+  box-shadow: 0 10px 30px rgba(22, 101, 52, 0.15);
+  overflow: hidden;
+}
+
+/* طبقة التدرج الأخضر الشفاف (لضمان وضوح النص) */
+.signin-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+      rgba(15, 74, 59, 0.95) 0%,
+      rgba(15, 74, 59, 0.8) 45%,
+      rgba(15, 74, 59, 0.1) 100%);
+  z-index: 1;
 }
 
 .signin-banner-text {
-  max-width: 580px;
-}
-
-.signin-badge {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(5px);
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  display: inline-block;
-  margin-bottom: 15px;
+  position: relative;
+  z-index: 2;
+  max-width: 550px;
+  color: #ffffff;
 }
 
 .signin-banner-text h2 {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 800;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   line-height: 1.2;
+  color: #ffffff;
 }
 
 .signin-banner-text p {
   color: #dcfce7;
-  font-size: 1rem;
+  font-size: 1.125rem;
   line-height: 1.5;
-  margin: 0;
+  margin-bottom: 30px;
 }
 
-.signin-banner-actions {
+/* تنسيق شريط البحث */
+.signin-banner-search {
   display: flex;
   align-items: center;
-}
-
-.btn-banner-login {
-  background-color: #84cc16;
-  color: #1a2e05;
-  border: none;
-  padding: 14px 32px;
+  background: #ffffff;
   border-radius: 30px;
+  padding: 6px 6px 6px 18px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  max-width: 480px;
+}
+
+.signin-banner-search .search-icon {
+  color: #a0b0ac;
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.signin-banner-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: inherit;
   font-size: 1rem;
-  font-weight: 700;
+  color: #15312b;
+  background: transparent;
+  padding: 8px 0;
+}
+
+.signin-banner-search input::placeholder {
+  color: #a0b0ac;
+}
+
+.signin-banner-search .search-btn {
+  background-color: #145c4a;
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: all 0.25s ease;
-  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.btn-banner-login:hover {
-  background-color: #a3e635;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+.signin-banner-search .search-btn .material-symbols-outlined {
+  font-size: 22px;
 }
 
-/* التجاوب مع الشاشات الصغيرة */
+.signin-banner-search .search-btn:hover {
+  background-color: #15803d;
+  transform: scale(1.05);
+}
+
+/* التجاوب مع الجوال */
 @media (max-width: 768px) {
+  .signin-banner-container {
+    margin: 40px auto;
+    padding: 0 16px;
+  }
+
   .signin-banner-content {
-    flex-direction: column;
+    padding: 40px 24px;
+    min-height: auto;
+    background-position: center;
+  }
+
+  .signin-banner-overlay {
+    background: linear-gradient(180deg,
+        rgba(15, 74, 59, 0.9) 0%,
+        rgba(15, 74, 59, 0.85) 100%);
+  }
+
+  .signin-banner-text {
     text-align: center;
-    padding: 30px 20px;
+    margin: 0 auto;
   }
 
   .signin-banner-text h2 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
   }
 
-  .btn-banner-login {
-    width: 100%;
+  .signin-banner-text p {
+    font-size: 1rem;
+    margin-bottom: 24px;
+  }
+
+  .signin-banner-search {
+    flex-direction: row;
+    padding: 4px 4px 4px 14px;
+  }
+
+  .signin-banner-search input {
+    font-size: 0.95rem;
+  }
+
+  .signin-banner-search .search-btn {
+    width: 42px;
+    height: 42px;
   }
 }

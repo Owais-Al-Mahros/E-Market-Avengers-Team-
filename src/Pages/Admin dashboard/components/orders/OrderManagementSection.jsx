@@ -7,15 +7,16 @@ import "./OrderManagementSection.css";
 export default function OrderManagementSection() {
   const [activeTab, setActiveTab] = useState("pending");
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchMode, setSearchMode] = useState("order"); // "order" أو "product"
   const [hasSearched, setHasSearched] = useState(false);
 
   const inputRef = useRef(null);
 
-  // ✅ كل شيء من السياق — لا state محلي
   const {
     orders,
     loading,
     searchOrders,
+    searchOrdersByProduct, // الدالة الجديدة
     updateOrderStatus,
     fetchOrders,
   } = useOrders();
@@ -29,18 +30,22 @@ export default function OrderManagementSection() {
     if (!term) {
       if (hasSearched) {
         setHasSearched(false);
-        fetchOrders(); // إعادة تعيين إلى كل الطلبات
+        fetchOrders();
       }
       return;
     }
 
     const timer = setTimeout(async () => {
       setHasSearched(true);
-      await searchOrders(term);
+      if (searchMode === "order") {
+        await searchOrders(term);
+      } else {
+        await searchOrdersByProduct(term);
+      }
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, searchMode, hasSearched, fetchOrders, searchOrders, searchOrdersByProduct]);
 
   const clearSearch = () => {
     setSearchTerm("");
@@ -51,7 +56,8 @@ export default function OrderManagementSection() {
 
   const handleRefresh = async () => {
     if (hasSearched && searchTerm.trim()) {
-      await searchOrders(searchTerm.trim());
+      if (searchMode === "order") await searchOrders(searchTerm.trim());
+      else await searchOrdersByProduct(searchTerm.trim());
     }
   };
 
@@ -70,21 +76,35 @@ export default function OrderManagementSection() {
     <div className="orders-management-container">
       {/* Search Bar */}
       <div className="oms-search-bar">
+        {/* أزرار تبديل نوع البحث */}
+        <select
+          className="oms-search-mode"
+          value={searchMode}
+          onChange={(e) => {
+            setSearchMode(e.target.value);
+            setSearchTerm("");
+            setHasSearched(false);
+          }}
+        >
+          <option value="order">🔍 Bestellnummer</option>
+          <option value="product">📦 Produktname</option>
+        </select>
+
         <div className="oms-search-input-wrap">
           <span className="material-symbols-outlined">search</span>
           <input
             ref={inputRef}
             type="text"
-            placeholder="Bestellnummer suchen... (z.B. ORD-20260918-1234)"
+            placeholder={
+              searchMode === "order"
+                ? "Bestellnummer suchen... (z.B. ORD-20260918-1234)"
+                : "Produktname suchen... (z.B. Milch)"
+            }
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           {searchTerm && (
-            <button
-              className="oms-search-clear"
-              onClick={clearSearch}
-              type="button"
-            >
+            <button className="oms-search-clear" onClick={clearSearch} type="button">
               ✕
             </button>
           )}
@@ -93,6 +113,7 @@ export default function OrderManagementSection() {
         {hasSearched && !loading && (
           <span className="oms-search-count">
             {orders.length} Ergebnis{orders.length !== 1 ? "se" : ""}
+            {searchMode === "product" && " (Letzte 30 Tage)"}
           </span>
         )}
       </div>
@@ -106,10 +127,7 @@ export default function OrderManagementSection() {
               className={`tab-btn ${activeTab === tab.key ? "active" : ""}`}
               onClick={() => setActiveTab(tab.key)}
             >
-              <span
-                className="tab-dot"
-                style={{ background: tab.color }}
-              ></span>
+              <span className="tab-dot" style={{ background: tab.color }}></span>
               {tab.label}
             </button>
           ))}
@@ -131,7 +149,11 @@ export default function OrderManagementSection() {
           ) : (
             <div className="empty-state">
               <span className="material-symbols-outlined">search_off</span>
-              <p>Keine Bestellung gefunden für "{searchTerm}"</p>
+              <p>
+                {searchMode === "order"
+                  ? `Keine Bestellung gefunden für "${searchTerm}"`
+                  : `Keine Bestellung mit dem Produkt "${searchTerm}" in den letzten 30 Tagen gefunden.`}
+              </p>
             </div>
           )
         ) : (
