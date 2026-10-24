@@ -4,17 +4,17 @@ import toast from "react-hot-toast";
 import { supabase } from "../../lib/supabase";
 import { fetchMyOrders, updateOrderStatusByDriver } from "../../api/drivers";
 import { updateBestSellers } from "../../lib/bestSellers";
-import { canDeliverOrder, canStartRound } from "../../api/haccp";
+import { getTodayShiftCheck } from "../../api/haccp";
 import ShipOrderModal from "../../components/order/ShipOrderModal";
 import DriverOrderDetailsModal from "./Modal/DriverOrderDetailsModal";
-import ProductReceiptCheck from "./Haccp/ProductReceiptCheck";
-import HaccpPanel from "./Haccp/HaccpPanel";
-import RoundGateBanner from "./Haccp/RoundGateBanner";
-import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import DeliveryCoolingModal from "./Modal/DeliveryCoolingModal";
+import ShiftStartModal from "./Modal/ShiftStartModal";
+import ShiftSummaryModal from "./components/ShiftSummaryModal";
+import ShiftCleaningModal from "./components/ShiftCleaningModal";
+import DriverHistoryModal from "./components/DriverHistoryModal";
 import "./DriverDashboard.css";
 
 const TABS = [
-    { key: "haccp", label: "HACCP & Hygiene", icon: "🛡️" },
     { key: "confirmed", label: "Bestätigt", icon: "✅" },
     { key: "shipped", label: "Unterwegs", icon: "🚚" },
     { key: "delivered", label: "Zugestellt", icon: "🎉" },
@@ -31,60 +31,65 @@ export default function DriverDashboard() {
     const [processingId, setProcessingId] = useState(null);
     const [shipModalOrder, setShipModalOrder] = useState(null);
     const [detailsOrder, setDetailsOrder] = useState(null);
-    const [receiptCheckOrder, setReceiptCheckOrder] = useState(null);
-    const [pendingDeliveryOrder, setPendingDeliveryOrder] = useState(null);
+    const [coolingDeliveryOrder, setCoolingDeliveryOrder] = useState(null);
 
-    // ✅ حالة الجولة — null = لم يُتحقق، false = محظور، true = مسموح
-    const [roundAllowed, setRoundAllowed] = useState(null);
+    // حالات الفحص والسجلات
+    const [hasShiftCheck, setHasShiftCheck] = useState(null);
+    const [shiftCheckData, setShiftCheckData] = useState(null);
+
+    // المودالات
+    const [showSummary, setShowSummary] = useState(false);
+    const [showCleaning, setShowCleaning] = useState(false);
+    const [showHistory, setShowHistory] = useState(false); // ✅ مودال السجل الجديد
 
     /* ═══ Load ═══ */
     const load = async () => {
         setLoading(true);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                navigate("/login");
+                return;
+            }
 
-        const {
-            data: { user },
-        } = await supabase.auth.getUser();
+            const { data: profile } = await supabase
+                .from("profiles")
+                .select("id, name, email, role")
+                .eq("id", user.id)
+                .single();
 
-        if (!user) {
-            navigate("/login");
-            return;
+            if (profile?.role !== "driver") {
+                toast.error("Zugriff verweigert.");
+                navigate("/");
+                return;
+            }
+
+            setDriver(profile);
+
+            // ✅ التحقق من الفحص اليومي
+            const checkRes = await getTodayShiftCheck();
+            if (checkRes.success && checkRes.data) {
+                setHasShiftCheck(true);
+                setShiftCheckData(checkRes.data);
+            } else {
+                setHasShiftCheck(false);
+            }
+
+            const res = await fetchMyOrders();
+            if (res && res.success) setOrders(res.data);
+            else if (res) toast.error(res.error);
+
+        } catch (err) {
+            console.error("Load error:", err);
+            toast.error("Verbindungsfehler beim Laden.");
+        } finally {
+            setLoading(false);
         }
-
-        const { data: profile } = await supabase
-            .from("profiles")
-            .select("id, name, email, role")
-            .eq("id", user.id)
-            .single();
-
-        if (profile?.role !== "driver") {
-            toast.error("Zugriff verweigert.");
-            navigate("/");
-            return;
-        }
-
-        setDriver(profile);
-
-        const res = await fetchMyOrders();
-        if (res.success) setOrders(res.data);
-        else toast.error(res.error);
-
-        setLoading(false);
     };
 
     useEffect(() => {
         load();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    /* ═══ تحديث حالة الجولة ═══ */
-    const refreshRoundStatus = useCallback(async () => {
-        const res = await canStartRound();
-        if (res.success) {
-            setRoundAllowed(res.data.allowed === true);
-        } else {
-            // عند الفشل — احترازًا: اعتبر الجولة محظورة
-            setRoundAllowed(false);
-        }
     }, []);
 
     /* ═══ Logout ═══ */
@@ -100,78 +105,40 @@ export default function DriverDashboard() {
         await load();
     };
 
-    /* ═══ Deliver ═══ */
-    const handleDeliver = async (orderId) => {
-        setProcessingId(orderId);
-        const toastId = toast.loading("Prüfe HACCP-Status...");
-
-        const gate = await canDeliverOrder(orderId);
-
-        if (!gate.success) {
-            toast.error(gate.error || "Prüfung fehlgeschlagen", { id: toastId });
-            setProcessingId(null);
+    /* ═══ Deliver Flow ═══ */
+    const handleDeliver = async (orderId, hasCooling) => {
+        if (hasCooling) {
+            const order = orders.find(o => o.id === orderId);
+            setCoolingDeliveryOrder(order);
             return;
         }
-
-        if (!gate.data.allowed) {
-            toast.dismiss(toastId);
-            setPendingDeliveryOrder({
-                orderId,
-                reasons: gate.data.reasons,
-                violations: gate.data.violations,
-            });
-            setProcessingId(null);
-            return;
-        }
-
-        toast.loading("Wird aktualisiert...", { id: toastId });
-        const res = await updateOrderStatusByDriver(orderId, "delivered");
-
-        if (res.success) {
-            try {
-                await updateBestSellers(orderId);
-            } catch (err) {
-                console.warn("Best sellers update failed:", err);
-            }
-            toast.success("Als zugestellt markiert", { id: toastId });
-            await load();
-        } else {
-            toast.error(res.error, { id: toastId });
-        }
-
-        setProcessingId(null);
+        await processDelivery(orderId, null);
     };
 
-    /* ═══ فتح Modals — تحقق من الفحص ═══ */
-    const handleOpenShipModal = useCallback(
-        (order) => {
-            if (!roundAllowed) {
-                toast.error(
-                    "Bitte führen Sie zuerst den HACCP-Fahrzeugcheck durch.",
-                    { icon: "🚫", duration: 4000 }
-                );
-                setActiveTab("haccp");
-                return;
-            }
-            setShipModalOrder(order);
-        },
-        [roundAllowed]
-    );
+    const processDelivery = async (orderId, measuredTemp) => {
+        setProcessingId(orderId);
+        const toastId = toast.loading("Wird zugestellt...");
 
-    const handleOpenReceiptCheck = useCallback(
-        (order) => {
-            if (!roundAllowed) {
-                toast.error(
-                    "Bitte führen Sie zuerst den HACCP-Fahrzeugcheck durch.",
-                    { icon: "🚫", duration: 4000 }
-                );
-                setActiveTab("haccp");
-                return;
+        try {
+            const res = await updateOrderStatusByDriver(orderId, "delivered");
+            if (res.success) {
+                await updateBestSellers(orderId);
+                toast.success("Als zugestellt markiert", { id: toastId });
+                setCoolingDeliveryOrder(null);
+                await load();
+            } else {
+                toast.error(res.error, { id: toastId });
             }
-            setReceiptCheckOrder(order);
-        },
-        [roundAllowed]
-    );
+        } catch (err) {
+            toast.error("Fehler beim Zustellen", { id: toastId });
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    const handleOpenShipModal = useCallback((order) => {
+        setShipModalOrder(order);
+    }, []);
 
     /* ═══ Derived ═══ */
     const filtered = useMemo(
@@ -188,6 +155,22 @@ export default function DriverDashboard() {
     }, [orders]);
 
     /* ═══ Render ═══ */
+
+    // إذا كان الفحص اليومي غير مكتمل، اعرض المودال الإجباري فقط
+    if (hasShiftCheck === false) {
+        return (
+            <div className="dd-page">
+                <ShiftStartModal
+                    driverName={driver?.name || "Fahrer"}
+                    onComplete={() => {
+                        setHasShiftCheck(true);
+                        load();
+                    }}
+                />
+            </div>
+        );
+    }
+
     return (
         <div className="dd-page">
             {/* Header */}
@@ -201,14 +184,22 @@ export default function DriverDashboard() {
                         <p>{driver?.email}</p>
                     </div>
                 </div>
-                <button className="dd-logout" onClick={handleLogout}>
-                    <span className="material-symbols-outlined">logout</span>
-                    <span>Abmelden</span>
-                </button>
-            </header>
 
-            {/* Banner */}
-            <RoundGateBanner onStatusChange={(s) => setRoundAllowed(s.allowed === true)} />
+                {/* أزرار الهيدر */}
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <button className="dd-logout" onClick={() => setShowHistory(true)} title="Verlauf">
+                        <span className="material-symbols-outlined">history</span>
+                        <span className="hide-mobile">Verlauf</span>
+                    </button>
+                    <button className="dd-logout" onClick={() => setShowSummary(true)} title="Protokoll">
+                        <span className="material-symbols-outlined">fact_check</span>
+                        <span className="hide-mobile">Protokoll</span>
+                    </button>
+                    <button className="dd-logout" onClick={handleLogout} title="Abmelden">
+                        <span className="material-symbols-outlined">logout</span>
+                    </button>
+                </div>
+            </header>
 
             {/* Tabs */}
             <nav className="dd-tabs">
@@ -219,21 +210,14 @@ export default function DriverDashboard() {
                         onClick={() => setActiveTab(t.key)}
                     >
                         {t.label}
-                        {t.key !== "haccp" && (
-                            <span className="dd-tab-count">{counts[t.key]}</span>
-                        )}
+                        <span className="dd-tab-count">{counts[t.key]}</span>
                     </button>
                 ))}
             </nav>
 
             {/* Content */}
             <main className="dd-content">
-                {activeTab === "haccp" ? (
-                    <HaccpPanel
-                        driverId={driver?.id}
-                        onCheckCompleted={refreshRoundStatus}
-                    />
-                ) : loading ? (
+                {loading ? (
                     <div className="dd-state">Lade Bestellungen...</div>
                 ) : filtered.length === 0 ? (
                     <div className="dd-state">
@@ -247,10 +231,8 @@ export default function DriverDashboard() {
                                 key={order.id}
                                 order={order}
                                 processing={processingId === order.id}
-                                canAct={roundAllowed === true}
-                                onOpenReceiptCheck={() => handleOpenReceiptCheck(order)}
                                 onOpenShipModal={() => handleOpenShipModal(order)}
-                                onDeliver={() => handleDeliver(order.id)}
+                                onDeliver={(orderId, hasCooling) => handleDeliver(orderId, hasCooling)}
                                 onShowDetails={() => setDetailsOrder(order)}
                             />
                         ))}
@@ -259,17 +241,6 @@ export default function DriverDashboard() {
             </main>
 
             {/* Modals */}
-            {receiptCheckOrder && (
-                <ProductReceiptCheck
-                    order={receiptCheckOrder}
-                    onClose={() => setReceiptCheckOrder(null)}
-                    onSuccess={() => {
-                        setReceiptCheckOrder(null);
-                        toast.success("Produktprüfung gespeichert");
-                    }}
-                />
-            )}
-
             {shipModalOrder && (
                 <ShipOrderModal
                     order={shipModalOrder}
@@ -286,38 +257,42 @@ export default function DriverDashboard() {
                 />
             )}
 
-            {pendingDeliveryOrder && (
-                <ConfirmDialog
-                    isOpen={true}
-                    title="Lieferung blockiert"
-                    message={
-                        <>
-                            <p>
-                                <strong>HACCP-Sperre aktiv:</strong> Für diese Bestellung
-                                bestehen offene Verstöße. Die Lieferung kann erst nach Behebung
-                                freigegeben werden.
-                            </p>
-                            <p style={{ marginTop: 10 }}>
-                                <strong>Offene Verstöße:</strong>
-                            </p>
-                            <ul style={{ margin: "6px 0", paddingLeft: 20 }}>
-                                {pendingDeliveryOrder.reasons.map((r, i) => (
-                                    <li key={i}>{r}</li>
-                                ))}
-                            </ul>
-                            <p style={{ marginTop: 10, fontSize: 13, color: "#6b7a77" }}>
-                                Bitte wenden Sie sich an den Administrator, um die Verstöße zu
-                                klären.
-                            </p>
-                        </>
-                    }
-                    variant="danger"
-                    icon="block"
-                    confirmLabel="Verstanden"
-                    cancelLabel={null}
-                    isLoading={false}
-                    onConfirm={() => setPendingDeliveryOrder(null)}
-                    onCancel={() => setPendingDeliveryOrder(null)}
+            {coolingDeliveryOrder && (
+                <DeliveryCoolingModal
+                    order={coolingDeliveryOrder}
+                    onClose={() => setCoolingDeliveryOrder(null)}
+                    onConfirm={(temp) => processDelivery(coolingDeliveryOrder.id, temp)}
+                    onSkip={() => processDelivery(coolingDeliveryOrder.id, null)}
+                />
+            )}
+
+            {/* ✅ مودال سجل الوردية الحالي */}
+            {showSummary && shiftCheckData && (
+                <ShiftSummaryModal
+                    checkData={shiftCheckData}
+                    onClose={() => setShowSummary(false)}
+                    onEndShift={() => {
+                        setShowSummary(false);
+                        setShowCleaning(true);
+                    }}
+                />
+            )}
+
+            {/* ✅ مودال تنظيف نهاية الوردية */}
+            {showCleaning && (
+                <ShiftCleaningModal
+                    onClose={() => setShowCleaning(false)}
+                    onSuccess={() => {
+                        setShowCleaning(false);
+                        toast.success("Schicht beendet.");
+                    }}
+                />
+            )}
+
+            {/* ✅ مودال السجل التاريخي للسائق */}
+            {showHistory && (
+                <DriverHistoryModal
+                    onClose={() => setShowHistory(false)}
                 />
             )}
         </div>
@@ -330,8 +305,6 @@ export default function DriverDashboard() {
 function DriverOrderCard({
     order,
     processing,
-    canAct,
-    onOpenReceiptCheck,
     onOpenShipModal,
     onDeliver,
     onShowDetails,
@@ -341,7 +314,6 @@ function DriverOrderCard({
 
     return (
         <article className="dd-card">
-            {/* Head */}
             <header className="dd-card-head">
                 <div>
                     <span className="dd-card-num">#{order.order_number}</span>
@@ -373,7 +345,6 @@ function DriverOrderCard({
                 </div>
             </header>
 
-            {/* Customer */}
             <div className="dd-card-section">
                 <h4>
                     <span className="material-symbols-outlined">person</span>
@@ -391,7 +362,6 @@ function DriverOrderCard({
                 )}
             </div>
 
-            {/* Address */}
             <div className="dd-card-section">
                 <h4>
                     <span className="material-symbols-outlined">location_on</span>
@@ -412,7 +382,6 @@ function DriverOrderCard({
                 {addr.notes && <p className="dd-card-note">📝 {addr.notes}</p>}
             </div>
 
-            {/* Items count */}
             <div className="dd-card-section">
                 <h4>
                     <span className="material-symbols-outlined">inventory_2</span>
@@ -423,34 +392,24 @@ function DriverOrderCard({
                 </p>
             </div>
 
-            {/* Actions */}
             <footer className="dd-card-actions">
-                {/* ✅ Confirmed + فحص صالح → أزرار */}
-                {order.status === "confirmed" && canAct && (
-                    <>
-                        <button
-                            type="button"
-                            className="dd-btn dd-btn-ship"
-                            onClick={onOpenShipModal}
-                            disabled={processing}
-                        >
-                            <span className="material-symbols-outlined">
-                                local_shipping
-                            </span>
-                            Versand vorbereiten
-                        </button>
-                    </>
+                {order.status === "confirmed" && (
+                    <button
+                        type="button"
+                        className="dd-btn dd-btn-ship"
+                        onClick={onOpenShipModal}
+                        disabled={processing}
+                    >
+                        <span className="material-symbols-outlined">local_shipping</span>
+                        Versand vorbereiten
+                    </button>
                 )}
 
-                {/* ✅ Confirmed + فحص غير صالح → لا شيء (لا أزرار، لا رسالة) */}
-                {/* (الفراغ مقصود) */}
-
-                {/* Shipped → زر التسليم */}
                 {order.status === "shipped" && (
                     <button
                         type="button"
                         className="dd-btn dd-btn-deliver"
-                        onClick={onDeliver}
+                        onClick={() => onDeliver(order.id, order.has_cooling_items)}
                         disabled={processing}
                     >
                         <span className="material-symbols-outlined">task_alt</span>
@@ -460,9 +419,7 @@ function DriverOrderCard({
 
                 {order.status === "delivered" && (
                     <span className="dd-card-done">
-                        <span className="material-symbols-outlined">
-                            check_circle
-                        </span>
+                        <span className="material-symbols-outlined">check_circle</span>
                         Zugestellt
                     </span>
                 )}

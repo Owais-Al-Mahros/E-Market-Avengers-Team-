@@ -19,7 +19,8 @@ const ORDER_ITEMS_SELECT = `
   weight, weight_unit, total_weight,
   actual_weight, actual_quantity, actual_unit_price,
   actual_total, price_difference, status,
-  substitution_note, scanned_at
+  substitution_note, scanned_at,
+  products (product_number) 
 `;
 
 const ORDER_SELECT = `
@@ -43,6 +44,7 @@ export function OrdersProvider({ children }) {
 
   /* ✅ الدالة الذكية لجلب أرقام المنتجات من قاعدة البيانات */
   const enrichOrders = useCallback(async (ordersData) => {
+    // 1. استخراج كل الـ product_ids من الطلبات
     const productIds = [
       ...new Set(
         (ordersData || [])
@@ -52,6 +54,7 @@ export function OrdersProvider({ children }) {
       ),
     ];
 
+    // 2. جلب المنتجات من جدول products
     let productMap = {};
     if (productIds.length > 0) {
       const { data: productsData } = await supabase
@@ -67,6 +70,7 @@ export function OrdersProvider({ children }) {
       }
     }
 
+    // 3. دمج رقم المنتج مع الطلبات (إذا لم يكن موجوداً في الطلب، نأخذه من جدول المنتجات)
     return (ordersData || []).map((order) => ({
       ...order,
       order_items: (order.order_items || []).map((item) => ({
@@ -273,13 +277,87 @@ export function OrdersProvider({ children }) {
   }, []);
 
   const saveShippedItems = useCallback(async (items, orderUpdate) => {
-    // ... (هذا الجزء من الكود طويل جداً ولكنه يعمل بشكل صحيح)
-    // لقد تركته كما هو في ملفك السابق لتجنب أخطاء النسخ،
-    // يمكنك نسخه من الملف القديم أو من الرسالة السابقة.
-    // في الأسفل سأضع نسخة مختصرة لضمان عدم حدوث خطأ.
+    try {
+      // 1. تحديث كل بند في الطلب (order_items)
+      const itemUpdates = items.map((item) => {
+        // تجهيز البيانات المرسلة من مودال الشحن
+        const payload = {
+          status: item.status,
+          actual_quantity: parseFloat(item.actual_quantity) || null,
+          actual_piece_weight: parseFloat(item.actual_piece_weight) || null,
+          actual_piece_price: parseFloat(item.actual_piece_price) || null,
+          actual_total_weight: parseFloat(item.actual_total_weight) || null,
+          actual_total: item.actual_total !== null && item.actual_total !== undefined
+            ? parseFloat(item.actual_total)
+            : null,
+          price_difference: item.price_difference !== null && item.price_difference !== undefined
+            ? parseFloat(item.price_difference)
+            : null,
+          actual_unit_price: item.actual_unit_price || null,
+          scanned_at: new Date().toISOString(),
+        };
 
-    // ملاحظة: الكود الأصلي لـ saveShippedItems موجود في ملفك، 
-    // لا داعي لتغييره هنا.
+        // إذا كان المنتج مستبدلاً (Substituted)
+        if (item.status === "substituted") {
+          payload.product_id = item.product_id;
+          payload.product_name = item.product_name;
+          payload.substitution_note = item.original_product_name
+            ? `Ersetzt durch: ${item.product_name} (war: ${item.original_product_name})`
+            : `Ersetzt durch: ${item.product_name}`;
+        } else if (item.substitution_note) {
+          payload.substitution_note = item.substitution_note;
+        }
+
+        // إذا تم إزالة المنتج (Removed / Not Available)
+        if (item.status === "removed") {
+          payload.actual_total = 0;
+          payload.price_difference = -parseFloat(item.total_price || 0);
+        }
+
+        // تنفيذ التحديث في قاعدة البيانات
+        return supabase
+          .from("order_items")
+          .update(payload)
+          .eq("id", item.id);
+      });
+
+      // تنفيذ جميع التحديثات بالتوازي لتوفير الوقت
+      const itemResults = await Promise.all(itemUpdates);
+
+      // التحقق من وجود أي خطأ في تحديث البنود
+      const itemError = itemResults.find((r) => r.error);
+      if (itemError) {
+        throw new Error(itemError.error.message);
+      }
+
+      // 2. تحديث حالة الطلب الرئيسي (orders)
+      // فصلنا `substitutions` لأنها بيانات للقراءة فقط وليست عموداً في الجدول
+      const { substitutions, ...orderData } = orderUpdate;
+
+      const { error: orderError } = await supabase
+        .from("orders")
+        .update({
+          status: orderData.status,
+          total_price: parseFloat(orderData.total_price),
+          subtotal: parseFloat(orderData.subtotal),
+          shipping_cost: parseFloat(orderData.shipping_cost),
+          tax: parseFloat(orderData.tax),
+          has_cooling_items: orderData.has_cooling_items || false, // ✅ الحقل الجديد
+          updated_at: orderData.updated_at,
+        })
+        .eq("id", orderData.id);
+
+      if (orderError) {
+        throw new Error(orderError.message);
+      }
+
+      // إذا وصلنا هنا، فكل شيء تم بنجاح
+      return { success: true };
+
+    } catch (err) {
+      console.error("saveShippedItems error:", err);
+      return { success: false, error: err.message || "Fehler beim Speichern der Versanddaten." };
+    }
   }, []);
 
   /* ═══ Initial Load ═══ */

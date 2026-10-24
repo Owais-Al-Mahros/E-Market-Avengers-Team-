@@ -26,6 +26,7 @@ export default function SearchSuggestionCard({ product, onClick }) {
             {
                 id,
                 name,
+                product_number,
                 image,
                 price: parseFloat(price) || 0,
                 total_price: displayPrice,

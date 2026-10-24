@@ -89,7 +89,7 @@
     min-height: 400px;
 }
 
-/* ═══ Filters Bar (shared with AdminRecordsView) ═══ */
+/* ═══ Filters Bar ═══ */
 .haccp-filters-bar {
     display: flex;
     flex-wrap: wrap;
@@ -99,36 +99,6 @@
     border: 2px solid #ddf4ea;
     border-radius: 14px;
     align-items: center;
-}
-
-.haccp-filter-group {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-
-.haccp-filter-btn {
-    padding: 8px 14px;
-    background: #f7faf8;
-    border: 1.5px solid #ddf4ea;
-    border-radius: 20px;
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 700;
-    color: #15312b;
-    cursor: pointer;
-    transition: 0.15s;
-    white-space: nowrap;
-}
-
-.haccp-filter-btn:hover {
-    border-color: #145c4a;
-}
-
-.haccp-filter-btn.active {
-    background: #145c4a;
-    color: #fff;
-    border-color: #145c4a;
 }
 
 .haccp-select {
@@ -165,19 +135,19 @@
 .haccp-timeline {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 14px;
     margin-top: 14px;
 }
 
+/* ✅ البطاقة الرئيسية (Flex عمودي لضمان عدم تقطع النص) */
 .haccp-record {
-    display: grid;
-    grid-template-columns: 52px 1fr;
-    gap: 14px;
-    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
     background: #fff;
     border: 2px solid #ddf4ea;
     border-radius: 14px;
     transition: 0.15s;
+    overflow: hidden;
 }
 
 .haccp-record:hover {
@@ -197,8 +167,14 @@
     border-left: 5px solid #f59e0b;
 }
 
-.haccp-record.info {
-    border-left: 5px solid #3b82f6;
+/* ✅ رأس البطاقة (يحتوي الأيقونة والمعلومات) */
+.haccp-record-header-row {
+    display: flex;
+    gap: 14px;
+    padding: 14px 16px;
+    width: 100%;
+    align-items: flex-start;
+    cursor: pointer;
 }
 
 .haccp-record-icon {
@@ -218,23 +194,12 @@
     background: rgba(16, 185, 129, 0.08);
 }
 
-.haccp-record.fail .haccp-record-icon {
-    background: rgba(220, 38, 38, 0.08);
-}
-
-.haccp-record.warn .haccp-record-icon {
-    background: rgba(245, 158, 11, 0.08);
-}
-
-.haccp-record.info .haccp-record-icon {
-    background: rgba(59, 130, 246, 0.08);
-}
-
 .haccp-record-content {
     display: flex;
     flex-direction: column;
     gap: 4px;
     min-width: 0;
+    flex: 1;
 }
 
 .haccp-record-head {
@@ -287,201 +252,138 @@
     word-break: break-word;
 }
 
-.haccp-record-subtitle {
-    font-size: 12.5px;
-    color: #6b7a77;
-    line-height: 1.5;
-    word-break: break-word;
-}
-
-.haccp-record-badges {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 6px;
-}
-
-.haccp-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    white-space: nowrap;
-}
-
-.haccp-badge.ok {
-    background: rgba(16, 185, 129, 0.12);
-    color: #047857;
-}
-
-.haccp-badge.fail {
-    background: rgba(220, 38, 38, 0.12);
-    color: #991b1b;
-}
-
-.haccp-badge.warn {
-    background: rgba(245, 158, 11, 0.12);
-    color: #92400e;
-}
-
-.haccp-badge.info {
-    background: rgba(59, 130, 246, 0.12);
-    color: #1d4ed8;
-}
-
-.haccp-toggle-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 12px;
-    background: #f7faf8;
-    border: 1.5px solid #ddf4ea;
-    border-radius: 20px;
-    font-family: inherit;
-    font-size: 11.5px;
-    font-weight: 800;
+.haccp-chevron {
     color: #145c4a;
-    cursor: pointer;
-    transition: 0.15s;
+    margin-top: 4px;
 }
 
-.haccp-toggle-btn:hover {
-    background: #145c4a;
-    color: #fff;
-    border-color: #145c4a;
-}
-
-.haccp-toggle-btn .material-symbols-outlined {
-    font-size: 16px;
-}
-
-/* ═══ Details ═══ */
-.haccp-details {
-    margin-top: 14px;
-    padding-top: 14px;
+/* ✅ منطقة التفاصيل التي تظهر عند التوسيع */
+.haccp-record-details {
+    width: 100%;
+    padding: 16px;
+    background: #fafcfb;
     border-top: 1px dashed #ddf4ea;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    animation: haccpSlide 0.25s ease;
+    cursor: default;
 }
 
-@keyframes haccpSlide {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.haccp-details-title {
+    margin: 0 0 12px;
+    color: #145c4a;
+    font-size: 14px;
+    font-weight: 800;
 }
 
+/* ✅ شبكة نقاط الفحص */
 .haccp-checks-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 6px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
 }
 
-.haccp-check-row {
+.haccp-check-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    background: #fff;
-    border-radius: 8px;
-    border-left: 3px solid #10b981;
+    gap: 8px;
     font-size: 13px;
-    line-height: 1.4;
+    font-weight: 600;
+    color: #15312b;
 }
 
-.haccp-check-row.is-ok {
+.haccp-check-item.is-ok {
     color: #047857;
 }
 
-.haccp-check-row.is-fail {
-    border-left-color: #dc2626;
-    color: #991b1b;
-    background: rgba(220, 38, 38, 0.04);
+.haccp-check-item.is-fail {
+    color: #dc2626;
 }
 
-.haccp-check-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 900;
-    flex-shrink: 0;
-    background: #10b981;
-    color: #fff;
+.haccp-check-item .material-symbols-outlined {
+    font-size: 18px;
 }
 
-.haccp-check-row.is-fail .haccp-check-icon {
-    background: #dc2626;
+/* ✅ شبكة صناديق التبريد */
+.haccp-boxes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
 }
 
-.haccp-info-row {
+.haccp-box-card {
+    background: #f0f7f4;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid #ddf4ea;
+    font-size: 13px;
+}
+
+.haccp-box-header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-    padding: 8px 12px;
-    background: #fff;
-    border-radius: 8px;
-    font-size: 13px;
-    flex-wrap: wrap;
+    margin-bottom: 6px;
 }
 
-.haccp-info-label {
-    font-size: 11px;
+.haccp-box-name {
     font-weight: 800;
-    color: #6b7a77;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
+    color: #145c4a;
 }
 
-.haccp-info-value {
-    font-size: 13px;
-    font-weight: 700;
-    color: #15312b;
-    text-align: right;
-    word-break: break-word;
-}
-
-.haccp-note-block {
-    padding: 10px 14px;
-    background: rgba(59, 130, 246, 0.05);
-    border-left: 3px solid #3b82f6;
-    border-radius: 8px;
-}
-
-.haccp-block-label {
-    display: block;
-    font-size: 10.5px;
+.haccp-box-temp {
     font-weight: 800;
-    color: #1d4ed8;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    margin-bottom: 4px;
+    color: #15312b;
+    font-size: 14px;
 }
 
-.haccp-note-text {
-    margin: 0;
-    font-size: 13px;
-    color: #15312b;
+.haccp-box-status {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: #4b5563;
+    font-weight: 600;
+}
+
+/* ✅ ملاحظات */
+.haccp-notes-box {
+    background: #fffbeb;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #fcd34d;
+    margin-bottom: 16px;
+}
+
+.haccp-notes-label {
+    font-size: 12px;
+    color: #d97706;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 800;
+}
+
+.haccp-notes-text {
+    margin: 6px 0 0;
+    font-size: 13.5px;
+    color: #78350f;
     line-height: 1.5;
-    white-space: pre-wrap;
+}
+
+/* ✅ تفاصيل التنظيف */
+.haccp-cleaning-details {
+    background: #f7faf8;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid #ddf4ea;
+    font-size: 14px;
+}
+
+.haccp-cleaning-status {
+    margin: 0 0 8px;
+    color: #15312b;
+}
+
+.haccp-cleaning-notes {
+    margin: 0;
+    font-style: italic;
+    color: #6b7a77;
 }
 
 /* ═══ States ═══ */
@@ -536,9 +438,7 @@
         font-size: 12.5px;
     }
 
-    .haccp-record {
-        grid-template-columns: 44px 1fr;
-        gap: 10px;
+    .haccp-record-header-row {
         padding: 12px;
     }
 
@@ -546,6 +446,10 @@
         width: 44px;
         height: 44px;
         font-size: 20px;
+    }
+
+    .haccp-record-details {
+        padding: 12px;
     }
 
     .haccp-filters-bar {
@@ -562,93 +466,99 @@
     }
 }
 
-/* ═══ Modal (Close Violation) ═══ */
-.haccp-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(21, 49, 43, 0.65);
-    backdrop-filter: blur(6px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 99999;
-    padding: 20px;
-}
-
-.haccp-modal {
-    background: #fff;
-    border-radius: 20px;
-    width: 100%;
-    max-width: 560px;
-    max-height: 90vh;
+/* ═══ Checklist & Problems List ═══ */
+.haccp-checks-list {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
-}
-
-.haccp-modal-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
     gap: 12px;
-    padding: 20px 24px;
-    background: linear-gradient(135deg, #145c4a, #0f4a3b);
-    color: #fff;
+    margin-bottom: 16px;
 }
 
-.haccp-modal-head h3 {
-    margin: 0;
-    font-size: 17px;
-    font-weight: 800;
-    color: #fff;
-}
-
-.haccp-modal-close {
-    width: 34px;
-    height: 34px;
+.haccp-check-block {
+    border: 1px solid #e1ebe7;
     border-radius: 10px;
-    border: none;
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    cursor: pointer;
+    overflow: hidden;
+    background: #fff;
+}
+
+.haccp-check-row {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 12px;
+    padding: 12px 16px;
+}
+
+.haccp-check-row.is-ok {
+    background: #f0fdf4;
+}
+
+.haccp-check-row.is-fail {
+    background: #fef2f2;
+}
+
+.haccp-check-row .material-symbols-outlined {
+    font-size: 22px;
+}
+
+.haccp-check-row.is-ok .material-symbols-outlined {
+    color: #10b981;
+}
+
+.haccp-check-row.is-fail .material-symbols-outlined {
+    color: #dc2626;
+}
+
+.haccp-check-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: #15312b;
+}
+
+.haccp-check-badge {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+
+.haccp-check-badge.bg-ok {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.haccp-check-badge.bg-fail {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* ✅ صندوق المشكلة تحت النقطة */
+.haccp-check-problem {
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px;
+    background: #fffbeb;
+    border-top: 1px dashed #fcd34d;
+}
+
+.haccp-check-problem .material-symbols-outlined {
+    color: #d97706;
+    font-size: 20px;
     flex-shrink: 0;
 }
 
-.haccp-modal-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    background: #f7faf8;
+.haccp-check-problem strong {
+    display: block;
+    font-size: 11.5px;
+    color: #b45309;
+    text-transform: uppercase;
+    margin-bottom: 4px;
 }
 
-.haccp-modal-footer {
-    display: flex;
-    gap: 12px;
-    padding: 16px 24px;
-    border-top: 2px solid #ddf4ea;
-    background: #fff;
-}
-
-@media (max-width: 640px) {
-    .haccp-modal-overlay {
-        padding: 0;
-    }
-
-    .haccp-modal {
-        max-width: 100%;
-        height: 100vh;
-        max-height: 100vh;
-        border-radius: 0;
-    }
-
-    .haccp-modal-footer {
-        flex-direction: column-reverse;
-    }
+.haccp-check-problem p {
+    margin: 0;
+    font-size: 13.5px;
+    color: #78350f;
+    line-height: 1.5;
 }

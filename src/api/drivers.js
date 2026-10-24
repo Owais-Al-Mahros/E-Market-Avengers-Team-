@@ -35,7 +35,7 @@ export async function fetchMyOrders() {
         .from("orders")
         .select(`
       *,
-      order_items (id, product_name, quantity, weight, weight_unit, total_price)
+      order_items (id, product_name,product_number, quantity, weight, weight_unit, total_price)
     `)
         .eq("driver_id", user.id)
         .in("status", ["confirmed", "shipped", "delivered"])

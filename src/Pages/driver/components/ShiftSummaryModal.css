@@ -1,0 +1,181 @@
+/* ==========================================
+   📋 SHIFT MODALS (Summary, Cleaning, History)
+   ========================================== */
+
+.shift-sum-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(21, 49, 43, 0.85);
+    backdrop-filter: blur(5px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.shift-sum-modal {
+    background: #f7faf8;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 600px;
+    height: 80vh;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+}
+
+.shift-sum-header {
+    background: linear-gradient(135deg, #145c4a, #0f4a3b);
+    color: #fff;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.shift-sum-header h2 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.shift-sum-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #b9e769;
+    font-weight: 500;
+}
+
+.shift-sum-close {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.shift-sum-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.shift-sum-body {
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+    background: #f7faf8;
+}
+
+.shift-sum-info {
+    display: flex;
+    justify-content: space-between;
+    background: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #ddf4ea;
+    font-size: 14px;
+}
+
+.shift-sum-info span {
+    color: #6b7a77;
+    font-weight: 600;
+}
+
+.shift-sum-info strong {
+    color: #15312b;
+    font-weight: 800;
+}
+
+.shift-sum-section {
+    background: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #ddf4ea;
+}
+
+.shift-sum-section h3 {
+    margin: 0;
+    font-size: 15px;
+    color: #145c4a;
+}
+
+.shift-sum-box {
+    background: #f7faf8;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e1ebe7;
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.shift-sum-note {
+    background: #fffbeb;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #fcd34d;
+    font-size: 13px;
+    color: #78350f;
+}
+
+.shift-sum-footer {
+    padding: 16px 24px;
+    background: #fff;
+    border-top: 1px solid #ddf4ea;
+    flex-shrink: 0;
+}
+
+.shift-sum-btn-end {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    background: #dc2626;
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.shift-sum-btn-end:hover {
+    background: #b91c1c;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+    .shift-sum-overlay {
+        padding: 0;
+    }
+
+    .shift-sum-modal {
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .shift-sum-body {
+        padding: 16px;
+    }
+}

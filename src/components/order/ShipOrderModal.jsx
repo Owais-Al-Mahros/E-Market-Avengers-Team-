@@ -42,6 +42,7 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
   const [substitutingItem, setSubstitutingItem] = useState(null);
   const [allProducts, setAllProducts] = useState([]);
   const [substitutionsLog, setSubstitutionsLog] = useState([]);
+  const [hasCooling, setHasCooling] = useState(order.has_cooling_items || false);
 
   const hasStripe = !!order.payment_intent_id;
   const allowSubstitution = order.allow_substitution === true;
@@ -319,6 +320,7 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
         status: "shipped",
         updated_at: new Date().toISOString(),
         substitutions: substitutionsLog,
+        has_cooling_items: hasCooling,
       });
 
       if (!saveResult.success)
@@ -771,6 +773,27 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
               <span>Endbetrag (zu belasten)</span>
               <span>€{finalTotal.toFixed(2)}</span>
             </div>
+          </div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '12px',
+            background: '#f0f7f4',
+            borderRadius: '8px',
+            marginBottom: '15px',
+            border: '1px solid #ddf4ea'
+          }}>
+            <input
+              type="checkbox"
+              id="hasCooling"
+              checked={hasCooling}
+              onChange={(e) => setHasCooling(e.target.checked)}
+              style={{ width: '20px', height: '20px', accentColor: '#145c4a', cursor: 'pointer' }}
+            />
+            <label htmlFor="hasCooling" style={{ fontSize: '14px', fontWeight: 'bold', color: '#145c4a', cursor: 'pointer' }}>
+              🧊 Dieser Auftrag enthält Kühl-/Tiefkühlware
+            </label>
           </div>
 
           <div className="ship-footer-actions">

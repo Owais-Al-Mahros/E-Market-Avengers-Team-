@@ -30,7 +30,7 @@ const PUBLIC_COLUMNS = `
     storage_notes,
     nutrition_basis,
     product_type,
-    total_sold,
+    total_sold
 `;
 
 // ============================================================

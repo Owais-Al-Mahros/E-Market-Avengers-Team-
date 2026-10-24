@@ -18,7 +18,7 @@
   overflow: hidden;
 }
 
-/* طبقة التدرج الأخضر الشفاف (لضمان وضوح النص) */
+/* طبقة التدرج الأخضر الشفاف */
 .signin-banner-overlay {
   position: absolute;
   inset: 0;
@@ -60,6 +60,10 @@
   padding: 6px 6px 6px 18px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   max-width: 480px;
+  width: 100%;
+  /* يضمن التمدد بشكل صحيح */
+  box-sizing: border-box;
+  /* ✅ إصلاح حساب الأبعاد */
 }
 
 .signin-banner-search .search-icon {
@@ -70,6 +74,8 @@
 
 .signin-banner-search input {
   flex: 1;
+  min-width: 0;
+  /* ✅ إصلاح خروج الزر (يمنع الـ input من دفع الزر للخارج) */
   border: none;
   outline: none;
   font-family: inherit;
@@ -87,7 +93,8 @@
   background-color: #145c4a;
   color: #ffffff;
   border: none;
-  border-radius: 24px;
+  border-radius: 50%;
+  /* شكل دائري مثالي */
   width: 48px;
   height: 48px;
   display: flex;
@@ -96,6 +103,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  /* يمنع الزر من الانكماش */
 }
 
 .signin-banner-search .search-btn .material-symbols-outlined {
@@ -107,42 +115,46 @@
   transform: scale(1.05);
 }
 
-/* التجاوب مع الجوال */
+/* التجاوب مع الجوال (الشاشات المتوسطة والصغيرة) */
 @media (max-width: 768px) {
   .signin-banner-container {
-    margin: 40px auto;
+    margin: 32px auto;
     padding: 0 16px;
   }
 
   .signin-banner-content {
-    padding: 40px 24px;
+    padding: 36px 20px;
     min-height: auto;
+    border-radius: 20px;
     background-position: center;
   }
 
   .signin-banner-overlay {
     background: linear-gradient(180deg,
-        rgba(15, 74, 59, 0.9) 0%,
-        rgba(15, 74, 59, 0.85) 100%);
+        rgba(15, 74, 59, 0.92) 0%,
+        rgba(15, 74, 59, 0.88) 100%);
   }
 
   .signin-banner-text {
     text-align: center;
     margin: 0 auto;
+    width: 100%;
   }
 
   .signin-banner-text h2 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
+    margin-bottom: 12px;
   }
 
   .signin-banner-text p {
-    font-size: 1rem;
+    font-size: 0.95rem;
     margin-bottom: 24px;
+    line-height: 1.5;
   }
 
   .signin-banner-search {
-    flex-direction: row;
-    padding: 4px 4px 4px 14px;
+    padding: 5px 5px 5px 16px;
+    border-radius: 25px;
   }
 
   .signin-banner-search input {
@@ -150,7 +162,41 @@
   }
 
   .signin-banner-search .search-btn {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .signin-banner-search .search-btn .material-symbols-outlined {
+    font-size: 20px;
+  }
+}
+
+/* التجاوب مع الجوالات الصغيرة جداً */
+@media (max-width: 480px) {
+  .signin-banner-container {
+    margin: 24px auto;
+    padding: 0 12px;
+  }
+
+  .signin-banner-content {
+    padding: 28px 16px;
+    border-radius: 16px;
+  }
+
+  .signin-banner-text h2 {
+    font-size: 1.35rem;
+  }
+
+  .signin-banner-text p {
+    font-size: 0.875rem;
+    margin-bottom: 20px;
+  }
+
+  .signin-banner-search {
+    padding: 4px 4px 4px 14px;
+  }
+
+  .signin-banner-search input {
+    font-size: 0.875rem;
   }
 }

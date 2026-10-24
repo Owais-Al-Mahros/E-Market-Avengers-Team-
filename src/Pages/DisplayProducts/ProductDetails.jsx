@@ -130,8 +130,8 @@ export default function ProductCardDetails() {
     addToCart(
       {
         id,
-        product_number,
         name,
+        product_number,
         image,
         weight,
         weight_unit,
@@ -323,9 +323,6 @@ export default function ProductCardDetails() {
 
       <StaticSubscribe />
 
-      {/* ============================================
-          Related products
-      ============================================ */}
       {relatedProducts.length > 0 && (
         <div className="related-products-section">
           <h2 className="related-products-title">
