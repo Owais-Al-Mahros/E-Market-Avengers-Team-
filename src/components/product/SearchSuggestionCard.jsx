@@ -5,7 +5,8 @@ import { calculatePriceByKg } from "../../api";
 import { formatEuro, formatWeight } from "../../lib/format";
 
 export default function SearchSuggestionCard({ product, onClick }) {
-    const { id, name, image, price, total_price, weight, weight_unit } = product;
+    // ✅ أضفنا product_number هنا
+    const { id, product_number, name, image, price, total_price, weight, weight_unit } = product;
     const { addToCart } = useCart();
 
     const displayPrice = parseFloat(total_price || price) || 0;
@@ -22,20 +23,25 @@ export default function SearchSuggestionCard({ product, onClick }) {
 
     const handleAddToCart = (e) => {
         e.stopPropagation();
-        addToCart(
-            {
-                id,
-                name,
-                product_number,
-                image,
-                price: parseFloat(price) || 0,
-                total_price: displayPrice,
-                weight,
-                weight_unit,
-            },
-            1
-        );
-        toast.success(`${name} zum Warenkorb hinzugefügt`, { duration: 1500 });
+        try {
+            addToCart(
+                {
+                    id,
+                    product_number, // ✅ تمرير رقم المنتج
+                    name,
+                    image,
+                    price: parseFloat(price) || 0,
+                    total_price: displayPrice,
+                    weight,
+                    weight_unit,
+                },
+                1
+            );
+            toast.success(`${name} zum Warenkorb hinzugefügt`, { duration: 1500 });
+        } catch (err) {
+            console.error("Add to cart error:", err);
+            toast.error("Fehler beim Hinzufügen");
+        }
     };
 
     return (

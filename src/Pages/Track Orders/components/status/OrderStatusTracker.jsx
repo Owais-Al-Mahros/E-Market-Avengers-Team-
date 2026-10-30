@@ -1,4 +1,6 @@
 import "./OrderStatusTracker.css";
+import html2pdf from "html2pdf.js";
+import toast from "react-hot-toast";
 
 const STEPS = [
     { label: "Bestellung", icon: "checklist" },
@@ -114,7 +116,33 @@ export default function OrderStatusTracker({ status, orderNumber }) {
 
     const currentStatus = STATUS_CONTENT[status] || STATUS_CONTENT.pending;
     const statusLabel = STATUS_LABELS[status] || status;
+    const handleDownloadInvoice = () => {
+        const element = document.getElementById("invoice-pdf-download");
 
+        // إذا لم تكن الفاتورة معروضة في الصفحة حالياً (لأن المستخدم في صفحة التتبع فقط)
+        if (!element) {
+            toast.error("Rechnung ist noch nicht geladen. Bitte warten Sie einen Moment.");
+            return;
+        }
+
+        const toastId = toast.loading("PDF wird erstellt...");
+
+        const opt = {
+            margin: 10, // هامش الصفحة بالمليمتر
+            filename: `Rechnung_${orderNumber}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true }, // scale: 2 لضمان جودة عالية
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // تحويل العنصر إلى PDF وتنزيله
+        html2pdf().set(opt).from(element).save().then(() => {
+            toast.success("Rechnung erfolgreich heruntergeladen!", { id: toastId });
+        }).catch((err) => {
+            console.error("PDF Error:", err);
+            toast.error("Fehler beim Erstellen der PDF.", { id: toastId });
+        });
+    };
     // ============================================
     // Render
     // ============================================
@@ -188,7 +216,7 @@ export default function OrderStatusTracker({ status, orderNumber }) {
                 )}
 
                 {status === "delivered" && (
-                    <button className="btn-invoice">
+                    <button className="btn-invoice" onClick={handleDownloadInvoice}>
                         📄 Rechnung herunterladen
                     </button>
                 )}

@@ -100,6 +100,7 @@ export default function ProductCardDetails() {
   // ============================================
   const {
     id = "",
+    product_number = "",
     name = "",
     image = "",
     price = 0,
@@ -168,9 +169,7 @@ export default function ProductCardDetails() {
       <StaticHeader />
 
       <div className="product-page-container">
-        {/* ============================================
-            Top action bar — Back + Go Home (side by side)
-        ============================================ */}
+
         <div className="product-detail-actions">
           <button className="product-back-btn" onClick={() => navigate(-1)}>
             ← Zurück

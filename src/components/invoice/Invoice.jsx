@@ -98,7 +98,7 @@ export default function Invoice({ order, items = [] }) {
     const address = order.shipping_address || {};
 
     return (
-        <div className="rechnung-container">
+        <div className="rechnung-container" id="invoice-pdf-download">
             {/* ═══ HEADER ═══ */}
             <div className="rechnung-header">
                 <div className="rechnung-header-left">

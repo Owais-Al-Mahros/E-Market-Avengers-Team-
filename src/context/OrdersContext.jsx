@@ -18,9 +18,8 @@ const ORDER_ITEMS_SELECT = `
   quantity, unit_price, total_price, tax_rate,
   weight, weight_unit, total_weight,
   actual_weight, actual_quantity, actual_unit_price,
-  actual_total, price_difference, status,
-  substitution_note, scanned_at,
-  products (product_number) 
+  actual_total, actual_piece_weight, actual_piece_price, actual_total_weight, price_difference, status,
+  substitution_note, scanned_at
 `;
 
 const ORDER_SELECT = `

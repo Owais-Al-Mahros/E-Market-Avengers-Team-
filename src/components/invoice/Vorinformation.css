@@ -1,433 +1,378 @@
-/* ============================================================
-   🧾 VORINFORMATION — Kassenbon Style (Preview Only)
-   ============================================================ */
+/* ============================================
+   🛍️ MODERN CHECKOUT SUMMARY (Cart Style)
+   ============================================ */
 
-.kb-receipt {
-    background: #fff;
-    max-width: 420px;
+.vo-container {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 8px 32px rgba(20, 92, 74, 0.06);
+    border: 1px solid rgba(20, 92, 74, 0.08);
+    font-family: "IBM Plex Sans Arabic", -apple-system, sans-serif;
+    color: #15312b;
+    max-width: 680px;
     margin: 0 auto;
-    padding: 32px 28px 24px;
-    font-family: "Courier New", "Consolas", monospace;
-    font-size: 13px;
-    line-height: 1.5;
-    color: #1a1a1a;
+}
+
+/* ═══ Header ═══ */
+.vo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 24px;
+    border-bottom: 2px solid #f0f7f4;
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.vo-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #145c4a;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.5px;
+}
+
+.vo-subtitle {
+    font-size: 14px;
+    color: #6b7a77;
+    margin: 0;
     font-weight: 500;
-    position: relative;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    border-radius: 4px;
 }
 
-/* ═══ VORINFORMATION BANNER ═══ */
-.kb-vorinfo-banner {
-    margin: -8px -8px 18px;
-    padding: 14px 16px;
-    background: #fef3c7;
-    border: 2px solid #f59e0b;
-    border-radius: 6px;
-    text-align: left;
+.vo-subtitle strong {
+    color: #145c4a;
+    font-weight: 800;
+    font-family: "Courier New", monospace;
 }
 
-.kb-vorinfo-header {
+.vo-brand {
+    font-size: 18px;
+    font-weight: 800;
+    color: #145c4a;
+    background: #ddf4ea;
+    padding: 8px 16px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+/* ═══ Items List (Grid exactly like Shopping Cart) ═══ */
+.vo-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.vo-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid rgba(245, 158, 11, 0.35);
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f3f4f6;
 }
 
-.kb-vorinfo-icon {
-    font-size: 18px;
-    color: #b45309;
-    font-weight: 800;
-    line-height: 1;
+.vo-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
-.kb-vorinfo-title {
-    font-size: 13px;
-    font-weight: 800;
-    color: #78350f;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    font-family: "IBM Plex Sans Arabic", sans-serif;
+.vo-item.is-removed {
+    opacity: 0.6;
+    background: #fef2f2;
+    padding: 12px;
+    border-radius: 8px;
+    border-bottom: none;
+    margin: 0 -12px;
 }
 
-.kb-vorinfo-text {
-    font-size: 12px;
-    line-height: 1.6;
-    color: #78350f;
-    letter-spacing: 0.2px;
-    font-family: "IBM Plex Sans Arabic", sans-serif;
-}
-
-.kb-vorinfo-text strong {
-    font-weight: 800;
-    color: #b45309;
-}
-
-/* ═══ HEADER ═══ */
-.kb-header {
-    text-align: center;
-    padding-bottom: 14px;
-    margin-bottom: 14px;
-}
-
-.kb-brand {
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: 6px;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-}
-
-.kb-line {
-    font-size: 12.5px;
-    letter-spacing: 0.5px;
-    line-height: 1.5;
-    color: #1a1a1a;
-}
-
-.kb-doclabel {
-    text-align: center;
-    font-size: 11px;
-    color: #6b7280;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding-bottom: 12px;
-    margin-bottom: 16px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-/* ═══ PRODUCTS ═══ */
-.kb-products {
-    padding-bottom: 8px;
-}
-
-.kb-eur-row {
+/* ✅ صندوق صورة المنتج */
+.vo-item-image-box {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    background: #f7faf8;
+    border: 1px solid #e1ebe7;
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 6px;
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    color: #6b7280;
-}
-
-.kb-eur-label {
-    width: 80px;
-    text-align: right;
-}
-
-.kb-product {
-    margin-bottom: 10px;
-}
-
-.kb-product-main {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-}
-
-.kb-product-name {
-    flex: 1;
-    text-transform: uppercase;
-    word-break: break-word;
-}
-
-.kb-product-total {
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
-    text-align: right;
-    min-width: 80px;
-    font-variant-numeric: tabular-nums;
-}
-
-.kb-product-calc {
-    padding-left: 22px;
-    margin-top: 2px;
-    font-size: 13px;
-    color: #1a1a1a;
-    letter-spacing: 0.2px;
-    font-variant-numeric: tabular-nums;
-}
-
-.kb-product-removed {
-    padding-left: 22px;
-    margin-top: 2px;
-    font-size: 12px;
-    color: #dc2626;
-    font-style: italic;
-}
-
-.kb-sub-note {
-    font-size: 10px;
-    color: #8b5cf6;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-
-/* ═══ SEPARATORS ═══ */
-.kb-separator {
-    border-top: 1px dashed #1a1a1a;
-    margin: 12px 0;
-}
-
-.kb-double-separator {
-    border-top: 3px double #1a1a1a;
-    margin: 4px 0 14px;
-}
-
-/* ═══ SUMME ═══ */
-.kb-summe {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 12px;
-    align-items: baseline;
-    font-size: 16px;
-    font-weight: 800;
-    padding: 4px 0;
-}
-
-.kb-summe-label {
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.kb-summe-currency {
-    font-size: 13px;
-    letter-spacing: 1.5px;
-    color: #4b5563;
-}
-
-.kb-summe-value {
-    text-align: right;
-    min-width: 90px;
-    font-variant-numeric: tabular-nums;
-    font-size: 18px;
-}
-
-/* ═══ PAYMENT ═══ */
-.kb-payment {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 12px;
-    align-items: baseline;
-    font-size: 15px;
-    font-weight: 700;
-    padding: 4px 0;
-    margin-bottom: 14px;
-}
-
-.kb-payment-currency {
-    font-size: 13px;
-    letter-spacing: 1.5px;
-    color: #4b5563;
-}
-
-.kb-payment-value {
-    text-align: right;
-    min-width: 90px;
-    font-variant-numeric: tabular-nums;
-}
-
-/* ═══ BUFFER ═══ */
-.kb-buffer {
-    margin: 10px 0 14px;
-    padding: 10px 12px;
-    border: 1px dashed #b45309;
-    background: #fffbeb;
-    font-size: 12px;
-}
-
-.kb-buffer-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 2px 0;
-    font-variant-numeric: tabular-nums;
-}
-
-.kb-buffer-total {
-    margin-top: 4px;
-    padding-top: 6px;
-    border-top: 1px dashed #b45309;
-    font-weight: 800;
-    color: #78350f;
-}
-
-/* ═══ TAX TABLE ═══ */
-.kb-tax-section {
-    margin-top: 14px;
-    padding-top: 12px;
-    border-top: 1px dashed #d1d5db;
-    font-size: 12px;
-}
-
-.kb-tax-preview-note {
-    padding: 6px 8px;
-    margin-bottom: 8px;
-    background: #eff6ff;
-    border-left: 3px solid #3b82f6;
-    border-radius: 3px;
-    font-size: 10.5px;
-    font-weight: 600;
-    color: #1e40af;
-    font-family: "IBM Plex Sans Arabic", sans-serif;
-}
-
-.kb-tax-header {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr 1fr 1fr;
-    gap: 8px;
-    padding-bottom: 6px;
-    margin-bottom: 4px;
-    border-bottom: 1px solid #e5e7eb;
-    font-weight: 700;
-    color: #4b5563;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.kb-tax-row {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr 1fr 1fr;
-    gap: 8px;
-    padding: 3px 0;
-    font-variant-numeric: tabular-nums;
-}
-
-.kb-tax-col-letter {
-    font-weight: 700;
-}
-
-.kb-tax-col {
-    text-align: right;
-}
-
-.kb-tax-total {
-    margin-top: 4px;
-    padding-top: 6px;
-    border-top: 1px solid #1a1a1a;
-    font-weight: 800;
-}
-
-/* ═══ METADATA ═══ */
-.kb-meta {
-    margin-top: 20px;
-    padding-top: 14px;
-    border-top: 1px dashed #d1d5db;
-    font-size: 12.5px;
-    line-height: 1.7;
-}
-
-.kb-meta-row {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    font-variant-numeric: tabular-nums;
-}
-
-.kb-meta-row span:last-child {
-    margin-left: auto;
-}
-
-/* ═══ FOOTER ═══ */
-.kb-footer {
-    margin-top: 20px;
-    padding-top: 16px;
-    text-align: center;
-    font-size: 12px;
-    line-height: 1.7;
-}
-
-.kb-footer-star {
-    color: #1a1a1a;
-    font-size: 11px;
-    letter-spacing: 1px;
-    white-space: nowrap;
     overflow: hidden;
 }
 
-.kb-footer-text {
-    margin: 8px 0;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.vo-item-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 4px;
 }
 
-.kb-footer-sub {
-    margin: 8px 0;
-    font-size: 11px;
-    color: #6b7280;
-    font-style: italic;
-    line-height: 1.6;
-    font-family: "IBM Plex Sans Arabic", sans-serif;
+.vo-item-image-placeholder {
+    color: #a0b0ac;
+    font-size: 24px;
 }
 
-.kb-footer-brand {
-    margin-top: 12px;
+/* ✅ معلومات المنتج */
+.vo-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.vo-item-name {
+    font-size: 15px;
     font-weight: 700;
+    color: #15312b;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vo-item-sub {
     font-size: 12px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    color: #8b5cf6;
+    font-style: italic;
 }
 
-/* ═══ MOBILE ═══ */
+.vo-item-meta {
+    font-size: 13px;
+    color: #6b7a77;
+    font-weight: 500;
+}
+
+.vo-item-removed-text {
+    font-size: 12px;
+    color: #dc2626;
+    font-weight: 700;
+}
+
+/* ✅ سعر المنتج */
+.vo-item-price {
+    font-size: 16px;
+    font-weight: 800;
+    color: #145c4a;
+    white-space: nowrap;
+    text-align: right;
+    min-width: 80px;
+}
+
+/* ═══ Totals ═══ */
+.vo-totals {
+    background: #f7faf8;
+    border-radius: 16px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.vo-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14.5px;
+    color: #4b5563;
+    font-weight: 600;
+}
+
+.vo-row-grand {
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 2px dashed #ddf4ea;
+    font-size: 18px;
+    color: #15312b;
+    font-weight: 800;
+}
+
+.vo-row-grand strong {
+    color: #145c4a;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+}
+
+/* ═══ Buffer Box ═══ */
+.vo-buffer-box {
+    display: flex;
+    gap: 12px;
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.vo-buffer-box .material-symbols-outlined {
+    color: #d97706;
+    font-size: 24px;
+}
+
+.vo-buffer-box p {
+    margin: 0 0 6px 0;
+    font-size: 13px;
+    color: #78350f;
+    line-height: 1.5;
+}
+
+.vo-buffer-box p:last-child {
+    margin: 0;
+}
+
+.vo-buffer-total {
+    font-weight: 700;
+    color: #b45309 !important;
+}
+
+/* ═══ Meta Grid (Payment & Delivery) ═══ */
+.vo-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.vo-meta-card {
+    background: #ffffff;
+    border: 1px solid #e1ebe7;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.vo-meta-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #6b7a77;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.vo-meta-value {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #15312b;
+}
+
+/* ═══ Footer ═══ */
+.vo-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-top: 24px;
+    border-top: 1px solid #f0f7f4;
+    color: #6b7a77;
+}
+
+.vo-footer .material-symbols-outlined {
+    font-size: 20px;
+    color: #145c4a;
+}
+
+.vo-footer p {
+    margin: 0;
+    font-size: 12.5px;
+    font-weight: 500;
+}
+
+/* ═══ Responsive ═══ */
 @media (max-width: 640px) {
-    .kb-receipt {
-        max-width: 100%;
-        padding: 24px 18px 20px;
-        border-radius: 0;
-        box-shadow: none;
-        font-size: 12px;
+    .vo-container {
+        padding: 20px;
+        border-radius: 16px;
     }
 
-    .kb-brand {
-        font-size: 19px;
-        letter-spacing: 5px;
+    .vo-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .kb-product-main {
-        font-size: 13px;
+    .vo-title {
+        font-size: 20px;
     }
 
-    .kb-product-total {
-        min-width: 70px;
+    .vo-meta-grid {
+        grid-template-columns: 1fr;
     }
 
-    .kb-product-calc {
-        padding-left: 16px;
-        font-size: 12px;
+    .vo-item-image-box {
+        width: 56px;
+        height: 56px;
     }
 
-    .kb-summe {
+    .vo-item-name {
         font-size: 14px;
     }
 
-    .kb-summe-value {
-        font-size: 16px;
-        min-width: 78px;
+    .vo-item-meta {
+        font-size: 12px;
     }
 
-    .kb-tax-section {
-        font-size: 11px;
+    .vo-item-price {
+        font-size: 15px;
+        min-width: 70px;
+    }
+
+    .vo-row-grand strong {
+        font-size: 20px;
     }
 }
 
-/* ═══ PRINT ═══ */
-@media print {
-    .kb-receipt {
-        box-shadow: none;
-        max-width: 80mm;
-        padding: 4mm 2mm;
-        font-size: 10pt;
-    }
+/* ═══ Totals Adjustments ═══ */
+.vo-totals {
+    background: #f7faf8;
+    border-radius: 16px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* تقليل المسافة قليلاً لترتيب أفضل */
+    margin-bottom: 24px;
+    border: 1px solid #ddf4ea;
+}
 
-    @page {
-        size: 80mm auto;
-        margin: 2mm;
-    }
+/* المجموع قبل الهامش */
+.vo-row-subtotal {
+    padding-top: 12px;
+    margin-top: 4px;
+    border-top: 1px dashed #ddf4ea;
+    font-size: 15px;
+    color: #15312b;
+}
+
+.vo-row-subtotal strong {
+    font-weight: 800;
+}
+
+/* سطر الهامش (باللون الأصفر/البرتقالي) */
+.vo-row-buffer {
+    color: #b45309;
+    font-weight: 700;
+    font-size: 14px;
+    background: #fffbeb;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin: 4px 0;
+}
+
+/* المبلغ النهائي المحجوز (البارز) */
+.vo-row-grand {
+    margin-top: 4px;
+    padding-top: 16px;
+    border-top: 2px solid #145c4a;
+    /* خط أخضر داكن */
+    font-size: 18px;
+    color: #15312b;
+    font-weight: 800;
+}
+
+.vo-row-grand strong {
+    color: #145c4a;
+    font-size: 24px;
+    /* تكبير الخط ليكون واضحاً جداً */
+    letter-spacing: -0.5px;
 }

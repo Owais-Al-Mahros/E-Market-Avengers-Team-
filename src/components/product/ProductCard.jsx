@@ -51,8 +51,36 @@ export default function ProductCard({
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    addToCart(
-      {
+
+    // ✅ وضعنا الإضافة في try/catch لضمان ظهور التوست حتى لو حدث خطأ
+    try {
+      addToCart(
+        {
+          id,
+          product_number,
+          name,
+          image,
+          price: parseFloat(price) || 0,
+          total_price: displayPrice,
+          tax_rate: parseFloat(tax_rate) || 0,
+          weight,
+          weight_unit,
+        },
+        counter
+      );
+      toast.success(`${counter} × ${name} zum Warenkorb hinzugefügt`, {
+        duration: 2000,
+      });
+    } catch (err) {
+      console.error("Add to cart error:", err);
+      toast.error("Fehler beim Hinzufügen zum Warenkorb");
+    }
+  };
+
+  const handleToggleFavorite = (e) => {
+    e.stopPropagation();
+    try {
+      toggleFavorite({
         id,
         product_number,
         name,
@@ -62,34 +90,18 @@ export default function ProductCard({
         tax_rate: parseFloat(tax_rate) || 0,
         weight,
         weight_unit,
-      },
-      counter
-    );
-    toast.success(`${counter} × ${name} zum Warenkorb hinzugefügt`, {
-      duration: 2000,
-    });
-  };
-
-  const handleToggleFavorite = (e) => {
-    e.stopPropagation();
-    toggleFavorite({
-      id,
-      name,
-      image,
-      price: parseFloat(price) || 0,
-      total_price: displayPrice,
-      tax_rate: parseFloat(tax_rate) || 0,
-      weight,
-      weight_unit,
-      category,
-      description,
-      ingredients,
-      nutrition_facts: nutritionObject,
-      storage_notes: storageObject,
-    });
-    toast(isFav ? "Aus Favoriten entfernt" : "Zu Favoriten hinzugefügt", {
-      icon: isFav ? "💔" : "❤️",
-    });
+        category,
+        description,
+        ingredients,
+        nutrition_facts: nutritionObject,
+        storage_notes: storageObject,
+      });
+      toast(isFav ? "Aus Favoriten entfernt" : "Zu Favoriten hinzugefügt", {
+        icon: isFav ? "💔" : "❤️",
+      });
+    } catch (err) {
+      console.error("Favorite error:", err);
+    }
   };
 
   return (
@@ -99,19 +111,18 @@ export default function ProductCard({
           type="button"
           className={`product-card-fav-btn ${isFav ? "active" : ""}`}
           onClick={handleToggleFavorite}
-          aria-label={
-            isFav ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"
-          }
+          aria-label={isFav ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
         >
           <span className="material-symbols-outlined">favorite</span>
         </button>
 
         <img
-          src={image}
+          src={image || "https://via.placeholder.com/150?text=Kein+Bild"}
           alt={name || "Produkt"}
           className="product-card-image"
           loading="lazy"
           onLoad={() => setIsImageLoaded(true)}
+          onError={() => setIsImageLoaded(true)} /* ✅ إظهار الصورة حتى لو كان الرابط مكسوراً */
           style={{ opacity: isImageLoaded ? 1 : 0 }}
         />
       </div>
@@ -125,19 +136,11 @@ export default function ProductCard({
           {formatWeight(weight, weight_unit)}
         </span>
         <div className="product-card-qty">
-          <button
-            type="button"
-            onClick={decreaseCounter}
-            aria-label="Verringern"
-          >
+          <button type="button" onClick={decreaseCounter} aria-label="Verringern">
             −
           </button>
           <span className="product-card-qty-count">{counter}</span>
-          <button
-            type="button"
-            onClick={increaseCounter}
-            aria-label="Erhöhen"
-          >
+          <button type="button" onClick={increaseCounter} aria-label="Erhöhen">
             +
           </button>
         </div>
@@ -155,11 +158,7 @@ export default function ProductCard({
           )}
         </div>
 
-        <button
-          type="button"
-          className="product-card-add-btn"
-          onClick={handleAddToCart}
-        >
+        <button type="button" className="product-card-add-btn" onClick={handleAddToCart}>
           <span>In den Warenkorb</span>
         </button>
       </div>
