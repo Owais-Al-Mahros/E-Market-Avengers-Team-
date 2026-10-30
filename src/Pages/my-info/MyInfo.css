@@ -387,3 +387,39 @@
     border-left-width: 3px;
   }
 }
+
+/* ============================================
+   🛡️ Privacy Notice Box
+   ============================================ */
+.privacy-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid #3b82f6;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.privacy-notice .material-symbols-outlined {
+  color: #2563eb;
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.privacy-notice strong {
+  display: block;
+  font-size: 14px;
+  color: #1e3a8a;
+  margin-bottom: 4px;
+}
+
+.privacy-notice p {
+  margin: 0;
+  font-size: 13px;
+  color: #1e40af;
+  line-height: 1.5;
+}

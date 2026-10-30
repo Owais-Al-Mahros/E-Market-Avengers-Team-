@@ -12,23 +12,23 @@ import "./MyInfo.css";
 // Field Configurations
 // ============================================================
 const PERSONAL_FIELDS = [
-  { label: "First Name", name: "firstName", sanitize: "name" },
-  { label: "Last Name", name: "lastName", sanitize: "name" },
-  { label: "Phone", name: "phone", type: "tel", sanitize: "phone" },
-  { label: "Email", name: "email", type: "email" },
+  { label: "Vorname", name: "firstName", sanitize: "name" },
+  { label: "Nachname", name: "lastName", sanitize: "name" },
+  { label: "Telefon", name: "phone", type: "tel", sanitize: "phone" },
+  { label: "E-Mail", name: "email", type: "email" },
 ];
 
 const ADDRESS_FIELDS = [
-  { label: "Street", name: "street", sanitize: "name" },
-  { label: "House Number", name: "houseNumber", sanitize: "house" },
-  { label: "Postal Code", name: "postalCode", sanitize: "postal" },
-  { label: "City", name: "city", sanitize: "name" },
+  { label: "Straße", name: "street", sanitize: "name" },
+  { label: "Hausnummer", name: "houseNumber", sanitize: "house" },
+  { label: "Postleitzahl", name: "postalCode", sanitize: "postal" },
+  { label: "Stadt", name: "city", sanitize: "name" },
 ];
 
 const ACCESS_FIELDS = [
-  { label: "Floor", name: "floor", type: "number", sanitize: "floor", min: 0 },
-  { label: "Apartment (optional)", name: "apartment", sanitize: "apartment" },
-  { label: "Doorbell Name", name: "doorbellName", sanitize: "name" },
+  { label: "Etage", name: "floor", type: "number", sanitize: "floor", min: 0 },
+  { label: "Wohnung (optional)", name: "apartment", sanitize: "apartment" },
+  { label: "Klingelname (optional)", name: "doorbellName", sanitize: "name" },
 ];
 
 const ALL_FIELDS = [...PERSONAL_FIELDS, ...ADDRESS_FIELDS, ...ACCESS_FIELDS];
@@ -47,7 +47,7 @@ const sanitize = (type, value) => {
     case "house":
       return value.replace(/[^\d\w\-\/]/g, "").slice(0, 6);
     case "floor":
-      return value.replace(/\D/g, "").slice(0, 2);   // ✅ أرقام فقط — لا سالب
+      return value.replace(/\D/g, "").slice(0, 2);
     case "apartment":
       return value.replace(/[^\d\w\-]/g, "").slice(0, 6);
     default:
@@ -87,7 +87,7 @@ export default function MyInfo() {
     e.preventDefault();
     setInfo(draft);
     setIsEditing(false);
-    toast.success("Saved! We'll use this info on your next order.", {
+    toast.success("Gespeichert! Wir verwenden diese Daten für Ihre nächste Bestellung.", {
       icon: "✨",
     });
   };
@@ -111,23 +111,34 @@ export default function MyInfo() {
           onClick={() => navigate("/")}
         >
           <span className="material-symbols-outlined">arrow_back</span>
-          Go Home
+          Startseite
         </button>
       </div>
 
       <div className="myinfo-page">
         <form className="profile-card" onSubmit={handleSave}>
-          <h2>My Info</h2>
+          <h2>Meine Daten</h2>
           <p className="profile-subtitle">
-            Save your details once — we'll fill them in automatically at
-            checkout.
+            Speichern Sie Ihre Daten einmalig – wir füllen sie beim Checkout automatisch aus.
           </p>
+
+          <div className="privacy-notice">
+            <span className="material-symbols-outlined">shield</span>
+            <div>
+              <strong>Datenschutzhinweis</strong>
+              <p>
+                Ihre Daten werden <strong>nicht</strong> auf unseren Servern gespeichert.
+                Sie verbleiben ausschließlich lokal in Ihrem Browser, um Ihnen das Ausfüllen
+                beim nächsten Checkout zu erleichtern.
+              </p>
+            </div>
+          </div>
 
           {/* ===== Personal ===== */}
           <section className="profile-section">
             <h3 className="profile-section-title">
               <span className="material-symbols-outlined">person</span>
-              Personal Information
+              Persönliche Daten
             </h3>
             <div className="info-grid">
               {PERSONAL_FIELDS.map((f) => (
@@ -146,7 +157,7 @@ export default function MyInfo() {
           <section className="profile-section">
             <h3 className="profile-section-title">
               <span className="material-symbols-outlined">location_on</span>
-              Delivery Address
+              Lieferadresse
             </h3>
             <div className="info-grid">
               {ADDRESS_FIELDS.map((f) => (
@@ -165,7 +176,7 @@ export default function MyInfo() {
           <section className="profile-section">
             <h3 className="profile-section-title">
               <span className="material-symbols-outlined">apartment</span>
-              Access Details
+              Zugangsdetails
             </h3>
             <div className="info-grid">
               {ACCESS_FIELDS.map((f) => (
@@ -179,7 +190,7 @@ export default function MyInfo() {
               ))}
 
               <div className="form-group">
-                <label htmlFor="hasElevator">Elevator</label>
+                <label htmlFor="hasElevator">Aufzug</label>
                 <select
                   id="hasElevator"
                   name="hasElevator"
@@ -187,8 +198,8 @@ export default function MyInfo() {
                   onChange={handleChange}
                   disabled={disabled}
                 >
-                  <option value="no">No Elevator</option>
-                  <option value="yes">With Elevator</option>
+                  <option value="no">Kein Aufzug</option>
+                  <option value="yes">Mit Aufzug</option>
                 </select>
               </div>
             </div>
@@ -203,10 +214,10 @@ export default function MyInfo() {
                   className="cancel-btn"
                   onClick={handleCancel}
                 >
-                  Cancel
+                  Abbrechen
                 </button>
                 <button type="submit" className="save-btn">
-                  Save
+                  Speichern
                 </button>
               </>
             ) : (
@@ -218,7 +229,7 @@ export default function MyInfo() {
                 <span className="material-symbols-outlined">
                   {isFilled ? "edit" : "add"}
                 </span>
-                {isFilled ? "Edit My Info" : "Fill My Info"}
+                {isFilled ? "Daten bearbeiten" : "Daten eingeben"}
               </button>
             )}
           </div>

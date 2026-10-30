@@ -214,8 +214,8 @@ export default function CheckoutPage() {
       newErrors.city = "Stadt ist erforderlich.";
     }
 
-    if (!checkoutData.floor || !checkoutData.doorbellName) {
-      newErrors.floor = "Etage und Klingelname sind erforderlich.";
+    if (!checkoutData.floor) {
+      newErrors.floor = "Etage ist erforderlich.";
     }
 
     if (!checkoutData.shippingDetails) {
@@ -467,7 +467,7 @@ export default function CheckoutPage() {
               </div>
 
               <div className="chk-field">
-                <label>Klingelname *</label>
+                <label>Klingelname</label>
                 <input
                   type="text"
                   name="doorbellName"

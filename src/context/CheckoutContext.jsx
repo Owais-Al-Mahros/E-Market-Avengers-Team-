@@ -97,8 +97,7 @@ export function CheckoutProvider({ children }) {
             checkoutData.houseNumber &&
             checkoutData.postalCode &&
             checkoutData.city &&
-            checkoutData.floor !== "" &&
-            checkoutData.doorbellName
+            checkoutData.floor !== ""
         );
     };
 
