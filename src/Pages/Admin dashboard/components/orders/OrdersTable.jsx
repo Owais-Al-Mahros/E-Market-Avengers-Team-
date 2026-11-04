@@ -1,10 +1,14 @@
 import { useState, useCallback, useMemo } from "react";
+import { createPortal } from "react-dom";
+import html2pdf from "html2pdf.js";
 import toast from "react-hot-toast";
 import OrderDetailsModal from "./modals/OrderDetailsModal";
 import ShipOrderModal from "../../../../components/order/ShipOrderModal";
+import Invoice from "../../../../components/invoice/Invoice";
 import { processRefund, sendOrderEmail } from "../../../../api/orders";
 import { updateBestSellers, decrementBestSellers } from "../../../../lib/bestSellers";
 import { formatTotalWeight } from "../../../../lib/units";
+import { useLocalStorage } from "../../../../hooks/useLocalStorage"; // ✅ تمت إضافة هذا السطر
 import {
   getDeliveryUrgency,
   formatDeliveryDate,
@@ -26,6 +30,11 @@ export default function OrdersTable({
   const [processingId, setProcessingId] = useState(null);
   const [assignDriverOrder, setAssignDriverOrder] = useState(null);
   const [assigningDriver, setAssigningDriver] = useState(false);
+
+  // ✅ استخدام useLocalStorage بدلاً من useState لضمان بقاء الإشارة بعد التحديث
+  const [downloadedInvoices, setDownloadedInvoices] = useLocalStorage("downloaded_invoices", {});
+
+  const [invoiceToDownload, setInvoiceToDownload] = useState(null);
 
   /* ═══════════════════════════════════════════
      Helpers
@@ -56,6 +65,49 @@ export default function OrdersTable({
   );
 
   /* ═══════════════════════════════════════════
+     Download Invoice Logic
+     ═══════════════════════════════════════════ */
+  const handleDownloadInvoice = (order) => {
+    setInvoiceToDownload(order);
+
+    // ننتظر قليلاً حتى يتم رندر مكون الفاتورة في الـ DOM المخفي
+    setTimeout(() => {
+      const element = document.getElementById("invoice-pdf-download");
+      if (!element) {
+        toast.error("Rechnung konnte nicht geladen werden.");
+        setInvoiceToDownload(null);
+        return;
+      }
+
+      const toastId = toast.loading("PDF wird erstellt...");
+
+      const opt = {
+        margin: 10,
+        filename: `Rechnung_${order.order_number}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      };
+
+      html2pdf()
+        .set(opt)
+        .from(element)
+        .save()
+        .then(() => {
+          toast.success("Rechnung erfolgreich heruntergeladen!", { id: toastId });
+          // ✅ التحديث يتم الآن في الـ LocalStorage
+          setDownloadedInvoices((prev) => ({ ...prev, [order.id]: true }));
+          setInvoiceToDownload(null);
+        })
+        .catch((err) => {
+          console.error("PDF Error:", err);
+          toast.error("Fehler beim Erstellen der PDF.", { id: toastId });
+          setInvoiceToDownload(null);
+        });
+    }, 300);
+  };
+
+  /* ═══════════════════════════════════════════
      Cancel Order
      ═══════════════════════════════════════════ */
   const cancelOrder = useCallback(
@@ -79,8 +131,6 @@ export default function OrdersTable({
         }
 
         await onUpdateStatus(order.id, "cancelled");
-
-
 
         if (refundResult.type === "refunded") {
           toast.success(
@@ -115,15 +165,12 @@ export default function OrdersTable({
     const toastId = toast.loading("Fahrer wird zugewiesen...");
 
     try {
-      // 1. أسند السائق
       const assignRes = await assignDriverToOrder(assignDriverOrder.id, driverId);
       if (!assignRes.success) throw new Error(assignRes.error);
 
-      // 2. غيّر الحالة إلى confirmed
       const statusRes = await onUpdateStatus(assignDriverOrder.id, "confirmed");
       if (!statusRes?.success) throw new Error(statusRes?.error || "Status fehlgeschlagen");
 
-      // 3. أرسل إيميل التأكيد
       await sendOrderEmail(assignDriverOrder.id, "confirmed").catch(() => { });
 
       toast.success("✅ Fahrer zugewiesen & Bestellung bestätigt", { id: toastId });
@@ -135,6 +182,7 @@ export default function OrdersTable({
       setAssigningDriver(false);
     }
   };
+
   /* ═══════════════════════════════════════════
      Change Status
      ═══════════════════════════════════════════ */
@@ -231,6 +279,17 @@ export default function OrdersTable({
      ═══════════════════════════════════════════ */
   return (
     <div className="orders-container">
+      {/* ✅ Hidden Invoice for PDF Download */}
+      {invoiceToDownload && createPortal(
+        <div style={{ position: 'fixed', left: '-9999px', top: 0, width: '210mm', background: '#fff' }}>
+          <Invoice
+            order={invoiceToDownload}
+            items={invoiceToDownload.order_items}
+          />
+        </div>,
+        document.body
+      )}
+
       {/* HEADER */}
       <div className="orders-header">
         <h2>{getTitle()}</h2>
@@ -484,21 +543,30 @@ export default function OrdersTable({
 
                       {["delivered", "search"].includes(status) &&
                         order.status === "delivered" && (
-                          <button
-                            className="btn-action btn-undo"
-                            onClick={async () => {
-                              const result = await changeStatus(
-                                order.id,
-                                "shipped"
-                              );
-                              if (result?.success) {
-                                await decrementBestSellers(order.id);
-                              }
-                            }}
-                            disabled={isBusy}
-                          >
-                            ↩️ Undo
-                          </button>
+                          <>
+                            <button
+                              className={`btn-action ${downloadedInvoices[order.id] ? "btn-invoice-downloaded" : "btn-invoice"}`}
+                              onClick={() => handleDownloadInvoice(order)}
+                              disabled={isBusy}
+                            >
+                              {downloadedInvoices[order.id] ? "✅ Heruntergeladen" : "📄 Rechnung"}
+                            </button>
+                            <button
+                              className="btn-action btn-undo"
+                              onClick={async () => {
+                                const result = await changeStatus(
+                                  order.id,
+                                  "shipped"
+                                );
+                                if (result?.success) {
+                                  await decrementBestSellers(order.id);
+                                }
+                              }}
+                              disabled={isBusy}
+                            >
+                              ↩️ Undo
+                            </button>
+                          </>
                         )}
 
                       {["cancelled", "search"].includes(status) &&

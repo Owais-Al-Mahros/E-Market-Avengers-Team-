@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
 import { applyWiderruf } from "../../../../api/orders";
 import ConfirmDialog from "../../../../components/ui/ConfirmDialog";
-import "./WiderrufModal.css";
+import "./WiderrufModal.css"; // ✅ تأكد من وجود هذا السطر
 
 const PERISHABLE_CATEGORIES = [
     "fruits", "vegetables", "obst", "gemüse", "früchte",

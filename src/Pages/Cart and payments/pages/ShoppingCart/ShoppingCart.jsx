@@ -100,7 +100,6 @@ export default function ShoppingCart() {
   // ============================================
   const handleAddFromSearch = (product) => {
     const price = parseFloat(product.total_price || product.price) || 0;
-
     addToCart(
       {
         id: product.id,
@@ -112,10 +111,12 @@ export default function ShoppingCart() {
         tax_rate: parseFloat(product.tax_rate) || 0,
         weight: product.weight,
         weight_unit: product.weight_unit,
+        gross_weight: product.gross_weight,
+        deposit_amount: parseFloat(product.deposit_amount) || 0,
+        deposit_tax_rate: parseFloat(product.deposit_tax_rate) || 0,
       },
       1
     );
-
     toast.success(`„${product.name}" zum Warenkorb hinzugefügt`, { duration: 1500 });
     setSearchTerm("");
     setSearchResults([]);
@@ -260,6 +261,7 @@ export default function ShoppingCart() {
                       qty={product.quantity}
                       price={product.price}
                       total_price={product.total_price}
+                      deposit_amount={product.deposit_amount}
                       increaseQty={increaseQty}
                       weight={product.weight}
                       weight_unit={product.weight_unit}

@@ -69,21 +69,7 @@ export default function BestSellers() {
               #{index + 1}
             </div>
 
-            <ProductCard
-              id={product.id}
-              name={product.name}
-              image={product.image}
-              category={product.category}
-              price={product.price}
-              weight={product.weight}
-              tax_rate={product.tax_rate}
-              weight_unit={product.weight_unit}
-              total_price={product.total_price}
-              description={product.description}
-              nutritionObject={product.nutrition_facts}
-              storageObject={product.storage_notes}
-              ingredients={product.ingredients}
-            />
+            <ProductCard key={product.id} {...product} />
           </div>
         ))}
       </div>

@@ -4,7 +4,12 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useCart } from "../../context/CartContext.jsx";
 import { useFavorite } from "../../context/FavoriteContext.jsx";
-import { getProductById, getProductsByCategory, calculatePriceByKg } from "../../api/index.js";
+import {
+  getProductById,
+  getProductsByCategory,
+  calculatePriceByKg,
+  getBaseUnitLabel,
+} from "../../api/index.js";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import Subscribe from "../../components/layout/Subscribe";
@@ -30,9 +35,6 @@ export default function ProductCardDetails() {
 
   const isFav = product ? isFavorite(product.id) : false;
 
-  // ============================================
-  // Load product
-  // ============================================
   useEffect(() => {
     if (!productId) {
       setLoading(false);
@@ -53,9 +55,6 @@ export default function ProductCardDetails() {
     };
   }, [productId]);
 
-  // ============================================
-  // Load related
-  // ============================================
   useEffect(() => {
     if (!product?.category_id) return;
 
@@ -70,9 +69,6 @@ export default function ProductCardDetails() {
     };
   }, [product]);
 
-  // ============================================
-  // Loading / Not found
-  // ============================================
   if (loading) {
     return (
       <>
@@ -95,9 +91,6 @@ export default function ProductCardDetails() {
     );
   }
 
-  // ============================================
-  // Destructure
-  // ============================================
   const {
     id = "",
     product_number = "",
@@ -105,8 +98,15 @@ export default function ProductCardDetails() {
     image = "",
     price = 0,
     total_price = 0,
+    tax_rate = 0,
     weight = "",
     weight_unit = "",
+    gross_weight,
+    deposit_amount = 0,
+    deposit_tax_rate = 0,
+    manufacturer = "",
+    manufacturer_info: manufacturerInfoObject = {}, // ✅
+    origin_country = "",
     description = "",
     nutrition_facts: nutritionObject = {},
     storage_notes: storageObject = {},
@@ -115,15 +115,16 @@ export default function ProductCardDetails() {
 
   const displayPrice = parseFloat(total_price || price) || 0;
   const finalCategory = product?.categories?.name;
-  const pricePerKg = calculatePriceByKg(displayPrice, weight, weight_unit);
+  const pricePerBase = calculatePriceByKg(displayPrice, weight, weight_unit);
+  const baseUnit = getBaseUnitLabel(weight_unit);
 
-  const hasNutrition =
-    ingredients || (nutritionObject && Object.keys(nutritionObject).length > 0);
+  const deposit = parseFloat(deposit_amount) || 0;
+  const depositRate = parseFloat(deposit_tax_rate) || parseFloat(tax_rate) || 0;
+
+  const hasNutrition = ingredients || (nutritionObject && Object.keys(nutritionObject).length > 0);
   const hasStorage = storageObject && Object.keys(storageObject).length > 0;
+  const hasManufacturerInfo = manufacturerInfoObject && Object.keys(manufacturerInfoObject).length > 0;
 
-  // ============================================
-  // Handlers
-  // ============================================
   const decreaseQty = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   const increaseQty = () => setQuantity((prev) => prev + 1);
 
@@ -136,13 +137,19 @@ export default function ProductCardDetails() {
         image,
         weight,
         weight_unit,
+        gross_weight,
         price: displayPrice,
         total_price: displayPrice,
+        tax_rate: parseFloat(tax_rate) || 0,
+        deposit_amount: deposit,
+        deposit_tax_rate: depositRate,
       },
       quantity
     );
 
-    toast.success(`${quantity} × ${name} zum Warenkorb hinzugefügt!`, { duration: 2000 });
+    toast.success(`${quantity} × ${name} zum Warenkorb hinzugefügt!`, {
+      duration: 2000,
+    });
   };
 
   const handleToggleFavorite = () => {
@@ -152,8 +159,12 @@ export default function ProductCardDetails() {
       image,
       price: parseFloat(price) || 0,
       total_price: displayPrice,
+      tax_rate: parseFloat(tax_rate) || 0,
       weight,
       weight_unit,
+      gross_weight,
+      deposit_amount: deposit,
+      deposit_tax_rate: depositRate,
       description,
       ingredients,
       nutrition_facts: nutritionObject,
@@ -169,7 +180,6 @@ export default function ProductCardDetails() {
       <StaticHeader />
 
       <div className="product-page-container">
-
         <div className="product-detail-actions">
           <button className="product-back-btn" onClick={() => navigate(-1)}>
             ← Zurück
@@ -179,9 +189,6 @@ export default function ProductCardDetails() {
           </button>
         </div>
 
-        {/* ============================================
-            Main layout — image + info (REWE-style)
-        ============================================ */}
         <div className="product-main-layout">
           <div className="product-img-box">
             <img src={image} alt={name} />
@@ -190,21 +197,38 @@ export default function ProductCardDetails() {
           <div className="product-info-box">
             <h1 className="main-product-title">{name}</h1>
 
-            {finalCategory && (
+            {(manufacturer || finalCategory) && (
               <p className="product-brand">
-                <span className="brand-name">{finalCategory}</span>
+                {manufacturer && (
+                  <span className="manufacturer-name">
+                    Marke: <strong>{manufacturer}</strong>
+                  </span>
+                )}
+                {manufacturer && finalCategory && <span className="brand-separator"> | </span>}
+                {finalCategory && (
+                  <span className="category-name">
+                    Kategorie: <strong>{finalCategory}</strong>
+                  </span>
+                )}
               </p>
             )}
 
-            <div className="main-product-price">{formatEuro(displayPrice)}</div>
+            <div className="main-product-price">
+              {formatEuro(displayPrice)}
+            </div>
 
             {weight && (
               <p className="product-unit-info">
                 {formatWeight(weight, weight_unit)}
-                {pricePerKg > 0 && ` (1 kg = ${pricePerKg} €)`}
+                {pricePerBase > 0 && baseUnit && ` (1 ${baseUnit} = ${pricePerBase} €) `}
+                {deposit > 0 && (
+                  <span className="product-unit-info">
+                    zzgl. {formatEuro(deposit)} Pfand
+                  </span>
+                )}
               </p>
             )}
-            {/* ===== Actions row ===== */}
+
             <div className="product-actions-row">
               <button
                 type="button"
@@ -216,13 +240,9 @@ export default function ProductCardDetails() {
               </button>
 
               <div className="quantity-picker">
-                <button type="button" onClick={decreaseQty} aria-label="Decrease">
-                  −
-                </button>
+                <button type="button" onClick={decreaseQty} aria-label="Decrease">−</button>
                 <span>{quantity}</span>
-                <button type="button" onClick={increaseQty} aria-label="Increase">
-                  +
-                </button>
+                <button type="button" onClick={increaseQty} aria-label="Increase">+</button>
               </div>
 
               <button type="button" className="checkout-add-btn" onClick={handleAddToCart}>
@@ -233,65 +253,120 @@ export default function ProductCardDetails() {
           </div>
         </div>
 
-
-        {description &&
+        {description && (
           <section className="detail-section-card">
             <h2 className="detail-section-title">Produktbeschreibung</h2>
-            <p className="product-description">{description}</p>
-          </section>}
-
-        {/* ============================================
-            Article details
-        ============================================ */}
-        {(finalCategory || weight) && (
-          <section className="detail-section-card">
-            <h2 className="detail-section-title">Artikeldetails</h2>
-
-            <dl className="article-details">
-              {finalCategory && (
-                <>
-                  <dt>Kategorie</dt>
-                  <dd>{finalCategory}</dd>
-                </>
-              )}
-              {weight && (
-                <>
-                  <dt>Gewicht</dt>
-                  <dd>
-                    {weight} {weight_unit}
-                  </dd>
-                </>
-              )}
-            </dl>
+            <div className="product-description-html" dangerouslySetInnerHTML={{ __html: description }} />
           </section>
         )}
 
-        {/* ============================================
-            Nutrition
-        ============================================ */}
+        <section className="detail-section-card">
+          <h2 className="detail-section-title">Artikeldetails</h2>
+
+          <dl className="article-details">
+            {manufacturer && (
+              <>
+                <dt>Hersteller</dt>
+                <dd>{manufacturer}</dd>
+              </>
+            )}
+            {origin_country && (
+              <>
+                <dt>Herkunftsland</dt>
+                <dd>{origin_country}</dd>
+              </>
+            )}
+            {finalCategory && (
+              <>
+                <dt>Kategorie</dt>
+                <dd>{finalCategory}</dd>
+              </>
+            )}
+            {product_number && (
+              <>
+                <dt>Artikelnummer</dt>
+                <dd>{product_number}</dd>
+              </>
+            )}
+            {weight && (
+              <>
+                <dt>Gewicht</dt>
+                <dd>{weight} {weight_unit}</dd>
+              </>
+            )}
+            {deposit > 0 && (
+              <>
+                <dt>Pfand</dt>
+                <dd>{formatEuro(deposit)}</dd>
+              </>
+            )}
+          </dl>
+        </section>
+
+        {/* ✅ قسم معلومات الشركة المصنعة */}
+        {hasManufacturerInfo && (
+          <section className="detail-section-card">
+            <h2 className="detail-section-title">Herstellerinformationen</h2>
+            <ul className="storage-list-page">
+              {Object.entries(manufacturerInfoObject).map(([key, value]) => (
+                <li key={key}>
+                  <strong>{key}:</strong> {value}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {hasNutrition && (
           <section className="detail-section-card">
-            <h2 className="detail-section-title">
-              Nährwerte & Zutaten
-            </h2>
+            <h2 className="detail-section-title">Nährwerte & Zutaten</h2>
 
-            {Object.keys(nutritionObject).length > 0 && (
-              <table className="page-nutrition-table">
-                <thead>
-                  <tr>
-                    <th>Nährwert</th>
-                    <th>{product.nutrition_basis || "pro 100 g"}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(nutritionObject).map(([key, value]) => (
-                    <tr key={key}>
-                      <td>{key}</td>
-                      <td>{value}</td>
+            {nutritionObject._type === 'nutrition_table' ? (
+              <div className="client-table-container">
+                <table className="client-nutrition-table">
+                  <thead>
+                    <tr>
+                      <th className="fixed-name-col">Nährwert</th>
+                      {/* التكرار بناءً على الأعمدة التي أدخلتها 1، 2، 3... */}
+                      {nutritionObject.columns.map((col, i) => (
+                        <th key={i}>{col || `Spalte ${i + 1}`}</th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {/* التكرار بناءً على الصفوف التي أدخلتها */}
+                    {nutritionObject.rows.map((row, i) => (
+                      <tr key={i}>
+                        <td className="fixed-name-col">{row.name}</td>
+                        {/* طباعة القيم مع ضمان عدم حدوث خطأ إذا كان العمود فارغاً */}
+                        {nutritionObject.columns.map((_, j) => (
+                          <td key={j}>{row.values[j] || "—"}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              /* التوافق مع المنتجات القديمة */
+              Object.keys(nutritionObject).length > 0 && (
+                <table className="page-nutrition-table">
+                  <thead>
+                    <tr>
+                      <th>Nährwert</th>
+                      <th>{product.nutrition_basis || "pro 100 g"}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(nutritionObject).map(([key, value]) => (
+                      <tr key={key}>
+                        <td>{key}</td>
+                        <td>{value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )
             )}
 
             {ingredients && (
@@ -303,9 +378,6 @@ export default function ProductCardDetails() {
           </section>
         )}
 
-        {/* ============================================
-            Storage
-        ============================================ */}
         {hasStorage && (
           <section className="detail-section-card">
             <h2 className="detail-section-title">Lagerung & Hinweise</h2>
@@ -324,9 +396,7 @@ export default function ProductCardDetails() {
 
       {relatedProducts.length > 0 && (
         <div className="related-products-section">
-          <h2 className="related-products-title">
-            Produkte aus derselben Kategorie
-          </h2>
+          <h2 className="related-products-title">Produkte aus derselben Kategorie</h2>
           <div className="related-products">
             {relatedProducts.map((item) => (
               <ProductCard key={item.id} {...item} />

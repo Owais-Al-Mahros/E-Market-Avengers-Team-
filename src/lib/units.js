@@ -249,8 +249,12 @@ export function getPricePerKg(product) {
     if (!isProductWeightBased(product)) return 0;
     const price = parseFloat(product.total_price || product.price) || 0;
     const weight = parseFloat(product.weight) || 0;
+    const unit = String(product.weight_unit || "kg").toLowerCase();
     if (weight <= 0) return 0;
-    return (price / weight).toFixed(2);
+
+    if (unit === "kg" || unit === "l") return (price / weight).toFixed(2);
+    if (unit === "g" || unit === "ml") return ((price * 1000) / weight).toFixed(2);
+    return 0;
 }
 
 /**
@@ -277,4 +281,28 @@ export function getUnitLabel(product) {
         return `€/${product.weight_unit || "kg"}`;
     }
     return "€/Stück";
+}
+/**
+ * الوزن الفيزيائي للوحدة الواحدة (kg) لأغراض الشحن.
+ * - إذا gross_weight موجود → هو
+ * - وإلا fallback: net_weight في الوحدة الأساسية
+ */
+export function getShippingWeight(item) {
+    if (!item) return 0;
+    const gross = parseFloat(item.gross_weight);
+    if (Number.isFinite(gross) && gross > 0) return gross;
+    return toBaseUnit(item.weight, item.weight_unit);
+}
+
+/** الوزن الفيزيائي للسطر = weight × qty */
+export function calcItemShippingWeight(item) {
+    if (!item) return 0;
+    const qty = parseFloat(item.quantity) || 1;
+    return getShippingWeight(item) * qty;
+}
+
+/** الوزن الفيزيائي الإجمالي لمصفوفة */
+export function calcTotalShippingWeight(items) {
+    if (!Array.isArray(items)) return 0;
+    return items.reduce((s, i) => s + calcItemShippingWeight(i), 0);
 }

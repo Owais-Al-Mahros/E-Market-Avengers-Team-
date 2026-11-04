@@ -1,536 +1,193 @@
 /* ============================================================
-   🧾 RECHNUNG — Formale Rechnung (§14 UStG)
-   Only for DELIVERED orders
+   🧾 RECHNUNG (RECEIPT STYLE)
    ============================================================ */
 
-.rechnung-container {
+.receipt-container {
     background: #fff;
-    max-width: 850px;
+    max-width: 600px;
+    /* عرض مناسب للإيصال */
     margin: 0 auto;
-    padding: 48px 56px 40px;
-    font-family: "IBM Plex Sans Arabic", -apple-system, sans-serif;
+    padding: 30px;
+    font-family: "Courier New", Courier, monospace;
+    /* خط الطابعة */
     font-size: 14px;
-    line-height: 1.6;
-    color: #1a1a1a;
-    box-shadow: 0 4px 24px rgba(20, 92, 74, 0.08);
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    line-height: 1.4;
+    color: #000;
+    box-sizing: border-box;
 }
 
 /* ═══ HEADER ═══ */
-.rechnung-header {
+.receipt-header {
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.receipt-brand {
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.receipt-mt {
+    margin-top: 8px;
+}
+
+/* ═══ LINES ═══ */
+.receipt-line {
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 8px 0;
+    color: #000;
+    font-weight: bold;
+}
+
+/* ═══ META DATA ═══ */
+.receipt-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13px;
+}
+
+.receipt-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding-bottom: 24px;
-    border-bottom: 3px double #1a1a1a;
-    margin-bottom: 28px;
-    gap: 24px;
 }
 
-.rechnung-brand {
-    font-size: 26px;
-    font-weight: 800;
-    color: #145c4a;
-    letter-spacing: -0.5px;
-    text-transform: uppercase;
-}
-
-.rechnung-brand-sub {
-    font-size: 12px;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 600;
-    margin-top: 2px;
-}
-
-.rechnung-header-right {
-    text-align: right;
-}
-
-.rechnung-title {
-    font-size: 32px;
-    font-weight: 800;
-    color: #1a1a1a;
-    letter-spacing: 4px;
-    margin-bottom: 4px;
-}
-
-.rechnung-number {
-    font-family: "Courier New", monospace;
-    font-size: 13px;
-    color: #6b7280;
-    font-weight: 700;
-}
-
-/* ═══ COMPANY LEGAL DATA ═══ */
-.rechnung-company {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px 40px;
-    padding: 18px 22px;
-    background: #f9fafb;
-    border-radius: 8px;
-    border-left: 4px solid #145c4a;
-    margin-bottom: 24px;
-}
-
-.rechnung-company-label {
-    font-size: 10.5px;
-    font-weight: 800;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-bottom: 6px;
-}
-
-.rechnung-company-name {
-    font-size: 16px;
-    font-weight: 800;
-    color: #1a1a1a;
-    margin-bottom: 4px;
-}
-
-.rechnung-company-line {
-    font-size: 13px;
-    color: #4b5563;
-    line-height: 1.5;
-}
-
-.rechnung-company-line strong {
-    color: #1a1a1a;
-    font-family: "Courier New", monospace;
-    font-weight: 700;
-}
-
-/* ═══ CUSTOMER + META ═══ */
-.rechnung-meta-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    margin-bottom: 32px;
-}
-
-.rechnung-section-label {
-    font-size: 10.5px;
-    font-weight: 800;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-bottom: 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.rechnung-customer-name {
-    font-size: 15px;
-    font-weight: 800;
-    color: #1a1a1a;
-    margin-bottom: 4px;
-}
-
-.rechnung-customer-line {
-    font-size: 13.5px;
-    color: #1a1a1a;
-    line-height: 1.5;
-}
-
-.rechnung-muted {
-    color: #6b7280;
-    font-size: 12.5px;
-    margin-top: 4px;
-}
-
-.rechnung-dates {
+/* ═══ ITEMS ═══ */
+.receipt-items {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
-.rechnung-date-row {
+.receipt-item-block {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 6px 0;
-    border-bottom: 1px dashed #e5e7eb;
-    font-size: 13.5px;
-    gap: 16px;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.rechnung-date-row:last-child {
-    border-bottom: none;
-}
-
-.rechnung-date-row span {
-    color: #6b7280;
-    font-weight: 600;
-}
-
-.rechnung-date-row strong {
-    color: #1a1a1a;
-    font-weight: 800;
-    font-family: "Courier New", monospace;
-    text-align: right;
-}
-
-/* ═══ ITEMS TABLE ═══ */
-.rechnung-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 24px;
-    font-size: 13px;
-}
-
-.rechnung-table thead {
-    border-top: 2px solid #1a1a1a;
-    border-bottom: 2px solid #1a1a1a;
-}
-
-.rechnung-table th {
-    padding: 12px 10px;
-    text-align: left;
-    font-size: 11px;
-    font-weight: 800;
-    color: #1a1a1a;
+.receipt-item-name {
+    font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 0.6px;
-    white-space: nowrap;
+    word-break: break-word;
 }
 
-.rechnung-table td {
-    padding: 14px 10px;
-    border-bottom: 1px solid #e5e7eb;
-    vertical-align: top;
-}
-
-.rechnung-table tbody tr:last-child td {
-    border-bottom: 2px solid #1a1a1a;
-}
-
-.rc-col-num {
-    width: 45px;
-    text-align: center;
-    color: #6b7280;
-    font-weight: 700;
-}
-
-.rc-col-desc {
-    min-width: 220px;
-}
-
-.rc-col-qty {
-    width: 80px;
-    text-align: right;
-    font-family: "Courier New", monospace;
-    font-weight: 700;
-}
-
-.rc-col-net,
-.rc-col-tax,
-.rc-col-gross {
-    width: 95px;
-    text-align: right;
-    font-family: "Courier New", monospace;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.rc-col-rate {
-    width: 70px;
-    text-align: center;
-}
-
-.rc-strong {
-    font-weight: 800;
-    color: #1a1a1a;
-}
-
-.rc-product-name {
-    font-weight: 700;
-    color: #1a1a1a;
-    font-size: 14px;
-}
-
-.rc-product-calc {
-    font-size: 11.5px;
-    color: #6b7280;
-    font-family: "Courier New", monospace;
-    margin-top: 2px;
-}
-
-.rc-sub-note {
-    color: #8b5cf6;
+.receipt-deposit {
+    padding-left: 10px;
     font-style: italic;
-    font-size: 12px;
-}
-
-.rc-removed-note {
-    font-size: 11.5px;
-    color: #dc2626;
-    font-weight: 700;
-    text-decoration: line-through;
-    margin-top: 2px;
-}
-
-.rc-row-removed {
-    opacity: 0.65;
-    background: rgba(217, 79, 79, 0.04);
-}
-
-.rc-empty {
-    text-align: center;
-    padding: 32px !important;
-    color: #6b7280;
-    font-style: italic;
+    font-size: 13px;
 }
 
 /* ═══ TOTALS ═══ */
-.rechnung-totals {
-    margin-left: auto;
-    max-width: 400px;
-    margin-bottom: 24px;
+.receipt-totals {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 16px 0;
-    border-bottom: 1px dashed #d1d5db;
+    gap: 4px;
+    margin-bottom: 10px;
 }
 
-.rc-total-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: 14px;
-    font-family: "Courier New", monospace;
-    font-weight: 600;
-    color: #1a1a1a;
-    padding: 3px 0;
-    gap: 16px;
-}
-
-.rc-total-tax {
-    color: #4b5563;
-    font-size: 13px;
-    padding-left: 20px;
-}
-
-.rc-total-grand {
-    padding-top: 12px;
-    margin-top: 6px;
-    border-top: 2px solid #1a1a1a;
+.receipt-summe {
     font-size: 18px;
-    font-weight: 800;
-}
-
-.rc-total-grand span:last-child {
-    color: #145c4a;
-    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 4px;
 }
 
 /* ═══ TAX BREAKDOWN ═══ */
-.rechnung-tax-section {
-    padding: 20px;
-    background: #f9fafb;
-    border-radius: 10px;
-    margin-bottom: 20px;
+.receipt-tax-section {
+    font-size: 13px;
+    margin: 10px 0;
 }
 
-.rc-tax-title {
-    font-size: 12px;
-    font-weight: 800;
-    color: #1a1a1a;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #d1d5db;
-}
-
-.rechnung-tax-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12.5px;
-    font-family: "Courier New", monospace;
-}
-
-.rechnung-tax-table th {
-    text-align: left;
-    font-size: 10.5px;
-    font-weight: 800;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 6px 8px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.rechnung-tax-table th:not(:first-child) {
-    text-align: right;
-}
-
-.rechnung-tax-table td {
-    padding: 8px;
-    color: #1a1a1a;
-    font-weight: 700;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.rechnung-tax-table td:not(:first-child) {
-    text-align: right;
-}
-
-.rechnung-tax-table tr:last-child td {
-    border-bottom: none;
-}
-
-/* ═══ PAYMENT INFO ═══ */
-.rechnung-payment {
-    padding: 16px 20px;
-    background: #f9fafb;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.rc-payment-row {
+.receipt-tax-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    font-size: 13.5px;
-    gap: 16px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    border-bottom: 1px dashed #000;
+    padding-bottom: 2px;
 }
 
-.rc-payment-label {
-    color: #6b7280;
-    font-weight: 600;
+.receipt-tax-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
 }
 
-.rc-payment-value {
-    color: #1a1a1a;
-    font-weight: 700;
+.receipt-tax-row span:nth-child(1) {
+    width: 20%;
+}
+
+.receipt-tax-row span:nth-child(2) {
+    width: 30%;
     text-align: right;
 }
 
-.rc-payment-status {
-    display: inline-block;
-    padding: 3px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
+.receipt-tax-row span:nth-child(3) {
+    width: 25%;
+    text-align: right;
 }
 
-.rc-paid {
-    background: #dcfce7;
-    color: #166534;
+.receipt-tax-row span:nth-child(4) {
+    width: 25%;
+    text-align: right;
 }
 
-/* ═══ LEGAL NOTICE ═══ */
-.rechnung-legal {
-    padding: 14px 18px;
-    background: #eff6ff;
-    border-left: 4px solid #3b82f6;
-    border-radius: 8px;
-    font-size: 12.5px;
-    color: #1e40af;
-    line-height: 1.6;
-    margin-bottom: 24px;
+.receipt-tax-total {
+    font-weight: bold;
+    border-top: 1px dashed #000;
+    padding-top: 4px;
+    margin-top: 4px;
 }
 
-.rechnung-legal strong {
-    font-weight: 800;
-    color: #1e3a8a;
+/* ═══ CUSTOMER ═══ */
+.receipt-customer {
+    font-size: 13px;
 }
 
 /* ═══ FOOTER ═══ */
-.rechnung-footer {
+.receipt-footer {
     text-align: center;
-    padding-top: 24px;
-    border-top: 1px dashed #d1d5db;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+.receipt-thanks {
     font-size: 14px;
-    font-weight: 700;
-    color: #1a1a1a;
+    font-weight: bold;
+    margin-bottom: 8px;
 }
 
-.rechnung-footer-sub {
-    margin-top: 8px;
-    font-size: 11.5px;
-    color: #6b7280;
-    font-weight: 500;
-    font-style: italic;
+.receipt-legal {
+    font-size: 11px;
+    color: #333;
+    margin-bottom: 10px;
+    line-height: 1.3;
 }
 
-/* ═══ RESPONSIVE ═══ */
-@media (max-width: 768px) {
-    .rechnung-container {
-        padding: 28px 20px 24px;
-        border-radius: 0;
-    }
-
-    .rechnung-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .rechnung-header-right {
-        text-align: left;
-    }
-
-    .rechnung-title {
-        font-size: 24px;
-        letter-spacing: 3px;
-    }
-
-    .rechnung-company {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-
-    .rechnung-meta-section {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .rechnung-table {
-        font-size: 11.5px;
-    }
-
-    .rechnung-table th,
-    .rechnung-table td {
-        padding: 8px 4px;
-    }
-
-    .rc-col-num,
-    .rc-col-net,
-    .rc-col-tax,
-    .rc-col-rate {
-        display: none;
-    }
-
-    .rc-total-grand {
-        font-size: 15px;
-    }
-
-    .rc-total-grand span:last-child {
-        font-size: 17px;
+/* ═══ RESPONSIVE & PRINT ═══ */
+@media (max-width: 600px) {
+    .receipt-container {
+        padding: 15px;
     }
 }
 
-/* ═══ PRINT ═══ */
 @media print {
-    .rechnung-container {
+    .receipt-container {
         box-shadow: none;
         border: none;
-        padding: 20mm 15mm;
+        padding: 0;
         max-width: 100%;
     }
 
     @page {
-        size: A4;
-        margin: 0;
+        size: 80mm 297mm;
+        /* حجم ورق الإيصالات الحراري (اختياري) */
+        /* أو يمكنك استخدام A4 إذا كنت ستطبعه على ورق عادي */
+        margin: 10mm;
     }
 }

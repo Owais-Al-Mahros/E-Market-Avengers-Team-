@@ -241,3 +241,13 @@
     letter-spacing: 0.5px;
   }
 }
+
+.cart-product-deposit {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary-color);
+  background: rgba(20, 92, 74, 0.06);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  width: fit-content;
+}

@@ -846,3 +846,30 @@
         font-size: var(--font-xs);
     }
 }
+
+/* ═══════════════════════════════════════════
+   📄 Invoice Button (Download)
+   ═══════════════════════════════════════════ */
+.btn-invoice {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+    border-color: rgba(59, 130, 246, 0.25);
+}
+
+.btn-invoice:hover {
+    background: #3b82f6;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-invoice-downloaded {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border-color: rgba(16, 185, 129, 0.25);
+}
+
+.btn-invoice-downloaded:hover {
+    background: #10b981;
+    color: #fff;
+    transform: translateY(-1px);
+}

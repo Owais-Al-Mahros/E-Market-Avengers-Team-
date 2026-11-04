@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useCart } from "../../context/CartContext.jsx";
 import { useFavorite } from "../../context/FavoriteContext.jsx";
-import { calculatePriceByKg } from "../../api/index.js";
+import { calculatePriceByKg, getBaseUnitLabel } from "../../api/index.js";
 import { formatEuro, formatWeight } from "../../lib/format";
 
 export default function ProductCard({
@@ -17,6 +17,9 @@ export default function ProductCard({
   tax_rate,
   weight,
   weight_unit,
+  gross_weight,
+  deposit_amount,
+  deposit_tax_rate,
   category,
   description,
   ingredients,
@@ -32,7 +35,10 @@ export default function ProductCard({
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const displayPrice = parseFloat(total_price || price) || 0;
-  const pricePerKg = calculatePriceByKg(displayPrice, weight, weight_unit);
+  const pricePerBase = calculatePriceByKg(displayPrice, weight, weight_unit);
+  const baseUnit = getBaseUnitLabel(weight_unit);
+  const deposit = parseFloat(deposit_amount) || 0;
+  const depositRate = parseFloat(deposit_tax_rate) || parseFloat(tax_rate) || 0;
 
   const openDetails = () => {
     navigate(`/DisplayProducts/ProductCardDetails?productId=${id}`);
@@ -51,8 +57,6 @@ export default function ProductCard({
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-
-    // ✅ وضعنا الإضافة في try/catch لضمان ظهور التوست حتى لو حدث خطأ
     try {
       addToCart(
         {
@@ -65,6 +69,9 @@ export default function ProductCard({
           tax_rate: parseFloat(tax_rate) || 0,
           weight,
           weight_unit,
+          gross_weight,
+          deposit_amount: deposit,
+          deposit_tax_rate: depositRate,
         },
         counter
       );
@@ -90,6 +97,9 @@ export default function ProductCard({
         tax_rate: parseFloat(tax_rate) || 0,
         weight,
         weight_unit,
+        gross_weight,
+        deposit_amount: deposit,
+        deposit_tax_rate: depositRate,
         category,
         description,
         ingredients,
@@ -122,7 +132,7 @@ export default function ProductCard({
           className="product-card-image"
           loading="lazy"
           onLoad={() => setIsImageLoaded(true)}
-          onError={() => setIsImageLoaded(true)} /* ✅ إظهار الصورة حتى لو كان الرابط مكسوراً */
+          onError={() => setIsImageLoaded(true)}
           style={{ opacity: isImageLoaded ? 1 : 0 }}
         />
       </div>
@@ -151,9 +161,9 @@ export default function ProductCard({
           <span className="product-card-main-price">
             {formatEuro(displayPrice * counter)}
           </span>
-          {pricePerKg > 0 && (
+          {pricePerBase > 0 && baseUnit && (
             <span className="product-card-price-per-kg">
-              ({pricePerKg} € / kg)
+              ({pricePerBase} € / {baseUnit})
             </span>
           )}
         </div>

@@ -41,7 +41,7 @@ function generateOrderNumber() {
 
 export default function DeliveryTimePage() {
     const navigate = useNavigate();
-    const { cartItems, totalPrice, clearCart } = useCart();
+    const { cartItems, totalPrice, totalDeposit, totalWeight, clearCart } = useCart();
     const {
         checkoutData,
         updateFields,
@@ -134,22 +134,29 @@ export default function DeliveryTimePage() {
             // ══════════════════════════════════════════════════════
             // 2. حساب المبالغ
             // ══════════════════════════════════════════════════════
-            const productsTotal = totalPrice;
+            const productsTotal = totalPrice;         // منتجات فقط
+            const depositTotal = totalDeposit;       // Pfand
             const shipping = checkoutData.shippingDetails.totalShipping || 0;
-            const total = productsTotal + shipping;
+            const total = productsTotal + depositTotal + shipping;
 
-            // ✅ FIX #5b: حساب الضريبة عند إنشاء الطلب
-            const totalTax = cartItems.reduce((sum, item) => {
+            const productsTax = cartItems.reduce((sum, item) => {
                 const rate = parseFloat(item.tax_rate) || 0;
                 if (rate <= 0) return sum;
-
-                const itemBrutto =
-                    (parseFloat(item.total_price || item.price) || 0) *
-                    (parseFloat(item.quantity) || 1);
-
-                const netto = itemBrutto / (1 + rate / 100);
-                return sum + (itemBrutto - netto);
+                const brutto = (parseFloat(item.total_price || item.price) || 0) * item.quantity;
+                return sum + (brutto - brutto / (1 + rate / 100));
             }, 0);
+
+            const depositsTax = cartItems.reduce((sum, item) => {
+                const d = parseFloat(item.deposit_amount) || 0;
+                if (d <= 0) return sum;
+                const rate = parseFloat(item.deposit_tax_rate) || parseFloat(item.tax_rate) || 0;
+                if (rate <= 0) return sum;
+                const brutto = d * item.quantity;
+                return sum + (brutto - brutto / (1 + rate / 100));
+            }, 0);
+
+            const totalTax = productsTax + depositsTax;
+
 
             // ══════════════════════════════════════════════════════
             // 3. توليد المعرّفات من جهة العميل (لتفادي مشكلة RLS)
@@ -180,6 +187,7 @@ export default function DeliveryTimePage() {
                 order_number: orderNumber,
                 status: "awaiting_payment",
                 subtotal: productsTotal,
+                deposit_total: depositTotal,
                 tax: +totalTax.toFixed(2),
                 total_price: total,
                 current_total: total,
@@ -229,21 +237,29 @@ export default function DeliveryTimePage() {
             // ══════════════════════════════════════════════════════
             // 5. ✅ FIX: إدراج الطلب + البنود ذريًا عبر RPC
             // ══════════════════════════════════════════════════════
-            const orderItems = cartItems.map((item) => ({
-                order_id: orderId,
-                product_id: item.id,
-                product_number: item.product_number || null,
-                quantity: item.quantity,
-                product_name: item.name,
-                unit_price: item.price,
-                total_price: (item.total_price || item.price) * item.quantity,
-                tax_rate: item.tax_rate || 0,
-                weight: item.weight || null,
-                weight_unit: item.weight_unit || "kg",
-                total_weight:
-                    toBaseUnit(item.weight, item.weight_unit) * item.quantity,
-                product_type: item.product_type || "unit_based",
-            }));
+            const orderItems = cartItems.map((item) => {
+                const grossW = parseFloat(item.gross_weight)
+                    || toBaseUnit(item.weight, item.weight_unit);
+
+                return {
+                    order_id: orderId,
+                    product_id: item.id,
+                    product_number: item.product_number || null,
+                    quantity: item.quantity,
+                    product_name: item.name,
+                    unit_price: item.price,
+                    total_price: (item.total_price || item.price) * item.quantity,
+                    tax_rate: item.tax_rate || 0,
+                    weight: item.weight || null,
+                    weight_unit: item.weight_unit || "kg",
+                    total_weight: grossW * item.quantity,        // ← الوزن الفيزيائي للشحن
+                    gross_weight: grossW,                        // ← جديد
+                    deposit_amount: parseFloat(item.deposit_amount) || 0,   // ← جديد
+                    deposit_tax_rate: parseFloat(item.deposit_tax_rate)
+                        || parseFloat(item.tax_rate) || 0,       // ← جديد
+                    product_type: item.product_type || "unit_based",
+                };
+            });
 
             const { data: rpcResult, error: rpcError } = await supabase.rpc(
                 "create_guest_order",
@@ -259,7 +275,7 @@ export default function DeliveryTimePage() {
             }
 
             if (!rpcResult?.success) {
-                throw new Error("Bestellung konnte nicht erstellt werden.");
+                throw new Error(rpcResult?.error || "Bestellung konnte nicht erstellt werden.");
             }
 
             console.log(

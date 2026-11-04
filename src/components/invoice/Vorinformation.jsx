@@ -69,11 +69,21 @@ export default function Vorinformation({
     if (!order) return null;
 
     const shipping = parseFloat(order.shipping_cost || 0);
+
     const productsTotal = items
         .filter((i) => !i._isRemoved)
         .reduce((sum, item) => sum + parseFloat(item.total_price || 0), 0);
 
-    const total = productsTotal + shipping;
+    // ✅ حساب الـ Pfand
+    const depositTotal = items
+        .filter((i) => !i._isRemoved)
+        .reduce((sum, item) => {
+            const d = parseFloat(item.deposit_amount) || 0;
+            const q = parseFloat(item.quantity) || 1;
+            return sum + d * q;
+        }, 0);
+
+    const total = productsTotal + depositTotal + shipping;
     const authorizedTotal = total + bufferAmount;
 
     const paymentLabel = (() => {
@@ -132,6 +142,14 @@ export default function Vorinformation({
                     <span>Zwischensumme (Produkte)</span>
                     <span>{fmtPrice(productsTotal)} €</span>
                 </div>
+
+                {/* ✅ سطر الـ Pfand */}
+                {depositTotal > 0 && (
+                    <div className="vo-row">
+                        <span>+ Pfand</span>
+                        <span>{fmtPrice(depositTotal)} €</span>
+                    </div>
+                )}
 
                 {shipping > 0 && (
                     <div className="vo-row">

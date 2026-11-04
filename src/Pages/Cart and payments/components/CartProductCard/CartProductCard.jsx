@@ -3,33 +3,22 @@ import "./CartProductCard.css";
 
 export default function CartProductCard(props) {
     const {
-        id,
-        name,
-        image,
-        qty,
-        price,
-        weight,
-        total_price,
-        weight_unit,
-        increaseQty,
-        decreaseQty,
-        removeFromCart,
+        id, name, image, qty, price, weight, total_price, weight_unit,
+        deposit_amount,
+        increaseQty, decreaseQty, removeFromCart,
     } = props;
 
     const unitPrice = parseFloat(total_price) || parseFloat(price) || 0;
     const totalPrice = unitPrice * qty;
     const itemWeight = parseFloat(weight) || 0;
     const totalWeight = itemWeight * qty;
+    const deposit = parseFloat(deposit_amount) || 0;
+    const depositTotal = deposit * qty;
 
     return (
         <div className="cart-product-row">
             <div className="cart-product-image-wrapper">
-                <img
-                    src={image}
-                    alt={name}
-                    className="cart-product-image"
-                    loading="lazy"
-                />
+                <img src={image} alt={name} className="cart-product-image" loading="lazy" />
             </div>
 
             <div className="cart-product-info">
@@ -38,6 +27,11 @@ export default function CartProductCard(props) {
                     <span className="cart-product-weight">
                         ⚖️ {formatWeight(itemWeight, weight_unit)} × {qty} ={" "}
                         {formatWeight(totalWeight, weight_unit)}
+                    </span>
+                )}
+                {deposit > 0 && (
+                    <span className="cart-product-deposit">
+                        ♻️ + {formatEuro(depositTotal)} Pfand ({qty} × {formatEuro(deposit)})
                     </span>
                 )}
             </div>
@@ -83,12 +77,9 @@ export default function CartProductCard(props) {
                 </div>
             </div>
 
-            <div className="cart-product-unit-price">
-                {formatEuro(unitPrice)}
-            </div>
-
+            <div className="cart-product-unit-price">{formatEuro(unitPrice)}</div>
             <div className="cart-product-total">
-                {formatEuro(totalPrice)}
+                {formatEuro(totalPrice + depositTotal)}
             </div>
         </div>
     );

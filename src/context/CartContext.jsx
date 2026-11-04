@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-import { toBaseUnit } from "../lib/units";
+import { toBaseUnit, getShippingWeight } from "../lib/units";
 
 const CartContext = createContext();
 
@@ -10,115 +10,110 @@ export function CartProvider({ children }) {
     []
   );
 
-  // ============================================
-  // إضافة منتج
-  // ============================================
+  // ═══ Normalize before storing — new fields guaranteed ═══
+  const normalizeItem = (product) => ({
+    ...product,
+    deposit_amount: Math.max(0, parseFloat(product.deposit_amount) || 0),
+    deposit_tax_rate: Math.max(0, parseFloat(product.deposit_tax_rate) || 0),
+    gross_weight: getShippingWeight(product),
+  });
+
   const addToCart = (product, quantity = 1) => {
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
+      const normalized = normalizeItem(product);
+      const existing = prevItems.find((item) => item.id === normalized.id);
 
-      if (existingItem) {
+      if (existing) {
         return prevItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
+          item.id === normalized.id
+            ? { ...item, ...normalized, quantity: item.quantity + quantity }
             : item
         );
       }
-
-      // إضافة المنتج إذا لم يكن موجوداً في السلة
-      return [...prevItems, { ...product, quantity }];
+      return [...prevItems, { ...normalized, quantity }];
     });
   };
 
-  // ============================================
-  // إزالة منتج من السلة (كانت مفقودة)
-  // ============================================
   const removeFromCart = (productId) => {
     setCartItems((prev) => prev.filter((item) => item.id !== productId));
   };
 
-  // ============================================
-  // زيادة الكمية
-  // ============================================
   const increaseQty = (productId) => {
     setCartItems((prev) =>
       prev.map((item) =>
-        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+        item.id === productId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
       )
     );
   };
 
-  // ============================================
-  // إنقاص الكمية
-  // ============================================
   const decreaseQty = (productId) => {
     setCartItems((prev) =>
       prev
         .map((item) =>
-          item.id === productId ? { ...item, quantity: item.quantity - 1 } : item
+          item.id === productId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
         )
         .filter((item) => item.quantity > 0)
     );
   };
 
-  // ============================================
-  // تحديث الكمية
-  // ============================================
   const updateQuantity = (productId, newQuantity) => {
     if (newQuantity <= 0) {
       removeFromCart(productId);
       return;
     }
-
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
+    setCartItems((prev) =>
+      prev.map((item) =>
         item.id === productId ? { ...item, quantity: newQuantity } : item
       )
     );
   };
 
-  // ============================================
-  // تفريغ السلة
-  // ============================================
-  const clearCart = () => {
-    clearCartItems();
-  };
+  const clearCart = () => clearCartItems();
 
-  // ============================================
-  // إجمالي عدد المنتجات
-  // ============================================
-  const totalItems = useMemo(() => {
-    return cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  }, [cartItems]);
+  // ═══ Totals ═══
+  const totalItems = useMemo(
+    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    [cartItems]
+  );
 
-  // ============================================
-  // إجمالي السعر (مع الضريبة)
-  // ============================================
+  // المنتجات فقط (بدون Pfand، بدون شحن)
   const totalPrice = useMemo(() => {
     return cartItems.reduce((sum, item) => {
-      const itemTotal = parseFloat(item.total_price || item.price || 0);
-      return sum + itemTotal * item.quantity;
+      const unit = parseFloat(item.total_price || item.price || 0);
+      return sum + unit * item.quantity;
     }, 0);
   }, [cartItems]);
 
-  // ============================================
-  // ✅ إجمالي الوزن بالوحدة الأساسية (kg / L)
-  // ============================================
+  // الـ Pfand كإجمالي
+  const totalDeposit = useMemo(() => {
+    return cartItems.reduce((sum, item) => {
+      const d = parseFloat(item.deposit_amount) || 0;
+      return sum + d * item.quantity;
+    }, 0);
+  }, [cartItems]);
+
+  // المجموع النهائي قبل الشحن = منتجات + Pfand
+  const cartGrandTotal = totalPrice + totalDeposit;
+
+  // ⚠️ للأغراض القديمة: totalWeight الآن = الوزن الفيزيائي (gross) للشحن
   const totalWeight = useMemo(() => {
     return cartItems.reduce((sum, item) => {
-      const itemBaseWeight = toBaseUnit(item.weight, item.weight_unit);
-      return sum + itemBaseWeight * item.quantity;
+      const w = getShippingWeight(item);
+      return sum + w * item.quantity;
     }, 0);
   }, [cartItems]);
 
-  // ============================================
-  // Context Value
-  // ============================================
   const value = {
     cartItems,
     totalItems,
-    totalPrice,
-    totalWeight, // ✅ بالكيلوغرام دائماً
+    totalPrice,        // منتجات فقط
+    totalDeposit,      // Pfand
+    cartGrandTotal,    // منتجات + Pfand
+    totalWeight,       // الوزن الفيزيائي (kg) للشحن
     addToCart,
     removeFromCart,
     updateQuantity,
@@ -127,18 +122,11 @@ export function CartProvider({ children }) {
     increaseQty,
   };
 
-  return (
-    <CartContext.Provider value={value}>{children}</CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
-// ============================================
-// Hook
-// ============================================
 export function useCart() {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error("useCart must be used within a CartProvider");
-  }
-  return context;
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error("useCart must be used within a CartProvider");
+  return ctx;
 }

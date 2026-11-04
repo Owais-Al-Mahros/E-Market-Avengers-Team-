@@ -6,8 +6,7 @@ import "./OrderSummary.css";
 
 export default function OrderSummary() {
   const navigate = useNavigate();
-  const { totalItems, totalPrice } = useCart();
-
+  const { totalItems, totalPrice, totalDeposit, cartGrandTotal } = useCart();
   const [allowSubstitution, setAllowSubstitution] = useLocalStorage(
     "allowSubstitution",
     true
@@ -15,44 +14,36 @@ export default function OrderSummary() {
 
   return (
     <aside className="order-summary">
-      {/* ═══ Complete Purchase Button ═══ */}
       <button
         className="order-complete-btn"
         onClick={() => navigate("/Cart&Payments/Checkout")}
       >
         Zur Kasse gehen
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M5 12h14M12 5l7 7-7 7"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+          <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
 
-      {/* ═══ Total Card ═══ */}
       <div className="order-summary-card">
         <div className="order-summary-total">
           <span className="order-total-label">Gesamt</span>
-          <span className="order-total-value">
-            {formatEuro(totalPrice)}
-          </span>
+          <span className="order-total-value">{formatEuro(cartGrandTotal)}</span>
         </div>
-        <p className="order-summary-vat">
-          Preise inkl. MwSt.
-        </p>
+        <p className="order-summary-vat">Preise inkl. MwSt. · zzgl. Versand</p>
 
         <div className="order-summary-divider" />
 
         <div className="order-summary-row">
-          <span>
-            ({totalItems}{" "}
-            {totalItems === 1 ? "Produkt" : "Produkte"})
-          </span>
+          <span>({totalItems} {totalItems === 1 ? "Produkt" : "Produkte"})</span>
           <span>{formatEuro(totalPrice)}</span>
         </div>
+
+        {totalDeposit > 0 && (
+          <div className="order-summary-row">
+            <span>♻️ Pfand (rückzahlbar)</span>
+            <span>{formatEuro(totalDeposit)}</span>
+          </div>
+        )}
       </div>
 
       {/* ═══ Substitution Checkbox ═══ */}

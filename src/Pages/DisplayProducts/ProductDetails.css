@@ -460,3 +460,147 @@
     margin-top: 0.5rem;
   }
 }
+
+/* ═══ Manufacturer & Category ═══ */
+.product-brand {
+  font-size: 0.9375rem;
+  color: var(--secondary-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.manufacturer-name strong,
+.category-name strong {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.brand-separator {
+  color: var(--border-color);
+}
+
+/* ═══ Rich Text Description Styling ═══ */
+.product-description-html {
+  line-height: 1.7;
+  color: var(--secondary-text);
+  font-size: 0.95rem;
+}
+
+.product-description-html p {
+  margin-bottom: 12px;
+}
+
+.product-description-html ul,
+.product-description-html ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+  /* مسافة للنقاط */
+}
+
+.product-description-html li {
+  margin-bottom: 6px;
+}
+
+.product-description-html b,
+.product-description-html strong {
+  font-weight: 800;
+  color: var(--primary-color);
+}
+
+.product-description-html i,
+.product-description-html em {
+  font-style: italic;
+  color: var(--dark-green);
+}
+
+.product-description-html u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.product-description-html h4 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--dark-green);
+  margin: 16px 0 8px;
+}
+
+/* ═══════════════════════════════════════════
+   📊 Client Nutrition Table (Matches Admin)
+   ═══════════════════════════════════════════ */
+.client-nutrition-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  /* يسمح بالتمرير إذا زادت الأعمدة في الجوال */
+  margin-bottom: 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(20, 92, 74, 0.04);
+}
+
+.client-nutrition-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  white-space: nowrap;
+  /* يمنع النص من التداخل */
+  min-width: 100%;
+}
+
+.client-nutrition-table thead th {
+  background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
+  color: #fff;
+  padding: 14px 16px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+}
+
+.client-nutrition-table th.cn-name-col {
+  text-align: left;
+  border-top-left-radius: var(--radius-md);
+}
+
+.client-nutrition-table th.cn-value-col:last-child {
+  border-top-right-radius: var(--radius-md);
+}
+
+.client-nutrition-table tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+  color: var(--text);
+}
+
+.client-nutrition-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.client-nutrition-table tbody tr:nth-child(even) {
+  background-color: rgba(20, 92, 74, 0.02);
+}
+
+.client-nutrition-table tbody tr:hover {
+  background-color: rgba(20, 92, 74, 0.05);
+}
+
+.client-nutrition-table td.cn-name-col {
+  text-align: left;
+  font-weight: 700;
+  color: var(--primary-color);
+  background-color: #fff;
+  border-right: 1px solid var(--border-color);
+}
+
+.client-nutrition-table tbody tr:nth-child(even) td.cn-name-col {
+  background-color: #f7faf8;
+}
+
+.client-nutrition-table td.cn-value-col {
+  font-family: "Courier New", monospace;
+  font-weight: 600;
+}

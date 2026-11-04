@@ -1,5 +1,10 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
-import { fetchData, searchProduct, fetchBestSellers } from "../api";
+import {
+    fetchData,
+    searchProduct,
+    fetchBestSellers,
+    fetchProductsPaginated as fetchProductsPaginatedAPI
+} from "../api";
 import { supabase } from "../lib/supabase";
 
 const ProductContext = createContext();
@@ -47,51 +52,26 @@ export function ProductProvider({ children }) {
     }, []);
 
     // ═══════════════════════════════════════════
-    // الجديد — Pagination
+    // الجديد — Pagination (عبر API)
     // ═══════════════════════════════════════════
-    // ═══════════════════════════════════════════
-    // ✅ Pagination — Public + Admin
-    // ═══════════════════════════════════════════
-    const fetchProductsPaginated = useCallback(async ({
-        categoryId = null,
-        subcategoryId = null,
-        search = null,
-        page = 1,
-        limit = 40,
-        isAdmin = false,   // ← جديد
-    } = {}) => {
+    const fetchProductsPaginated = useCallback(async (options = {}) => {
         setPaginationLoading(true);
         try {
-            const offset = (page - 1) * limit;
+            const result = await fetchProductsPaginatedAPI(options);
 
-            // ✅ اختر RPC حسب الدور
-            const rpcName = isAdmin
-                ? "get_products_paginated_admin"
-                : "get_products_paginated";
-
-            const { data, error } = await supabase.rpc(rpcName, {
-                p_category_id: categoryId,
-                p_subcategory_id: subcategoryId,
-                p_search: search,
-                p_limit: limit,
-                p_offset: offset,
-            });
-            if (error) throw error;
-
-            const total = Number(data?.[0]?.total_count || 0);
-            const rows = (data || []).map(({ total_count, ...rest }) => rest);
-
-            setPaginatedProducts(rows);
-            setPaginationMeta({ total, page, limit });
-            return { success: true, products: rows, total };
+            if (result.success) {
+                setPaginatedProducts(result.data);
+                setPaginationMeta({
+                    total: result.total,
+                    page: options.page || 1,
+                    limit: options.limit || 40
+                });
+                return { success: true, products: result.data, total: result.total };
+            } else {
+                return { success: false, error: result.error };
+            }
         } catch (err) {
-            console.error("fetchProductsPaginated error:", {
-                message: err?.message,
-                details: err?.details,
-                hint: err?.hint,
-                code: err?.code,
-                raw: err,
-            });
+            console.error("Context fetchProductsPaginated error:", err);
             return { success: false, error: err.message };
         } finally {
             setPaginationLoading(false);
@@ -99,7 +79,7 @@ export function ProductProvider({ children }) {
     }, []);
 
     // ═══════════════════════════════════════════
-    // الجديد — Counts
+    // الجديد — Counts (تستخدم RPC للفئات)
     // ═══════════════════════════════════════════
     const fetchCategoriesWithCounts = useCallback(async () => {
         try {

@@ -6,11 +6,7 @@ const TABLE = "products";
 const STORAGE_BUCKET = "upload-image";
 
 // ═══════════════════════════════════════════════════════════
-// 🎯 Public Columns — لا تحتوي على product_number
-// يُستخدم لكل الاستعلامات من واجهة العميل
-// ═══════════════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════════════
-// 🎯 Public Columns — لا تحتوي على product_number
+// 🎯 Public Columns
 // ═══════════════════════════════════════════════════════════
 const PUBLIC_COLUMNS = `
     id,
@@ -22,6 +18,12 @@ const PUBLIC_COLUMNS = `
     tax_rate,
     weight,
     weight_unit,
+    gross_weight,
+    deposit_amount,
+    deposit_tax_rate,
+    manufacturer,
+    manufacturer_info,
+    origin_country,
     category_id,
     subcategory_id,
     description,
@@ -75,17 +77,11 @@ export async function deleteProduct(id) {
 }
 
 // ============================================================
-// 2. Queries — Customer-facing (بدون product_number)
+// 2. Queries — Customer-facing
 // ============================================================
 
 /**
  * بحث عن منتجات — يُستخدم للاقتراحات في الهيدر والسلة
- *
- * ✅ تحديث: البحث بـ name فقط
- *    لم يعد يبحث بـ product_number (خاص بالأدمن)
- *
- * @param {string} searchItem - كلمة البحث
- * @param {number} limit - الحد الأقصى للنتائج (افتراضي 40)
  */
 export async function searchProduct(searchItem, limit = 40) {
     try {
@@ -100,7 +96,6 @@ export async function searchProduct(searchItem, limit = 40) {
             return data || [];
         }
 
-        // ✅ بحث بـ name فقط — الأرقام أيضًا تُعامل كنص في name
         const { data, error } = await supabase
             .from(TABLE)
             .select(PUBLIC_COLUMNS)
@@ -118,7 +113,6 @@ export async function searchProduct(searchItem, limit = 40) {
 
 /**
  * جلب منتج واحد بالـ id — لواجهة العميل
- * @param {number|string} productId
  */
 export async function getProductById(productId) {
     try {
@@ -186,6 +180,40 @@ export async function countSubCategory(categoryId) {
     } catch (error) {
         console.error("Error counting subcategories:", error.message);
         return { success: false, error: error.message };
+    }
+}
+
+/**
+ * جلب المنتجات مع الترقيم (Pagination)
+ */
+export async function fetchProductsPaginated({
+    categoryId = null,
+    subcategoryId = null,
+    search = null,
+    page = 1,
+    limit = 40,
+} = {}) {
+    try {
+        const offset = (page - 1) * limit;
+
+        let query = supabase
+            .from(TABLE)
+            .select(PUBLIC_COLUMNS, { count: "exact" });
+
+        if (categoryId) query = query.eq("category_id", categoryId);
+        if (subcategoryId) query = query.eq("subcategory_id", subcategoryId);
+        if (search) query = query.ilike("name", `%${search}%`);
+
+        const { data, error, count } = await query
+            .range(offset, offset + limit - 1)
+            .order("id", { ascending: true });
+
+        if (error) throw error;
+
+        return { success: true, data: data || [], total: count || 0 };
+    } catch (err) {
+        console.error("fetchProductsPaginated error:", err);
+        return { success: false, error: err.message, data: [], total: 0 };
     }
 }
 

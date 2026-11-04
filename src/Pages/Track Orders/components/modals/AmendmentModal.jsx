@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
-import { applyAmendment } from "../../../../api/orders";
+import { applyAmendment, cancelOrder } from "../../../../api/orders";
 import ConfirmDialog from "../../../../components/ui/ConfirmDialog";
+import "./AmendmentModal.css";
 
 export default function AmendmentModal({ order, onClose, onSuccess }) {
     const [items, setItems] = useState([]);
@@ -47,6 +48,9 @@ export default function AmendmentModal({ order, onClose, onSuccess }) {
     // ============================================
     const activeItems = items.filter((i) => !i.toDelete);
 
+    // ✅ إذا تم حذف جميع المنتجات → إلغاء الطلب
+    const allDeleted = items.length > 0 && activeItems.length === 0;
+
     const getUnitPrice = (item) => {
         const total = parseFloat(item.total_price || 0);
         const qty = parseFloat(item.quantity || 1);
@@ -90,6 +94,61 @@ export default function AmendmentModal({ order, onClose, onSuccess }) {
     // ============================================
     const performSubmit = async () => {
         setSubmitting(true);
+
+        // ═══════════════════════════════════════════════════════
+        // ✅ حالة خاصة: كل المنتجات محذوفة → إلغاء الطلب
+        // ═══════════════════════════════════════════════════════
+        if (allDeleted) {
+            const email = order.customer_info?.email;
+            if (!email) {
+                toast.error("E-Mail fehlt. Stornierung nicht möglich.");
+                setSubmitting(false);
+                setShowConfirm(false);
+                return;
+            }
+
+            const toastId = toast.loading("Bestellung wird storniert...");
+            try {
+                const result = await cancelOrder(order.id, email);
+
+                if (!result.success) {
+                    toast.error(result.error || "Stornierung fehlgeschlagen", {
+                        id: toastId,
+                        duration: 7000,
+                    });
+                    setSubmitting(false);
+                    setShowConfirm(false);
+                    return;
+                }
+
+                let msg = "✅ Bestellung erfolgreich storniert!";
+                if (result.refund_type === "refunded") {
+                    msg += ` €${result.refund_amount?.toFixed(2)} werden innerhalb von 3-5 Werktagen erstattet.`;
+                } else if (result.refund_type === "authorization_cancelled") {
+                    msg += ` Reservierter Betrag (€${result.refund_amount?.toFixed(2)}) wurde freigegeben.`;
+                } else if (result.refund_type === "no_payment") {
+                    msg += " Es wurde kein Betrag belastet.";
+                }
+
+                toast.success(msg, { id: toastId, duration: 8000 });
+
+                setShowConfirm(false);
+                setSubmitting(false);
+                onSuccess();
+            } catch (err) {
+                console.error("Cancel failed:", err);
+                toast.error("Verbindungsfehler. Bitte versuchen Sie es später.", {
+                    id: toastId,
+                });
+                setSubmitting(false);
+                setShowConfirm(false);
+            }
+            return;
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // ✅ حالة عادية: تعديل الطلب
+        // ═══════════════════════════════════════════════════════
         const toastId = toast.loading("Änderungen werden gespeichert...");
 
         try {
@@ -146,29 +205,34 @@ export default function AmendmentModal({ order, onClose, onSuccess }) {
                         <div>
                             <h2>
                                 <span className="material-symbols-outlined">
-                                    edit_note
+                                    {allDeleted ? "cancel" : "edit_note"}
                                 </span>
-                                Bestellung ändern
+                                {allDeleted ? "Bestellung stornieren" : "Bestellung ändern"}
                             </h2>
                             <p>Bestellung #{order.order_number}</p>
                         </div>
                         <button className="am-close" onClick={onClose}>
-                            <span className="material-symbols-outlined">
-                                close
-                            </span>
+                            <span className="material-symbols-outlined">close</span>
                         </button>
                     </div>
 
                     {/* Body */}
                     <div className="am-body">
-                        <div className="am-info">
-                            <span className="material-symbols-outlined">info</span>
+                        {/* Info Banner — يتغير حسب الحالة */}
+                        <div className={`am-info ${allDeleted ? "am-info-danger" : ""}`}>
+                            <span className="material-symbols-outlined">
+                                {allDeleted ? "warning" : "info"}
+                            </span>
                             <div>
-                                <strong>Artikel reduzieren oder entfernen</strong>
+                                <strong>
+                                    {allDeleted
+                                        ? "Alle Artikel entfernt"
+                                        : "Artikel reduzieren oder entfernen"}
+                                </strong>
                                 <p>
-                                    Sie können Mengen verringern oder Artikel
-                                    entfernen. Neue Artikel können nicht
-                                    hinzugefügt werden.
+                                    {allDeleted
+                                        ? "Da Sie alle Artikel entfernt haben, wird die gesamte Bestellung storniert. Eine eventuell vorhandene Zahlung wird automatisch erstattet oder die Autorisierung freigegeben."
+                                        : "Sie können Mengen verringern oder Artikel entfernen. Neue Artikel können nicht hinzugefügt werden."}
                                 </p>
                             </div>
                         </div>
@@ -177,8 +241,7 @@ export default function AmendmentModal({ order, onClose, onSuccess }) {
                             {items.map((item) => (
                                 <div
                                     key={item.id}
-                                    className={`am-item ${item.toDelete ? "is-deleted" : ""
-                                        }`}
+                                    className={`am-item ${item.toDelete ? "is-deleted" : ""}`}
                                 >
                                     <div className="am-item-info">
                                         <span className="am-item-name">
@@ -193,9 +256,7 @@ export default function AmendmentModal({ order, onClose, onSuccess }) {
                                     {!item.toDelete ? (
                                         <div className="am-qty">
                                             <button
-                                                onClick={() =>
-                                                    decreaseQuantity(item.id)
-                                                }
+                                                onClick={() => decreaseQuantity(item.id)}
                                                 disabled={item.newQuantity <= 1}
                                                 title="Menge verringern"
                                             >
@@ -210,14 +271,9 @@ export default function AmendmentModal({ order, onClose, onSuccess }) {
                                     )}
 
                                     <button
-                                        className={`am-delete ${item.toDelete ? "am-restore" : ""
-                                            }`}
+                                        className={`am-delete ${item.toDelete ? "am-restore" : ""}`}
                                         onClick={() => toggleDelete(item.id)}
-                                        title={
-                                            item.toDelete
-                                                ? "Wiederherstellen"
-                                                : "Entfernen"
-                                        }
+                                        title={item.toDelete ? "Wiederherstellen" : "Entfernen"}
                                     >
                                         <span className="material-symbols-outlined">
                                             {item.toDelete ? "undo" : "delete"}
@@ -229,31 +285,46 @@ export default function AmendmentModal({ order, onClose, onSuccess }) {
 
                         {hasChanges && (
                             <div className="am-summary">
-                                <div className="am-summary-row">
-                                    <span>Produkte (inkl. MwSt.)</span>
-                                    <span>€{productsTotal.toFixed(2)}</span>
-                                </div>
-                                <div className="am-summary-row">
-                                    <span>Versand</span>
-                                    <span>€{shipping.toFixed(2)}</span>
-                                </div>
-                                <div className="am-summary-row am-summary-total">
-                                    <span>Neuer Gesamtbetrag</span>
-                                    <strong>€{newTotal.toFixed(2)}</strong>
-                                </div>
-                                <div className="am-summary-row am-summary-delta">
-                                    <span>Differenz zum Original</span>
-                                    <span
-                                        className={
-                                            priceDelta >= 0
-                                                ? "am-delta-positive"
-                                                : "am-delta-negative"
-                                        }
-                                    >
-                                        {priceDelta >= 0 ? "+" : ""}€
-                                        {priceDelta.toFixed(2)}
-                                    </span>
-                                </div>
+                                {allDeleted ? (
+                                    <div className="am-cancel-notice">
+                                        <span className="material-symbols-outlined">
+                                            cancel
+                                        </span>
+                                        <span>
+                                            <strong>Die gesamte Bestellung wird storniert.</strong>
+                                            <br />
+                                            Eine Rückerstattung erfolgt automatisch (falls erforderlich).
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="am-summary-row">
+                                            <span>Produkte (inkl. MwSt.)</span>
+                                            <span>€{productsTotal.toFixed(2)}</span>
+                                        </div>
+                                        <div className="am-summary-row">
+                                            <span>Versand</span>
+                                            <span>€{shipping.toFixed(2)}</span>
+                                        </div>
+                                        <div className="am-summary-row am-summary-total">
+                                            <span>Neuer Gesamtbetrag</span>
+                                            <strong>€{newTotal.toFixed(2)}</strong>
+                                        </div>
+                                        <div className="am-summary-row am-summary-delta">
+                                            <span>Differenz zum Original</span>
+                                            <span
+                                                className={
+                                                    priceDelta >= 0
+                                                        ? "am-delta-positive"
+                                                        : "am-delta-negative"
+                                                }
+                                            >
+                                                {priceDelta >= 0 ? "+" : ""}€
+                                                {priceDelta.toFixed(2)}
+                                            </span>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         )}
                     </div>
@@ -268,21 +339,21 @@ export default function AmendmentModal({ order, onClose, onSuccess }) {
                             Abbrechen
                         </button>
                         <button
-                            className="am-btn am-btn-submit"
+                            className={`am-btn ${allDeleted ? "am-btn-danger" : "am-btn-submit"}`}
                             onClick={handleSubmitClick}
                             disabled={submitting || !hasChanges}
                         >
                             {submitting ? (
                                 <>
                                     <div className="am-spinner-small" />
-                                    Wird gespeichert...
+                                    {allDeleted ? "Wird storniert..." : "Wird gespeichert..."}
                                 </>
                             ) : (
                                 <>
                                     <span className="material-symbols-outlined">
-                                        check
+                                        {allDeleted ? "cancel" : "check"}
                                     </span>
-                                    Änderungen speichern
+                                    {allDeleted ? "Bestellung stornieren" : "Änderungen speichern"}
                                 </>
                             )}
                         </button>
@@ -293,22 +364,41 @@ export default function AmendmentModal({ order, onClose, onSuccess }) {
             {/* Confirm Dialog */}
             <ConfirmDialog
                 isOpen={showConfirm}
-                title="Bestellung ändern?"
+                title={allDeleted ? "Bestellung stornieren?" : "Bestellung ändern?"}
                 message={
-                    <>
-                        <p>
-                            <strong>Änderungen:</strong>
-                        </p>
-                        <p>{changesSummary}</p>
-                        <p>
-                            Neuer Gesamtbetrag:{" "}
-                            <strong>€{newTotal.toFixed(2)}</strong>
-                        </p>
-                    </>
+                    allDeleted ? (
+                        <>
+                            <p>
+                                Sie haben <strong>alle Artikel</strong> entfernt.
+                            </p>
+                            <p>
+                                Die gesamte Bestellung{" "}
+                                <strong style={{ color: "var(--danger-color)" }}>
+                                    wird storniert
+                                </strong>
+                                .
+                            </p>
+                            <p>
+                                Falls eine Zahlung autorisiert oder abgebucht wurde, wird diese
+                                automatisch zurückerstattet bzw. freigegeben.
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <p>
+                                <strong>Änderungen:</strong>
+                            </p>
+                            <p>{changesSummary}</p>
+                            <p>
+                                Neuer Gesamtbetrag:{" "}
+                                <strong>€{newTotal.toFixed(2)}</strong>
+                            </p>
+                        </>
+                    )
                 }
-                variant="warning"
-                icon="edit_note"
-                confirmLabel="Änderungen speichern"
+                variant={allDeleted ? "danger" : "warning"}
+                icon={allDeleted ? "cancel" : "edit_note"}
+                confirmLabel={allDeleted ? "Ja, stornieren" : "Änderungen speichern"}
                 cancelLabel="Zurück"
                 isLoading={submitting}
                 onConfirm={performSubmit}
