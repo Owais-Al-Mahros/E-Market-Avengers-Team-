@@ -29,8 +29,11 @@ export default function OrderDetailsView({ order }) {
                 );
 
             const finalQty = isWeightBased
-                ? item.actual_weight ?? item.quantity
-                : item.actual_quantity ?? item.quantity;
+    ? (parseFloat(item.actual_total_weight)
+        || parseFloat(item.total_weight)
+        || parseFloat(item.quantity)
+        || 0)
+    : (parseFloat(item.actual_quantity) || parseFloat(item.quantity) || 0);
 
             return {
                 ...item,
@@ -52,9 +55,10 @@ export default function OrderDetailsView({ order }) {
     /* ✅ اختيار المكوّن حسب الحالة */
     const isDelivered = order.status === "delivered";
 
+
     if (isDelivered) {
-        return <Invoice order={order} items={items} />;
-    }
+    return <Invoice snapshot={order.invoice_snapshot} />;
+  }
 
     return (
         <Vorinformation

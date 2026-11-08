@@ -197,21 +197,6 @@ export default function ProductCardDetails() {
           <div className="product-info-box">
             <h1 className="main-product-title">{name}</h1>
 
-            {(manufacturer || finalCategory) && (
-              <p className="product-brand">
-                {manufacturer && (
-                  <span className="manufacturer-name">
-                    Marke: <strong>{manufacturer}</strong>
-                  </span>
-                )}
-                {manufacturer && finalCategory && <span className="brand-separator"> | </span>}
-                {finalCategory && (
-                  <span className="category-name">
-                    Kategorie: <strong>{finalCategory}</strong>
-                  </span>
-                )}
-              </p>
-            )}
 
             <div className="main-product-price">
               {formatEuro(displayPrice)}
@@ -280,12 +265,6 @@ export default function ProductCardDetails() {
               <>
                 <dt>Kategorie</dt>
                 <dd>{finalCategory}</dd>
-              </>
-            )}
-            {product_number && (
-              <>
-                <dt>Artikelnummer</dt>
-                <dd>{product_number}</dd>
               </>
             )}
             {weight && (
@@ -371,7 +350,7 @@ export default function ProductCardDetails() {
 
             {ingredients && (
               <div className="page-ingredients">
-                <h3>Zutaten</h3>
+                <h3>Zutaten & Allergene</h3>
                 <p>{ingredients}</p>
               </div>
             )}

@@ -873,3 +873,177 @@
     color: #fff;
     transform: translateY(-1px);
 }
+/* ✅ DATE FILTER BAR */
+.date-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: var(--admin-card-bg);
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--secondary-color);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+  box-shadow: var(--shadow-sm);
+}
+
+.date-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-filter-group label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.date-filter-group input[type="date"] {
+  padding: 8px 12px;
+  border: 1.5px solid var(--secondary-color);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.date-filter-group input[type="date"]:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(20, 92, 74, 0.1);
+}
+
+.date-filter-reset {
+  padding: 8px 16px;
+  background: rgba(217, 79, 79, 0.1);
+  color: var(--danger-color);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.date-filter-reset:hover {
+  background: var(--danger-color);
+  color: #fff;
+}
+/* ✅ PROFESSIONAL DATE FILTER DROPDOWN */
+.date-filter-container {
+  position: relative;
+}
+
+.btn-date-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--admin-card-bg);
+  border: 2px solid var(--secondary-color);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-date-filter:hover {
+  border-color: var(--primary-color);
+}
+
+.btn-date-filter.active {
+  background: var(--secondary-color);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-date-filter .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.btn-date-clear {
+  font-size: 16px !important;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px;
+}
+
+.btn-date-clear:hover {
+  background: var(--danger-color);
+  color: #fff;
+}
+
+.date-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background: var(--admin-card-bg);
+  border: 1px solid var(--secondary-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow: hidden;
+  animation: dropdownFade 0.2s ease;
+}
+
+.date-preset-list {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border-bottom: 1px solid var(--secondary-color);
+}
+
+.date-preset-list button {
+  padding: 10px 12px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.date-preset-list button:hover {
+  background: var(--bg-color);
+}
+
+.date-preset-list button.active {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.date-custom-range {
+  padding: 12px;
+  background: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.date-custom-range input[type="date"] {
+  width: 100%;
+  padding: 8px;
+  border: 1.5px solid var(--secondary-color);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.date-custom-range input[type="date"]:focus {
+  border-color: var(--primary-color);
+}

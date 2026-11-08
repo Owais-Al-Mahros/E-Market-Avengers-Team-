@@ -1,246 +1,266 @@
-import { useCompany } from "../../context/CompanyContext";
 import "./Invoice.css";
 
-/* ══════════════════════════════════════════════════════════
-   🧮 German Number Formatters
-   ══════════════════════════════════════════════════════════ */
-const fmt = (n, decimals = 2) => {
-    const num = parseFloat(n) || 0;
-    return num
-        .toFixed(decimals)
-        .replace(".", ",")
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const TZ = "Europe/Berlin";
+
+const fmtEur = (val) => {
+  const num = parseFloat(val) || 0;
+  return num.toLocaleString("de-DE", { style: "currency", currency: "EUR" });
 };
 
-const fmtEur = (n) => `${fmt(n, 2)} €`;
-const fmtWeight = (n) => fmt(n, 3);
+const fmtNum = (val, decimals = 2) =>
+  (parseFloat(val) || 0).toLocaleString("de-DE", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
 
-const fmtDate = (iso) => {
-    if (!iso) return "—";
-    const d = new Date(iso);
-    return d.toLocaleDateString("de-DE", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
+const fmtDateTime = (iso) => {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  const date = d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: TZ });
+  const time = d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
+  return `${date}, ${time} Uhr`;
 };
 
-const fmtTime = (iso) => {
-    if (!iso) return "—";
-    const d = new Date(iso);
-    return d.toLocaleTimeString("de-DE", {
-        hour: "2-digit",
-        minute: "2-digit",
-    });
+const fmtPlainDate = (s) => {
+  if (!s) return "—";
+  const [y, m, d] = String(s).slice(0, 10).split("-");
+  return `${d}.${m}.${y}`;
 };
 
-export default function Invoice({ order, items = [] }) {
-    const { company } = useCompany();
-    if (!order) return null;
+const BRAND_LABELS = {
+  visa: "Visa", mastercard: "Mastercard", amex: "American Express", maestro: "Maestro", girocard: "girocard",
+};
 
-    const customer = order.customer_info || {};
-    const address = order.shipping_address || {};
+function paymentLabel(p) {
+  if (!p) return "—";
+  if (p.method === "cod") return "Barzahlung bei Lieferung";
+  if (p.method === "transfer" || p.method === "bank") return "Überweisung";
+  if (p.type === "card" || p.method === "card" || p.card_brand) {
+    const brand = p.card_brand ? BRAND_LABELS[String(p.card_brand).toLowerCase()] || String(p.card_brand).toUpperCase() : "Karte";
+    return p.card_last4 ? `${brand} ${p.card_last4}` : ` (${brand})`;
+  }
+  if (p.type === "sepa_debit") return "SEPA-Lastschrift";
+  return "Online-Zahlung";
+}
 
-    // Filter active items
-    const activeItems = items.filter((i) => !i._isRemoved);
+export default function Invoice({ snapshot, showWarnings = false }) {
+  if (!snapshot) return <div className="rechnung-container">Rechnung wird geladen...</div>;
 
-    // Calculate totals
-    const productsTotal = activeItems.reduce((sum, item) => sum + parseFloat(item.total_price || 0), 0);
-    const depositTotal = activeItems.reduce((sum, item) => {
-        const d = parseFloat(item.deposit_amount) || 0;
-        const q = parseFloat(item.quantity) || 1;
-        return sum + d * q;
-    }, 0);
+  const { meta = {}, seller = {}, customer = {}, lines = [], tax_rows = [], totals = {}, payment = {}, warnings = [] } = snapshot;
 
-    const shipping = parseFloat(order.shipping_cost || 0);
-    const grandTotal = productsTotal + depositTotal + shipping;
+  // ✅ فصل الأسطر: المنتجات والـ Pfand في الجدول، والشحن يذهب للمجموع فقط
+  const tableLines = lines.filter((l) => l.kind !== "shipping");
+  const shippingLines = lines.filter((l) => l.kind === "shipping");
 
-    // Tax Breakdown (A = 7%, B = 19%) - Dynamic grouping based on actual rates
-    const taxGroups = {};
+  const shippingTotal = shippingLines.reduce((s, l) => s + (parseFloat(l.gross) || 0), 0);
+  
+  // ✅ حساب إجمالي الضريبة الخاصة بالشحن فقط
+  const shippingTaxTotal = shippingLines.reduce((sum, l) => {
+    const gross = parseFloat(l.gross) || 0;
+    const rate = parseFloat(l.rate) || 0;
+    const tax = gross - (gross / (1 + rate / 100));
+    return sum + tax;
+  }, 0);
+    const productsTotal = tableLines.filter((l) => l.kind === "item").reduce((s, l) => s + (parseFloat(l.gross) || 0), 0);
+  const depositTotal = tableLines.filter((l) => l.kind === "deposit").reduce((s, l) => s + (parseFloat(l.gross) || 0), 0);
 
-    // Add Products to Tax Groups
-    activeItems.forEach((item) => {
-        const rate = parseFloat(item.tax_rate) || 0;
-        const gross = parseFloat(item.total_price) || 0;
-        if (rate > 0 && gross > 0) {
-            const net = gross / (1 + rate / 100);
-            const key = String(rate);
-            if (!taxGroups[key]) taxGroups[key] = { rate, net: 0, tax: 0, gross: 0 };
-            taxGroups[key].net += net;
-            taxGroups[key].tax += gross - net;
-            taxGroups[key].gross += gross;
-        }
-    });
+  const isPaid = ["captured", "paid", "succeeded", "authorized"].includes(payment.status) || !!payment.paid_at;
 
-    // Add Deposits to Tax Groups
-    activeItems.forEach((item) => {
-        const d = parseFloat(item.deposit_amount) || 0;
-        const q = parseFloat(item.quantity) || 1;
-        const dGross = d * q;
-        if (dGross > 0) {
-            const dRate = parseFloat(item.deposit_tax_rate) || parseFloat(item.tax_rate) || 0;
-            if (dRate > 0) {
-                const dNet = dGross / (1 + dRate / 100);
-                const key = String(dRate);
-                if (!taxGroups[key]) taxGroups[key] = { rate: dRate, net: 0, tax: 0, gross: 0 };
-                taxGroups[key].net += dNet;
-                taxGroups[key].tax += dGross - dNet;
-                taxGroups[key].gross += dGross;
-            }
-        }
-    });
-
-    // ❌ REMOVED SHIPPING FROM TAX GROUPS (As requested by user)
-
-    const taxRows = Object.values(taxGroups).sort((a, b) => a.rate - b.rate);
-    const totalNet = taxRows.reduce((s, r) => s + r.net, 0);
-
-    const paymentDate = order.delivered_at || order.updated_at || new Date();
-
-    return (
-        <div className="receipt-container" id="invoice-pdf-download">
-            {/* ═══ HEADER ═══ */}
-            <div className="receipt-header">
-                <div className="receipt-brand">{company?.brand_name || "Shopora"}</div>
-                <div>{company?.legal_form || "GmbH"}</div>
-                <div>{company?.owner_name}</div>
-                <div>{company?.address} {company?.house_number}</div>
-                <div>{company?.postal_code} {company?.city}</div>
-                <div className="receipt-mt">USt-IdNr.: {company?.vat_id || "DE000000000"}</div>
-            </div>
-
-            <div className="receipt-line">--------------------------------------------------</div>
-
-            {/* ═══ META ═══ */}
-            <div className="receipt-meta">
-                <div className="receipt-row">
-                    <span>Beleg-Nr.:</span>
-                    <span>{order.order_number}</span>
-                </div>
-                <div className="receipt-row">
-                    <span>Datum:</span>
-                    <span>{fmtDate(order.created_at)} {fmtTime(order.created_at)}</span>
-                </div>
-            </div>
-
-            <div className="receipt-line">--------------------------------------------------</div>
-
-            {/* ═══ ITEMS ═══ */}
-            <div className="receipt-items">
-                {activeItems.map((item, idx) => {
-                    const qty = parseFloat(item.actual_quantity ?? item.quantity) || 0;
-                    const total = parseFloat(item.total_price) || 0;
-                    const unitPrice = qty > 0 ? total / qty : 0;
-                    const depositAmt = parseFloat(item.deposit_amount) || 0;
-
-                    return (
-                        <div key={item.id} className="receipt-item-block">
-                            <div className="receipt-item-name">{item.product_name}</div>
-
-                            <div className="receipt-row">
-                                {/* ✅ عرض الكمية × السعر فقط، بدون الوزن */}
-                                <span>{fmt(qty, qty % 1 === 0 ? 0 : 2)} Stk x {fmt(unitPrice)} EUR</span>
-                                <span>{fmt(total)} EUR</span>
-                            </div>
-
-                            {depositAmt > 0 && (
-                                <div className="receipt-row receipt-deposit">
-                                    <span>Pfandartikel {fmt(qty, 0)} * {fmt(depositAmt)}</span>
-                                    <span>{fmt(depositAmt * qty)} EUR</span>
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
-
-            <div className="receipt-line">--------------------------------------------------</div>
-
-            {/* ═══ SUMME ═══ */}
-            <div className="receipt-totals">
-                <div className="receipt-row">
-                    <span>Zwischensumme (Produkte)</span>
-                    <span>{fmt(productsTotal)} EUR</span>
-                </div>
-
-                {depositTotal > 0 && (
-                    <div className="receipt-row">
-                        <span>+ Pfand</span>
-                        <span>{fmt(depositTotal)} EUR</span>
-                    </div>
-                )}
-
-                {shipping > 0 && (
-                    <div className="receipt-row">
-                        <span>+ Versandkosten</span>
-                        <span>{fmt(shipping)} EUR</span>
-                    </div>
-                )}
-
-                <div className="receipt-row receipt-summe" style={{ marginTop: '8px', borderTop: '1px dashed #000', paddingTop: '8px' }}>
-                    <span>SUMME EUR</span>
-                    <span>{fmt(grandTotal)}</span>
-                </div>
-
-                <div className="receipt-row">
-                    <span>Geg. {order.payment_method === "card" ? "Kartenzahlung" : order.payment_method === "cod" ? "Barzahlung" : "Überweisung"}</span>
-                    <span>{fmt(grandTotal)}</span>
-                </div>
-            </div>
-
-            <div className="receipt-line">--------------------------------------------------</div>
-
-            {/* ═══ TAX BREAKDOWN ═══ */}
-            <div className="receipt-tax-section">
-                <div className="receipt-tax-header">
-                    <span>Steuer %</span>
-                    <span>Netto</span>
-                    <span>Steuer</span>
-                    <span>Brutto</span>
-                </div>
-                {taxRows.map((row) => (
-                    <div key={row.rate} className="receipt-tax-row">
-                        <span>{row.rate}%</span>
-                        <span>{fmt(row.net)}</span>
-                        <span>{fmt(row.tax)}</span>
-                        <span>{fmt(row.gross)}</span>
-                    </div>
-                ))}
-                <div className="receipt-tax-row receipt-tax-total">
-                    <span>Produkte</span>
-                    <span>{fmt(totalNet)}</span>
-                    <span>{fmt(productsTotal + depositTotal - totalNet)}</span>
-                    <span>{fmt(productsTotal + depositTotal)}</span>
-                </div>
-            </div>
-
-            <div className="receipt-line">--------------------------------------------------</div>
-
-            {/* ═══ CUSTOMER ═══ */}
-            <div className="receipt-meta receipt-customer">
-                <div className="receipt-mt">Kunde:</div>
-                <div>{customer.first_name} {customer.last_name}</div>
-                <div>{address.street} {address.house_number}</div>
-                <div>{address.postal_code} {address.city}</div>
-            </div>
-
-            <div className="receipt-line">--------------------------------------------------</div>
-
-            {/* ═══ FOOTER & LEGAL ═══ */}
-            <div className="receipt-footer">
-                <div className="receipt-thanks">Vielen Dank für Ihren Einkauf!</div>
-                <div className="receipt-legal">
-                    Gemäß § 14 UStG ist diese Rechnung für die steuerliche Erfassung gültig.
-                    Der Rechnungsbetrag wurde bereits beglichen.
-                </div>
-                <div className="receipt-mt">
-                    Zahlungsstatus: ✓ BEZAHLT am {fmtDate(paymentDate)} um {fmtTime(paymentDate)} Uhr
-                </div>
-                <div className="receipt-mt">
-                    Tel. Nr.: {company?.contact_phone || "0152..."}<br />
-                    {company?.contact_email}
-                </div>
-            </div>
+  return (
+    <div className="rechnung-container" id="invoice-pdf-download" data-invoice-number={meta.invoice_number || ""}>
+      {showWarnings && warnings.length > 0 && (
+        <div data-html2canvas-ignore="true" style={{ background: "#fee2e2", color: "#991b1b", padding: 10, marginBottom: 20, borderRadius: 8 }}>
+          <strong>⚠️ Achtung (nur intern):</strong>
+          <ul>{warnings.map((w, i) => <li key={i}>{w.code}</li>)}</ul>
         </div>
-    );
+      )}
+
+      {/* HEADER */}
+      <div className="rechnung-header">
+        <div>
+          <div className="rechnung-brand">{seller.name}</div>
+          <div className="rechnung-brand-sub">{seller.legal_form}</div>
+        </div>
+        <div className="rechnung-header-right">
+          <div className="rechnung-title">RECHNUNG</div>
+          <div className="rechnung-number">Nr. {meta.invoice_number}</div>
+        </div>
+      </div>
+
+      {/* COMPANY & CUSTOMER */}
+      <div className="rechnung-company">
+        <div>
+          <div className="rechnung-company-label">Verkäufer</div>
+          <div className="rechnung-company-name">{seller.name}</div>
+          {seller.owner_name && <div className="rechnung-company-line">{seller.owner_name}</div>}
+          <div className="rechnung-company-line">{seller.address}</div>
+          <div className="rechnung-company-line">{seller.postal_code} {seller.city}</div>
+        </div>
+        <div>
+          <div className="rechnung-company-label">Steuerliche Angaben</div>
+          {seller.tax_number && <div className="rechnung-company-line">St.-Nr.: <strong>{seller.tax_number}</strong></div>}
+          {seller.vat_id && <div className="rechnung-company-line">USt-IdNr.: <strong>{seller.vat_id}</strong></div>}
+        </div>
+      </div>
+
+      <div className="rechnung-meta-section">
+        <div>
+          <div className="rechnung-section-label">Rechnungsempfänger</div>
+          <div className="rechnung-customer-name">{customer.name}</div>
+          <div className="rechnung-customer-line">{customer.street}</div>
+          <div className="rechnung-customer-line">{customer.postal_code} {customer.city}</div>
+        </div>
+        <div className="rechnung-dates">
+          <div className="rechnung-date-row"><span>Rechnungsdatum:</span> <strong>{fmtDateTime(meta.issued_at)}</strong></div>
+          <div className="rechnung-date-row"><span>Lieferdatum:</span> <strong>{fmtPlainDate(meta.delivery_date)}</strong></div>
+          <div className="rechnung-date-row"><span>Bestellnummer:</span> <strong>#{meta.order_number}</strong></div>
+        </div>
+      </div>
+
+      {/* ITEMS TABLE */}
+      <table className="rechnung-table">
+        <thead>
+          <tr>
+            <th className="rc-col-num">Pos.</th>
+            <th className="rc-col-desc">Bezeichnung</th>
+            <th className="rc-col-qty">Menge</th>
+            <th className="rc-col-rate">MwSt.</th>
+            <th className="rc-col-gross">Brutto</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tableLines.map((line, idx) => {
+            const rate = parseFloat(line.rate) || 0;
+            const isWeight = line.unit !== "Stk";
+
+            // ✅ سطر الـ Pfand (يُعرض تحت المنتج مباشرة وبخط أصغر)
+            if (line.kind === "deposit") {
+              const unitPrice = line.qty > 0 ? (parseFloat(line.gross) / line.qty) : 0;
+              return (
+                <tr key={`dep-${idx}`} className="rc-row-deposit">
+                  <td className="rc-col-num"></td>
+                  <td className="rc-col-desc" style={{ paddingLeft: '24px', fontStyle: 'italic', color: '#4b5563' }}>
+                    Pfandartikel
+                  </td>
+                  <td className="rc-col-qty">
+                    {line.qty} * {fmtNum(unitPrice)}
+                  </td>
+                  <td className="rc-col-rate">{line.code} · {fmtNum(rate, 0)}%</td>
+                  <td className="rc-col-gross">{fmtEur(line.gross)}</td>
+                </tr>
+              );
+            }
+
+            // ✅ سطر المنتج العادي
+            const qtyText = isWeight ? `${fmtNum(line.qty, 3)} ${line.unit}` : `${fmtNum(line.qty, Number.isInteger(line.qty) ? 0 : 2)} Stk`;
+            const calcText = isWeight ? `${fmtNum(line.unit_price)} EUR/${line.unit}` : `${fmtNum(line.unit_price)} EUR/Stk`;
+
+            return (
+              <tr key={`item-${idx}`}>
+                <td className="rc-col-num">{idx + 1}</td>
+                <td className="rc-col-desc">
+                  <div className="rc-product-name">
+                    {line.name}
+                    {line.status === "substituted" && " (Ersatzartikel)"}
+                  </div>
+                  {calcText && <div className="rc-product-calc">{calcText}</div>}
+                </td>
+                <td className="rc-col-qty">{qtyText}</td>
+                <td className="rc-col-rate">{line.code} · {fmtNum(rate, 0)}%</td>
+                <td className="rc-col-gross rc-strong">{fmtEur(line.gross)}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      {/* TOTALS */}
+      <div className="rechnung-totals">
+        <div className="rc-total-row">
+          <span>Zwischensumme (Artikel)</span>
+          <span>{fmtEur(productsTotal)}</span>
+        </div>
+        
+        {depositTotal > 0 && (
+          <div className="rc-total-row">
+            <span>zzgl. Pfand</span>
+            <span>{fmtEur(depositTotal)}</span>
+          </div>
+        )}
+        
+                {shippingTotal > 0 && (
+          <>
+            <div className="rc-total-row">
+              <span>zzgl. Versandkosten</span>
+              <span>{fmtEur(shippingTotal)}</span>
+            </div>
+            {/* ✅ عرض قيمة الضريبة على التوصيل بشكل صريح */}
+            <div className="rc-total-row rc-total-tax" style={{ fontSize: '11.5px', color: '#6b7280', marginTop: '-4px' }}>
+              <span style={{ paddingLeft: '10px' }}>davon MwSt. auf Versand</span>
+              <span>{fmtEur(shippingTaxTotal)}</span>
+            </div>
+          </>
+        )}
+
+        {/* جدول الضريبة (الذي يضم ضريبة الشحن والمنتجات معاً) */}
+        {tax_rows.map((row, i) => (
+          <div key={i} className="rc-total-row rc-total-tax">
+            <span>zzgl. MwSt. {row.code} {fmtNum(row.rate, 0)}%</span>
+            <span>{fmtEur(row.tax)}</span>
+          </div>
+        ))}
+        
+        <div className="rc-total-row rc-total-grand">
+          <span>Gesamtbetrag (Brutto)</span>
+          <span>{fmtEur(totals.gross)}</span>
+        </div>
+      </div>
+
+      {/* TAX BREAKDOWN */}
+      <div className="rechnung-tax-section">
+        <div className="rc-tax-title">Umsatzsteuer-Aufschlüsselung</div>
+        <table className="rechnung-tax-table">
+          <thead>
+            <tr><th>Satz</th><th>Netto</th><th>Steuer</th><th>Brutto</th></tr>
+          </thead>
+          <tbody>
+            {tax_rows.map((row, i) => (
+              <tr key={i}>
+                <td>{row.code} = {fmtNum(row.rate, 0)}%</td>
+                <td>{fmtEur(row.net)}</td>
+                <td>{fmtEur(row.tax)}</td>
+                <td>{fmtEur(row.gross)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="rechnung-muted" style={{ fontSize: 11, marginTop: 6 }}>
+        </div>
+      </div>
+
+      {/* PAYMENT */}
+      <div className="rechnung-payment">
+        <div className="rc-payment-row">
+          <span className="rc-payment-label">Zahlungsart:</span>
+          <span className="rc-payment-value">{paymentLabel(payment)}</span>
+        </div>
+        {payment.paid_at && (
+          <div className="rc-payment-row">
+            <span className="rc-payment-label">Zahlungsdatum:</span>
+            <span className="rc-payment-value">{fmtDateTime(payment.paid_at)}</span>
+          </div>
+        )}
+        <div className="rc-payment-row">
+          <span className="rc-payment-label">Zahlungsstatus:</span>
+          <span className={`rc-payment-status ${isPaid ? "rc-paid" : ""}`}>
+            {isPaid ? "✓ Zahlung erfolgt" : "Offen"}
+          </span>
+        </div>
+      </div>
+
+      <div className="rechnung-footer">
+        Vielen Dank für Ihren Einkauf bei <strong>{seller.name}</strong>!
+      </div>
+    </div>
+  );
 }

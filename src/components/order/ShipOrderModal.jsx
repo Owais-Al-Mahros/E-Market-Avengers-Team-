@@ -7,6 +7,8 @@ import { normalizeUnit } from "../../lib/units";
 import { supabase } from "../../lib/supabase";
 import "./ShipOrderModal.css";
 
+const round2 = (n) => Math.round((parseFloat(n) || 0) * 100) / 100;
+
 /* ══════════════════════════════════════════════════════════
    🎯 Brutto Total — Piece Price هو Brutto مباشرة
    ══════════════════════════════════════════════════════════ */
@@ -127,19 +129,19 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
 
   /* ═══ Confirm ═══ */
   const confirmItem = (item) => {
-    const total = calculateTotal(item);
+    // ✅ المنتج فقط — Pfand يُحسب منفصلًا في depositTotal + بسطر مستقل في الفاتورة
+    const total = round2(calculateTotal(item));
+
     const taxRate = parseFloat(item.tax_rate) || 0;
 
     const piecePriceBrutto = parseFloat(item.actual_piece_price) || 0;
     const pieceWeight = parseFloat(item.actual_piece_weight) || 0;
 
     // ✅ Brutto per unit of weight (per g / kg / L / ml)
-    // مثال: 0.37 / 200 = 0.00185 €/g
     const bruttoPerWeightUnit =
       pieceWeight > 0 ? piecePriceBrutto / pieceWeight : 0;
 
     // ✅ Netto per unit of weight (للحفظ في DB)
-    // مثال: 0.00185 / 1.07 = 0.001729 €/g Netto
     const nettoPerWeightUnit =
       taxRate > 0
         ? bruttoPerWeightUnit / (1 + taxRate / 100)
@@ -148,13 +150,15 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
     setItems((prev) =>
       prev.map((i) => {
         if (i.id !== item.id) return i;
+
+        const oldTotal = parseFloat(i.total_price || 0);
+
         return {
           ...i,
           status: "scanned",
-          // ✅ 6 منازل لدقة g/ml
           actual_unit_price: +nettoPerWeightUnit.toFixed(6),
           actual_total: total,
-          price_difference: total - parseFloat(i.total_price || 0),
+          price_difference: round2(total - oldTotal),
         };
       })
     );
@@ -216,6 +220,8 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
           weight: substituteProduct.weight,
           weight_unit: substituteProduct.weight_unit,
           tax_rate: subTaxRate,
+          deposit_amount: parseFloat(substituteProduct.deposit_amount) || 0,
+          deposit_tax_rate: parseFloat(substituteProduct.deposit_tax_rate) || 0,
           actual_quantity: qty,
           actual_piece_price: subBruttoPrice.toFixed(2),
           actual_piece_weight: subWeight > 0 ? subWeight.toFixed(3) : "",
@@ -253,12 +259,22 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
   };
 
   /* ═══ Totals ═══ */
+
   const actualProductsTotal = items.reduce((sum, i) => {
     if (i.status === "scanned" || i.status === "substituted")
-      return sum + (i.actual_total || 0);
-    if (i.status === "removed") return sum + 0;
+      return sum + round2(i.actual_total);
     return sum;
   }, 0);
+
+  // Pfand — نفس منطق الفاتورة
+  const depositTotal = items.reduce((sum, i) => {
+    if (i.status === "removed") return sum;
+    const dep = parseFloat(i.deposit_amount) || 0;
+    const qty = parseFloat(i.actual_quantity) || parseFloat(i.quantity) || 0;
+    return sum + round2(dep * qty);
+  }, 0);
+
+ 
 
   /* ✅ FIX #5: حساب الضريبة الإجمالية */
   const totalTax = useMemo(() => {
@@ -275,8 +291,8 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
     }, 0);
   }, [items]);
 
-  const shippingCost = parseFloat(order.shipping_cost || 0);
-  const finalTotal = actualProductsTotal + shippingCost;
+  const shippingCost = round2(order.shipping_cost);
+  const finalTotal = round2(actualProductsTotal + depositTotal + shippingCost);
   const authorizedMax = parseFloat(order.authorized_amount || 0);
   const remainingBuffer = authorizedMax - finalTotal;
 
@@ -765,6 +781,12 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
                 €{actualProductsTotal.toFixed(2)}
               </span>
             </div>
+            {depositTotal > 0 && (
+              <div className="ship-total-row">
+                <span>Pfand</span>
+                <span>€{depositTotal.toFixed(2)}</span>
+              </div>
+            )}
             <div className="ship-total-row">
               <span>Versand</span>
               <span>€{shippingCost.toFixed(2)}</span>
@@ -773,6 +795,7 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
               <span>Endbetrag (zu belasten)</span>
               <span>€{finalTotal.toFixed(2)}</span>
             </div>
+                        
           </div>
           <div style={{
             display: 'flex',

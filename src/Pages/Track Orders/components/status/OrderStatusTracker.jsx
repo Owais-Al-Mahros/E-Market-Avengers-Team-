@@ -116,10 +116,13 @@ export default function OrderStatusTracker({ status, orderNumber }) {
 
     const currentStatus = STATUS_CONTENT[status] || STATUS_CONTENT.pending;
     const statusLabel = STATUS_LABELS[status] || status;
+
+    // ============================================
+    // ✅ تنزيل الفاتورة — اسم الملف من رقم الفاتورة
+    // ============================================
     const handleDownloadInvoice = () => {
         const element = document.getElementById("invoice-pdf-download");
 
-        // إذا لم تكن الفاتورة معروضة في الصفحة حالياً (لأن المستخدم في صفحة التتبع فقط)
         if (!element) {
             toast.error("Rechnung ist noch nicht geladen. Bitte warten Sie einen Moment.");
             return;
@@ -127,22 +130,42 @@ export default function OrderStatusTracker({ status, orderNumber }) {
 
         const toastId = toast.loading("PDF wird erstellt...");
 
-        const opt = {
-            margin: 10, // هامش الصفحة بالمليمتر
-            filename: `Rechnung_${orderNumber}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true }, // scale: 2 لضمان جودة عالية
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        // ✅ اسم الملف من رقم الفاتورة (RE-2026-XXXX) بدل رقم الطلب
+        const invoiceNo = element.dataset.invoiceNumber || `Order_${orderNumber}`;
+
+                const opt = {
+          margin: [5, 5, 5, 5],
+          filename: `Rechnung_${invoiceNo}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { 
+            scale: 2, 
+            useCORS: true
+          },
+          jsPDF: { 
+            unit: "mm", 
+            format: "a4", 
+            orientation: "portrait",
+            compress: true
+          },
+          pagebreak: { 
+            mode: ['css', 'legacy'], 
+            avoid: ['.rechnung-table tr', '.rechnung-totals', '.rechnung-payment', '.rechnung-company'] 
+          }
         };
 
-        // تحويل العنصر إلى PDF وتنزيله
-        html2pdf().set(opt).from(element).save().then(() => {
-            toast.success("Rechnung erfolgreich heruntergeladen!", { id: toastId });
-        }).catch((err) => {
-            console.error("PDF Error:", err);
-            toast.error("Fehler beim Erstellen der PDF.", { id: toastId });
-        });
+        html2pdf()
+            .set(opt)
+            .from(element)
+            .save()
+            .then(() => {
+                toast.success("Rechnung erfolgreich heruntergeladen!", { id: toastId });
+            })
+            .catch((err) => {
+                console.error("PDF Error:", err);
+                toast.error("Fehler beim Erstellen der PDF.", { id: toastId });
+            });
     };
+
     // ============================================
     // Render
     // ============================================
@@ -167,9 +190,7 @@ export default function OrderStatusTracker({ status, orderNumber }) {
                     return (
                         <div key={index} className="step-item">
                             <div
-                                className={`step-circle ${isActive ? "active" : ""
-                                    } ${isPendingCurrent ? "pending-step" : ""
-                                    }`}
+                                className={`step-circle ${isActive ? "active" : ""} ${isPendingCurrent ? "pending-step" : ""}`}
                             >
                                 <span className="material-symbols-outlined">
                                     {step.icon}
@@ -178,8 +199,7 @@ export default function OrderStatusTracker({ status, orderNumber }) {
                             <span className="step-label">{step.label}</span>
                             {index < STEPS.length - 1 && (
                                 <div
-                                    className={`step-line ${index < activeStep ? "active" : ""
-                                        }`}
+                                    className={`step-line ${index < activeStep ? "active" : ""}`}
                                 />
                             )}
                         </div>

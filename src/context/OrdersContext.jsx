@@ -287,7 +287,7 @@ export function OrdersProvider({ children }) {
           actual_piece_price: parseFloat(item.actual_piece_price) || null,
           actual_total_weight: parseFloat(item.actual_total_weight) || null,
           actual_total: item.actual_total !== null && item.actual_total !== undefined
-            ? parseFloat(item.actual_total)
+            ? Math.round(parseFloat(item.actual_total) * 100) / 100
             : null,
           price_difference: item.price_difference !== null && item.price_difference !== undefined
             ? parseFloat(item.price_difference)

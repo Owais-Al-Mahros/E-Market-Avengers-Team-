@@ -21,7 +21,9 @@ export default function ShoppingCart() {
     increaseQty,     // ← من الـ Context
     decreaseQty,
     addToCart,
+    syncPrices,
   } = useCart();
+
   const { products } = useProducts();
   const { categories } = useCategories();
   const [searchTerm, setSearchTerm] = useState("");
@@ -82,7 +84,7 @@ export default function ShoppingCart() {
     };
   }, [debouncedSearchTerm]);
 
-  // ============================================
+   // ============================================
   // 🖱️ إغلاق عند النقر خارجاً
   // ============================================
   useEffect(() => {
@@ -94,6 +96,22 @@ export default function ShoppingCart() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // ============================================
+  // 🔄 مزامنة أسعار السلة مع قاعدة البيانات عند فتح الصفحة
+  // ============================================
+  useEffect(() => {
+    if (!syncPrices) return;
+    syncPrices().then(({ changed, removed }) => {
+      if (removed?.length) {
+        toast.error(`Nicht mehr verfügbar und entfernt: ${removed.join(", ")}`, { id: "cart-sync" });
+      } else if (changed) {
+        toast("Einige Preise wurden aktualisiert.", { icon: "ℹ️", id: "cart-sync" });
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   // ============================================
   // ➕ إضافة منتج من نتائج البحث

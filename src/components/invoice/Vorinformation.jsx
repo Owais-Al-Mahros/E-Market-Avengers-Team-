@@ -74,12 +74,13 @@ export default function Vorinformation({
         .filter((i) => !i._isRemoved)
         .reduce((sum, item) => sum + parseFloat(item.total_price || 0), 0);
 
-    // ✅ حساب الـ Pfand
+    // ✅ حساب إجمالي الـ Pfand
     const depositTotal = items
         .filter((i) => !i._isRemoved)
         .reduce((sum, item) => {
             const d = parseFloat(item.deposit_amount) || 0;
-            const q = parseFloat(item.quantity) || 1;
+            // ✅ استخدام الكمية الفعلية إذا وُجدت، وإلا الكمية المطلوبة
+    const q = parseFloat(item.actual_quantity ?? item.quantity) || 1;
             return sum + d * q;
         }, 0);
 
@@ -111,7 +112,11 @@ export default function Vorinformation({
             <div className="vo-items-list">
                 {items.map((item) => {
                     const calcLine = getCalcLine(item);
-                    const itemTotal = parseFloat(item.total_price) || 0;
+                    
+                    // ✅ دمج قيمة الـ Pfand مع سعر المنتج في القائمة
+                    const depositPerItem = (parseFloat(item.deposit_amount) || 0) * (parseFloat(item.quantity) || 1);
+                    const basePrice = parseFloat(item.total_price) || 0;
+                    const itemTotalWithDeposit = basePrice + depositPerItem;
 
                     return (
                         <div key={item.id} className={`vo-item ${item._isRemoved ? "is-removed" : ""}`}>
@@ -124,12 +129,18 @@ export default function Vorinformation({
                                 {item._isRemoved ? (
                                     <span className="vo-item-removed-text">Nicht geliefert</span>
                                 ) : (
-                                    calcLine && <span className="vo-item-meta">{calcLine}</span>
+                                    calcLine && (
+                                        <span className="vo-item-meta">
+                                            {calcLine}
+                                            {depositPerItem > 0 && <span style={{ fontSize: '11px', color: '#145c4a', marginLeft: '6px' }}>(inkl. Pfand)</span>}
+                                        </span>
+                                    )
                                 )}
                             </div>
 
                             <div className="vo-item-price">
-                                {fmtPrice(itemTotal)} €
+                                {/* ✅ السعر المعروض أصبح شاملاً للـ Pfand */}
+                                {fmtPrice(itemTotalWithDeposit)} €
                             </div>
                         </div>
                     );
@@ -139,17 +150,10 @@ export default function Vorinformation({
             {/* ═══ TOTALS ═══ */}
             <div className="vo-totals">
                 <div className="vo-row">
-                    <span>Zwischensumme (Produkte)</span>
-                    <span>{fmtPrice(productsTotal)} €</span>
+                    <span>Zwischensumme</span>
+                    <span>{fmtPrice(productsTotal + depositTotal)} €</span>
                 </div>
 
-                {/* ✅ سطر الـ Pfand */}
-                {depositTotal > 0 && (
-                    <div className="vo-row">
-                        <span>+ Pfand</span>
-                        <span>{fmtPrice(depositTotal)} €</span>
-                    </div>
-                )}
 
                 {shipping > 0 && (
                     <div className="vo-row">
@@ -165,7 +169,7 @@ export default function Vorinformation({
 
                 {showBufferInfo && bufferAmount > 0 && (
                     <div className="vo-row vo-row-buffer">
-                        <span>Sicherheitsreserve (Gewicht)</span>
+                        <span>Sicherheitsreserve</span>
                         <span>+{fmtPrice(bufferAmount)} €</span>
                     </div>
                 )}
@@ -201,7 +205,7 @@ export default function Vorinformation({
             {/* ═══ FOOTER ═══ */}
             <div className="vo-footer">
                 <span className="material-symbols-outlined">verified_user</span>
-                <p>Sichere Zahlungsabwicklung. Alle Preise inkl. gesetzlicher MwSt.</p>
+                <p>Sichere Zahlungsabwicklung. Alle Preise inkl. MwSt.</p>
             </div>
         </div>
     );

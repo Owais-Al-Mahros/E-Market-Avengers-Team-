@@ -1,6 +1,7 @@
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useMemo, useCallback } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { toBaseUnit, getShippingWeight } from "../lib/units";
+import { supabase } from "../lib/supabase";
 
 const CartContext = createContext();
 
@@ -9,6 +10,8 @@ export function CartProvider({ children }) {
     "cartItems",
     []
   );
+
+
 
   // ═══ Normalize before storing — new fields guaranteed ═══
   const normalizeItem = (product) => ({
@@ -74,6 +77,33 @@ export function CartProvider({ children }) {
 
   const clearCart = () => clearCartItems();
 
+  // داخل CartProvider، بعد clearCart:
+const syncPrices = useCallback(async () => {
+  if (cartItems.length === 0) return { changed: false, removed: [] };
+
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, name, price, total_price, tax_rate, weight, weight_unit, deposit_amount, deposit_tax_rate, product_type")
+    .in("id", cartItems.map((i) => i.id));
+  if (error || !data) return { changed: false, removed: [], failed: true };
+
+  const fresh = new Map(data.map((p) => [p.id, p]));
+  const unit = (x) => parseFloat(x.total_price || x.price || 0);
+  const removed = [];
+  let changed = false;
+  const next = [];
+
+  for (const item of cartItems) {
+    const p = fresh.get(item.id);
+    if (!p) { removed.push(item.name); changed = true; continue; }
+    if (unit(p) !== unit(item) ||
+        Number(p.deposit_amount || 0) !== Number(item.deposit_amount || 0)) changed = true;
+    next.push(normalizeItem({ ...item, ...p }));
+  }
+  setCartItems(next);
+  return { changed, removed };
+}, [cartItems]);
+
   // ═══ Totals ═══
   const totalItems = useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
@@ -120,8 +150,8 @@ export function CartProvider({ children }) {
     clearCart,
     decreaseQty,
     increaseQty,
+    syncPrices,
   };
-
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 

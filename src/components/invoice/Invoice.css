@@ -1,193 +1,366 @@
 /* ============================================================
-   🧾 RECHNUNG (RECEIPT STYLE)
+   🧾 RECHNUNG (INVOICE) — Compact Single Page (html2pdf optimized)
    ============================================================ */
 
-.receipt-container {
-    background: #fff;
-    max-width: 600px;
-    /* عرض مناسب للإيصال */
-    margin: 0 auto;
-    padding: 30px;
-    font-family: "Courier New", Courier, monospace;
-    /* خط الطابعة */
-    font-size: 14px;
-    line-height: 1.4;
-    color: #000;
-    box-sizing: border-box;
+.rechnung-container {
+  background: #fff;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px 30px;
+  font-family: "IBM Plex Sans Arabic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #1a1a1a;
+  box-sizing: border-box;
 }
 
 /* ═══ HEADER ═══ */
-.receipt-header {
-    text-align: center;
-    font-size: 14px;
-    margin-bottom: 10px;
+.rechnung-header {
+  display: table;
+  width: 100%;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #1a1a1a;
+  margin-bottom: 15px;
 }
 
-.receipt-brand {
-    font-size: 18px;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-bottom: 4px;
+.rechnung-header > div {
+  display: table-cell;
+  vertical-align: bottom;
 }
 
-.receipt-mt {
-    margin-top: 8px;
+.rechnung-header > div:first-child {
+  text-align: left;
+  width: 50%;
 }
 
-/* ═══ LINES ═══ */
-.receipt-line {
-    text-align: center;
-    overflow: hidden;
-    white-space: nowrap;
-    margin: 8px 0;
-    color: #000;
-    font-weight: bold;
+.rechnung-header > div:last-child {
+  text-align: right;
+  width: 50%;
 }
 
-/* ═══ META DATA ═══ */
-.receipt-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    font-size: 13px;
+.rechnung-brand {
+  font-size: 22px;
+  font-weight: 800;
+  color: #145c4a;
+  line-height: 1;
 }
 
-.receipt-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+.rechnung-brand-sub {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 4px;
 }
 
-/* ═══ ITEMS ═══ */
-.receipt-items {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.rechnung-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: #1a1a1a;
+  line-height: 1;
 }
 
-.receipt-item-block {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+.rechnung-number {
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  margin-top: 4px;
 }
 
-.receipt-item-name {
-    font-weight: bold;
-    text-transform: uppercase;
-    word-break: break-word;
+/* ═══ COMPANY & CUSTOMER (Tables to avoid html2pdf flex bugs) ═══ */
+.rechnung-company {
+  display: table;
+  width: 100%;
+  background: #f9fafb;
+  border-left: 3px solid #145c4a;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
 }
 
-.receipt-deposit {
-    padding-left: 10px;
-    font-style: italic;
-    font-size: 13px;
+.rechnung-company > div {
+  display: table-cell;
+  width: 50%;
+  vertical-align: top;
+}
+
+.rechnung-company-label, .rechnung-section-label {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.rechnung-section-label {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 2px;
+}
+
+.rechnung-company-name, .rechnung-customer-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.rechnung-company-line, .rechnung-customer-line {
+  font-size: 11.5px;
+  color: #4b5563;
+}
+
+.rechnung-meta-section {
+  display: table;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.rechnung-meta-section > div {
+  display: table-cell;
+  width: 50%;
+  vertical-align: top;
+}
+
+.rechnung-meta-section > div:first-child {
+  padding-right: 15px;
+}
+
+.rechnung-dates {
+  display: block;
+}
+
+.rechnung-date-row {
+  display: block;
+  overflow: hidden; /* Clearfix for floats */
+  font-size: 11.5px;
+  color: #6b7280;
+  padding: 3px 0;
+  border-bottom: 1px dashed #f3f4f6;
+}
+
+.rechnung-date-row span {
+  float: left;
+}
+
+.rechnung-date-row strong {
+  float: right;
+  color: #1a1a1a;
+}
+
+/* ═══ ITEMS TABLE ═══ */
+.rechnung-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+  font-size: 11.5px;
+}
+
+.rechnung-table thead {
+  border-top: 2px solid #1a1a1a;
+  border-bottom: 2px solid #1a1a1a;
+}
+
+.rechnung-table th {
+  padding: 6px 4px;
+  text-align: left;
+  font-size: 9.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rechnung-table td {
+  padding: 8px 4px;
+  border-bottom: 1px dashed #e5e7eb;
+  vertical-align: top;
+}
+
+.rechnung-table .rc-col-num { width: 30px; text-align: center; }
+.rechnung-table .rc-col-qty { width: 70px; text-align: right; }
+.rechnung-table .rc-col-rate { width: 70px; text-align: center; }
+.rechnung-table .rc-col-gross { width: 80px; text-align: right; }
+
+.rc-product-name {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.rc-product-calc {
+  font-size: 10.5px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* ✅ Pfand Row (Sub-item like Kaufland) */
+.rc-row-deposit td {
+  border-bottom: none !important;
+  padding-top: 2px !important;
+  padding-bottom: 6px !important;
+  font-size: 11px;
+  color: #4b5563;
+  font-style: italic;
+}
+.rc-row-deposit + tr td {
+  padding-top: 12px !important; /* Space after Pfand */
 }
 
 /* ═══ TOTALS ═══ */
-.receipt-totals {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 10px;
+.rechnung-totals {
+  display: block;
+  background: #f9fafb;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 15px;
+  border-top: 2px solid #1a1a1a;
 }
 
-.receipt-summe {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 4px;
+.rc-total-row {
+  display: block;
+  overflow: hidden;
+  font-size: 12px;
+  padding: 4px 0;
 }
 
-/* ═══ TAX BREAKDOWN ═══ */
-.receipt-tax-section {
-    font-size: 13px;
-    margin: 10px 0;
+.rc-total-row span:first-child {
+  float: left;
+  color: #4b5563;
 }
 
-.receipt-tax-header {
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-    margin-bottom: 4px;
-    border-bottom: 1px dashed #000;
-    padding-bottom: 2px;
+.rc-total-row span:last-child {
+  float: right;
+  font-weight: 700;
+  font-family: "Courier New", monospace;
 }
 
-.receipt-tax-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 2px;
+.rc-total-tax span:first-child {
+  font-size: 11px;
 }
 
-.receipt-tax-row span:nth-child(1) {
-    width: 20%;
+.rc-total-grand {
+  padding-top: 10px;
+  margin-top: 6px;
+  border-top: 2px solid #145c4a;
+  font-size: 15px;
+  font-weight: 800;
 }
 
-.receipt-tax-row span:nth-child(2) {
-    width: 30%;
-    text-align: right;
+.rc-total-grand span:first-child {
+  color: #145c4a;
+  font-weight: 800;
 }
 
-.receipt-tax-row span:nth-child(3) {
-    width: 25%;
-    text-align: right;
+.rc-total-grand span:last-child {
+  color: #145c4a;
+  font-size: 16px;
 }
 
-.receipt-tax-row span:nth-child(4) {
-    width: 25%;
-    text-align: right;
+/* ═══ TAX TABLE ═══ */
+.rechnung-tax-section {
+  margin-bottom: 15px;
+  page-break-inside: avoid;
 }
 
-.receipt-tax-total {
-    font-weight: bold;
-    border-top: 1px dashed #000;
-    padding-top: 4px;
-    margin-top: 4px;
+.rc-tax-title {
+  font-size: 10px;
+  font-weight: 800;
+  color: #6b7280;
+  margin-bottom: 6px;
+  text-transform: uppercase;
 }
 
-/* ═══ CUSTOMER ═══ */
-.receipt-customer {
-    font-size: 13px;
+.rechnung-tax-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
 }
 
-/* ═══ FOOTER ═══ */
-.receipt-footer {
-    text-align: center;
-    font-size: 12px;
-    margin-top: 10px;
+.rechnung-tax-table th, 
+.rechnung-tax-table td {
+  padding: 6px 8px;
+  border: 1px solid #e5e7eb;
 }
 
-.receipt-thanks {
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 8px;
+.rechnung-tax-table th {
+  background: #f3f4f6;
+  text-align: left;
+  font-size: 10px;
 }
 
-.receipt-legal {
-    font-size: 11px;
-    color: #333;
-    margin-bottom: 10px;
-    line-height: 1.3;
+.rechnung-tax-table td {
+  text-align: right;
+  font-family: "Courier New", monospace;
 }
 
-/* ═══ RESPONSIVE & PRINT ═══ */
-@media (max-width: 600px) {
-    .receipt-container {
-        padding: 15px;
-    }
+/* ═══ PAYMENT ═══ */
+.rechnung-payment {
+  background: #f9fafb;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 15px;
+  page-break-inside: avoid;
 }
 
-@media print {
-    .receipt-container {
-        box-shadow: none;
-        border: none;
-        padding: 0;
-        max-width: 100%;
-    }
+.rc-payment-row {
+  display: block;
+  overflow: hidden;
+  font-size: 12px;
+  padding: 4px 0;
+}
 
-    @page {
-        size: 80mm 297mm;
-        /* حجم ورق الإيصالات الحراري (اختياري) */
-        /* أو يمكنك استخدام A4 إذا كنت ستطبعه على ورق عادي */
-        margin: 10mm;
-    }
+.rc-payment-label {
+  float: left;
+  color: #6b7280;
+}
+
+.rc-payment-value {
+  float: right;
+  font-weight: 700;
+  text-align: right;
+  max-width: 60%; /* Prevents text overflow */
+  word-break: break-all; /* Fixes cut-off card numbers */
+}
+
+.rc-payment-status {
+  display: inline-block;
+  float: right;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.rc-payment-status.rc-paid {
+  background: #dcfce7;
+  color: #166534;
+}
+
+/* ═══ LEGAL & FOOTER ═══ */
+.rechnung-legal {
+  font-size: 11px;
+  color: #6b7280;
+  padding: 8px 12px;
+  background: #f0fdf4;
+  border-left: 3px solid #10b981;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.rechnung-footer {
+  text-align: center;
+  padding-top: 15px;
+  border-top: 1px dashed #d1d5db;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.rechnung-footer-sub {
+  font-size: 11px;
+  font-weight: 500;
+  font-style: italic;
+  color: #6b7280;
+  margin-top: 4px;
 }

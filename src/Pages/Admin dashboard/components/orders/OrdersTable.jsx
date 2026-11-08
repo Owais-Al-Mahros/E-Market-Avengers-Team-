@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import html2pdf from "html2pdf.js";
 import toast from "react-hot-toast";
@@ -8,22 +8,13 @@ import Invoice from "../../../../components/invoice/Invoice";
 import { processRefund, sendOrderEmail } from "../../../../api/orders";
 import { updateBestSellers, decrementBestSellers } from "../../../../lib/bestSellers";
 import { formatTotalWeight } from "../../../../lib/units";
-import { useLocalStorage } from "../../../../hooks/useLocalStorage"; // ✅ تمت إضافة هذا السطر
-import {
-  getDeliveryUrgency,
-  formatDeliveryDate,
-  sortByDeliveryUrgency,
-} from "../../../../lib/orderStatus";
+import { useLocalStorage } from "../../../../hooks/useLocalStorage";
+import { getDeliveryUrgency, formatDeliveryDate, sortByDeliveryUrgency } from "../../../../lib/orderStatus";
 import "./OrdersTable.css";
 import AssignDriverModal from "./modals/AssignDriverModal";
 import { assignDriverToOrder } from "../../../../api/drivers";
 
-export default function OrdersTable({
-  orders,
-  status,
-  onUpdateStatus,
-  onRefresh,
-}) {
+export default function OrdersTable({ orders, status, onUpdateStatus, onRefresh }) {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [shipOrderModal, setShipOrderModal] = useState(null);
@@ -31,20 +22,45 @@ export default function OrdersTable({
   const [assignDriverOrder, setAssignDriverOrder] = useState(null);
   const [assigningDriver, setAssigningDriver] = useState(false);
 
-  // ✅ استخدام useLocalStorage بدلاً من useState لضمان بقاء الإشارة بعد التحديث
-  const [downloadedInvoices, setDownloadedInvoices] = useLocalStorage("downloaded_invoices", {});
+  // ✅ حالات فلترة التاريخ
+  const [showDateMenu, setShowDateMenu] = useState(false);
+  const [datePreset, setDatePreset] = useState("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const dateMenuRef = useRef(null);
 
+  const [downloadedInvoices, setDownloadedInvoices] = useLocalStorage("downloaded_invoices", {});
+  const [invoiceSnapshot, setInvoiceSnapshot] = useState(null);
   const [invoiceToDownload, setInvoiceToDownload] = useState(null);
+
+  // ✅ إغلاق القائمة عند النقر خارجها
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dateMenuRef.current && !dateMenuRef.current.contains(e.target)) {
+        setShowDateMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   /* ═══════════════════════════════════════════
      Helpers
      ═══════════════════════════════════════════ */
   const getTotalWeight = (order) => {
     if (!order.order_items?.length) return 0;
-    return order.order_items.reduce(
-      (sum, item) => sum + (item.total_weight || 0),
-      0
-    );
+    return order.order_items.reduce((sum, item) => sum + (item.total_weight || 0), 0);
+  };
+
+  const getTotalWithDeposit = (order) => {
+    const baseTotal = parseFloat(order.total_price) || 0;
+    const depositTotal = (order.order_items || []).reduce((sum, item) => {
+      if (item.status === "removed") return sum;
+      const d = parseFloat(item.deposit_amount) || 0;
+      const q = parseFloat(item.quantity) || 1;
+      return sum + d * q;
+    }, 0);
+    return baseTotal + depositTotal;
   };
 
   const getTitle = () => {
@@ -59,109 +75,159 @@ export default function OrdersTable({
     return titles[status] || "Orders";
   };
 
-  const sortedOrders = useMemo(
-    () => sortByDeliveryUrgency(orders),
-    [orders]
-  );
+  // ✅ منطق الفلترة
+  const filteredAndSortedOrders = useMemo(() => {
+    let result = orders;
+
+    if (datePreset !== "all") {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+
+      if (datePreset === "today") {
+        result = result.filter(o => new Date(o.created_at) >= now);
+      } else if (datePreset === "yesterday") {
+        const start = new Date(now);
+        start.setDate(start.getDate() - 1);
+        const end = new Date(start);
+        end.setHours(23, 59, 59, 999);
+        result = result.filter(o => {
+          const d = new Date(o.created_at);
+          return d >= start && d <= end;
+        });
+      } else if (datePreset === "7days") {
+        const start = new Date(now);
+        start.setDate(start.getDate() - 7);
+        result = result.filter(o => new Date(o.created_at) >= start);
+      } else if (datePreset === "30days") {
+        const start = new Date(now);
+        start.setDate(start.getDate() - 30);
+        result = result.filter(o => new Date(o.created_at) >= start);
+      } else if (datePreset === "month") {
+        const start = new Date(now.getFullYear(), now.getMonth(), 1);
+        result = result.filter(o => new Date(o.created_at) >= start);
+      } else if (datePreset === "custom") {
+        if (dateFrom) {
+          const start = new Date(dateFrom);
+          start.setHours(0, 0, 0, 0);
+          result = result.filter(o => new Date(o.created_at) >= start);
+        }
+        if (dateTo) {
+          const end = new Date(dateTo);
+          end.setHours(23, 59, 59, 999);
+          result = result.filter(o => new Date(o.created_at) <= end);
+        }
+      }
+    }
+
+    return sortByDeliveryUrgency(result);
+  }, [orders, datePreset, dateFrom, dateTo]);
+
+  const getFilterLabel = () => {
+    if (datePreset === "all") return "Datum filtern";
+    if (datePreset === "today") return "Heute";
+    if (datePreset === "yesterday") return "Gestern";
+    if (datePreset === "7days") return "Letzte 7 Tage";
+    if (datePreset === "30days") return "Letzte 30 Tage";
+    if (datePreset === "month") return "Dieser Monat";
+    if (datePreset === "custom") return "Zeitraum";
+    return "Datum";
+  };
+
+  const clearFilter = () => {
+    setDatePreset("all");
+    setDateFrom("");
+    setDateTo("");
+    setShowDateMenu(false);
+  };
 
   /* ═══════════════════════════════════════════
-     Download Invoice Logic
+     Download Invoice & Cancel Order Logic (نفس الكود السابق)
      ═══════════════════════════════════════════ */
-  const handleDownloadInvoice = (order) => {
+  const handleDownloadInvoice = async (order) => {
+    const loadId = toast.loading("Rechnung wird geladen...");
+    const fetchSnapshot = () => supabase.from("invoices").select("snapshot").eq("order_id", order.id).maybeSingle();
+
+    let { data } = await fetchSnapshot();
+    if (!data) {
+      const { error } = await supabase.rpc("ensure_invoice", { p_order_id: order.id });
+      if (error) {
+        toast.error("Rechnung konnte nicht erstellt werden.", { id: loadId });
+        return;
+      }
+      ({ data } = await fetchSnapshot());
+    }
+    if (!data) {
+      toast.error("Rechnung nicht gefunden.", { id: loadId });
+      return;
+    }
+    toast.dismiss(loadId);
+
+    setInvoiceSnapshot(data.snapshot);
     setInvoiceToDownload(order);
 
-    // ننتظر قليلاً حتى يتم رندر مكون الفاتورة في الـ DOM المخفي
     setTimeout(() => {
       const element = document.getElementById("invoice-pdf-download");
       if (!element) {
         toast.error("Rechnung konnte nicht geladen werden.");
         setInvoiceToDownload(null);
+        setInvoiceSnapshot(null);
         return;
       }
 
       const toastId = toast.loading("PDF wird erstellt...");
+      const invoiceNo = data.snapshot.meta.invoice_number || order.order_number;
 
       const opt = {
-        margin: 10,
-        filename: `Rechnung_${order.order_number}.pdf`,
+        margin: [5, 5, 5, 5],
+        filename: `Rechnung_${invoiceNo}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait", compress: true },
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['.rechnung-table tr', '.rechnung-totals', '.rechnung-payment', '.rechnung-company'] }
       };
 
-      html2pdf()
-        .set(opt)
-        .from(element)
-        .save()
-        .then(() => {
-          toast.success("Rechnung erfolgreich heruntergeladen!", { id: toastId });
-          // ✅ التحديث يتم الآن في الـ LocalStorage
-          setDownloadedInvoices((prev) => ({ ...prev, [order.id]: true }));
-          setInvoiceToDownload(null);
-        })
+      html2pdf().set(opt).from(element).save()
+        .then(() => toast.success("Rechnung erfolgreich heruntergeladen!", { id: toastId }))
         .catch((err) => {
           console.error("PDF Error:", err);
           toast.error("Fehler beim Erstellen der PDF.", { id: toastId });
+        })
+        .finally(() => {
           setInvoiceToDownload(null);
+          setInvoiceSnapshot(null);
         });
     }, 300);
   };
 
-  /* ═══════════════════════════════════════════
-     Cancel Order
-     ═══════════════════════════════════════════ */
-  const cancelOrder = useCallback(
-    async (order) => {
-      const confirmed = window.confirm(
-        `Cancel order ${order.order_number}?\n\nThe customer will be refunded if payment was made.`
-      );
-      if (!confirmed) return { success: false, cancelled: true };
+  const cancelOrder = useCallback(async (order) => {
+    const confirmed = window.confirm(`Cancel order ${order.order_number}?\n\nThe customer will be refunded if payment was made.`);
+    if (!confirmed) return { success: false, cancelled: true };
 
-      setProcessingId(order.id);
-      const toastId = toast.loading("Cancelling order & processing refund...");
+    setProcessingId(order.id);
+    const toastId = toast.loading("Cancelling order & processing refund...");
 
-      try {
-        const refundResult = await processRefund(order.id);
-
-        if (!refundResult.success) {
-          toast.error(refundResult.error || "Refund failed", {
-            id: toastId,
-          });
-          return { success: false, error: refundResult.error };
-        }
-
-        await onUpdateStatus(order.id, "cancelled");
-
-        if (refundResult.type === "refunded") {
-          toast.success(
-            `✅ Refunded €${refundResult.amount.toFixed(2)} to customer`,
-            { id: toastId, duration: 5000 }
-          );
-        } else if (refundResult.type === "authorization_cancelled") {
-          toast.success("✅ Order cancelled, payment hold released", {
-            id: toastId,
-          });
-        } else {
-          toast.success("✅ Order cancelled", { id: toastId });
-        }
-
-        onRefresh();
-        return { success: true };
-      } catch (err) {
-        console.error("Cancel failed:", err);
-        toast.error("Failed to cancel order", { id: toastId });
-        return { success: false, error: err.message };
-      } finally {
-        setProcessingId(null);
+    try {
+      const refundResult = await processRefund(order.id);
+      if (!refundResult.success) {
+        toast.error(refundResult.error || "Refund failed", { id: toastId });
+        return { success: false, error: refundResult.error };
       }
-    },
-    [onUpdateStatus, onRefresh]
-  );
+      await onUpdateStatus(order.id, "cancelled");
+      toast.success("✅ Order cancelled", { id: toastId });
+      onRefresh();
+      return { success: true };
+    } catch (err) {
+      console.error("Cancel failed:", err);
+      toast.error("Failed to cancel order", { id: toastId });
+      return { success: false, error: err.message };
+    } finally {
+      setProcessingId(null);
+    }
+  }, [onUpdateStatus, onRefresh]);
 
   const handleAssignDriver = async (driverId) => {
     if (!assignDriverOrder) return;
     setAssigningDriver(true);
-
     const toastId = toast.loading("Fahrer wird zugewiesen...");
 
     try {
@@ -172,7 +238,6 @@ export default function OrdersTable({
       if (!statusRes?.success) throw new Error(statusRes?.error || "Status fehlgeschlagen");
 
       await sendOrderEmail(assignDriverOrder.id, "confirmed").catch(() => { });
-
       toast.success("✅ Fahrer zugewiesen & Bestellung bestätigt", { id: toastId });
       setAssignDriverOrder(null);
       onRefresh();
@@ -183,61 +248,40 @@ export default function OrdersTable({
     }
   };
 
-  /* ═══════════════════════════════════════════
-     Change Status
-     ═══════════════════════════════════════════ */
-  const changeStatus = useCallback(
-    async (orderId, newStatus) => {
-      if (processingId) return { success: false, error: "Busy" };
+  const changeStatus = useCallback(async (orderId, newStatus) => {
+    if (processingId) return { success: false, error: "Busy" };
+    const order = orders.find((o) => o.id === orderId);
+    if (!order) return { success: false, error: "Order not found" };
+    if (newStatus === "cancelled") return cancelOrder(order);
 
-      const order = orders.find((o) => o.id === orderId);
-      if (!order) return { success: false, error: "Order not found" };
+    setProcessingId(orderId);
+    const toastId = toast.loading("Updating order...");
 
-      if (newStatus === "cancelled") return cancelOrder(order);
-
-      setProcessingId(orderId);
-      const toastId = toast.loading("Updating order...");
-
-      try {
-        const result = await onUpdateStatus(orderId, newStatus);
-
-        if (!result?.success) {
-          toast.error(result?.error || "Failed to update order", {
-            id: toastId,
-          });
-          return result;
-        }
-
-        if (newStatus === "confirmed" || newStatus === "delivered") {
-          const sent = await sendOrderEmail(orderId, newStatus);
-          toast.success(
-            sent
-              ? newStatus === "confirmed"
-                ? "✅ Order confirmed & email sent"
-                : "✅ Order delivered & email sent"
-              : "✅ Status updated (email pending)",
-            { id: toastId }
-          );
-        } else {
-          toast.success("✅ Status updated", { id: toastId });
-        }
-
-        onRefresh();
-        return { success: true };
-      } catch (err) {
-        console.error("Status update failed:", err);
-        toast.error("Failed to update order", { id: toastId });
-        return { success: false, error: err.message };
-      } finally {
-        setProcessingId(null);
+    try {
+      const result = await onUpdateStatus(orderId, newStatus);
+      if (!result?.success) {
+        toast.error(result?.error || "Failed to update order", { id: toastId });
+        return result;
       }
-    },
-    [orders, processingId, onUpdateStatus, onRefresh, cancelOrder]
-  );
 
-  /* ═══════════════════════════════════════════
-     Modal handlers
-     ═══════════════════════════════════════════ */
+      if (newStatus === "confirmed" || newStatus === "delivered") {
+        const sent = await sendOrderEmail(orderId, newStatus);
+        toast.success(sent ? "✅ Status updated & email sent" : "✅ Status updated", { id: toastId });
+      } else {
+        toast.success("✅ Status updated", { id: toastId });
+      }
+
+      onRefresh();
+      return { success: true };
+    } catch (err) {
+      console.error("Status update failed:", err);
+      toast.error("Failed to update order", { id: toastId });
+      return { success: false, error: err.message };
+    } finally {
+      setProcessingId(null);
+    }
+  }, [orders, processingId, onUpdateStatus, onRefresh, cancelOrder]);
+
   const openOrderDetails = (order) => {
     setSelectedOrder(order);
     setShowModal(true);
@@ -248,44 +292,13 @@ export default function OrdersTable({
     setSelectedOrder(null);
   };
 
-  /* ═══════════════════════════════════════════
-     Empty State
-     ═══════════════════════════════════════════ */
-  if (orders.length === 0) {
-    return (
-      <div className="orders-container">
-        <div className="orders-header">
-          <h2>{getTitle()}</h2>
-          <button className="btn-refresh" onClick={onRefresh}>
-            <span className="material-symbols-outlined">refresh</span> Refresh
-          </button>
-        </div>
-        <div className="empty-state">
-          <span className="material-symbols-outlined">inbox</span>
-          <p>
-            {status === "search"
-              ? "Keine Bestellung gefunden."
-              : `No ${status} orders found.`}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   const isBusy = !!processingId;
 
-  /* ═══════════════════════════════════════════
-     Render
-     ═══════════════════════════════════════════ */
   return (
     <div className="orders-container">
-      {/* ✅ Hidden Invoice for PDF Download */}
-      {invoiceToDownload && createPortal(
-        <div style={{ position: 'fixed', left: '-9999px', top: 0, width: '210mm', background: '#fff' }}>
-          <Invoice
-            order={invoiceToDownload}
-            items={invoiceToDownload.order_items}
-          />
+      {invoiceToDownload && invoiceSnapshot && createPortal(
+        <div style={{ position: 'absolute', top: 0, left: '-9999px', width: '210mm', background: '#fff', zIndex: -1 }}>
+          <Invoice snapshot={invoiceSnapshot} showWarnings={false} />
         </div>,
         document.body
       )}
@@ -293,343 +306,145 @@ export default function OrdersTable({
       {/* HEADER */}
       <div className="orders-header">
         <h2>{getTitle()}</h2>
-        <button
-          className="btn-refresh"
-          onClick={onRefresh}
-          disabled={isBusy}
-        >
-          <span className="material-symbols-outlined">refresh</span> Refresh
-        </button>
+        
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          {/* ✅ زر فلترة التاريخ الاحترافي */}
+          <div className="date-filter-container" ref={dateMenuRef}>
+            <button 
+              className={`btn-date-filter ${datePreset !== 'all' ? 'active' : ''}`}
+              onClick={() => setShowDateMenu(!showDateMenu)}
+            >
+              <span className="material-symbols-outlined">calendar_month</span>
+              {getFilterLabel()}
+              {datePreset !== 'all' && (
+                <span className="material-symbols-outlined btn-date-clear" onClick={(e) => { e.stopPropagation(); clearFilter(); }}>close</span>
+              )}
+            </button>
+
+            {/* القائمة المنسدلة */}
+            {showDateMenu && (
+              <div className="date-dropdown-menu">
+                <div className="date-preset-list">
+                  <button onClick={() => { setDatePreset("all"); setShowDateMenu(false); }} className={datePreset === 'all' ? 'active' : ''}>Alle anzeigen</button>
+                  <button onClick={() => { setDatePreset("today"); setShowDateMenu(false); }} className={datePreset === 'today' ? 'active' : ''}>Heute</button>
+                  <button onClick={() => { setDatePreset("yesterday"); setShowDateMenu(false); }} className={datePreset === 'yesterday' ? 'active' : ''}>Gestern</button>
+                  <button onClick={() => { setDatePreset("7days"); setShowDateMenu(false); }} className={datePreset === '7days' ? 'active' : ''}>Letzte 7 Tage</button>
+                  <button onClick={() => { setDatePreset("30days"); setShowDateMenu(false); }} className={datePreset === '30days' ? 'active' : ''}>Letzte 30 Tage</button>
+                  <button onClick={() => { setDatePreset("month"); setShowDateMenu(false); }} className={datePreset === 'month' ? 'active' : ''}>Dieser Monat</button>
+                </div>
+                <div className="date-custom-range">
+                  <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#6b7280', marginBottom: '4px', display: 'block' }}>Benutzerdefiniert</span>
+                  <input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setDatePreset('custom'); }} />
+                  <span style={{ textAlign: 'center', fontSize: '12px' }}>bis</span>
+                  <input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setDatePreset('custom'); }} />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <button className="btn-refresh" onClick={onRefresh} disabled={isBusy}>
+            <span className="material-symbols-outlined">refresh</span> Refresh
+          </button>
+        </div>
       </div>
 
       {/* TABLE */}
       <div className="orders-table-wrapper">
-        <table className="orders-table">
-          <thead>
-            <tr>
-              <th>Order #</th>
-              <th>Customer</th>
-              <th>Address</th>
-              <th>🚗 Fahrer</th>
-              <th className="th-delivery">🚚 Lieferung</th>
-              <th>Weight</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedOrders.map((order) => {
-              const urgency = getDeliveryUrgency(order);
-
-              return (
-                <tr
-                  key={order.id}
-                  className={`order-row order-row-${order.status}`}
-                >
-                  {/* Order # */}
-                  <td>
-                    <button
-                      className="order-number-btn"
-                      onClick={() => openOrderDetails(order)}
-                    >
-                      <span className="order-number">
-                        {order.order_number}
-                      </span>
-                    </button>
-                  </td>
-
-                  {/* Customer */}
-                  <td>
-                    <div className="customer-info">
-                      <span className="customer-name">
-                        {order.customer_info?.first_name}{" "}
-                        {order.customer_info?.last_name}
-                      </span>
-                      <span className="customer-email">
-                        {order.customer_info?.email}
-                      </span>
-                      <span className="customer-phone">
-                        📞 {order.customer_info?.phone}
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* Address */}
-                  <td>
-                    <div className="address-info">
-                      <span>
-                        {order.shipping_address?.street}{" "}
-                        {order.shipping_address?.house_number}
-                      </span>
-                      <span>
-                        {order.shipping_address?.postal_code}{" "}
-                        {order.shipping_address?.city}
-                      </span>
-                      <span className="address-detail">
-                        🏢 Floor {order.shipping_address?.floor}
-                        {order.shipping_address?.has_elevator &&
-                          " (Elevator)"}
-                      </span>
-                      {order.shipping_address?.doorbell_name && (
-                        <span className="address-detail">
-                          🔔 {order.shipping_address.doorbell_name}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td>
-                    {order.driver ? (
-                      <div className="driver-cell">
-                        <div className="driver-cell-head">
-                          <span className="material-symbols-outlined">person</span>
+        {filteredAndSortedOrders.length === 0 ? (
+          <div className="empty-state" style={{ padding: '40px', textAlign: 'center' }}>
+            <span className="material-symbols-outlined">inbox</span>
+            <p>{status === "search" ? "Keine Bestellung gefunden." : "Keine Bestellungen im ausgewählten Zeitraum."}</p>
+          </div>
+        ) : (
+          <table className="orders-table">
+            {/* نفس محتوى الجدول السابق */}
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Address</th>
+                <th>🚗 Fahrer</th>
+                <th className="th-delivery">🚚 Lieferung</th>
+                <th>Weight</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredAndSortedOrders.map((order) => {
+                const urgency = getDeliveryUrgency(order);
+                return (
+                  <tr key={order.id} className={`order-row order-row-${order.status}`}>
+                    <td><button className="order-number-btn" onClick={() => openOrderDetails(order)}><span className="order-number">{order.order_number}</span></button></td>
+                    <td>
+                      <div className="customer-info">
+                        <span className="customer-name">{order.customer_info?.first_name} {order.customer_info?.last_name}</span>
+                        <span className="customer-email">{order.customer_info?.email}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="address-info">
+                        <span>{order.shipping_address?.street} {order.shipping_address?.house_number}</span>
+                        <span>{order.shipping_address?.postal_code} {order.shipping_address?.city}</span>
+                      </div>
+                    </td>
+                    <td>
+                      {order.driver ? (
+                        <div className="driver-cell">
                           <strong>{order.driver.name || "Fahrer"}</strong>
                         </div>
-                        {order.driver.phone ? (
-                          <a
-                            href={`tel:${order.driver.phone}`}
-                            className="driver-phone-btn"
-                            title={`Anrufen: ${order.driver.phone}`}
-                          >
-                            <span className="material-symbols-outlined">call</span>
-                            {order.driver.phone}
-                          </a>
-                        ) : (
-                          <span className="driver-phone-missing">Kein Telefon</span>
-                        )}
-                      </div>
-                    ) : (
-                      <span className="driver-unassigned">
-                        <span className="material-symbols-outlined">person_off</span>
-                        Nicht zugewiesen
-                      </span>
-                    )}
-                  </td>
-                  {/* Delivery */}
-                  <td className="td-delivery">
-                    <div className="delivery-info">
-                      <div className="delivery-date">
-                        <span className="material-symbols-outlined">
-                          event
-                        </span>
-                        <span className="delivery-date-value">
-                          {formatDeliveryDate(order.delivery_date)}
-                        </span>
-                      </div>
-
-                      {order.delivery_time && (
-                        <div className="delivery-time">
-                          <span className="material-symbols-outlined">
-                            schedule
-                          </span>
-                          <span>{order.delivery_time}</span>
-                        </div>
+                      ) : (
+                        <span className="driver-unassigned">Nicht zugewiesen</span>
                       )}
-
-                      {urgency && (
-                        <span
-                          className={`delivery-badge delivery-badge-${urgency.class}`}
-                        >
-                          {urgency.label}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-
-                  {/* Weight */}
-                  <td className="order-weight">
-                    {formatTotalWeight(getTotalWeight(order))}
-                  </td>
-
-                  {/* Total */}
-                  <td className="order-total">
-                    €{parseFloat(order.total_price || 0).toFixed(2)}
-                  </td>
-
-                  {/* Status */}
-                  <td>
-                    <span
-                      className={`status-badge status-${order.status}`}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-
-                  {/* Actions */}
-                  <td>
-                    <div className="actions-cell">
-                      {["pending", "search"].includes(status) &&
-                        order.status === "pending" && (
+                    </td>
+                    <td className="td-delivery">
+                      <div className="delivery-info">
+                        <div className="delivery-date"><span className="delivery-date-value">{formatDeliveryDate(order.delivery_date)}</span></div>
+                        {urgency && <span className={`delivery-badge delivery-badge-${urgency.class}`}>{urgency.label}</span>}
+                      </div>
+                    </td>
+                    <td className="order-weight">{formatTotalWeight(getTotalWeight(order))}</td>
+                    <td className="order-total">€{getTotalWithDeposit(order).toFixed(2)}</td>
+                    <td><span className={`status-badge status-${order.status}`}>{order.status}</span></td>
+                    <td>
+                      <div className="actions-cell">
+                        {order.status === "pending" && (
                           <>
-                            <button
-                              className="btn-action btn-confirm"
-                              onClick={() => setAssignDriverOrder(order)}
-                              disabled={isBusy}
-                            >
-                              ✅ Confirm
-                            </button>
-                            <button
-                              className="btn-action btn-cancel"
-                              onClick={() =>
-                                changeStatus(order.id, "cancelled")
-                              }
-                              disabled={isBusy}
-                            >
-                              ❌ Cancel
-                            </button>
+                            <button className="btn-action btn-confirm" onClick={() => setAssignDriverOrder(order)} disabled={isBusy}>✅ Confirm</button>
+                            <button className="btn-action btn-cancel" onClick={() => changeStatus(order.id, "cancelled")} disabled={isBusy}>❌ Cancel</button>
                           </>
                         )}
-
-                      {["confirmed", "search"].includes(status) &&
-                        order.status === "confirmed" && (
+                        {order.status === "confirmed" && (
                           <>
-                            <button
-                              className="btn-action btn-ship"
-                              onClick={() => setShipOrderModal(order)}
-                              disabled={isBusy}
-                            >
-                              📦 Ship
-                            </button>
-                            <button
-                              className="btn-action btn-undo"
-                              onClick={() =>
-                                changeStatus(order.id, "pending")
-                              }
-                              disabled={isBusy}
-                            >
-                              ↩️ Undo
-                            </button>
-                            <button
-                              className="btn-action btn-cancel"
-                              onClick={() =>
-                                changeStatus(order.id, "cancelled")
-                              }
-                              disabled={isBusy}
-                            >
-                              ❌ Cancel
-                            </button>
+                            <button className="btn-action btn-ship" onClick={() => setShipOrderModal(order)} disabled={isBusy}>📦 Ship</button>
+                            <button className="btn-action btn-cancel" onClick={() => changeStatus(order.id, "cancelled")} disabled={isBusy}>❌ Cancel</button>
                           </>
                         )}
-
-                      {["shipped", "search"].includes(status) &&
-                        order.status === "shipped" && (
-                          <>
-                            <button
-                              className="btn-action btn-deliver"
-                              onClick={async () => {
-                                const result = await changeStatus(
-                                  order.id,
-                                  "delivered"
-                                );
-                                if (result?.success) {
-                                  await updateBestSellers(order.id);
-                                }
-                              }}
-                              disabled={isBusy}
-                            >
-                              ✅ Deliver
-                            </button>
-                            <button
-                              className="btn-action btn-cancel"
-                              onClick={() =>
-                                changeStatus(order.id, "cancelled")
-                              }
-                              disabled={isBusy}
-                            >
-                              ❌ Cancel
-                            </button>
-                          </>
+                        {order.status === "shipped" && (
+                          <button className="btn-action btn-deliver" onClick={async () => {
+                            const result = await changeStatus(order.id, "delivered");
+                            if (result?.success) await updateBestSellers(order.id);
+                          }} disabled={isBusy}>✅ Deliver</button>
                         )}
-
-                      {["delivered", "search"].includes(status) &&
-                        order.status === "delivered" && (
-                          <>
-                            <button
-                              className={`btn-action ${downloadedInvoices[order.id] ? "btn-invoice-downloaded" : "btn-invoice"}`}
-                              onClick={() => handleDownloadInvoice(order)}
-                              disabled={isBusy}
-                            >
-                              {downloadedInvoices[order.id] ? "✅ Heruntergeladen" : "📄 Rechnung"}
-                            </button>
-                            <button
-                              className="btn-action btn-undo"
-                              onClick={async () => {
-                                const result = await changeStatus(
-                                  order.id,
-                                  "shipped"
-                                );
-                                if (result?.success) {
-                                  await decrementBestSellers(order.id);
-                                }
-                              }}
-                              disabled={isBusy}
-                            >
-                              ↩️ Undo
-                            </button>
-                          </>
-                        )}
-
-                      {["cancelled", "search"].includes(status) &&
-                        order.status === "cancelled" && (
-                          <button
-                            className="btn-action btn-undo"
-                            onClick={() =>
-                              changeStatus(order.id, "confirmed")
-                            }
-                            disabled={isBusy}
-                          >
-                            ↩️ Undo
+                        {order.status === "delivered" && (
+                          <button className={`btn-action ${downloadedInvoices[order.id] ? "btn-invoice-downloaded" : "btn-invoice"}`} onClick={() => handleDownloadInvoice(order)} disabled={isBusy}>
+                            {downloadedInvoices[order.id] ? "✅ PDF" : "📄 Rechnung"}
                           </button>
                         )}
-
-                      {isBusy && processingId === order.id && (
-                        <span
-                          className="row-processing"
-                          title="Processing..."
-                        >
-                          ⏳
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
 
-      {/* === Modals === */}
-      {showModal && selectedOrder && (
-        <OrderDetailsModal
-          order={selectedOrder}
-          onClose={closeModal}
-          onUpdateStatus={changeStatus}
-          onOpenShipModal={(order) => {
-            closeModal();
-            setShipOrderModal(order);
-          }}
-        />
-      )}
-      {assignDriverOrder && (
-        <AssignDriverModal
-          order={assignDriverOrder}
-          onClose={() => setAssignDriverOrder(null)}
-          onConfirm={handleAssignDriver}
-          isConfirming={assigningDriver}
-        />
-      )}
-
-      {shipOrderModal && (
-        <ShipOrderModal
-          order={shipOrderModal}
-          onClose={() => setShipOrderModal(null)}
-          onSuccess={() => {
-            setShipOrderModal(null);
-            onRefresh();
-          }}
-        />
-      )}
+      {showModal && selectedOrder && <OrderDetailsModal order={selectedOrder} onClose={closeModal} onUpdateStatus={changeStatus} onOpenShipModal={(order) => { closeModal(); setShipOrderModal(order); }} />}
+      {assignDriverOrder && <AssignDriverModal order={assignDriverOrder} onClose={() => setAssignDriverOrder(null)} onConfirm={handleAssignDriver} isConfirming={assigningDriver} />}
+      {shipOrderModal && <ShipOrderModal order={shipOrderModal} onClose={() => setShipOrderModal(null)} onSuccess={() => { setShipOrderModal(null); onRefresh(); }} />}
     </div>
   );
 }

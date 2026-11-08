@@ -662,7 +662,7 @@ export default function ProductFormPage({
                                 </div>
 
                                 <div className="pf-field pf-mt-2" style={{ marginTop: "1.5rem" }}>
-                                    <label>Ingredients</label>
+                                    <label>Zutaten & Allergene</label>
                                     <textarea className="pf-input pf-textarea" value={form.ingredients} onChange={(e) => setField("ingredients", e.target.value)} placeholder="e.g., Apples, Vitamin C..." rows={3} />
                                 </div>
                             </div>

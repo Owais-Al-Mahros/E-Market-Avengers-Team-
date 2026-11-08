@@ -41,7 +41,7 @@ function generateOrderNumber() {
 
 export default function DeliveryTimePage() {
     const navigate = useNavigate();
-    const { cartItems, totalPrice, totalDeposit, totalWeight, clearCart } = useCart();
+    const { cartItems, totalPrice, totalDeposit, totalWeight, clearCart ,syncPrices} = useCart();
     const {
         checkoutData,
         updateFields,
@@ -313,9 +313,18 @@ export default function DeliveryTimePage() {
             navigate(`/Cart&Payments/BillAndPayment/${orderId}`, {
                 replace: true,
             });
-        } catch (error) {
+               } catch (error) {
             console.error("❌ Order submission failed:", error);
-            toast.error(`Fehler: ${error.message}`, { id: toastId });
+            
+            // ✅ التحقق مما إذا كان الخطأ بسبب تغير الأسعار أو نفاد المنتج
+            if (/Preise haben sich geändert|nicht mehr verfügbar/.test(error.message)) {
+                await syncPrices(); // تحديث السلة بأسعار الداتا بيز
+                toast.error("Preise wurden aktualisiert. Bitte prüfen Sie Ihren Warenkorb.", { id: toastId });
+            } else {
+                // أي خطأ آخر (شبكة، خطأ سيرفر، إلخ)
+                toast.error(`Fehler: ${error.message}`, { id: toastId });
+            }
+            
             setHasSubmitted(false);
         } finally {
             setSubmitting(false);

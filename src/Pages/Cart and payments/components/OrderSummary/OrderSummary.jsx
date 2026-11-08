@@ -40,13 +40,12 @@ export default function OrderSummary() {
 
         {totalDeposit > 0 && (
           <div className="order-summary-row">
-            <span>♻️ Pfand (rückzahlbar)</span>
+            <span>♻️ Pfand</span>
             <span>{formatEuro(totalDeposit)}</span>
           </div>
         )}
       </div>
 
-      {/* ═══ Substitution Checkbox ═══ */}
       <label
         className={`order-substitution-box ${allowSubstitution ? "checked" : ""
           }`}
