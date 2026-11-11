@@ -346,37 +346,10 @@ export default function ShipOrderModal({ order, onClose, onSuccess }) {
       const result = await capturePayment(order.id);
 
       if (!result.success) {
-        console.error(
-          "❌ Capture failed, reverting order status:",
-          result.error
-        );
-
-        // ✅ FIX #32: تراجع عن status إلى "confirmed"
-        const { error: revertErr } = await supabase
-          .from("orders")
-          .update({
-            status: "confirmed",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", order.id);
-
-        if (revertErr) {
-          console.error("❌ Revert failed:", revertErr);
-          toast.error(
-            `Zahlung fehlgeschlagen: ${result.error}. ` +
-            `Manueller Eingriff erforderlich — Support kontaktieren.`,
-            { id: toastId, duration: 12000 }
-          );
-        } else {
-          toast.error(
-            `❌ Zahlung fehlgeschlagen: ${result.error}. ` +
-            `Bestellung zurück auf "Confirmed" — bitte erneut versuchen.`,
-            { id: toastId, duration: 10000 }
-          );
-        }
-
+        console.error("❌ Capture failed:", result.error);
+        toast.error(`❌ Zahlung fehlgeschlagen: ${result.error}`, { id: toastId, duration: 10000 });
         setSubmitting(false);
-        onSuccess();
+        onSuccess({ refreshOnly: true });
         return;
       }
 

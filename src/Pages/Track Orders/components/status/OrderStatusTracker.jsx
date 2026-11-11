@@ -133,25 +133,13 @@ export default function OrderStatusTracker({ status, orderNumber }) {
         // ✅ اسم الملف من رقم الفاتورة (RE-2026-XXXX) بدل رقم الطلب
         const invoiceNo = element.dataset.invoiceNumber || `Order_${orderNumber}`;
 
-                const opt = {
-          margin: [5, 5, 5, 5],
-          filename: `Rechnung_${invoiceNo}.pdf`,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { 
-            scale: 2, 
-            useCORS: true
-          },
-          jsPDF: { 
-            unit: "mm", 
-            format: "a4", 
-            orientation: "portrait",
-            compress: true
-          },
-          pagebreak: { 
-            mode: ['css', 'legacy'], 
-            avoid: ['.rechnung-table tr', '.rechnung-totals', '.rechnung-payment', '.rechnung-company'] 
-          }
-        };
+        const opt = {
+        margin: [5, 5, 5, 5],
+        filename: `Rechnung_${invoiceNo}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true }, // ✅ لا تضع أي إعدادات pagebreak هنا
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait", compress: true }
+      };
 
         html2pdf()
             .set(opt)

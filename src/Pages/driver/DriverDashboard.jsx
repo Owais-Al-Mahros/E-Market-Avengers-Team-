@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { supabase } from "../../lib/supabase";
 import { fetchMyOrders, updateOrderStatusByDriver } from "../../api/drivers";
 import { updateBestSellers } from "../../lib/bestSellers";
+import { capturePayment, sendOrderEmail } from "../../api/orders";
 import { getTodayShiftCheck } from "../../api/haccp";
 import ShipOrderModal from "../../components/order/ShipOrderModal";
 import DriverOrderDetailsModal from "./Modal/DriverOrderDetailsModal";
@@ -20,12 +21,26 @@ const TABS = [
     { key: "delivered", label: "Zugestellt", icon: "🎉" },
 ];
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/* يعيد المحاولة عند الأخطاء المؤقتة (شبكة ضعيفة / تجديد التوكن) بدل اعتبارها "غير مصرَّح" */
+async function withRetry(fn, tries = 3, delayMs = 500) {
+    let last;
+    for (let i = 0; i < tries; i++) {
+        last = await fn();
+        if (!last?.error) return last;
+        await sleep(delayMs * (i + 1));
+    }
+    return last;
+}
+
 export default function DriverDashboard() {
     const navigate = useNavigate();
 
     const [driver, setDriver] = useState(null);
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState(false);
     const [activeTab, setActiveTab] = useState("confirmed");
 
     const [processingId, setProcessingId] = useState(null);
@@ -40,75 +55,122 @@ export default function DriverDashboard() {
     // المودالات
     const [showSummary, setShowSummary] = useState(false);
     const [showCleaning, setShowCleaning] = useState(false);
-    const [showHistory, setShowHistory] = useState(false); // ✅ مودال السجل الجديد
+    const [showHistory, setShowHistory] = useState(false);
 
-    /* ═══ Load ═══ */
-    const load = async () => {
-        setLoading(true);
+    /* ═══ تحديث الطلبات فقط (بدون إعادة فحص الهوية، وبدون وميض الشاشة) ═══ */
+    const refreshOrders = useCallback(async ({ silent = false } = {}) => {
+        if (!silent) setLoading(true);
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                navigate("/login");
-                return;
+            const res = await fetchMyOrders();
+            if (res?.success) {
+                setOrders(res.data);
+            } else if (res) {
+                toast.error(res.error || "Bestellungen konnten nicht geladen werden.", { id: "orders-load" });
             }
+        } catch (err) {
+            console.error("refreshOrders:", err);
+            toast.error("Verbindungsfehler beim Laden.", { id: "orders-load" });
+        } finally {
+            if (!silent) setLoading(false);
+        }
+    }, []);
 
-            const { data: profile } = await supabase
+    /* ═══ هوية السائق: لا نطرده إلا إذا تأكدنا أنه ليس سائقًا ═══ */
+    const loadDriver = useCallback(async () => {
+        // getSession محلي (بلا شبكة) — غيابه يعني أن المستخدم غير مسجّل فعلًا
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) {
+            navigate("/login", { replace: true });
+            return null;
+        }
+
+        const { data: profile, error } = await withRetry(() =>
+            supabase
                 .from("profiles")
                 .select("id, name, email, role")
-                .eq("id", user.id)
-                .single();
+                .eq("id", session.user.id)
+                .single()
+        );
 
-            if (profile?.role !== "driver") {
-                toast.error("Zugriff verweigert.");
-                navigate("/");
+        // خطأ شبكة/خادم مؤقت ≠ "ممنوع": نعرض شاشة إعادة المحاولة ولا نخرجه من الموقع
+        if (error || !profile) {
+            console.error("loadDriver:", error);
+            setLoadError(true);
+            return null;
+        }
+
+        if (profile.role !== "driver") {
+            toast.error("Zugriff verweigert.");
+            navigate("/", { replace: true });
+            return null;
+        }
+
+        setDriver(profile);
+        return profile;
+    }, [navigate]);
+
+    /* ═══ التحميل الأول ═══ */
+    const initialLoad = useCallback(async () => {
+        setLoading(true);
+        setLoadError(false);
+        try {
+            const profile = await loadDriver();
+            if (!profile) return;
+
+            // success:true + data:null = لا يوجد فحص اليوم (يُفرض المودال)
+            // success:false = خطأ مؤقت (لا نفرض المودال، ولا نسمح بالعمل بلا تحقق)
+            const checkRes = await getTodayShiftCheck();
+            if (!checkRes.success) {
+                setLoadError(true);
                 return;
             }
-
-            setDriver(profile);
-
-            // ✅ التحقق من الفحص اليومي
-            const checkRes = await getTodayShiftCheck();
-            if (checkRes.success && checkRes.data) {
+            if (checkRes.data) {
                 setHasShiftCheck(true);
                 setShiftCheckData(checkRes.data);
             } else {
                 setHasShiftCheck(false);
             }
 
-            const res = await fetchMyOrders();
-            if (res && res.success) setOrders(res.data);
-            else if (res) toast.error(res.error);
-
+            await refreshOrders({ silent: true });
         } catch (err) {
             console.error("Load error:", err);
-            toast.error("Verbindungsfehler beim Laden.");
+            setLoadError(true);
         } finally {
             setLoading(false);
         }
-    };
+    }, [loadDriver, refreshOrders]);
 
     useEffect(() => {
-        load();
+        initialLoad();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    /* ═══ Logout ═══ */
+    /* ═══ Logout (يدوي فقط) ═══ */
     const handleLogout = async () => {
         await supabase.auth.signOut();
         navigate("/login", { replace: true });
     };
 
+    /* ═══ بعد إكمال الفحص اليومي ═══ */
+    const handleShiftCheckComplete = async () => {
+        setHasShiftCheck(true);
+        const r = await getTodayShiftCheck();
+        if (r.success && r.data) setShiftCheckData(r.data);
+        await refreshOrders({ silent: true });
+    };
+
     /* ═══ Ship success ═══ */
-    const handleShipSuccess = async () => {
+    // ShipOrderModal يستدعي onSuccess({ refreshOnly: true }) عند فشل الدفع (لا رسالة نجاح كاذبة)
+    const handleShipSuccess = async (result) => {
         setShipModalOrder(null);
-        toast.success("Bestellung versandt!");
-        await load();
+        if (!result?.refreshOnly) toast.success("Bestellung versandt!");
+        await refreshOrders({ silent: true });
     };
 
     /* ═══ Deliver Flow ═══ */
     const handleDeliver = async (orderId, hasCooling) => {
         if (hasCooling) {
-            const order = orders.find(o => o.id === orderId);
+            const order = orders.find((o) => o.id === orderId);
             setCoolingDeliveryOrder(order);
             return;
         }
@@ -120,17 +182,44 @@ export default function DriverDashboard() {
         const toastId = toast.loading("Wird zugestellt...");
 
         try {
-            const res = await updateOrderStatusByDriver(orderId, "delivered");
+            // ✅ درجة الحرارة تُحفظ الآن (orders.delivery_temp_c) ويراها الأدمن في قسم HACCP
+            const res = await updateOrderStatusByDriver(orderId, "delivered", {
+                tempC: measuredTemp,
+            });
+
             if (res.success) {
-                await updateBestSellers(orderId);
+                // ثانوية وغير حاجبة: فشلها لا يجب أن يُظهر خطأ والطلب سُلِّم فعلًا
+                updateBestSellers(orderId).catch((e) => console.error("updateBestSellers:", e));
+                // الفاتورة أُنشئت في قاعدة البيانات لحظة delivered؛ هنا يُرسَل بريدها للعميل
+                sendOrderEmail(orderId, "delivered").catch((e) => console.error("sendOrderEmail:", e));
+
                 toast.success("Als zugestellt markiert", { id: toastId });
                 setCoolingDeliveryOrder(null);
-                await load();
+                await refreshOrders({ silent: true });
             } else {
                 toast.error(res.error, { id: toastId });
             }
         } catch (err) {
             toast.error("Fehler beim Zustellen", { id: toastId });
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    /* ═══ إعادة محاولة تحصيل الدفع (طلب shipped لم يُحصَّل دفعه) ═══ */
+    const handleRetryCapture = async (orderId) => {
+        setProcessingId(orderId);
+        const toastId = toast.loading("Zahlung wird erfasst...");
+        try {
+            const res = await capturePayment(orderId);
+            if (res?.success) {
+                toast.success("Zahlung erfasst.", { id: toastId });
+            } else {
+                toast.error(res?.error || "Zahlung fehlgeschlagen.", { id: toastId, duration: 8000 });
+            }
+            await refreshOrders({ silent: true });
+        } catch (err) {
+            toast.error("Verbindungsfehler.", { id: toastId });
         } finally {
             setProcessingId(null);
         }
@@ -156,16 +245,33 @@ export default function DriverDashboard() {
 
     /* ═══ Render ═══ */
 
+    // مشكلة اتصال مؤقتة: الجلسة لم تُنهَ، والسائق يقرّر
+    if (loadError) {
+        return (
+            <div className="dd-page">
+                <div className="dd-state">
+                    <span className="material-symbols-outlined">wifi_off</span>
+                    <p>Verbindungsproblem. Ihre Sitzung wurde nicht beendet.</p>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+                        <button type="button" className="dd-details-btn" onClick={initialLoad}>
+                            Erneut versuchen
+                        </button>
+                        <button type="button" className="dd-details-btn" onClick={handleLogout}>
+                            Neu anmelden
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     // إذا كان الفحص اليومي غير مكتمل، اعرض المودال الإجباري فقط
     if (hasShiftCheck === false) {
         return (
             <div className="dd-page">
                 <ShiftStartModal
                     driverName={driver?.name || "Fahrer"}
-                    onComplete={() => {
-                        setHasShiftCheck(true);
-                        load();
-                    }}
+                    onComplete={handleShiftCheckComplete}
                 />
             </div>
         );
@@ -233,6 +339,7 @@ export default function DriverDashboard() {
                                 processing={processingId === order.id}
                                 onOpenShipModal={() => handleOpenShipModal(order)}
                                 onDeliver={(orderId, hasCooling) => handleDeliver(orderId, hasCooling)}
+                                onRetryCapture={() => handleRetryCapture(order.id)}
                                 onShowDetails={() => setDetailsOrder(order)}
                             />
                         ))}
@@ -307,8 +414,15 @@ function DriverOrderCard({
     processing,
     onOpenShipModal,
     onDeliver,
+    onRetryCapture,
     onShowDetails,
 }) {
+    // طلب بطاقة shipped لم يُحصَّل دفعه بعد: لا تسليم قبل التحصيل
+    const needsCapture =
+        order.status === "shipped" &&
+        !!order.payment_intent_id &&
+        !["paid", "captured"].includes(order.payment_status);
+
     const addr = order.shipping_address || {};
     const customer = order.customer_info || {};
 
@@ -405,7 +519,19 @@ function DriverOrderCard({
                     </button>
                 )}
 
-                {order.status === "shipped" && (
+                {needsCapture && (
+                    <button
+                        type="button"
+                        className="dd-btn dd-btn-ship"
+                        onClick={onRetryCapture}
+                        disabled={processing}
+                    >
+                        <span className="material-symbols-outlined">payments</span>
+                        {processing ? "..." : "Zahlung erneut erfassen"}
+                    </button>
+                )}
+
+                {order.status === "shipped" && !needsCapture && (
                     <button
                         type="button"
                         className="dd-btn dd-btn-deliver"

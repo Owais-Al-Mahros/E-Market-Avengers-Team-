@@ -562,3 +562,24 @@
     color: #78350f;
     line-height: 1.5;
 }
+
+/* ═══ Delivery temperature badge (تبويب Lieferungen & Temperatur) ═══ */
+.haccp-temp-badge {
+    align-self: center;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: #ddf4ea;
+    color: #145c4a;
+    font-weight: 800;
+    font-size: 15px;
+    font-family: "Courier New", monospace;
+    white-space: nowrap;
+}
+
+.haccp-temp-badge.missing {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fcd34d;
+    font-size: 12px;
+    font-family: inherit;
+}

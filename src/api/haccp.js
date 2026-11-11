@@ -202,3 +202,22 @@ export async function fetchAllCleaningLogs({ driverId = null, limit = 100 } = {}
         return { success: false, error: err.message };
     }
 }
+export async function fetchDeliveryTemperatures({ driverId = null, limit = 100 } = {}) {
+    try {
+        let query = supabase
+            .from("orders")
+            .select("id, order_number, delivered_at, delivery_temp_c, delivery_temp_at, driver_id, driver:profiles!driver_id(name)")
+            .eq("status", "delivered")
+            .eq("has_cooling_items", true)
+            .order("delivered_at", { ascending: false, nullsFirst: false })
+            .limit(limit);
+
+        if (driverId) query = query.eq("driver_id", driverId);
+
+        const { data, error } = await query;
+        if (error) throw error;
+        return { success: true, data: data || [] };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+}

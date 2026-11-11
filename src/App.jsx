@@ -78,14 +78,14 @@ function App() {
     initializeAuth();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        await checkAdminStatus(session);
-
-        if (event === "SIGNED_OUT") {
-          window.location.href = "/";
-        }
-      },
-    );
+    (event, session) => {
+    console.info("[auth]", event);                         // للتشخيص
+    setTimeout(() => { checkAdminStatus(session); }, 0);   // بدل await داخل الـ callback
+    if (event === "SIGNED_OUT") {
+      window.location.href = "/";
+    }
+  },
+);
 
     return () => {
       authListener?.subscription.unsubscribe();

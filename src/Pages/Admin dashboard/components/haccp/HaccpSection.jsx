@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { fetchAllShiftChecks, fetchAllCleaningLogs, fetchAllDriversList } from "../../../../api/haccp";
+import { fetchAllShiftChecks, fetchAllCleaningLogs, fetchAllDriversList, fetchDeliveryTemperatures } from "../../../../api/haccp";
 import "./HaccpSection.css";
 
 const CHECK_LABELS = {
@@ -28,7 +28,10 @@ export default function HaccpSection() {
     const loadData = useCallback(async () => {
         setLoading(true);
         setExpandedId(null);
-        const fetcher = activeTab === "checks" ? fetchAllShiftChecks : fetchAllCleaningLogs;
+        const fetcher =
+            activeTab === "checks" ? fetchAllShiftChecks
+                : activeTab === "cleaning" ? fetchAllCleaningLogs
+                    : fetchDeliveryTemperatures;
         const res = await fetcher({ driverId: selectedDriver || null });
         if (res.success) setData(res.data);
         setLoading(false);
@@ -54,6 +57,9 @@ export default function HaccpSection() {
                 <button className={`haccp-admin-tab ${activeTab === "cleaning" ? "active" : ""}`} onClick={() => setActiveTab("cleaning")}>
                     <span className="material-symbols-outlined">cleaning_services</span> Reinigungsprotokolle
                 </button>
+                <button className={`haccp-admin-tab ${activeTab === "deliveries" ? "active" : ""}`} onClick={() => setActiveTab("deliveries")}>
+                    <span className="material-symbols-outlined">ac_unit</span> Lieferungen & Temperatur
+                </button>
             </nav>
 
             <div className="haccp-filters-bar">
@@ -72,6 +78,41 @@ export default function HaccpSection() {
                 ) : (
                     <div className="haccp-timeline">
                         {data.map(item => {
+                            // ❄️ تبويب التسليمات: درجة الحرارة المقاسة عند التسليم
+                            if (activeTab === "deliveries") {
+                                const hasTemp = item.delivery_temp_c !== null && item.delivery_temp_c !== undefined;
+                                return (
+                                    <article key={item.id} className={`haccp-record ${hasTemp ? "ok" : "warn"}`}>
+                                        <div className="haccp-record-header-row" style={{ cursor: "default" }}>
+                                            <div className="haccp-record-icon">❄️</div>
+                                            <div className="haccp-record-content">
+                                                <div className="haccp-record-head">
+                                                    <span className="haccp-record-type">Zustellung mit Kühlware</span>
+                                                    <span className="haccp-record-time">
+                                                        {item.delivered_at ? new Date(item.delivered_at).toLocaleString("de-DE") : "—"}
+                                                    </span>
+                                                </div>
+                                                <span className="haccp-record-driver">
+                                                    <span className="material-symbols-outlined">person</span>
+                                                    {item.driver?.name || "Unbekannt"}
+                                                </span>
+                                                <span className="haccp-record-title">Bestellung #{item.order_number}</span>
+                                                {hasTemp && item.delivery_temp_at && (
+                                                    <span className="haccp-record-time" style={{ fontWeight: 600 }}>
+                                                        Gemessen: {new Date(item.delivery_temp_at).toLocaleString("de-DE")}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className={`haccp-temp-badge ${hasTemp ? "" : "missing"}`}>
+                                                {hasTemp
+                                                    ? `${Number(item.delivery_temp_c).toFixed(1).replace(".", ",")} °C`
+                                                    : "Keine Messung"}
+                                            </div>
+                                        </div>
+                                    </article>
+                                );
+                            }
+
                             const isExpanded = expandedId === item.id;
                             return (
                                 <article key={item.id} className="haccp-record ok">

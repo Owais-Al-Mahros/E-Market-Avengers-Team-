@@ -52,16 +52,6 @@ export default function OrdersTable({ orders, status, onUpdateStatus, onRefresh 
     return order.order_items.reduce((sum, item) => sum + (item.total_weight || 0), 0);
   };
 
-  const getTotalWithDeposit = (order) => {
-    const baseTotal = parseFloat(order.total_price) || 0;
-    const depositTotal = (order.order_items || []).reduce((sum, item) => {
-      if (item.status === "removed") return sum;
-      const d = parseFloat(item.deposit_amount) || 0;
-      const q = parseFloat(item.quantity) || 1;
-      return sum + d * q;
-    }, 0);
-    return baseTotal + depositTotal;
-  };
 
   const getTitle = () => {
     const titles = {
@@ -181,9 +171,8 @@ export default function OrdersTable({ orders, status, onUpdateStatus, onRefresh 
         margin: [5, 5, 5, 5],
         filename: `Rechnung_${invoiceNo}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait", compress: true },
-        pagebreak: { mode: ['css', 'legacy'], avoid: ['.rechnung-table tr', '.rechnung-totals', '.rechnung-payment', '.rechnung-company'] }
+        html2canvas: { scale: 2, useCORS: true }, // ✅ لا تضع أي إعدادات pagebreak هنا
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait", compress: true }
       };
 
       html2pdf().set(opt).from(element).save()
@@ -297,7 +286,7 @@ export default function OrdersTable({ orders, status, onUpdateStatus, onRefresh 
   return (
     <div className="orders-container">
       {invoiceToDownload && invoiceSnapshot && createPortal(
-        <div style={{ position: 'absolute', top: 0, left: '-9999px', width: '210mm', background: '#fff', zIndex: -1 }}>
+          <div style={{ position: 'fixed', top: 0, left: 0, width: '800px', zIndex: -9999, opacity: 0.01, pointerEvents: 'none' }}>
           <Invoice snapshot={invoiceSnapshot} showWarnings={false} />
         </div>,
         document.body
@@ -405,7 +394,9 @@ export default function OrdersTable({ orders, status, onUpdateStatus, onRefresh 
                       </div>
                     </td>
                     <td className="order-weight">{formatTotalWeight(getTotalWeight(order))}</td>
-                    <td className="order-total">€{getTotalWithDeposit(order).toFixed(2)}</td>
+                    <td className="order-total">
+                    €{(parseFloat(order.total_price) || 0).toFixed(2)}
+                  </td>
                     <td><span className={`status-badge status-${order.status}`}>{order.status}</span></td>
                     <td>
                       <div className="actions-cell">

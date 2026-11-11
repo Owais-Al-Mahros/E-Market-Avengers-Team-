@@ -1,366 +1,123 @@
-/* ============================================================
-   🧾 RECHNUNG (INVOICE) — Compact Single Page (html2pdf optimized)
-   ============================================================ */
-
-.rechnung-container {
-  background: #fff;
+/* إعدادات الصفحة الأساسية */
+.invoice-box {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  color: #111827;
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px 30px;
-  font-family: "IBM Plex Sans Arabic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 12px;
-  line-height: 1.4;
-  color: #1a1a1a;
+  /* تم تقليل الحشوة السفلية لإزالة الفراغ الكبير */
+  padding: 40px 40px 20px 40px; 
+  background: #fff;
   box-sizing: border-box;
 }
 
-/* ═══ HEADER ═══ */
-.rechnung-header {
-  display: table;
-  width: 100%;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #1a1a1a;
-  margin-bottom: 15px;
+/* أدوات مساعدة */
+.text-right { text-align: right !important; }
+.text-center { text-align: center !important; }
+.text-left { text-align: left !important; }
+.bold { font-weight: bold; }
+.mt-10 { margin-top: 10px; }
+
+/* الرأس */
+.inv-header { width: 100%; border-collapse: collapse; }
+.brand { color: #145c4a; font-size: 28px; margin: 0 0 4px 0; line-height: 1; }
+.slogan { font-size: 9px; color: #6b7280; letter-spacing: 1px; }
+.title { font-size: 18px; font-weight: bold; letter-spacing: 1px; color: #145c4a; }
+.meta { font-size: 12px; color: #6b7280; margin-top: 4px; }
+.divider { border: 0; border-top: 1px solid #145c4a; margin: 15px 0 25px 0; }
+
+/* العناوين */
+.inv-addresses { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+.inv-addresses td { vertical-align: top; padding-right: 20px; }
+.label { font-size: 10px; font-weight: bold; color: #145c4a; letter-spacing: 0.5px; margin-bottom: 4px; text-transform: uppercase; }
+
+/* التواريخ */
+.inv-dates { width: 100%; border-collapse: collapse; margin-bottom: 30px; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; }
+.inv-dates td { padding: 8px 0; vertical-align: top; }
+
+/* جدول المنتجات */
+.inv-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; table-layout: fixed; }
+.inv-table th { background-color: #145c4a; color: #fff; padding: 10px; font-size: 11px; text-align: left; font-weight: bold; }
+.inv-table td { padding: 10px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+
+/* صفوف المنتجات */
+.row-item { background-color: #f9fafb; }
+.row-item td { border-bottom: none; }
+
+/* صفوف الـ Pfand */
+.row-deposit { background-color: #fff; }
+.row-deposit td { padding-top: 0; padding-bottom: 10px; color: #6b7280; font-size: 12px; }
+.row-deposit td:first-child { padding-left: 30px; }
+
+/* صف الشحن */
+.row-shipping { background-color: #fff; }
+.row-shipping td { border-bottom: 1px solid #e5e7eb; }
+
+/* رمز الضريبة (A/B) */
+.tax-code { font-size: 11px; color: #6b7280; margin-left: 5px; font-weight: normal; }
+
+/* هيكل المجاميع (لدفع الجدول لليمين) */
+.inv-summary-wrapper { width: 100%; border-collapse: collapse; }
+
+/* الجدول المدمج (المجاميع + الضرائب) */
+.inv-summary-table { 
+  width: 100%; 
+  border-collapse: collapse; 
+  font-size: 12px;
 }
 
-.rechnung-header > div {
-  display: table-cell;
-  vertical-align: bottom;
+.inv-summary-table td { 
+  padding: 6px 0; 
 }
 
-.rechnung-header > div:first-child {
-  text-align: left;
-  width: 50%;
-}
-
-.rechnung-header > div:last-child {
-  text-align: right;
-  width: 50%;
-}
-
-.rechnung-brand {
-  font-size: 22px;
-  font-weight: 800;
+/* صف الإجمالي */
+.grand-total td { 
+  background-color: #eaf2ef; /* خلفية خضراء فاتحة */
   color: #145c4a;
-  line-height: 1;
+  font-weight: bold; 
+  padding: 10px 8px; 
+  font-size: 14px; 
+  border-top: 1px solid #145c4a;
+  border-bottom: 1px solid #145c4a;
 }
 
-.rechnung-brand-sub {
-  font-size: 10px;
-  font-weight: 600;
-  color: #6b7280;
+/* عنوان جدول الضرائب */
+.tax-title { 
+  font-size: 10px; 
+  font-weight: bold; 
+  color: #145c4a; 
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-top: 4px;
+  padding-top: 20px !important; 
+  padding-bottom: 8px !important;
 }
 
-.rechnung-title {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 3px;
-  color: #1a1a1a;
-  line-height: 1;
+/* رؤوس أعمدة الضرائب */
+.tax-headers td { 
+  border-bottom: 1px solid #145c4a; 
+  color: #145c4a; 
+  font-weight: bold; 
+  padding-bottom: 4px !important;
 }
 
-.rechnung-number {
-  font-family: "Courier New", monospace;
-  font-size: 12px;
-  font-weight: 700;
-  color: #6b7280;
-  margin-top: 4px;
-}
-
-/* ═══ COMPANY & CUSTOMER (Tables to avoid html2pdf flex bugs) ═══ */
-.rechnung-company {
-  display: table;
-  width: 100%;
-  background: #f9fafb;
-  border-left: 3px solid #145c4a;
-  border-radius: 4px;
-  padding: 10px 14px;
-  margin-bottom: 15px;
-  box-sizing: border-box;
-}
-
-.rechnung-company > div {
-  display: table-cell;
-  width: 50%;
-  vertical-align: top;
-}
-
-.rechnung-company-label, .rechnung-section-label {
-  font-size: 9.5px;
-  font-weight: 800;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-
-.rechnung-section-label {
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 2px;
-}
-
-.rechnung-company-name, .rechnung-customer-name {
-  font-size: 13px;
-  font-weight: 800;
-  color: #1a1a1a;
-}
-
-.rechnung-company-line, .rechnung-customer-line {
-  font-size: 11.5px;
-  color: #4b5563;
-}
-
-.rechnung-meta-section {
-  display: table;
-  width: 100%;
-  margin-bottom: 15px;
-}
-
-.rechnung-meta-section > div {
-  display: table-cell;
-  width: 50%;
-  vertical-align: top;
-}
-
-.rechnung-meta-section > div:first-child {
-  padding-right: 15px;
-}
-
-.rechnung-dates {
-  display: block;
-}
-
-.rechnung-date-row {
-  display: block;
-  overflow: hidden; /* Clearfix for floats */
-  font-size: 11.5px;
-  color: #6b7280;
-  padding: 3px 0;
-  border-bottom: 1px dashed #f3f4f6;
-}
-
-.rechnung-date-row span {
-  float: left;
-}
-
-.rechnung-date-row strong {
-  float: right;
-  color: #1a1a1a;
-}
-
-/* ═══ ITEMS TABLE ═══ */
-.rechnung-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 12px;
-  font-size: 11.5px;
-}
-
-.rechnung-table thead {
-  border-top: 2px solid #1a1a1a;
-  border-bottom: 2px solid #1a1a1a;
-}
-
-.rechnung-table th {
-  padding: 6px 4px;
-  text-align: left;
-  font-size: 9.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.rechnung-table td {
-  padding: 8px 4px;
-  border-bottom: 1px dashed #e5e7eb;
-  vertical-align: top;
-}
-
-.rechnung-table .rc-col-num { width: 30px; text-align: center; }
-.rechnung-table .rc-col-qty { width: 70px; text-align: right; }
-.rechnung-table .rc-col-rate { width: 70px; text-align: center; }
-.rechnung-table .rc-col-gross { width: 80px; text-align: right; }
-
-.rc-product-name {
-  font-weight: 700;
-  font-size: 12px;
-}
-
-.rc-product-calc {
-  font-size: 10.5px;
-  color: #6b7280;
-  margin-top: 2px;
-}
-
-/* ✅ Pfand Row (Sub-item like Kaufland) */
-.rc-row-deposit td {
-  border-bottom: none !important;
-  padding-top: 2px !important;
-  padding-bottom: 6px !important;
-  font-size: 11px;
-  color: #4b5563;
-  font-style: italic;
-}
-.rc-row-deposit + tr td {
-  padding-top: 12px !important; /* Space after Pfand */
-}
-
-/* ═══ TOTALS ═══ */
-.rechnung-totals {
-  display: block;
-  background: #f9fafb;
-  border-radius: 4px;
-  padding: 12px 16px;
-  margin-bottom: 15px;
-  border-top: 2px solid #1a1a1a;
-}
-
-.rc-total-row {
-  display: block;
-  overflow: hidden;
-  font-size: 12px;
-  padding: 4px 0;
-}
-
-.rc-total-row span:first-child {
-  float: left;
-  color: #4b5563;
-}
-
-.rc-total-row span:last-child {
-  float: right;
-  font-weight: 700;
-  font-family: "Courier New", monospace;
-}
-
-.rc-total-tax span:first-child {
-  font-size: 11px;
-}
-
-.rc-total-grand {
-  padding-top: 10px;
-  margin-top: 6px;
-  border-top: 2px solid #145c4a;
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.rc-total-grand span:first-child {
-  color: #145c4a;
-  font-weight: 800;
-}
-
-.rc-total-grand span:last-child {
-  color: #145c4a;
-  font-size: 16px;
-}
-
-/* ═══ TAX TABLE ═══ */
-.rechnung-tax-section {
-  margin-bottom: 15px;
-  page-break-inside: avoid;
-}
-
-.rc-tax-title {
-  font-size: 10px;
-  font-weight: 800;
-  color: #6b7280;
-  margin-bottom: 6px;
-  text-transform: uppercase;
-}
-
-.rechnung-tax-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 11px;
-}
-
-.rechnung-tax-table th, 
-.rechnung-tax-table td {
-  padding: 6px 8px;
-  border: 1px solid #e5e7eb;
-}
-
-.rechnung-tax-table th {
-  background: #f3f4f6;
-  text-align: left;
-  font-size: 10px;
-}
-
-.rechnung-tax-table td {
-  text-align: right;
-  font-family: "Courier New", monospace;
-}
-
-/* ═══ PAYMENT ═══ */
-.rechnung-payment {
-  background: #f9fafb;
-  border-radius: 4px;
-  padding: 12px 16px;
-  margin-bottom: 15px;
-  page-break-inside: avoid;
-}
-
-.rc-payment-row {
-  display: block;
-  overflow: hidden;
-  font-size: 12px;
-  padding: 4px 0;
-}
-
-.rc-payment-label {
-  float: left;
-  color: #6b7280;
-}
-
-.rc-payment-value {
-  float: right;
-  font-weight: 700;
-  text-align: right;
-  max-width: 60%; /* Prevents text overflow */
-  word-break: break-all; /* Fixes cut-off card numbers */
-}
-
-.rc-payment-status {
-  display: inline-block;
-  float: right;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.rc-payment-status.rc-paid {
-  background: #dcfce7;
-  color: #166534;
-}
-
-/* ═══ LEGAL & FOOTER ═══ */
-.rechnung-legal {
-  font-size: 11px;
-  color: #6b7280;
-  padding: 8px 12px;
-  background: #f0fdf4;
-  border-left: 3px solid #10b981;
-  border-radius: 4px;
-  margin-bottom: 15px;
-}
-
-.rechnung-footer {
-  text-align: center;
+/* سطر الدفع والتذييل (على نفس المستوى) */
+.invoice-footer-row {
+  display: flex;
+  justify-content: space-between; /* يضع الدفع على اليسار والشكر على اليمين */
+  align-items: center;
+  margin-top: 40px; 
   padding-top: 15px;
-  border-top: 1px dashed #d1d5db;
-  font-size: 13px;
-  font-weight: 800;
 }
 
-.rechnung-footer-sub {
-  font-size: 11px;
-  font-weight: 500;
-  font-style: italic;
-  color: #6b7280;
-  margin-top: 4px;
+.payment-info {
+  font-weight: bold;
+  color: #145c4a;
+  font-size: 13px;
+}
+
+.footer-thanks { 
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px; 
+  color: #145c4a; 
+  font-weight: bold; 
 }

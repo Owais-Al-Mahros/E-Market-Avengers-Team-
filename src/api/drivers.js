@@ -52,20 +52,15 @@ export async function fetchMyOrders() {
 /* ═══════════════════════════════════════════
    🚗 Driver — تحديث الحالة (shipped/delivered فقط)
    ═══════════════════════════════════════════ */
-export async function updateOrderStatusByDriver(orderId, newStatus) {
-    const ALLOWED = ["delivered"];   // "shipped" يتم عبر ShipOrderModal
-    if (!ALLOWED.includes(newStatus)) {
-        return { success: false, error: "Status nicht erlaubt." };
+export async function updateOrderStatusByDriver(orderId, newStatus, { tempC = null } = {}) {
+    if (newStatus !== "delivered") return { success: false, error: "Status nicht erlaubt." };
+
+    const payload = { status: newStatus, updated_at: new Date().toISOString() };
+    if (tempC !== null && tempC !== undefined && !Number.isNaN(Number(tempC))) {
+        payload.delivery_temp_c = Number(tempC);
     }
 
-    const { error } = await supabase
-        .from("orders")
-        .update({
-            status: newStatus,
-            updated_at: new Date().toISOString(),
-        })
-        .eq("id", orderId);
-
+    const { error } = await supabase.from("orders").update(payload).eq("id", orderId);
     if (error) {
         console.error("updateOrderStatusByDriver:", error);
         return { success: false, error: error.message };

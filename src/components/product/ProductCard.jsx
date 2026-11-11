@@ -31,7 +31,6 @@ export default function ProductCard({
   const { toggleFavorite, isFavorite } = useFavorite();
   const isFav = isFavorite(id);
 
-  const [counter, setCounter] = useState(1);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const displayPrice = parseFloat(total_price || price) || 0;
@@ -43,16 +42,6 @@ export default function ProductCard({
   const openDetails = () => {
     navigate(`/DisplayProducts/ProductCardDetails?productId=${id}`);
     window.scrollTo(0, 0);
-  };
-
-  const increaseCounter = (e) => {
-    e.stopPropagation();
-    setCounter((prev) => prev + 1);
-  };
-
-  const decreaseCounter = (e) => {
-    e.stopPropagation();
-    setCounter((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
   const handleAddToCart = (e) => {
@@ -73,14 +62,12 @@ export default function ProductCard({
           deposit_amount: deposit,
           deposit_tax_rate: depositRate,
         },
-        counter
+        1 // ✅ إضافة قطعة واحدة عند الضغط على الزر (مثل REWE)
       );
-      toast.success(`${counter} × ${name} zum Warenkorb hinzugefügt`, {
-        duration: 2000,
-      });
+      toast.success(`${name} hinzugefügt`, { duration: 1500 });
     } catch (err) {
       console.error("Add to cart error:", err);
-      toast.error("Fehler beim Hinzufügen zum Warenkorb");
+      toast.error("Fehler beim Hinzufügen");
     }
   };
 
@@ -106,30 +93,30 @@ export default function ProductCard({
         nutrition_facts: nutritionObject,
         storage_notes: storageObject,
       });
-      toast(isFav ? "Aus Favoriten entfernt" : "Zu Favoriten hinzugefügt", {
-        icon: isFav ? "💔" : "❤️",
-      });
     } catch (err) {
       console.error("Favorite error:", err);
     }
   };
 
   return (
-    <div className="product-card" onClick={openDetails}>
-      <div className="product-card-image-box">
+    <div className="rewe-card" onClick={openDetails}>
+      {/* 1. منطقة الصورة */}
+      <div className="rewe-image-box">
         <button
           type="button"
-          className={`product-card-fav-btn ${isFav ? "active" : ""}`}
+          className={`rewe-fav-btn ${isFav ? "active" : ""}`}
           onClick={handleToggleFavorite}
-          aria-label={isFav ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
+          aria-label="Favorit"
         >
           <span className="material-symbols-outlined">favorite</span>
         </button>
 
+        
+
         <img
           src={image || "https://via.placeholder.com/150?text=Kein+Bild"}
           alt={name || "Produkt"}
-          className="product-card-image"
+          className="rewe-image"
           loading="lazy"
           onLoad={() => setIsImageLoaded(true)}
           onError={() => setIsImageLoaded(true)}
@@ -137,39 +124,36 @@ export default function ProductCard({
         />
       </div>
 
-      <div className="product-card-title">
-        <span>{name}</span>
-      </div>
-
-      <div className="product-card-weight">
-        <span className="product-card-weight-value">
+      {/* 2. تفاصيل المنتج */}
+      <div className="rewe-info">
+        <h3 className="rewe-title">{name}</h3>
+        
+        <div className="rewe-meta">
           {formatWeight(weight, weight_unit)}
-        </span>
-        <div className="product-card-qty">
-          <button type="button" onClick={decreaseCounter} aria-label="Verringern">
-            −
-          </button>
-          <span className="product-card-qty-count">{counter}</span>
-          <button type="button" onClick={increaseCounter} aria-label="Erhöhen">
-            +
-          </button>
-        </div>
-      </div>
-
-      <div className="product-card-action">
-        <div className="product-card-price">
-          <span className="product-card-main-price">
-            {formatEuro(displayPrice * counter)}
-          </span>
           {pricePerBase > 0 && baseUnit && (
-            <span className="product-card-price-per-kg">
-              ({pricePerBase} € / {baseUnit})
+            <span className="rewe-price-per-kg">
+              {" "}(1 {baseUnit} = {pricePerBase} €)
             </span>
           )}
         </div>
+        
+        {/* عرض الـ Pfand إن وجد */}
+        {deposit > 0 && (
+          <div className="rewe-deposit">zzgl. {formatEuro(deposit)} Pfand</div>
+        )}
+      </div>
 
-        <button type="button" className="product-card-add-btn" onClick={handleAddToCart}>
-          <span>In den Warenkorb</span>
+      {/* 3. السعر وزر الإضافة */}
+      <div className="rewe-footer">
+        <div className="rewe-price">{formatEuro(displayPrice)}</div>
+        <button 
+          type="button" 
+          className="rewe-add-btn" 
+          onClick={handleAddToCart}
+          aria-label="In den Warenkorb"
+        >
+          <span className="material-symbols-outlined">shopping_cart</span>
+          <span className="material-symbols-outlined plus-icon">add</span>
         </button>
       </div>
     </div>

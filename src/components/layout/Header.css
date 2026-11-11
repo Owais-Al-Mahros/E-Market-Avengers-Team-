@@ -23,13 +23,13 @@
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
-  min-height: 2.75rem;
+  min-height: 2rem;
   flex-shrink: 1;
   min-width: 0;
 }
 
 .logo-header {
-  height: 2.75rem;
+  height: 2rem;
   width: auto;
   transition: transform var(--transition-fast);
   object-fit: contain;

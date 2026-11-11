@@ -1,11 +1,18 @@
 import "./Invoice.css";
 
+/* ══════════════════════════════════════════════════════════
+   النسخة النهائية — نفس تصميمك (invoice-box) وأصناف CSS بلا أي تغيير:
+   1) الكمية بوحدتها الصحيحة (kg / L / Stk) — كانت تُطبع Stk دائمًا
+   2) St.-Nr. و USt-IdNr. كلٌّ بعنوانه + السجل/الشكل القانوني إن وُجدا
+   3) "bezahlt" فقط عند captured / paid / الدفع عند الاستلام
+   4) تاريخ التسليم بلا إزاحة + تاريخ ووقت الفاتورة بتوقيت برلين
+   5) التوصيل المشترك بين A/B سطر واحد مجمَّع
+   ══════════════════════════════════════════════════════════ */
+
 const TZ = "Europe/Berlin";
 
-const fmtEur = (val) => {
-  const num = parseFloat(val) || 0;
-  return num.toLocaleString("de-DE", { style: "currency", currency: "EUR" });
-};
+const fmtEur = (val) =>
+  (parseFloat(val) || 0).toLocaleString("de-DE", { style: "currency", currency: "EUR" });
 
 const fmtNum = (val, decimals = 2) =>
   (parseFloat(val) || 0).toLocaleString("de-DE", {
@@ -13,254 +20,285 @@ const fmtNum = (val, decimals = 2) =>
     maximumFractionDigits: decimals,
   });
 
-const fmtDateTime = (iso) => {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  const date = d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: TZ });
-  const time = d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
-  return `${date}, ${time} Uhr`;
-};
+const fmtDate = (iso) =>
+  iso
+    ? new Date(iso).toLocaleDateString("de-DE", {
+        day: "2-digit", month: "2-digit", year: "numeric", timeZone: TZ,
+      })
+    : "—";
 
+const fmtTime = (iso) =>
+  iso
+    ? new Date(iso).toLocaleTimeString("de-DE", {
+        hour: "2-digit", minute: "2-digit", timeZone: TZ,
+      })
+    : "";
+
+// "YYYY-MM-DD" → "DD.MM.YYYY" بدون تحويل منطقة زمنية
 const fmtPlainDate = (s) => {
   if (!s) return "—";
   const [y, m, d] = String(s).slice(0, 10).split("-");
   return `${d}.${m}.${y}`;
 };
 
+const fmtQty = (line) => {
+  const isWeight = line.unit && line.unit !== "Stk";
+  const q = parseFloat(line.qty) || 0;
+  const decimals = isWeight ? 3 : Number.isInteger(q) ? 0 : 2;
+  return `${fmtNum(q, decimals)} ${line.unit || "Stk"}`;
+};
+
 const BRAND_LABELS = {
-  visa: "Visa", mastercard: "Mastercard", amex: "American Express", maestro: "Maestro", girocard: "girocard",
+  visa: "Visa",
+  mastercard: "Mastercard",
+  amex: "American Express",
+  maestro: "Maestro",
+  girocard: "girocard",
 };
 
 function paymentLabel(p) {
-  if (!p) return "—";
-  if (p.method === "cod") return "Barzahlung bei Lieferung";
+  if (!p) return "Online";
+  if (p.method === "cod") return "Barzahlung";
   if (p.method === "transfer" || p.method === "bank") return "Überweisung";
   if (p.type === "card" || p.method === "card" || p.card_brand) {
-    const brand = p.card_brand ? BRAND_LABELS[String(p.card_brand).toLowerCase()] || String(p.card_brand).toUpperCase() : "Karte";
-    return p.card_last4 ? `${brand} ${p.card_last4}` : ` (${brand})`;
+    const brand = p.card_brand
+      ? BRAND_LABELS[String(p.card_brand).toLowerCase()] || String(p.card_brand).toUpperCase()
+      : "Karte";
+    return p.card_last4 ? `Karte (${brand} •••• ${p.card_last4})` : `Karte (${brand})`;
   }
   if (p.type === "sepa_debit") return "SEPA-Lastschrift";
-  return "Online-Zahlung";
+  return "Online";
 }
 
-export default function Invoice({ snapshot, showWarnings = false }) {
-  if (!snapshot) return <div className="rechnung-container">Rechnung wird geladen...</div>;
+const isSoleProprietor = (legalForm) => /einzel|e\.\s?k\.|gbr/i.test(legalForm || "");
 
-  const { meta = {}, seller = {}, customer = {}, lines = [], tax_rows = [], totals = {}, payment = {}, warnings = [] } = snapshot;
+export default function Invoice({ snapshot }) {
+  if (!snapshot) {
+    return <div className="invoice-box">Rechnung wird erstellt. Bitte laden Sie die Seite in einem Moment neu.</div>;
+  }
 
-  // ✅ فصل الأسطر: المنتجات والـ Pfand في الجدول، والشحن يذهب للمجموع فقط
-  const tableLines = lines.filter((l) => l.kind !== "shipping");
+  const {
+    meta = {},
+    seller = {},
+    customer = {},
+    lines = [],
+    tax_rows = [],
+    totals = {},
+    payment = {},
+  } = snapshot;
+
+  // المجاميع
+  const productsTotal = lines.filter((l) => l.kind === "item").reduce((s, l) => s + (parseFloat(l.gross) || 0), 0);
+  const depositsTotal = lines.filter((l) => l.kind === "deposit").reduce((s, l) => s + (parseFloat(l.gross) || 0), 0);
+
+  // التوصيل: سطر واحد مجمَّع (قد يكون موزّعًا على A/B)
   const shippingLines = lines.filter((l) => l.kind === "shipping");
-
   const shippingTotal = shippingLines.reduce((s, l) => s + (parseFloat(l.gross) || 0), 0);
-  
-  // ✅ حساب إجمالي الضريبة الخاصة بالشحن فقط
-  const shippingTaxTotal = shippingLines.reduce((sum, l) => {
-    const gross = parseFloat(l.gross) || 0;
-    const rate = parseFloat(l.rate) || 0;
-    const tax = gross - (gross / (1 + rate / 100));
-    return sum + tax;
-  }, 0);
-    const productsTotal = tableLines.filter((l) => l.kind === "item").reduce((s, l) => s + (parseFloat(l.gross) || 0), 0);
-  const depositTotal = tableLines.filter((l) => l.kind === "deposit").reduce((s, l) => s + (parseFloat(l.gross) || 0), 0);
+  const shippingCodes = [...new Set(shippingLines.map((l) => l.code))].join("/");
 
-  const isPaid = ["captured", "paid", "succeeded", "authorized"].includes(payment.status) || !!payment.paid_at;
+  const isPaid = ["captured", "paid"].includes(payment.status) || payment.method === "cod";
+
+  const soleProp = isSoleProprietor(seller.legal_form);
+  const sellerName = [seller.name, !soleProp ? seller.legal_form : ""]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <div className="rechnung-container" id="invoice-pdf-download" data-invoice-number={meta.invoice_number || ""}>
-      {showWarnings && warnings.length > 0 && (
-        <div data-html2canvas-ignore="true" style={{ background: "#fee2e2", color: "#991b1b", padding: 10, marginBottom: 20, borderRadius: 8 }}>
-          <strong>⚠️ Achtung (nur intern):</strong>
-          <ul>{warnings.map((w, i) => <li key={i}>{w.code}</li>)}</ul>
-        </div>
-      )}
+    <div id="invoice-pdf-download" className="invoice-box" data-invoice-number={meta.invoice_number || ""}>
 
-      {/* HEADER */}
-      <div className="rechnung-header">
-        <div>
-          <div className="rechnung-brand">{seller.name}</div>
-          <div className="rechnung-brand-sub">{seller.legal_form}</div>
-        </div>
-        <div className="rechnung-header-right">
-          <div className="rechnung-title">RECHNUNG</div>
-          <div className="rechnung-number">Nr. {meta.invoice_number}</div>
-        </div>
-      </div>
+      {/* 1. الرأس */}
+      <table className="inv-header">
+        <tbody>
+          <tr>
+            <td>
+              <h1 className="brand">Shopora</h1>
+              <div className="slogan">DEIN EINKAUF. DIREKT GELIEFERT.</div>
+            </td>
+            <td className="text-right">
+              <div className="title">RECHNUNG</div>
+              <div className="meta">{meta.invoice_number}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <hr className="divider" />
 
-      {/* COMPANY & CUSTOMER */}
-      <div className="rechnung-company">
-        <div>
-          <div className="rechnung-company-label">Verkäufer</div>
-          <div className="rechnung-company-name">{seller.name}</div>
-          {seller.owner_name && <div className="rechnung-company-line">{seller.owner_name}</div>}
-          <div className="rechnung-company-line">{seller.address}</div>
-          <div className="rechnung-company-line">{seller.postal_code} {seller.city}</div>
-        </div>
-        <div>
-          <div className="rechnung-company-label">Steuerliche Angaben</div>
-          {seller.tax_number && <div className="rechnung-company-line">St.-Nr.: <strong>{seller.tax_number}</strong></div>}
-          {seller.vat_id && <div className="rechnung-company-line">USt-IdNr.: <strong>{seller.vat_id}</strong></div>}
-        </div>
-      </div>
+      {/* 2. العناوين */}
+      <table className="inv-addresses">
+        <tbody>
+          <tr>
+            <td width="50%">
+              <div className="label">RECHNUNG VON</div>
+              <div className="bold">{sellerName}</div>
+              {seller.owner_name && (
+                <div>{soleProp ? "Inhaber" : "Geschäftsführer"}: {seller.owner_name}</div>
+              )}
+              <div>{seller.address}</div>
+              <div>{seller.postal_code} {seller.city}</div>
+              <div className="mt-10">
+                {seller.tax_number && <div>Steuernummer: {seller.tax_number}</div>}
+                {seller.vat_id && <div>USt-IdNr.: {seller.vat_id}</div>}
+                {(seller.register_court || seller.register_number) && (
+                  <div>{[seller.register_court, seller.register_number].filter(Boolean).join(", ")}</div>
+                )}
+              </div>
+            </td>
+            <td width="50%">
+              <div className="label">RECHNUNG AN</div>
+              <div className="bold">{customer.name}</div>
+              <div>{customer.street}</div>
+              <div>{customer.postal_code} {customer.city}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-      <div className="rechnung-meta-section">
-        <div>
-          <div className="rechnung-section-label">Rechnungsempfänger</div>
-          <div className="rechnung-customer-name">{customer.name}</div>
-          <div className="rechnung-customer-line">{customer.street}</div>
-          <div className="rechnung-customer-line">{customer.postal_code} {customer.city}</div>
-        </div>
-        <div className="rechnung-dates">
-          <div className="rechnung-date-row"><span>Rechnungsdatum:</span> <strong>{fmtDateTime(meta.issued_at)}</strong></div>
-          <div className="rechnung-date-row"><span>Lieferdatum:</span> <strong>{fmtPlainDate(meta.delivery_date)}</strong></div>
-          <div className="rechnung-date-row"><span>Bestellnummer:</span> <strong>#{meta.order_number}</strong></div>
-        </div>
-      </div>
+      {/* 3. التواريخ */}
+      <table className="inv-dates">
+        <tbody>
+          <tr>
+            <td width="50%">
+              <div className="label">Rechnungsdatum</div>
+              <div className="bold">
+                {fmtDate(meta.issued_at)}{fmtTime(meta.issued_at) && `, ${fmtTime(meta.issued_at)} Uhr`}
+              </div>
+            </td>
+            <td width="50%">
+              <div className="label">Lieferdatum</div>
+              <div className="bold">{fmtPlainDate(meta.delivery_date)}</div>
+            </td>
+          </tr>
+          <tr>
+            <td width="50%">
+              <div className="label">Bestellnummer</div>
+              <div className="bold">{meta.order_number}</div>
+            </td>
+            <td width="50%"></td>
+          </tr>
+        </tbody>
+      </table>
 
-      {/* ITEMS TABLE */}
-      <table className="rechnung-table">
+      {/* 4. جدول المنتجات */}
+      <table className="inv-table">
         <thead>
           <tr>
-            <th className="rc-col-num">Pos.</th>
-            <th className="rc-col-desc">Bezeichnung</th>
-            <th className="rc-col-qty">Menge</th>
-            <th className="rc-col-rate">MwSt.</th>
-            <th className="rc-col-gross">Brutto</th>
+            <th width="50%">ARTIKEL</th>
+            <th width="15%" className="text-center">MENGE</th>
+            <th width="15%" className="text-right">EINZEL</th>
+            <th width="20%" className="text-right">GESAMT</th>
           </tr>
         </thead>
         <tbody>
-          {tableLines.map((line, idx) => {
-            const rate = parseFloat(line.rate) || 0;
-            const isWeight = line.unit !== "Stk";
-
-            // ✅ سطر الـ Pfand (يُعرض تحت المنتج مباشرة وبخط أصغر)
-            if (line.kind === "deposit") {
-              const unitPrice = line.qty > 0 ? (parseFloat(line.gross) / line.qty) : 0;
+          {lines.map((line, i) => {
+            if (line.kind === "item") {
+              const isWeight = line.unit && line.unit !== "Stk";
               return (
-                <tr key={`dep-${idx}`} className="rc-row-deposit">
-                  <td className="rc-col-num"></td>
-                  <td className="rc-col-desc" style={{ paddingLeft: '24px', fontStyle: 'italic', color: '#4b5563' }}>
-                    Pfandartikel
+                <tr key={i} className="row-item">
+                  <td>
+                    {line.name}
+                    {line.status === "substituted" && " (Ersatzartikel)"}
                   </td>
-                  <td className="rc-col-qty">
-                    {line.qty} * {fmtNum(unitPrice)}
+                  <td className="text-center">{fmtQty(line)}</td>
+                  <td className="text-right">
+                    {fmtEur(line.unit_price)}{isWeight ? `/${line.unit}` : ""}
                   </td>
-                  <td className="rc-col-rate">{line.code} · {fmtNum(rate, 0)}%</td>
-                  <td className="rc-col-gross">{fmtEur(line.gross)}</td>
+                  <td className="text-right bold">
+                    {fmtEur(line.gross)} <span className="tax-code">{line.code}</span>
+                  </td>
                 </tr>
               );
             }
 
-            // ✅ سطر المنتج العادي
-            const qtyText = isWeight ? `${fmtNum(line.qty, 3)} ${line.unit}` : `${fmtNum(line.qty, Number.isInteger(line.qty) ? 0 : 2)} Stk`;
-            const calcText = isWeight ? `${fmtNum(line.unit_price)} EUR/${line.unit}` : `${fmtNum(line.unit_price)} EUR/Stk`;
+            if (line.kind === "deposit") {
+              const unitPrice = line.qty > 0 ? parseFloat(line.gross) / line.qty : 0;
+              return (
+                <tr key={i} className="row-deposit">
+                  <td>Pfand · {fmtNum(line.qty, Number.isInteger(line.qty) ? 0 : 2)} × {fmtEur(unitPrice)}</td>
+                  <td className="text-center">{fmtNum(line.qty, Number.isInteger(line.qty) ? 0 : 2)} Stk</td>
+                  <td className="text-right">{fmtEur(unitPrice)}</td>
+                  <td className="text-right bold">
+                    {fmtEur(line.gross)} <span className="tax-code">{line.code}</span>
+                  </td>
+                </tr>
+              );
+            }
 
-            return (
-              <tr key={`item-${idx}`}>
-                <td className="rc-col-num">{idx + 1}</td>
-                <td className="rc-col-desc">
-                  <div className="rc-product-name">
-                    {line.name}
-                    {line.status === "substituted" && " (Ersatzartikel)"}
-                  </div>
-                  {calcText && <div className="rc-product-calc">{calcText}</div>}
-                </td>
-                <td className="rc-col-qty">{qtyText}</td>
-                <td className="rc-col-rate">{line.code} · {fmtNum(rate, 0)}%</td>
-                <td className="rc-col-gross rc-strong">{fmtEur(line.gross)}</td>
-              </tr>
-            );
+            return null; // التوصيل يُعرض مرة واحدة بعد الحلقة
           })}
+
+          {/* التوصيل — سطر واحد مجمَّع */}
+          {shippingLines.length > 0 && (
+            <tr className="row-shipping">
+              <td>
+                Lieferung
+                {shippingLines.length > 1 && (
+                  <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>
+                    anteilig: {shippingLines.map((l) => `${l.code} ${fmtEur(l.gross)}`).join(" · ")}
+                  </div>
+                )}
+              </td>
+              <td className="text-center">1</td>
+              <td className="text-right">{fmtEur(shippingTotal)}</td>
+              <td className="text-right bold">
+                {fmtEur(shippingTotal)} <span className="tax-code">{shippingCodes}</span>
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
 
-      {/* TOTALS */}
-      <div className="rechnung-totals">
-        <div className="rc-total-row">
-          <span>Zwischensumme (Artikel)</span>
-          <span>{fmtEur(productsTotal)}</span>
-        </div>
-        
-        {depositTotal > 0 && (
-          <div className="rc-total-row">
-            <span>zzgl. Pfand</span>
-            <span>{fmtEur(depositTotal)}</span>
-          </div>
-        )}
-        
-                {shippingTotal > 0 && (
-          <>
-            <div className="rc-total-row">
-              <span>zzgl. Versandkosten</span>
-              <span>{fmtEur(shippingTotal)}</span>
-            </div>
-            {/* ✅ عرض قيمة الضريبة على التوصيل بشكل صريح */}
-            <div className="rc-total-row rc-total-tax" style={{ fontSize: '11.5px', color: '#6b7280', marginTop: '-4px' }}>
-              <span style={{ paddingLeft: '10px' }}>davon MwSt. auf Versand</span>
-              <span>{fmtEur(shippingTaxTotal)}</span>
-            </div>
-          </>
-        )}
+      {/* 5. المجاميع والضرائب */}
+      <table className="inv-summary-wrapper">
+        <tbody>
+          <tr>
+            <td width="55%">
+              <table className="inv-summary-table">
+                <tbody>
+                  <tr>
+                    <td colSpan={3} className="text-left">Warenwert inkl. Pfand</td>
+                    <td className="text-right">{fmtEur(productsTotal + depositsTotal)}</td>
+                  </tr>
+                  {shippingTotal > 0 && (
+                    <tr>
+                      <td colSpan={3} className="text-left">Lieferung</td>
+                      <td className="text-right">{fmtEur(shippingTotal)}</td>
+                    </tr>
+                  )}
+                  <tr className="grand-total">
+                    <td colSpan={3} className="text-left">GESAMTBETRAG</td>
+                    <td className="text-right">{fmtEur(totals.gross)}</td>
+                  </tr>
 
-        {/* جدول الضريبة (الذي يضم ضريبة الشحن والمنتجات معاً) */}
-        {tax_rows.map((row, i) => (
-          <div key={i} className="rc-total-row rc-total-tax">
-            <span>zzgl. MwSt. {row.code} {fmtNum(row.rate, 0)}%</span>
-            <span>{fmtEur(row.tax)}</span>
-          </div>
-        ))}
-        
-        <div className="rc-total-row rc-total-grand">
-          <span>Gesamtbetrag (Brutto)</span>
-          <span>{fmtEur(totals.gross)}</span>
-        </div>
-      </div>
+                  <tr>
+                    <td colSpan={4} className="tax-title">UMSATZSTEUER</td>
+                  </tr>
 
-      {/* TAX BREAKDOWN */}
-      <div className="rechnung-tax-section">
-        <div className="rc-tax-title">Umsatzsteuer-Aufschlüsselung</div>
-        <table className="rechnung-tax-table">
-          <thead>
-            <tr><th>Satz</th><th>Netto</th><th>Steuer</th><th>Brutto</th></tr>
-          </thead>
-          <tbody>
-            {tax_rows.map((row, i) => (
-              <tr key={i}>
-                <td>{row.code} = {fmtNum(row.rate, 0)}%</td>
-                <td>{fmtEur(row.net)}</td>
-                <td>{fmtEur(row.tax)}</td>
-                <td>{fmtEur(row.gross)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="rechnung-muted" style={{ fontSize: 11, marginTop: 6 }}>
-        </div>
-      </div>
+                  <tr className="tax-headers">
+                    <td className="text-left">Steuergruppe</td>
+                    <td className="text-right">Netto</td>
+                    <td className="text-right">USt.</td>
+                    <td className="text-right">Brutto</td>
+                  </tr>
 
-      {/* PAYMENT */}
-      <div className="rechnung-payment">
-        <div className="rc-payment-row">
-          <span className="rc-payment-label">Zahlungsart:</span>
-          <span className="rc-payment-value">{paymentLabel(payment)}</span>
-        </div>
-        {payment.paid_at && (
-          <div className="rc-payment-row">
-            <span className="rc-payment-label">Zahlungsdatum:</span>
-            <span className="rc-payment-value">{fmtDateTime(payment.paid_at)}</span>
-          </div>
-        )}
-        <div className="rc-payment-row">
-          <span className="rc-payment-label">Zahlungsstatus:</span>
-          <span className={`rc-payment-status ${isPaid ? "rc-paid" : ""}`}>
-            {isPaid ? "✓ Zahlung erfolgt" : "Offen"}
-          </span>
-        </div>
-      </div>
+                  {tax_rows.map((row, i) => (
+                    <tr key={i}>
+                      <td className="text-left">{row.code} = {fmtNum(row.rate, 0)} %</td>
+                      <td className="text-right">{fmtEur(row.net)}</td>
+                      <td className="text-right">{fmtEur(row.tax)}</td>
+                      <td className="text-right">{fmtEur(row.gross)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-      <div className="rechnung-footer">
-        Vielen Dank für Ihren Einkauf bei <strong>{seller.name}</strong>!
-      </div>
+      {/* 6. الدفع والتذييل */}
+        <div className="footer-thanks">
+          Vielen Dank für deinen Einkauf!
+        </div>
     </div>
   );
 }

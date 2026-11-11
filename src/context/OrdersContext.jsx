@@ -333,15 +333,10 @@ export function OrdersProvider({ children }) {
       // فصلنا `substitutions` لأنها بيانات للقراءة فقط وليست عموداً في الجدول
       const { substitutions, ...orderData } = orderUpdate;
 
-      const { error: orderError } = await supabase
+            const { error: orderError } = await supabase
         .from("orders")
         .update({
-          status: orderData.status,
-          total_price: parseFloat(orderData.total_price),
-          subtotal: parseFloat(orderData.subtotal),
-          shipping_cost: parseFloat(orderData.shipping_cost),
-          tax: parseFloat(orderData.tax),
-          has_cooling_items: orderData.has_cooling_items || false, // ✅ الحقل الجديد
+          has_cooling_items: orderData.has_cooling_items || false,
           updated_at: orderData.updated_at,
         })
         .eq("id", orderData.id);
