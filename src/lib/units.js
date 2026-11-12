@@ -306,3 +306,12 @@ export function calcTotalShippingWeight(items) {
     if (!Array.isArray(items)) return 0;
     return items.reduce((s, i) => s + calcItemShippingWeight(i), 0);
 }
+
+/** "6 × 1,5 L" لمنتج الباك، وإلا null */
+export function formatPackLabel({ pack_pieces, piece_weight, weight_unit }) {
+    const n = parseInt(pack_pieces) || 1;
+    const w = parseFloat(piece_weight) || 0;
+    if (n <= 1 || w <= 0) return null;
+    const num = w.toLocaleString("de-DE", { maximumFractionDigits: 3 });
+    return `${n} × ${num} ${weight_unit || ""}`.trim();
+}

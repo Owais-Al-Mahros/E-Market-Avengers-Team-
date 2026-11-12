@@ -67,8 +67,9 @@ export default function HomePageHeader() {
         setShowDropdown(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    // pointerdown بدل mousedown: iOS Safari لا يُطلق أحداث الفأرة عند لمس عنصر غير قابل للنقر
+    document.addEventListener("pointerdown", handleClickOutside);
+    return () => document.removeEventListener("pointerdown", handleClickOutside);
   }, []);
 
   // ============================================
@@ -106,7 +107,14 @@ export default function HomePageHeader() {
   return (
     <header className="header">
       <Link to="/" className="logo-container">
-        <img src="/logo.png" alt="Shopora Logo" className="logo-header" />
+        <img
+          src="/logo - Copy.png"
+          alt="Shopora Logo"
+          className="logo-header"
+          width="64"
+          height="64"
+          decoding="async"
+        />
         <span className="tagline">Shopora</span>
       </Link>
 
@@ -121,6 +129,10 @@ export default function HomePageHeader() {
               if (!showDropdown) setShowDropdown(true);
             }}
             aria-label="Search products"
+            inputMode="search"
+            enterKeyHint="search"
+            autoComplete="off"
+            onKeyDown={(e) => e.key === "Escape" && setShowDropdown(false)}
           />
 
           {searchTerm && (
@@ -137,10 +149,9 @@ export default function HomePageHeader() {
           <button
             type="submit"
             className="header-search-button"
-            disabled={loadingProducts}
             aria-label="Search"
           >
-            <img src="/Search.png" alt="Search" className="search-icon" />
+            <img src="/Search.png" alt="" className="search-icon" />
           </button>
         </form>
 

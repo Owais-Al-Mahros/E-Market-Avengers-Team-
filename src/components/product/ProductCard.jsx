@@ -6,6 +6,7 @@ import { useCart } from "../../context/CartContext.jsx";
 import { useFavorite } from "../../context/FavoriteContext.jsx";
 import { calculatePriceByKg, getBaseUnitLabel } from "../../api/index.js";
 import { formatEuro, formatWeight } from "../../lib/format";
+import { formatPackLabel } from "../../lib/units"; // ✅ أضف هذا
 
 export default function ProductCard({
   id,
@@ -17,6 +18,8 @@ export default function ProductCard({
   tax_rate,
   weight,
   weight_unit,
+  pack_pieces,      // ✅ أضف
+  piece_weight,     // ✅ أضف
   gross_weight,
   deposit_amount,
   deposit_tax_rate,
@@ -111,7 +114,7 @@ export default function ProductCard({
           <span className="material-symbols-outlined">favorite</span>
         </button>
 
-        
+
 
         <img
           src={image || "https://via.placeholder.com/150?text=Kein+Bild"}
@@ -127,16 +130,19 @@ export default function ProductCard({
       {/* 2. تفاصيل المنتج */}
       <div className="rewe-info">
         <h3 className="rewe-title">{name}</h3>
-        
+
         <div className="rewe-meta">
-          {formatWeight(weight, weight_unit)}
-          {pricePerBase > 0 && baseUnit && (
-            <span className="rewe-price-per-kg">
-              {" "}(1 {baseUnit} = {pricePerBase} €)
-            </span>
-          )}
+          <span className="product-card-weight-value">
+            {formatWeight(weight, weight_unit)}
+            {/* ✅ أضف هذا السطر */}
+            {formatPackLabel({ pack_pieces, piece_weight, weight_unit }) && (
+              <span style={{ marginLeft: 4, color: "#6b7a77", fontSize: "0.75rem" }}>
+                ({formatPackLabel({ pack_pieces, piece_weight, weight_unit })})
+              </span>
+            )}
+          </span>
         </div>
-        
+
         {/* عرض الـ Pfand إن وجد */}
         {deposit > 0 && (
           <div className="rewe-deposit">zzgl. {formatEuro(deposit)} Pfand</div>
@@ -146,9 +152,9 @@ export default function ProductCard({
       {/* 3. السعر وزر الإضافة */}
       <div className="rewe-footer">
         <div className="rewe-price">{formatEuro(displayPrice)}</div>
-        <button 
-          type="button" 
-          className="rewe-add-btn" 
+        <button
+          type="button"
+          className="rewe-add-btn"
           onClick={handleAddToCart}
           aria-label="In den Warenkorb"
         >

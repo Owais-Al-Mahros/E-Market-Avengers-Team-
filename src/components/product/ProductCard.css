@@ -1,37 +1,40 @@
 /* ==========================================
-   🛒 REWE STYLE PRODUCT CARD (White Theme)
+   PRODUCT CARD (rewe-*)
+   كل مقاسات الجوال = متغيرات --pc-* تتبدل في media query واحدة.
+   الأحجام بـ rem (لا px) كي تحترم إعداد حجم الخط في جهاز المستخدم.
    ========================================== */
-
 .rewe-card {
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb; /* رمادي فاتح جداً */
+  --pc-pad: 1rem;
+  --pc-img-h: 10rem;
+  --pc-title: 0.875rem;
+  --pc-meta: 0.75rem;
+  --pc-price: 1.25rem;
+  --pc-btn: 0.5rem 0.625rem;
+  --pc-ink: #111827;
+
+  position: relative;
   display: flex;
   flex-direction: column;
-  cursor: pointer;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
-  position: relative;
-  overflow: hidden;
   height: 100%;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 0.75rem;
   box-sizing: border-box;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent; /* بدون وميض رمادي عند بدء السحب على البطاقة */
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.rewe-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  border-color: #d1d5db;
-}
-
-/* ============================================
-   Image Area
-   ============================================ */
+/* ===== Image ===== */
 .rewe-image-box {
   position: relative;
-  width: 100%;
-  height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  width: 100%;
+  height: var(--pc-img-h);
+  padding: var(--pc-pad);
   box-sizing: border-box;
 }
 
@@ -39,195 +42,200 @@
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  transition: transform 0.3s ease;
+  /* opacity يضبطها الـ JSX عند انتهاء التحميل؛ هذه تجعل الظهور تدريجيًا */
+  transition: transform 0.3s ease, opacity 0.25s ease;
 }
 
-.rewe-card:hover .rewe-image {
-  transform: scale(1.05);
-}
-
-/* شارة الحرارة (أيقونة التبريد) */
-.rewe-temp-badge {
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
-  width: 24px;
-  height: 24px;
-  background: #e0f2fe; /* أزرق فاتح */
-  color: #0284c7; /* أزرق غامق */
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.rewe-temp-badge .material-symbols-outlined {
-  font-size: 16px;
-}
-
-/* زر المفضلة */
+/* ===== Favorite button (32px مرئي، ≈44px قابل للّمس) ===== */
 .rewe-fav-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: transparent;
-  border: none;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: transparent;
+  color: var(--gray-400);
+  border: 0;
+  border-radius: 50%;
   cursor: pointer;
-  color: #9ca3af;
-  transition: all 0.2s ease;
-  z-index: 2;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.rewe-fav-btn:hover {
-  background: #f3f4f6;
-}
-
-.rewe-fav-btn.active {
-  color: #ef4444; /* أحمر */
-}
-
-.rewe-fav-btn.active .material-symbols-outlined {
-  font-variation-settings: 'FILL' 1;
+.rewe-fav-btn::after,
+.rewe-add-btn::after {
+  content: "";
+  position: absolute;
+  inset: -0.375rem; /* يوسّع منطقة اللمس فقط، ولا يغيّر الشكل */
 }
 
 .rewe-fav-btn .material-symbols-outlined {
-  font-size: 22px;
+  font-size: 1.375rem;
 }
 
-/* ============================================
-   Info Area (Title & Meta)
-   ============================================ */
+/* ===== Stretched link: رابط العنوان يغطي البطاقة كلها (نقر/لمس/لوحة مفاتيح/تبويبة جديدة) ===== */
+.rewe-title-link {
+  color: inherit;
+}
+
+.rewe-title-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1; /* تحت زرّي المفضلة والسلة (z-index: 2) فيبقيان قابلين للنقر */
+}
+
+.rewe-title-link:focus-visible {
+  outline: none;
+}
+
+.rewe-title-link:focus-visible::after {
+  outline: 2px solid var(--primary-color);
+  outline-offset: -2px;
+  border-radius: 0.75rem;
+}
+
+.rewe-fav-btn.active {
+  color: #ef4444;
+}
+
+.rewe-fav-btn.active .material-symbols-outlined {
+  font-variation-settings: "FILL" 1;
+}
+
+/* ===== Info ===== */
 .rewe-info {
-  padding: 0 16px 16px 16px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
   flex-grow: 1;
+  gap: 0.375rem;
+  padding: 0 var(--pc-pad) var(--pc-pad);
 }
 
 .rewe-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #111827; /* أسود داكن */
   margin: 0;
+  font-size: var(--pc-title);
+  font-weight: 700;
   line-height: 1.3;
+  color: var(--pc-ink);
+  overflow: hidden;
+  overflow-wrap: anywhere; /* الكلمات الألمانية المركّبة الطويلة لا تُقص خارج البطاقة */
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;   /* كان -webkit-box بلا clamp، فلا يحدث اقتطاع ويطول الاسم الطويل البطاقة */
+  line-clamp: 2;
 }
 
 .rewe-meta {
-  font-size: 12px;
-  color: #6b7280; /* رمادي متوسط */
+  font-size: var(--pc-meta);
   font-weight: 500;
   line-height: 1.4;
+  color: var(--gray-500);
 }
 
 .rewe-price-per-kg {
-  color: #6b7280;
+  color: var(--gray-500);
 }
 
 .rewe-deposit {
-  font-size: 11px;
-  color: #145c4a; /* هوية شوبورا للـ Pfand */
-  font-weight: 600;
-  background: #f0fdf4;
-  padding: 2px 6px;
-  border-radius: 4px;
   width: fit-content;
   margin-top: 2px;
+  padding: 2px 6px;
+  background: #f0fdf4;
+  color: var(--primary-color);
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
 }
 
-/* ============================================
-   Footer (Price & Add Button)
-   ============================================ */
+/* ===== Footer (price + add) ===== */
 .rewe-footer {
-  padding: 0 16px 16px 16px;
   display: flex;
-  justify-content: space-between;
   align-items: flex-end;
+  justify-content: space-between;
   margin-top: auto;
+  padding: 0 var(--pc-pad) var(--pc-pad);
 }
 
 .rewe-price {
-  font-size: 20px;
+  font-size: var(--pc-price);
   font-weight: 800;
-  color: #111827;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.025em;
+  color: var(--pc-ink);
 }
 
-/* زر الإضافة (هوية Shopora) */
 .rewe-add-btn {
+  position: relative;
+  z-index: 2; /* فوق رابط البطاقة الممتد */
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: var(--pc-btn);
   background: var(--primary-color);
   color: #fff;
-  border: none;
-  border-radius: 8px; /* حواف دائرية قليلاً مثل REWE */
-  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.rewe-add-btn:hover {
-  background: var(--dark-green);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(20, 92, 74, 0.3);
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .rewe-add-btn .material-symbols-outlined {
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 
-/* أيقونة الزائد الصغيرة فوق السلة */
 .rewe-add-btn .plus-icon {
-  font-size: 12px;
-  font-weight: 900;
   position: absolute;
-  top: 4px;
-  right: 4px;
-  color: var(--accent-color); /* لون ليموني فاتح */
+  top: 0.25rem;
+  right: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: var(--accent-color);
 }
 
-/* ============================================
-   Responsive (Mobile)
-   ============================================ */
+/* تغذية راجعة فورية عند اللمس (بدل hover غير الموجود على اللمس) */
+.rewe-add-btn:active {
+  transform: scale(0.94);
+}
+
+/* ===== hover: للأجهزة التي فيها فأرة فقط (على اللمس يبقى عالقًا بعد النقرة) ===== */
+@media (hover: hover) {
+  .rewe-card:hover {
+    border-color: var(--gray-300);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  .rewe-card:hover .rewe-image {
+    transform: scale(1.05);
+  }
+
+  .rewe-fav-btn:hover {
+    background: var(--gray-100);
+  }
+
+  .rewe-add-btn:hover {
+    background: var(--dark-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(20, 92, 74, 0.3);
+  }
+}
+
+/* ===== Mobile ===== */
 @media (max-width: 48rem) {
-  .rewe-image-box {
-    height: 130px;
-    padding: 12px;
+  .rewe-card {
+    --pc-pad: 0.75rem;
+    --pc-img-h: 8.125rem;
+    --pc-title: 0.8125rem;
+    --pc-meta: 0.6875rem;
+    --pc-price: 1.0625rem;
+    --pc-btn: 0.375rem 0.5rem;
   }
-  
-  .rewe-info {
-    padding: 0 12px 12px 12px;
-  }
-  
-  .rewe-title {
-    font-size: 13px;
-  }
-  
-  .rewe-meta {
-    font-size: 11px;
-  }
-  
-  .rewe-footer {
-    padding: 0 12px 12px 12px;
-  }
-  
-  .rewe-price {
-    font-size: 17px;
-  }
-  
-  .rewe-add-btn {
-    padding: 6px 8px;
-  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rewe-card,
+  .rewe-image,
+  .rewe-add-btn { transition-duration: 0.01ms; }
 }

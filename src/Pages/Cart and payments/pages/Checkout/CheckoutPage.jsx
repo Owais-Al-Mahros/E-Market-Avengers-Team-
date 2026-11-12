@@ -159,7 +159,7 @@ export default function CheckoutPage() {
         },
         body: JSON.stringify({
           customerAddress: `${street} ${houseNumber}, ${postalCode} ${city}, Germany`,
-          itemsWeight: totalWeight,
+          items: cartItems.map((i) => ({ id: i.id, quantity: i.quantity })),
           floor: parseInt(floor) || 0,
           hasElevator: hasElevator === "yes",
           cartSubtotal: totalPrice,

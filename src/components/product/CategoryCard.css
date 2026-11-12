@@ -1,135 +1,131 @@
 /* ============================================
-   🌿 CATEGORY CARD — Soft & Elegant
+   CATEGORY CARD — بطاقة بيضاء + هالة نعناعية خلف الصورة + شارة سهم
+   الألوان من توكنات الموقع فقط. كل ما يتغير مع الشاشة = متغيرات --cc-*.
    ============================================ */
 .category-card {
-    width: 100%;
-    height: 14rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    /* ← توسيط المحتوى عموديًا */
-    align-items: center;
-    gap: 0.75rem;
-    /* ← مسافة ثابتة بين الصورة والاسم */
-    padding: 1.25rem 0.875rem;
-    background: var(--bg-color);
-    border: 1px solid rgba(20, 92, 74, 0.06);
-    border-radius: 1.25rem;
-    cursor: pointer;
-    text-align: center;
-    overflow: hidden;
-    box-shadow:
-        0 1px 2px rgba(20, 92, 74, 0.03),
-        0 4px 12px rgba(20, 92, 74, 0.05);
-    transition:
-        transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        box-shadow 0.4s ease,
-        border-color 0.4s ease;
-    box-sizing: border-box;
-    background-color: var(--light-bg);
+  --cc-pad: 1.125rem;
+  --cc-halo: 6.25rem; /* 8 أعمدة: البطاقة ≈139px، فالهالة أصغر كي لا تلامس شارة السهم */
+  --cc-name: 0.9375rem;
+  --cc-radius: 1.25rem;
+  --cc-chip: 1.875rem;
+  --cc-gap: 0.875rem;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--cc-gap);
+  width: 100%;
+  padding: var(--cc-pad) var(--cc-pad) calc(var(--cc-pad) + 0.125rem);
+  box-sizing: border-box;
+  font: inherit;
+  color: inherit;
+  text-align: center;
+  background: #fff;
+  border: 1px solid rgba(20, 92, 74, 0.08);
+  border-radius: var(--cc-radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
-.category-card:hover {
-    transform: translateY(-0.375rem) scale(1.02);
-    border-color: rgba(20, 92, 74, 0.14);
-    box-shadow:
-        0 2px 4px rgba(20, 92, 74, 0.05),
-        0 10px 28px rgba(20, 92, 74, 0.1);
+/* ===== الهالة: دائرة بتدرج نعناعي → ليموني فاتح، والصورة فوقها ===== */
+.category-card-media {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--cc-halo);
+  aspect-ratio: 1;
+  background: radial-gradient(circle at 30% 25%, #fff 0%, var(--secondary-color) 52%, var(--light-bg) 150%);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(20, 92, 74, 0.06);
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* ===== Image — مساحة ثابتة دائمًا ===== */
 .category-card-image {
-    width: 100%;
-    height: 6.5rem;
-    /* ← ارتفاع ثابت لكل الصور */
-    object-fit: contain;
-    /* ← الصورة كاملة بدون تشويه */
-    flex-shrink: 0;
-    /* ← لا تنكمش أبدًا */
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    /* ← لا margin-top: auto هنا */
+  width: 74%;
+  height: 74%;
+  object-fit: contain;
+  filter: drop-shadow(0 0.375rem 0.5rem rgba(20, 92, 74, 0.2));
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.category-card:hover .category-card-image {
-    transform: scale(1.08);
-}
-
-/* ===== Name ===== */
 .category-card-name {
-    font-size: 1rem;
-    /* 14px */
-    font-weight: 700;
-    color: var(--primary-color);
-    margin: 0;
-    text-transform: capitalize;
-    letter-spacing: -0.2px;
-    line-height: 1.3;
-    word-break: break-word;
-    overflow-wrap: break-word;
-    max-width: 100%;
-    transition: color var(--transition-fast);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  max-width: 100%;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font-size: var(--cc-name);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-transform: capitalize;
+  color: var(--text);
+  transition: color 0.25s ease;
 }
 
-.category-card:hover .category-card-name {
-    color: var(--primary-color);
+/* ===== شارة السهم (أعلى اليمين): توحي بأن البطاقة قابلة للنقر =====
+   السهم SVG مضمّن بلون --primary-color (#145c4a)؛ إن تغيّر التوكن عدّل %23145c4a هنا */
+.category-card::after {
+  content: "";
+  position: absolute;
+  top: 0.625rem;
+  right: 0.625rem;
+  width: var(--cc-chip);
+  height: var(--cc-chip);
+  background: var(--secondary-color) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23145c4a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E") center / 52% no-repeat;
+  border-radius: 50%;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-/* ============================================
-   📱 Responsive — Tablet
-   ============================================ */
+.category-card:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* لمس: تصغير فوري يؤكد وصول الضغطة (بدل hover غير الموجود على اللمس) */
+.category-card:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) {
+  .category-card:hover {
+    transform: translateY(-0.25rem);
+    border-color: rgba(20, 92, 74, 0.28);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .category-card:hover .category-card-media { transform: scale(1.06); }
+  .category-card:hover .category-card-image { transform: scale(1.06) translateY(-2%); }
+  .category-card:hover .category-card-name { color: var(--primary-color); }
+  .category-card:hover::after { background-color: var(--accent-color); transform: translate(2px, -2px); }
+}
+
+/* ===== Responsive — متغيرات فقط ===== */
+@media (max-width: 75rem) {
+  .category-card { --cc-halo: 7rem; } /* 5 أعمدة: بطاقات أعرض */
+}
+
 @media (max-width: 64rem) {
-    .category-card {
-        height: 12.5rem;
-        padding: 1.125rem 0.75rem;
-        border-radius: 1.125rem;
-        gap: 0.625rem;
-    }
-
-    .category-card-image {
-        height: 5.5rem;
-    }
-
-    .category-card-name {
-        font-size: 0.8125rem;
-    }
+  .category-card { --cc-pad: 1rem; --cc-halo: 6.5rem; --cc-name: 0.875rem; --cc-radius: 1.125rem; }
 }
 
-/* ============================================
-   📱 Responsive — Small Tablet
-   ============================================ */
 @media (max-width: 48rem) {
-    .category-card {
-        height: 11rem;
-        padding: 1rem 0.625rem;
-        border-radius: 1rem;
-        gap: 0.5rem;
-    }
-
-    .category-card-image {
-        height: 4.75rem;
-    }
-
-    .category-card-name {
-        font-size: 0.78125rem;
-    }
+  .category-card { --cc-pad: 0.875rem; --cc-halo: 5.5rem; --cc-name: 0.8125rem; --cc-radius: 1rem; --cc-chip: 1.625rem; --cc-gap: 0.75rem; }
 }
 
-/* ============================================
-   📱 Responsive — Mobile
-   ============================================ */
 @media (max-width: 30rem) {
-    .category-card {
-        height: 10rem;
-        padding: 0.875rem 0.5rem;
-        border-radius: 0.875rem;
-        gap: 0.5rem;
-    }
+  .category-card { --cc-pad: 0.75rem; --cc-halo: 5.5rem; --cc-chip: 1.5rem; }
+}
 
-    .category-card-image {
-        height: 4.25rem;
-    }
-
-    .category-card-name {
-        font-size: 0.75rem;
-    }
+@media (prefers-reduced-motion: reduce) {
+  .category-card,
+  .category-card-media,
+  .category-card-image,
+  .category-card::after { transition-duration: 0.01ms; }
 }

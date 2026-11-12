@@ -270,7 +270,12 @@ export default function ProductCardDetails() {
             {weight && (
               <>
                 <dt>Gewicht</dt>
-                <dd>{weight} {weight_unit}</dd>
+                <dd>
+                  {weight} {weight_unit}
+                  {formatPackLabel({ pack_pieces, piece_weight, weight_unit })
+                    ? ` (${formatPackLabel({ pack_pieces, piece_weight, weight_unit })})`
+                    : ""}
+                </dd>
               </>
             )}
             {deposit > 0 && (

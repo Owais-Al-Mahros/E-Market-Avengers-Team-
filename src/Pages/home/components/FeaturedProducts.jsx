@@ -1,84 +1,77 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFeatured } from "../../../context/FeaturedContext";
 import ProductCard from "../../../components/product/ProductCard";
 import "./FeaturedProducts.css";
 
-const AUTO_DELAY = 4000;   // كل 4 ثوانٍ
+const AUTO_DELAY = 4000; // كل 4 ثوانٍ
+
+const prefersReducedMotion = () =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* المسافة بين بداية بطاقة وبداية التي تليها (عرض البطاقة + الـ gap).
+   تُقاس من الـ DOM نفسه، فلا نكرر نقاط التوقف الموجودة في الـ CSS. */
+const getStep = (el) =>
+    el.children.length > 1 ? el.children[1].offsetLeft - el.children[0].offsetLeft : 0;
 
 export default function FeaturedProducts() {
     const { items, loading } = useFeatured();
 
     const viewportRef = useRef(null);
-    const [index, setIndex] = useState(0);
-    const [metrics, setMetrics] = useState({
-        cardWidth: 200,
-        gap: 20,
-        visible: 5,
-    });
+    const [index, setIndex] = useState(0);   // البطاقة الظاهرة أولًا (من التمرير الفعلي)
+    const [pages, setPages] = useState(1);   // عدد مواضع التوقف الممكنة
     const [paused, setPaused] = useState(false);
 
-    /* ═══════════════════════════════════════════
-       Measure card width + gap on resize
-       ═══════════════════════════════════════════ */
-    const measure = useCallback(() => {
+    const goTo = useCallback((i) => {
+        const vp = viewportRef.current;
+        if (!vp) return;
+        vp.scrollTo({
+            left: i * getStep(vp),
+            behavior: prefersReducedMotion() ? "auto" : "smooth",
+        });
+    }, []);
+
+    /* عدد الصفحات = مدى التمرير ÷ الخطوة. يُعاد حسابه عند تغيّر حجم الإطار */
+    useEffect(() => {
         const vp = viewportRef.current;
         if (!vp) return;
 
-        const w = window.innerWidth;
-        let visible;
-        if (w < 480) visible = 2;
-        else if (w < 768) visible = 3;
-        else if (w < 1024) visible = 3;
-        else if (w < 1200) visible = 4;
-        else visible = 5;
+        const update = () => {
+            const step = getStep(vp);
+            setPages(step ? Math.round((vp.scrollWidth - vp.clientWidth) / step) + 1 : 1);
+        };
 
-        const gap = w < 480 ? 12 : w < 768 ? 16 : 20;
-        const vpWidth = vp.clientWidth;
-        const cardWidth = (vpWidth - gap * (visible - 1)) / visible;
+        update();
+        const ro = new ResizeObserver(update);
+        ro.observe(vp);
+        return () => ro.disconnect();
+    }, [loading, items.length]);
 
-        setMetrics({ cardWidth, gap, visible });
-    }, []);
+    /* المتصفح هو من يتحكم بالتمرير (سحب/لمس/لوحة مفاتيح)، ونحن فقط نقرأ الموضع */
+    const handleScroll = (e) => {
+        const vp = e.currentTarget;
+        const step = getStep(vp);
+        if (step) setIndex(Math.round(vp.scrollLeft / step));
+    };
 
+    const canSlide = pages > 1;
+
+    /* تدوير تلقائي. index ضمن الاعتماديات: أي تمرير يدوي يعيد العدّاد من الصفر
+       فلا يتعارض التدوير مع إصبع المستخدم */
     useEffect(() => {
-        measure();
-        window.addEventListener("resize", measure);
-        return () => window.removeEventListener("resize", measure);
-    }, [measure]);
+        if (!canSlide || paused || prefersReducedMotion()) return;
 
-    /* ═══════════════════════════════════════════
-       Derived
-       ═══════════════════════════════════════════ */
-    const canSlide = !loading && items.length > metrics.visible;
-    const maxIndex = Math.max(0, items.length - metrics.visible);
-    const step = metrics.cardWidth + metrics.gap;
-
-    /* Clamp index when visible/maxIndex change (resize) */
-    useEffect(() => {
-        if (index > maxIndex) setIndex(0);
-    }, [index, maxIndex]);
-
-    /* ═══════════════════════════════════════════
-       Auto-advance
-       ═══════════════════════════════════════════ */
-    useEffect(() => {
-        if (!canSlide || paused) return;
-
-        const id = setInterval(() => {
-            setIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
-        }, AUTO_DELAY);
-
+        const id = setInterval(
+            () => goTo(index >= pages - 1 ? 0 : index + 1),
+            AUTO_DELAY
+        );
         return () => clearInterval(id);
-    }, [canSlide, paused, maxIndex]);
+    }, [canSlide, paused, index, pages, goTo]);
 
-    /* ═══════════════════════════════════════════
-       Render
-       ═══════════════════════════════════════════ */
     if (!loading && items.length === 0) return null;
 
     return (
         <section className="featured-section">
             <div className="featured-inner">
-                {/* ═══ Header ═══ */}
                 <header className="featured-header">
                     <div className="featured-title-wrap">
                         <span className="featured-badge">🔥 Ausgewählt</span>
@@ -89,7 +82,6 @@ export default function FeaturedProducts() {
                     </div>
                 </header>
 
-                {/* ═══ Viewport + Track ═══ */}
                 {loading ? (
                     <div className="featured-loading">
                         <div className="featured-spinner" />
@@ -98,42 +90,34 @@ export default function FeaturedProducts() {
                     <div
                         className="featured-viewport"
                         ref={viewportRef}
+                        tabIndex={0}
+                        aria-label="Empfohlene Produkte"
+                        onScroll={handleScroll}
                         onMouseEnter={() => setPaused(true)}
                         onMouseLeave={() => setPaused(false)}
                         onTouchStart={() => setPaused(true)}
                         onTouchEnd={() => setPaused(false)}
+                        onFocus={() => setPaused(true)}
+                        onBlur={() => setPaused(false)}
                     >
-                        <div
-                            className="featured-track"
-                            style={{
-                                gap: `${metrics.gap}px`,
-                                transform: `translateX(-${index * step}px)`,
-                                transition: "transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
-                            }}
-                        >
-                            {items.map((product) => (
-                                <div
-                                    key={product.id}
-                                    className="featured-card-slot"
-                                    style={{ width: `${metrics.cardWidth}px` }}
-                                >
-                                    <ProductCard {...product} />
-                                </div>
-                            ))}
-                        </div>
+                        {items.map((product) => (
+                            <div key={product.id} className="featured-card-slot">
+                                <ProductCard {...product} />
+                            </div>
+                        ))}
                     </div>
                 )}
 
-                {/* ═══ Dots ═══ */}
                 {canSlide && (
                     <div className="featured-dots">
-                        {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+                        {Array.from({ length: pages }).map((_, i) => (
                             <button
                                 key={i}
                                 type="button"
                                 className={`featured-dot ${i === index ? "active" : ""}`}
-                                onClick={() => setIndex(i)}
+                                onClick={() => goTo(i)}
                                 aria-label={`Gehe zu Slide ${i + 1}`}
+                                aria-current={i === index}
                             />
                         ))}
                     </div>

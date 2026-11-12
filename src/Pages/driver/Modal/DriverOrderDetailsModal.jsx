@@ -53,14 +53,16 @@ export default function DriverOrderDetailsModal({ order, onClose }) {
     const addr = order.shipping_address || {};
     const items = order.order_items || [];
 
-    /* ═══ Total weight & items ═══ */
-    // ✅ FIX: تحويل للوحدة الأساسية (kg / L) قبل الجمع
     const totalWeight = items
         .filter((i) => i.status !== "removed")
         .reduce((sum, item) => {
-            const qty =
-                parseFloat(item.actual_quantity ?? item.quantity) || 0;
-            const unitWInBase = toBaseUnit(item.weight, item.weight_unit);
+            const qty = parseFloat(item.actual_quantity ?? item.quantity) || 0;
+            // ❌ السطر القديم: const unitWInBase = toBaseUnit(item.weight, item.weight_unit);
+
+            // ✅ السطر الجديد:
+            const gross = parseFloat(item.gross_weight) || 0;
+            const unitWInBase = gross > 0 ? gross : toBaseUnit(item.weight, item.weight_unit);
+
             return sum + unitWInBase * qty;
         }, 0);
 

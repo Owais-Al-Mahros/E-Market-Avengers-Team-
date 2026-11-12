@@ -23,7 +23,7 @@ function PricingCard({ id, isOpen, onToggle, children, header, image, highlight 
             <header className="hiw-card-header">{header}</header>
 
             <div className="hiw-card-image">
-                <img src={image} alt="" />
+                <img src={image} alt="" loading="lazy" decoding="async" />
             </div>
 
             <div className="hiw-card-highlight">{highlight}</div>
@@ -33,7 +33,6 @@ function PricingCard({ id, isOpen, onToggle, children, header, image, highlight 
                 className="hiw-card-toggle"
                 onClick={() => onToggle(id)}
                 aria-expanded={isOpen}
-                aria-label={isOpen ? "Show less" : "Show more"}
             >
                 <span>{isOpen ? "Weniger anzeigen" : "Mehr anzeigen"}</span>
                 <span className="material-symbols-outlined">

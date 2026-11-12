@@ -1,19 +1,22 @@
-// components/CartItem.jsx
+import { formatEuro } from "../../lib/format";
+
 export default function CartItem({ item, onIncrease, onDecrease, onRemove }) {
     return (
         <div className="cart-item">
-            <img src={item.image} alt={item.name} className="cart-item-image" />
+            <div className="cart-item-image-wrapper">
+                <img src={item.image} alt={item.name} className="cart-item-image" loading="lazy" />
+            </div>
 
             <div className="cart-item-details">
-                <h4>{item.name}</h4>
-                <p className="cart-item-price">€{item.total_price.toFixed(2)}</p>
+                <h4 className="cart-item-name">{item.name}</h4>
+                <p className="cart-item-price">{formatEuro(item.total_price)}</p>
 
                 <div className="cart-item-actions">
                     <div className="qty-controls">
                         <button
                             type="button"
                             onClick={() => onDecrease(item.id)}
-                            aria-label="Decrease quantity"
+                            aria-label="Menge verringern"
                         >
                             −
                         </button>
@@ -21,7 +24,7 @@ export default function CartItem({ item, onIncrease, onDecrease, onRemove }) {
                         <button
                             type="button"
                             onClick={() => onIncrease(item.id)}
-                            aria-label="Increase quantity"
+                            aria-label="Menge erhöhen"
                         >
                             +
                         </button>
@@ -31,15 +34,15 @@ export default function CartItem({ item, onIncrease, onDecrease, onRemove }) {
                         type="button"
                         className="remove-item-btn"
                         onClick={() => onRemove(item.id)}
-                        aria-label="Remove item"
+                        aria-label="Artikel entfernen"
                     >
-                        🗑️
+                        <span className="material-symbols-outlined">delete</span>
                     </button>
                 </div>
             </div>
 
             <div className="cart-item-total">
-                €{(item.total_price * item.quantity).toFixed(2)}
+                {formatEuro(item.total_price * item.quantity)}
             </div>
         </div>
     );

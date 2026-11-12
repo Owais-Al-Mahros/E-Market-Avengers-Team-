@@ -32,8 +32,15 @@ export default function Hero() {
     return () => clearTimeout(t);
   }, [prevIndex]);
 
-  // ✅ تدوير تلقائي كل 5 ثوانٍ
+  // ✅ تحميل الصورة التالية مسبقًا: بدونه تُطلب (≈300KB) لحظة بدء حركة الدخول، فتظهر فراغًا على الشبكات البطيئة
   useEffect(() => {
+    const img = new Image();
+    img.src = HERO_IMAGES[(currentIndex + 1) % HERO_IMAGES.length];
+  }, [currentIndex]);
+
+  // ✅ تدوير تلقائي كل 5 ثوانٍ (يتوقف لمن فعّل "تقليل الحركة")
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const i = setInterval(() => {
       setPrevIndex(currentIndex);
       setCurrentIndex((v) => (v + 1) % HERO_IMAGES.length);
@@ -45,12 +52,6 @@ export default function Hero() {
     document
       .getElementById("category-sections")
       ?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleDotClick = (i) => {
-    if (i === currentIndex) return;
-    setPrevIndex(currentIndex);
-    setCurrentIndex(i);
   };
 
   return (
@@ -71,6 +72,8 @@ export default function Hero() {
           key={`in-${currentIndex}`}
           src={HERO_IMAGES[currentIndex]}
           alt="Shopora fresh groceries"
+          fetchPriority={currentIndex === 0 ? "high" : undefined}
+          decoding="async"
           className={`hero-bg-img ${prevIndex !== null ? "hero-bg-in" : "hero-bg-static"
             }`}
         />

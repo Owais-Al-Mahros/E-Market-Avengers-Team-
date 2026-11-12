@@ -39,8 +39,16 @@ function SubHomeHeader() {
         setCatListOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    const handleEscape = (e) => {
+      if (e.key === "Escape") setCatListOpen(false);
+    };
+    // pointerdown بدل mousedown: iOS Safari لا يُطلق أحداث الفأرة عند لمس عنصر غير قابل للنقر
+    document.addEventListener("pointerdown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("pointerdown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
   }, []);
 
   return (
@@ -49,8 +57,11 @@ function SubHomeHeader() {
         {/* ===== Left: All together ===== */}
         <div className="sub-header-left" ref={dropdownRef}>
           <button
+            type="button"
             className={`categories-trigger ${isCatListOpen ? "open" : ""}`}
             onClick={() => setCatListOpen((prev) => !prev)}
+            aria-expanded={isCatListOpen}
+            aria-haspopup="true"
           >
             <span className="material-symbols-outlined">grid_view</span>
             <span>Alle Kategorien</span>
@@ -76,12 +87,13 @@ function SubHomeHeader() {
                   {categories.map((cat) => (
                     <button
                       key={cat.id}
+                      type="button"
                       className="subcategory-item"
                       onClick={() => handleCategorySelect(cat.id)}
                     >
                       <div className="subcategory-thumb">
                         {cat.image ? (
-                          <img src={cat.image} alt={cat.name} loading="lazy" />
+                          <img src={cat.image} alt="" loading="lazy" decoding="async" />
                         ) : (
                           <span className="material-symbols-outlined">restaurant</span>
                         )}
@@ -108,7 +120,7 @@ function SubHomeHeader() {
             <span>Startseite</span>
           </NavLink>
 
-          <button className="nav-item" onClick={handleTrackOrder}>
+          <button type="button" className="nav-item" onClick={handleTrackOrder}>
             <span className="material-symbols-outlined">local_shipping</span>
             <span>Bestellung verfolgen</span>
           </button>
