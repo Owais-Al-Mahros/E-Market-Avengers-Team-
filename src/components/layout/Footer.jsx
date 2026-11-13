@@ -2,13 +2,6 @@ import "./Footer.css";
 import { Link } from "react-router-dom";
 import { useCompany } from "../../context/CompanyContext";
 
-/* البيانات في مصفوفات: إضافة رابط/شبكة اجتماعية = سطر واحد بدل كتلة JSX كاملة */
-const SOCIAL = [
-  { label: "Instagram", href: "https://www.instagram.com/mohamad_rslan_/", icon: "/iconInstagram.png" },
-  { label: "Facebook", href: "https://www.facebook.com/Rslan.Nwelaty/", icon: "/iconFacebook.png" },
-  { label: "X", href: "https://x.com/MohamadRslan5", icon: "/twitter-x-.webp" },
-];
-
 const SERVICE_LINKS = [
   { to: "/faq", label: "FAQ" },
   { to: "/help", label: "Kontakt" },
@@ -55,22 +48,6 @@ function Footer() {
               ? `${company.brand_name} · ${company.owner_name}`
               : "Ihr Online-Supermarkt."}
           </p>
-
-          <ul className="footer-social">
-            {SOCIAL.map(({ label, href, icon }) => (
-              <li key={label}>
-                <a
-                  href={href}
-                  className="footer-social-link"
-                  aria-label={label}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img src={icon} alt="" width="24" height="24" loading="lazy" />
-                </a>
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* ========== Contact ========== */}
