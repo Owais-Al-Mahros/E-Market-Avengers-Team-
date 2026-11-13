@@ -6,8 +6,8 @@
 .header {
   --hdr-pad: 0.75rem 1.25rem;
   --hdr-gap: 1rem;
-  --hdr-logo: 4.2rem;
-  --hdr-tagline: 1.6rem;
+  --hdr-logo: 3rem;
+  --hdr-tagline: 1.5rem;
   --hdr-icon: 1.6rem;
   --hdr-actions-gap: 1rem;
 
@@ -20,10 +20,11 @@
   align-items: center;
   gap: var(--hdr-gap);
   padding: var(--hdr-pad);
-  background: var(--primary-color);
+  background: linear-gradient(180deg, var(--primary-color), var(--primary-hover));
   color: var(--cream);
   border-bottom: 0.1875rem solid var(--neon-green);
   box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
 }
 
 /* ===== Logo ===== */
@@ -38,9 +39,12 @@
 
 .logo-header {
   flex-shrink: 0;
-  width: auto;
+  width: var(--hdr-logo);
   height: var(--hdr-logo);
-  object-fit: contain;
+  object-fit: cover;
+  background: #fff; /* الشعار أخضر غامق على أبيض: يحتاج سطحًا فاتحًا فوق أخضر الـ Header */
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.125rem rgba(255, 255, 255, 0.22), 0 0.25rem 0.75rem rgba(0, 0, 0, 0.18);
   transition: transform 0.2s ease; /* كانت "transform var(--transition-fast)" = قيمة غير صالحة تُتجاهل */
 }
 
@@ -49,7 +53,7 @@
   overflow: hidden;
   font-size: var(--hdr-tagline);
   font-weight: 800;
-  letter-spacing: 0.2px;
+  letter-spacing: -0.01em;
   white-space: nowrap;
   text-overflow: ellipsis;
   color: var(--cream);
@@ -314,41 +318,44 @@
 @media (max-width: 64rem) {
   .header {
     --hdr-gap: 0.75rem;
-    --hdr-logo: 2.25rem;
-    --hdr-tagline: 1.125rem;
+    --hdr-logo: 2.75rem;
+    --hdr-tagline: 1.25rem;
   }
 
   .search-container-wrapper { max-width: 100%; }
 }
 
+/* ≤ 768px: صف واحد (شعار + بحث). السلة والمفضلة والحساب انتقلت إلى BottomNav */
 @media (max-width: 48rem) {
   .header {
-    --hdr-pad: 0.625rem 1rem;
+    --hdr-pad: 0.5rem 0.75rem;
     --hdr-gap: 0.625rem;
-    --hdr-icon: 1.5rem;
-    --hdr-actions-gap: 0.25rem;
+    --hdr-logo: 2.5rem;
 
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "logo   actions"
-      "search search";
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "logo search";
   }
 
-  .header-dashboard-link { display: none; }
+  .header-actions,
+  .tagline { display: none; }
+
+  /* يختفي عند التمرير للأسفل؛ يبقى ظاهرًا إن كان البحث نشطًا أو قائمة الاقتراحات مفتوحة */
+  .header[data-hidden="true"]:not(:focus-within):not(:has(.search-dropdown-container)) {
+    transform: translateY(-100%);
+  }
+
+  /* القائمة بعرض الـ Header كاملًا (لا بعرض حقل البحث فقط) */
+  .search-container-wrapper { position: static; }
 
   .search-dropdown-container {
     --dd-max: 24rem;
-    /* لا يتجاوز نصف الشاشة: لوحة المفاتيح تغطي جزءًا منها */
-    max-height: min(var(--dd-max), 55dvh);
+    inset: calc(100% + 0.25rem) 0.75rem auto;
+    max-height: min(var(--dd-max), 55dvh); /* لوحة المفاتيح تغطي جزءًا من الشاشة */
   }
 }
 
-@media (max-width: 30rem) {
-  .header { --hdr-tagline: 1rem; }
-  .logo-container { gap: 0.375rem; }
-}
-
 @media (prefers-reduced-motion: reduce) {
+  .header,
   .logo-header,
   .header-search-button,
   .search-dropdown-show-all { transition-duration: 0.01ms; }

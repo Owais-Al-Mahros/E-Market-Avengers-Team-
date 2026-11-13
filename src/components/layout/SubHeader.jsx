@@ -113,7 +113,7 @@ function SubHomeHeader() {
             to="/"
             end
             className={({ isActive }) =>
-              isActive ? "nav-item active" : "nav-item"
+              isActive ? "nav-item nav-item--home active" : "nav-item nav-item--home"
             }
           >
             <span className="material-symbols-outlined">home</span>

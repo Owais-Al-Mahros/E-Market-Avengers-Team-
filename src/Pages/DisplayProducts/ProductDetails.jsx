@@ -10,6 +10,7 @@ import {
   calculatePriceByKg,
   getBaseUnitLabel,
 } from "../../api/index.js";
+import { formatPackLabel } from "../../lib/units";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import Subscribe from "../../components/layout/Subscribe";
@@ -101,6 +102,8 @@ export default function ProductCardDetails() {
     tax_rate = 0,
     weight = "",
     weight_unit = "",
+    pack_pieces = 1,
+    piece_weight = "",
     gross_weight,
     deposit_amount = 0,
     deposit_tax_rate = 0,
@@ -121,7 +124,26 @@ export default function ProductCardDetails() {
   const deposit = parseFloat(deposit_amount) || 0;
   const depositRate = parseFloat(deposit_tax_rate) || parseFloat(tax_rate) || 0;
 
-  const hasNutrition = ingredients || (nutritionObject && Object.keys(nutritionObject).length > 0);
+  // ✅ دالة للتحقق مما إذا كان جدول التغذية يحتوي على بيانات حقيقية (وليس مجرد صفوف فارغة)
+  const hasValidNutrition = (() => {
+    if (!nutritionObject) return false;
+
+    // إذا كان الجدول من النوع الجديد
+    if (nutritionObject._type === 'nutrition_table') {
+      if (!Array.isArray(nutritionObject.rows) || nutritionObject.rows.length === 0) return false;
+      // نتحقق مما إذا كان هناك صف واحد على الأقل يحتوي على اسم أو قيمة
+      return nutritionObject.rows.some(row =>
+        (row.name && row.name.trim() !== "") ||
+        (row.values && row.values.some(v => v && v.trim() !== ""))
+      );
+    }
+
+    // للنوع القديم
+    return Object.keys(nutritionObject).length > 0;
+  })();
+
+  // ✅ لن يظهر القسم إلا إذا كان هناك مكونات نصية أو جدول يحتوي على بيانات
+  const hasNutrition = (ingredients && ingredients.trim() !== "") || hasValidNutrition;
   const hasStorage = storageObject && Object.keys(storageObject).length > 0;
   const hasManufacturerInfo = manufacturerInfoObject && Object.keys(manufacturerInfoObject).length > 0;
 

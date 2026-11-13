@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, memo } from "react";
+import { useState, useMemo, useCallback, useEffect, memo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import ProductCard from "../../components/product/ProductCard";
 import SubCategory from "./components/subCategory";
@@ -26,6 +26,13 @@ export default function DisplayProducts() {
 
   const [activeCategoryId, setActiveCategoryId] = useState(initialCategoryId);
   const [selectSubCat, setSelectSubCat] = useState(null);
+
+  // الفئة تُقرأ من الـ URL عند التحميل فقط (useState أعلاه). عند التنقّل داخل الصفحة نفسها
+  // (من نافذة الفئات في BottomNav مثلًا) يتغير الـ URL ولا تتغير الفئة النشطة. هذا يزامنهما.
+  useEffect(() => {
+    setActiveCategoryId(initialCategoryId);
+    setSelectSubCat(null);
+  }, [initialCategoryId]);
 
   // ============================================
   // Current category (only in category mode)

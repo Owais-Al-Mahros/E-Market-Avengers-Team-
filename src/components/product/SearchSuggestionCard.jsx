@@ -85,15 +85,15 @@ export default function SearchSuggestionCard({ product, onClick }) {
                 <span className="search-suggestion-price">
                     {formatEuro(displayPrice)}
                 </span>
+
                 <button
                     type="button"
                     className="search-suggestion-add-btn"
                     onClick={handleAddToCart}
                     aria-label={`${name} zum Warenkorb hinzufügen`}
                 >
-                    <span className="material-symbols-outlined">
-                        add_shopping_cart
-                    </span>
+                    <span className="material-symbols-outlined">shopping_cart</span>
+                    <span className="material-symbols-outlined plus-icon">add</span>
                 </button>
             </div>
         </div>

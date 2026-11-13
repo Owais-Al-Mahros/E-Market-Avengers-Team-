@@ -14,6 +14,7 @@ import "./OrdersTable.css";
 import AssignDriverModal from "./modals/AssignDriverModal";
 import { assignDriverToOrder } from "../../../../api/drivers";
 
+import { supabase } from "../../../../lib/supabase";
 export default function OrdersTable({ orders, status, onUpdateStatus, onRefresh }) {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -286,7 +287,7 @@ export default function OrdersTable({ orders, status, onUpdateStatus, onRefresh 
   return (
     <div className="orders-container">
       {invoiceToDownload && invoiceSnapshot && createPortal(
-          <div style={{ position: 'fixed', top: 0, left: 0, width: '800px', zIndex: -9999, opacity: 0.01, pointerEvents: 'none' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '800px', zIndex: -9999, opacity: 0.01, pointerEvents: 'none' }}>
           <Invoice snapshot={invoiceSnapshot} showWarnings={false} />
         </div>,
         document.body
@@ -295,11 +296,11 @@ export default function OrdersTable({ orders, status, onUpdateStatus, onRefresh 
       {/* HEADER */}
       <div className="orders-header">
         <h2>{getTitle()}</h2>
-        
+
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           {/* ✅ زر فلترة التاريخ الاحترافي */}
           <div className="date-filter-container" ref={dateMenuRef}>
-            <button 
+            <button
               className={`btn-date-filter ${datePreset !== 'all' ? 'active' : ''}`}
               onClick={() => setShowDateMenu(!showDateMenu)}
             >
@@ -395,8 +396,8 @@ export default function OrdersTable({ orders, status, onUpdateStatus, onRefresh 
                     </td>
                     <td className="order-weight">{formatTotalWeight(getTotalWeight(order))}</td>
                     <td className="order-total">
-                    €{(parseFloat(order.total_price) || 0).toFixed(2)}
-                  </td>
+                      €{(parseFloat(order.total_price) || 0).toFixed(2)}
+                    </td>
                     <td><span className={`status-badge status-${order.status}`}>{order.status}</span></td>
                     <td>
                       <div className="actions-cell">

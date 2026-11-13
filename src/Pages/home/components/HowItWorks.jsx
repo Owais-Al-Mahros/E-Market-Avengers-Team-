@@ -114,7 +114,7 @@ export default function HowItWorks() {
         <section className="hiw-section" id="how-it-works">
             <div className="hiw-container">
                 <div className="hiw-header">
-                    <span className="hiw-badge">💡 Transparente Preise</span>
+                    <span className="hiw-badge">Transparente Preise</span>
                     <h2 className="hiw-title">So berechnen wir Ihre Lieferung</h2>
                     <p className="hiw-subtitle">
                         Keine versteckten Gebühren. Nur klare, ehrliche Preise basierend auf

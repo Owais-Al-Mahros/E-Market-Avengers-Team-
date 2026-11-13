@@ -7,6 +7,45 @@ import { searchProduct } from "../../api/index.js";
 import { useDebounce } from "../../hooks/useDebounce.js";
 import SearchSuggestionCard from "../product/SearchSuggestionCard.jsx";
 import Cart from "../cart/CartModal.jsx";
+import BottomNav from "./BottomNav.jsx";
+
+/* على الجوال: يختفي الـ Header عند التمرير للأسفل ويعود عند التمرير للأعلى (يحرّر ≈60px من الشاشة).
+   العتبة 8px + التراكم: التمرير البطيء لا يربك الاتجاه، والاهتزاز الصغير لا يُظهره ويخفيه. */
+function useHideOnScroll() {
+  const [hidden, setHidden] = useState(false);
+
+  useEffect(() => {
+    let anchorY = window.scrollY;
+    let ticking = false;
+
+    const update = () => {
+      const y = window.scrollY;
+      if (y < 80) {
+        setHidden(false);
+        anchorY = y;
+      } else if (y - anchorY > 8) {
+        setHidden(true);
+        anchorY = y;
+      } else if (anchorY - y > 8) {
+        setHidden(false);
+        anchorY = y;
+      }
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return hidden;
+}
 
 export default function HomePageHeader() {
   const navigate = useNavigate();
@@ -20,6 +59,7 @@ export default function HomePageHeader() {
   const [loadingProducts, setLoadingProducts] = useState(false);
 
   const serRef = useRef(null);
+  const hidden = useHideOnScroll();
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
 
   // ============================================
@@ -105,129 +145,138 @@ export default function HomePageHeader() {
   };
 
   return (
-    <header className="header">
-      <Link to="/" className="logo-container">
-        <img
-          src="/logo - Copy.png"
-          alt="Shopora Logo"
-          className="logo-header"
-          width="64"
-          height="64"
-          decoding="async"
-        />
-        <span className="tagline">Shopora</span>
-      </Link>
-
-      <div className="search-container-wrapper" ref={serRef}>
-        <form onSubmit={handleSubmit} className="header-search">
-          <input
-            type="text"
-            placeholder="Produkte suchen..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              if (!showDropdown) setShowDropdown(true);
-            }}
-            aria-label="Search products"
-            inputMode="search"
-            enterKeyHint="search"
-            autoComplete="off"
-            onKeyDown={(e) => e.key === "Escape" && setShowDropdown(false)}
+    <>
+      <header className="header" data-hidden={hidden}>
+        <Link to="/" className="logo-container" aria-label="Shopora – Startseite">
+          <img
+            src="/logo.png"
+            alt=""
+            className="logo-header"
+            width="48"
+            height="48"
+            decoding="async"
           />
+          <span className="tagline">Shopora</span>
+        </Link>
 
-          {searchTerm && (
+        <div className="search-container-wrapper" ref={serRef}>
+          <form onSubmit={handleSubmit} className="header-search">
+            <input
+              type="text"
+              placeholder="Produkte suchen..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                if (!showDropdown) setShowDropdown(true);
+              }}
+              aria-label="Search products"
+              inputMode="search"
+              enterKeyHint="search"
+              autoComplete="off"
+              onKeyDown={(e) => e.key === "Escape" && setShowDropdown(false)}
+            />
+
+            {searchTerm && (
+              <button
+                type="button"
+                className="header-search-clear"
+                onClick={handleClearSearch}
+                aria-label="Clear search"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            )}
+
             <button
-              type="button"
-              className="header-search-clear"
-              onClick={handleClearSearch}
-              aria-label="Clear search"
+              type="submit"
+              className="header-search-button"
+              aria-label="Search"
             >
-              <span className="material-symbols-outlined">close</span>
+              <img src="/Search.png" alt="" className="search-icon" />
             </button>
-          )}
+          </form>
 
-          <button
-            type="submit"
-            className="header-search-button"
-            aria-label="Search"
-          >
-            <img src="/Search.png" alt="" className="search-icon" />
-          </button>
-        </form>
+          {showDropdown && (
+            <div className="search-dropdown-container">
+              <div className="search-dropdown-list">
+                {loadingProducts ? (
+                  <div className="search-loading-state">
+                    <span>Wird gesucht...</span>
+                  </div>
+                ) : searchResult.length > 0 ? (
+                  searchResult.map((item) => (
+                    <SearchSuggestionCard
+                      key={item.id}
+                      product={item}
+                      onClick={handleSelectProduct}
+                    />
+                  ))
+                ) : (
+                  <div className="search-loading-state">
+                    <span>Keine Produkte gefunden</span>
+                  </div>
+                )}
+              </div>
 
-        {showDropdown && (
-          <div className="search-dropdown-container">
-            <div className="search-dropdown-list">
-              {loadingProducts ? (
-                <div className="search-loading-state">
-                  <span>Wird gesucht...</span>
-                </div>
-              ) : searchResult.length > 0 ? (
-                searchResult.map((item) => (
-                  <SearchSuggestionCard
-                    key={item.id}
-                    product={item}
-                    onClick={handleSelectProduct}
-                  />
-                ))
-              ) : (
-                <div className="search-loading-state">
-                  <span>Keine Produkte gefunden</span>
+              {searchResult.length > 0 && !loadingProducts && (
+                <div className="search-dropdown-footer">
+                  <button
+                    type="button"
+                    className="search-dropdown-show-all"
+                    onClick={handleShowAll}
+                  >
+                    Alle Ergebnisse anzeigen
+                  </button>
                 </div>
               )}
             </div>
+          )}
+        </div>
 
-            {searchResult.length > 0 && !loadingProducts && (
-              <div className="search-dropdown-footer">
-                <button
-                  type="button"
-                  className="search-dropdown-show-all"
-                  onClick={handleShowAll}
-                >
-                  Alle Ergebnisse anzeigen
-                </button>
-              </div>
+        <div className="header-actions">
+          <Link to="/login" className="header-dashboard-link">
+            Go To Dashboard
+          </Link>
+
+          <Link to="/my-info" className="header-profile-link" aria-label="My Info">
+            <span className="material-symbols-outlined person-icon">person</span>
+          </Link>
+
+          <Link
+            to="/favorites"
+            className="header-favorites"
+            aria-label="Open favorites"
+          >
+            <span className="material-symbols-outlined heart-icon">favorite</span>
+            {favorite.length > 0 && (
+              <span className="counter-of-favorites">{favorite.length}</span>
             )}
-          </div>
-        )}
-      </div>
+          </Link>
 
-      <div className="header-actions">
-        <Link to="/login" className="header-dashboard-link">
-          Go To Dashboard
-        </Link>
+          <button
+            type="button"
+            className="header-cart"
+            onClick={() => setIsCartOpen(true)}
+            aria-label="Open cart"
+          >
+            <span className="material-symbols-outlined cart-icon">
+              shopping_cart
+            </span>
+            {totalItems > 0 && (
+              <span className="counter-of-items">{totalItems}</span>
+            )}
+          </button>
+        </div>
+      </header>
 
-        <Link to="/my-info" className="header-profile-link" aria-label="My Info">
-          <span className="material-symbols-outlined person-icon">person</span>
-        </Link>
-
-        <Link
-          to="/favorites"
-          className="header-favorites"
-          aria-label="Open favorites"
-        >
-          <span className="material-symbols-outlined heart-icon">favorite</span>
-          {favorite.length > 0 && (
-            <span className="counter-of-favorites">{favorite.length}</span>
-          )}
-        </Link>
-
-        <button
-          type="button"
-          className="header-cart"
-          onClick={() => setIsCartOpen(true)}
-          aria-label="Open cart"
-        >
-          <span className="material-symbols-outlined cart-icon">
-            shopping_cart
-          </span>
-          {totalItems > 0 && (
-            <span className="counter-of-items">{totalItems}</span>
-          )}
-        </button>
-      </div>
-
+      {/* خارج <header>: transform عند إخفائه يجعله containing block للعناصر position:fixed فيكسر المودال */}
       {isCartOpen && <Cart closeModal={() => setIsCartOpen(false)} />}
-    </header>
+
+      <BottomNav
+        cartCount={totalItems}
+        favCount={favorite.length}
+        onOpenCart={() => setIsCartOpen(true)}
+      />
+    </>
   );
 }

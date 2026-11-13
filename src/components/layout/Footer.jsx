@@ -39,7 +39,7 @@ function Footer() {
         <div className="footer-brand">
           <Link to="/" className="footer-logo" aria-label={`${brand} – Startseite`}>
             <img
-              src="/logo - Copy.png"
+              src="/logo.png"
               className="footer-logo-icon"
               alt=""
               width="64"

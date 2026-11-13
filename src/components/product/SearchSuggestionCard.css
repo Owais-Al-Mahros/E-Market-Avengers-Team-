@@ -104,6 +104,7 @@
 }
 
 .search-suggestion-add-btn {
+    position: relative; /* ✅ 1. إضافة هذا السطر لضبط مكان الأيقونة */
     width: 2.25rem;
     height: 2.25rem;
     display: flex;
@@ -130,8 +131,24 @@
 }
 
 .search-suggestion-add-btn .material-symbols-outlined {
-    font-size: 1.125rem;
+    font-size: 1.15rem;
     color: #fff;
+}
+
+.search-suggestion-add-btn .plus-icon {
+    position: absolute;
+    top: -6px; /* ✅ 2. ضبط الارتفاع */
+    right: -6px; /* ✅ 3. إصلاح الخطأ الإملائي وضبط اليمين */
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: var(--dark-green); 
+    background-color: var(--accent-color); /* ✅ إعطاؤها خلفية لتبرز */
+    border-radius: 50%; /* شكل دائري */
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* ============================================
