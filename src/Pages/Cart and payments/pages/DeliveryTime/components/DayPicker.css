@@ -1,225 +1,167 @@
 /* ============================================
    📅 Day Picker
+   Desktop/Tablet: شبكة 7 أعمدة | Mobile: شريط أفقي بصف واحد (scroll-snap)
+   السبب: الشبكة (4 أعمدة × 4 صفوف ≈ 290px) كانت تدفع منتقي الفترات تحت حدّ الشاشة،
+   فيلمس المستخدم يومًا ولا يرى أن شيئًا ظهر. الشريط (≈90px) يُبقيه على الشاشة.
    ============================================ */
-
 .dp-container {
-    background: #fff;
-    border-radius: 20px;
-    padding: 28px;
-    box-shadow: 0 2px 12px rgba(20, 92, 74, 0.06);
-    border: 1px solid rgba(20, 92, 74, 0.06);
+  --dp-pad: 1.75rem;
+  --dp-gap: 0.625rem;
+  --dp-day-h: 5.25rem;
+  --dp-num: 1.375rem;
+
+  padding: var(--dp-pad);
+  background: #fff;
+  border: 1px solid rgba(20, 92, 74, 0.06);
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 12px rgba(20, 92, 74, 0.06);
 }
 
 .dp-loading {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--primary-color);
-    font-weight: 600;
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--primary-color);
 }
 
-.dp-header {
-    margin-bottom: 24px;
-}
+.dp-header { margin-bottom: 1.5rem; }
 
 .dp-header h2 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--text);
-    margin: 0 0 6px;
-    letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0 0 0.375rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
 }
 
-.dp-header h2 .material-symbols-outlined {
-    color: var(--primary-color);
-    font-size: 26px;
-}
+.dp-header h2 .material-symbols-outlined { font-size: 1.625rem; color: var(--primary-color); }
 
-.dp-subtitle {
-    font-size: 14px;
-    color: #6b7a77;
-    margin: 0;
-    font-weight: 500;
-}
+.dp-subtitle { margin: 0; font-size: 0.875rem; font-weight: 500; color: #6b7a77; }
 
 /* ===== Grid ===== */
 .dp-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
+  position: relative; /* offsetLeft للتمرير إلى اليوم المختار */
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--dp-gap);
 }
 
-/* ===== Day Card ===== */
 .dp-day {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    padding: 14px 6px;
-    background: #fafcfb;
-    border: 2px solid #e1ebe7;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-    min-height: 84px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: var(--dp-day-h);
+  padding: 0.75rem 0.375rem;
+  font-family: inherit;
+  background: #fafcfb;
+  border: 2px solid #e1ebe7;
+  border-radius: 0.875rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
 }
 
-.dp-day:hover:not(.dp-day-disabled) {
-    border-color: var(--primary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(20, 92, 74, 0.1);
+.dp-day-name,
+.dp-day-month {
+  font-size: 0.6875rem; /* كانت 10px و9px */
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #6b7a77;
+}
+
+.dp-day-month { font-weight: 600; }
+
+.dp-day-number {
+  margin: 0.25rem 0;
+  font-size: var(--dp-num);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
 }
 
 .dp-day-selected {
-    background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
-    border-color: var(--primary-color);
-    color: #fff;
-    box-shadow: 0 8px 20px rgba(20, 92, 74, 0.3);
+  background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
+  border-color: var(--primary-color);
+  box-shadow: 0 8px 20px rgba(20, 92, 74, 0.3);
 }
 
 .dp-day-selected .dp-day-name,
 .dp-day-selected .dp-day-number,
-.dp-day-selected .dp-day-month {
-    color: #fff;
-}
-
-.dp-day-today {
-    border-color: var(--accent-color);
-    background: rgba(185, 231, 105, 0.08);
-}
-
-.dp-day-today.dp-day-selected {
-    background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
-}
+.dp-day-selected .dp-day-month { color: #fff; }
 
 .dp-day-disabled {
-    background: #f5f5f5;
-    border-color: #e5e5e5;
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-/* ===== Content ===== */
-.dp-day-name {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #6b7a77;
-    letter-spacing: 0.5px;
-}
-
-.dp-day-number {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--text);
-    line-height: 1;
-    margin: 4px 0;
-}
-
-.dp-day-month {
-    font-size: 10.5px;
-    font-weight: 600;
-    color: #a0b0ac;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-}
-
-/* ===== Badges ===== */
-.dp-day-badge {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    background: var(--accent-color);
-    color: var(--dark-green);
-    font-size: 8px;
-    font-weight: 800;
-    padding: 2px 5px;
-    border-radius: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
+  background: #f5f5f5;
+  border-color: #e5e5e5;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .dp-day-lock {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    color: #999;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  color: #999;
 }
 
-.dp-day-lock .material-symbols-outlined {
-    font-size: 14px;
-}
+.dp-day-lock .material-symbols-outlined { font-size: 0.875rem; }
 
-/* ===== Empty ===== */
-.dp-empty {
-    text-align: center;
-    padding: 60px 20px;
-    color: #6b7a77;
-}
+.dp-day:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+.dp-day:active:not(:disabled) { transform: scale(0.96); }
+
+.dp-empty { padding: 3.75rem 1.25rem; text-align: center; color: #6b7a77; }
 
 .dp-empty .material-symbols-outlined {
-    font-size: 56px;
-    color: var(--secondary-color);
-    display: block;
-    margin-bottom: 12px;
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 3.5rem;
+  color: var(--secondary-color);
 }
 
-.dp-empty p {
-    font-size: 15px;
-    margin: 0;
-    font-weight: 500;
+.dp-empty p { margin: 0; font-size: 0.9375rem; font-weight: 500; }
+
+@media (hover: hover) {
+  .dp-day:hover:not(.dp-day-disabled):not(.dp-day-selected) {
+    border-color: var(--primary-color);
+    box-shadow: 0 6px 16px rgba(20, 92, 74, 0.1);
+    transform: translateY(-2px);
+  }
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 1024px) {
-    .dp-grid {
-        grid-template-columns: repeat(7, 1fr);
-        gap: 8px;
-    }
-
-    .dp-day {
-        min-height: 74px;
-        padding: 10px 4px;
-    }
-
-    .dp-day-number {
-        font-size: 18px;
-    }
+/* ===== Responsive — متغيرات أولًا ===== */
+@media (max-width: 64rem) {
+  .dp-container { --dp-gap: 0.5rem; --dp-day-h: 4.625rem; --dp-num: 1.125rem; }
+  .dp-day { padding: 0.625rem 0.25rem; }
 }
 
-@media (max-width: 640px) {
-    .dp-container {
-        padding: 20px;
-    }
+@media (max-width: 48rem) {
+  .dp-container { --dp-pad: 1.25rem; --dp-gap: 0.5rem; --dp-day-h: 5rem; --dp-num: 1.25rem; }
 
-    .dp-header h2 {
-        font-size: 17px;
-    }
+  .dp-header { margin-bottom: 1rem; }
+  .dp-header h2 { font-size: 1.0625rem; }
 
-    .dp-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 6px;
-    }
+  .dp-grid {
+    display: flex;
+    margin-inline: calc(var(--dp-pad) * -1); /* الشريط يمتد حتى حافة البطاقة */
+    padding: 0.25rem var(--dp-pad) 0.875rem; /* مساحة سفلية تتسع لظل اليوم المختار (overflow يقصّ الظل) */
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: var(--dp-pad);
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
 
-    .dp-day {
-        min-height: 68px;
-        padding: 8px 4px;
-        border-radius: 12px;
-    }
+  .dp-grid::-webkit-scrollbar { display: none; }
 
-    .dp-day-name {
-        font-size: 10px;
-    }
+  .dp-day { flex: 0 0 4.5rem; scroll-snap-align: start; border-radius: 0.75rem; }
+  .dp-day-selected { box-shadow: 0 4px 12px rgba(20, 92, 74, 0.28); }
+}
 
-    .dp-day-number {
-        font-size: 16px;
-    }
-
-    .dp-day-month {
-        font-size: 9px;
-    }
+@media (prefers-reduced-motion: reduce) {
+  .dp-day { transition-duration: 0.01ms; }
 }

@@ -39,9 +39,15 @@ function generateOrderNumber() {
     return `ORD-${date}-${random}`;
 }
 
+const fmt = (n) =>
+    (Number(n) || 0).toLocaleString("de-DE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
 export default function DeliveryTimePage() {
     const navigate = useNavigate();
-    const { cartItems, totalPrice, totalDeposit, totalWeight, clearCart ,syncPrices} = useCart();
+    const { cartItems, totalPrice, totalDeposit, totalWeight, clearCart, syncPrices } = useCart();
     const {
         checkoutData,
         updateFields,
@@ -51,6 +57,7 @@ export default function DeliveryTimePage() {
 
     const { settings: shippingSettings } = useShippingSettings();
     const maxOrdersPerHour = shippingSettings?.maxOrdersPerHour || 0;
+    const duration = shippingSettings?.minDurationHours || 2;
 
     const [selectedDate, setSelectedDate] = useState(
         checkoutData.deliveryDate || ""
@@ -313,9 +320,9 @@ export default function DeliveryTimePage() {
             navigate(`/Cart&Payments/BillAndPayment/${orderId}`, {
                 replace: true,
             });
-               } catch (error) {
+        } catch (error) {
             console.error("❌ Order submission failed:", error);
-            
+
             // ✅ التحقق مما إذا كان الخطأ بسبب تغير الأسعار أو نفاد المنتج
             if (/Preise haben sich geändert|nicht mehr verfügbar/.test(error.message)) {
                 await syncPrices(); // تحديث السلة بأسعار الداتا بيز
@@ -324,12 +331,30 @@ export default function DeliveryTimePage() {
                 // أي خطأ آخر (شبكة، خطأ سيرفر، إلخ)
                 toast.error(`Fehler: ${error.message}`, { id: toastId });
             }
-            
+
             setHasSubmitted(false);
         } finally {
             setSubmitting(false);
         }
     };
+
+    // "Mo., 17. Nov. · 10:00 – 12:00 Uhr" — يظهر في الشريط الثابت على الجوال كتأكيد فوري للاختيار
+    const slotLabel =
+        selectedDate && selectedTime
+            ? (() => {
+                const day = new Date(`${selectedDate}T00:00:00`).toLocaleDateString("de-DE", {
+                    weekday: "short",
+                    day: "numeric",
+                    month: "short",
+                });
+                const h = parseInt(selectedTime, 10);
+                const pad = (n) => String(n).padStart(2, "0");
+                return `${day} · ${pad(h)}:00 – ${pad((h + duration) % 24)}:00 Uhr`;
+            })()
+            : "";
+    // نفس مبلغ الطلب الفعلي أدناه (منتجات + Pfand + شحن)
+    const grandTotal =
+        totalPrice + (totalDeposit || 0) + (checkoutData.shippingDetails?.totalShipping || 0);
 
     // ============================================
     // Render
@@ -340,7 +365,7 @@ export default function DeliveryTimePage() {
 
             <main className="dt-main">
                 <div className="dt-hero">
-                    <span className="dt-hero-badge">🕒 Schritt 2 von 4</span>
+                    <span className="dt-hero-badge">🕒 Schritt 3 von 4</span>
                     <h1>Liefertermin wählen</h1>
                     <p>Bestimmen Sie, wann wir Ihre Bestellung liefern sollen.</p>
                 </div>
@@ -367,17 +392,26 @@ export default function DeliveryTimePage() {
                         selectedTime={selectedTime}
                         cartItems={cartItems}
                         totalPrice={totalPrice}
+                        totalDeposit={totalDeposit}
                     />
                 </div>
 
                 <div className="dt-actions">
+                    {slotLabel && (
+                        <div className="dt-actions-slot">
+                            <span>{slotLabel}</span>
+                            <strong>{fmt(grandTotal)} €</strong>
+                        </div>
+                    )}
                     <button
                         type="button"
                         className="dt-btn-cancel"
                         onClick={() => navigate("/Cart&Payments/Checkout")}
                         disabled={submitting}
+                        aria-label="Zurück zur Adresse"
                     >
-                        ← Zurück zur Adresse
+                        <span aria-hidden="true">←</span>
+                        <span className="dt-btn-cancel-label">Zurück zur Adresse</span>
                     </button>
                     <button
                         type="button"
@@ -387,7 +421,7 @@ export default function DeliveryTimePage() {
                     >
                         {submitting ? (
                             <>
-                                <div className="dt-spinner" />
+                                <span className="dt-spinner" aria-hidden="true" />
                                 Wird verarbeitet...
                             </>
                         ) : (

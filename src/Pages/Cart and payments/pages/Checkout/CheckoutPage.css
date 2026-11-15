@@ -1,815 +1,460 @@
 /* ============================================
-   📋 Checkout Page — Grid Layout
+   CHECKOUT PAGE — شبكة 2×2 على الديسكتوب، وعمود واحد مع شريط إجراءات ثابت على الجوال
+   (كان الملف يعرّف الشبكة والبطاقات والحقول مرتين: نسخة ثم نسخة "أكبر وأفخم" تطغى عليها،
+    ودمجتهما في تعريف واحد. كل ما يتغير مع الشاشة = متغيرات --chk-* على .chk-container)
    ============================================ */
-
 .chk-container {
-    min-height: 100vh;
-    background: linear-gradient(180deg, #F7FAF8 0%, #EFF5F1 100%);
-    display: flex;
-    flex-direction: column;
+  --chk-muted: #6b7a77;
+  --chk-line: #e1ebe7;
+  --chk-main-pad: 3.5rem 2.5rem 5rem;
+  --chk-gutter: 2.5rem;
+  --chk-hero-gap: 3rem;
+  --chk-h1: 2.875rem;
+  --chk-lead: 1.125rem;
+  --chk-grid-gap: 1.75rem;
+  --chk-sec-pad: 2.5rem 2.75rem;
+  --chk-sec-radius: 1.5rem;
+  --chk-sec-gap: 1.375rem;
+  --chk-icon: 3.375rem;
+  --chk-h2: 1.4375rem;
+  --chk-input-pad: 1.0625rem 1.25rem;
+  --chk-input-fs: 1.0625rem; /* ≥ 16px دائمًا: iOS يكبّر الصفحة عند التركيز على حقل أصغر */
+  --chk-inline-gap: 1rem;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh; /* 100vh على iOS يشمل شريط المتصفح */
+  background: linear-gradient(180deg, #f7faf8 0%, #eff5f1 100%);
 }
 
 .chk-main {
-    flex: 1;
-    width: 100%;
-    padding: 56px 40px 80px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: var(--chk-main-pad);
 }
 
-/* ============================================
-   Hero
-   ============================================ */
+/* ===== Hero ===== */
 .chk-hero {
-    text-align: center;
-    max-width: 700px;
-    margin: 0 auto 48px;
+  max-width: 700px;
+  margin: 0 auto var(--chk-hero-gap);
+  text-align: center;
 }
 
 .chk-hero-badge {
-    display: inline-block;
-    background: var(--secondary-color);
-    color: var(--primary-color);
-    font-size: 13px;
-    font-weight: 800;
-    padding: 8px 18px;
-    border-radius: 30px;
-    letter-spacing: 0.5px;
-    margin-bottom: 18px;
-    text-transform: uppercase;
+  display: inline-block;
+  margin-bottom: 1.125rem;
+  padding: 0.5rem 1.125rem;
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border-radius: 30px;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .chk-hero h1 {
-    font-size: 46px;
-    font-weight: 800;
-    color: var(--text);
-    margin: 0 0 12px 0;
-    letter-spacing: -1px;
-    line-height: 1.1;
+  margin: 0 0 0.75rem;
+  font-size: var(--chk-h1);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--text);
 }
 
 .chk-hero p {
-    font-size: 18px;
-    color: #6b7a77;
-    margin: 0;
+  margin: 0;
+  font-size: var(--chk-lead);
+  color: var(--chk-muted);
 }
 
-/* ============================================
-   Form
-   ============================================ */
+/* ===== Form + Grid ===== */
 .chk-form {
-    width: 100%;
-    max-width: 1100px;
-    /* ✅ عرض أوسع لدعم الشبكة */
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1100px;
 }
 
-/* ============================================
-   🎯 Grid 2x2
-   ============================================ */
 .chk-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--chk-grid-gap);
 }
 
-/* ============================================
-   Sections (بطاقات أنيقة)
-   ============================================ */
+/* ===== Sections (بطاقات). كان عليها hover يرفعها 3px: بطاقات نموذج غير قابلة للنقر،
+   وعلى اللمس يبقى الـ hover عالقًا بعد أول لمسة داخلها ===== */
 .chk-section {
-    background: #fff;
-    border-radius: 20px;
-    padding: 30px 32px;
-    box-shadow:
-        0 1px 3px rgba(20, 92, 74, 0.04),
-        0 8px 32px rgba(20, 92, 74, 0.06);
-    border: 1px solid rgba(20, 92, 74, 0.06);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.chk-section:hover {
-    box-shadow:
-        0 1px 3px rgba(20, 92, 74, 0.04),
-        0 12px 40px rgba(20, 92, 74, 0.1);
-    transform: translateY(-2px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--chk-sec-gap);
+  padding: var(--chk-sec-pad);
+  background: #fff;
+  border: 1px solid rgba(20, 92, 74, 0.06);
+  border-radius: var(--chk-sec-radius);
+  box-shadow: 0 1px 3px rgba(20, 92, 74, 0.04), 0 8px 32px rgba(20, 92, 74, 0.06);
 }
 
 .chk-section-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    margin-bottom: 4px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--secondary-color);
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.375rem;
+  padding-bottom: 1.375rem;
+  border-bottom: 1px solid var(--secondary-color);
 }
 
 .chk-section-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--primary-color), var(--success));
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(20, 92, 74, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--chk-icon);
+  height: var(--chk-icon);
+  background: linear-gradient(135deg, var(--primary-color), var(--success));
+  border-radius: 0.875rem;
+  box-shadow: 0 6px 16px rgba(20, 92, 74, 0.25);
+  font-size: calc(var(--chk-icon) * 0.48);
 }
 
-.chk-section-header h3 {
-    font-size: 19px;
-    font-weight: 800;
-    color: var(--text);
-    margin: 0 0 3px 0;
-    letter-spacing: -0.3px;
+.chk-section-header h2 {
+  margin: 0 0 0.25rem;
+  font-size: var(--chk-h2);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
 }
 
 .chk-section-sub {
-    font-size: 13px;
-    color: #6b7a77;
-    margin: 0;
-    font-weight: 500;
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--chk-muted);
 }
 
-/* ============================================
-   Fields
-   ============================================ */
+/* ===== Fields ===== */
 .chk-field {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  min-width: 0; /* حقل داخل شبكة 2 أعمدة لا يوسّع عموده */
 }
 
 .chk-field label {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: 0.2px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--text);
 }
 
 .chk-field input,
 .chk-field select {
-    width: 100%;
-    padding: 14px 16px;
-    font-size: 16px;
-    font-family: inherit;
-    color: var(--text);
-    background: #FAFCFB;
-    border: 1.5px solid #E1EBE7;
-    border-radius: 11px;
-    outline: none;
-    transition: all 0.25s ease;
+  width: 100%;
+  padding: var(--chk-input-pad);
+  font-family: inherit;
+  font-size: var(--chk-input-fs);
+  color: var(--text);
+  background: #fafcfb;
+  border: 2px solid var(--chk-line);
+  border-radius: 0.8125rem;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 }
 
-.chk-field input:hover,
-.chk-field select:hover {
-    border-color: #C2D9D0;
+.chk-field input::placeholder {
+  font-size: 0.9375rem;
+  color: #a0b0ac;
 }
 
 .chk-field input:focus,
 .chk-field select:focus {
-    border-color: var(--primary-color);
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(20, 92, 74, 0.1);
-    transform: translateY(-1px);
-}
-
-.chk-field input::placeholder {
-    color: #a0b0ac;
-    font-size: 14px;
+  background: #fff;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 5px rgba(20, 92, 74, 0.1);
 }
 
 .chk-field select {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23145c4a' stroke-width='2.5'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    background-size: 17px;
-    padding-right: 42px;
+  padding-right: 3.125rem;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23145c4a' stroke-width='2.5'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1.125rem center;
+  background-size: 1.25rem;
 }
 
-.chk-hint {
-    font-size: 12.5px;
-    color: #6b7a77;
-    font-weight: 500;
-    line-height: 1.4;
-}
-
-/* ===== Inline Row (حقلان جانبيان) ===== */
-.chk-inline-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-/* ============================================
-   Selected Time Pill
-   ============================================ */
-.chk-selected-time {
-    margin-top: 4px;
-    padding: 11px 16px;
-    background: var(--secondary-color);
-    color: var(--primary-color);
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    border-left: 4px solid var(--primary-color);
-}
-
-/* ============================================
-   Shipping Section (Full Width)
-   ============================================ */
-.chk-shipping-section {
-    background: linear-gradient(135deg, #F7FAF8, #EFF5F1);
-    border: 2px dashed var(--primary-color);
-}
-
-.chk-shipping-section .chk-section-header {
-    border-bottom: 1px dashed rgba(20, 92, 74, 0.2);
-}
-
-.shipping-breakdown {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.breakdown-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-    color: var(--text);
-    font-weight: 500;
-    padding: 8px 0;
-    border-bottom: 1px dashed rgba(20, 92, 74, 0.15);
-}
-
-.breakdown-row:last-child {
-    border-bottom: none;
-}
-
-.breakdown-row.total-breakdown {
-    font-weight: 800;
-    color: var(--primary-color);
-    font-size: 18px;
-    border-top: 2px solid var(--primary-color);
-    border-bottom: none;
-    padding-top: 14px;
-    margin-top: 6px;
-}
-
-/* ============================================
-   Actions
-   ============================================ */
-.chk-actions {
-    display: flex;
-    gap: 14px;
-    align-items: center;
-}
-
-.chk-btn-submit {
-    flex: 1;
-    padding: 22px 32px;
-    font-size: 19px;
-    font-weight: 800;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    font-family: inherit;
-    background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
-    border: none;
-    color: #fff;
-    box-shadow: 0 8px 24px rgba(20, 92, 74, 0.35);
-    letter-spacing: 0.4px;
-}
-
-.chk-btn-submit:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(20, 92, 74, 0.5);
-    background: linear-gradient(135deg, var(--success), var(--primary-color));
-}
-
-.chk-btn-submit:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-    box-shadow: none;
-    background: linear-gradient(135deg, #9cb5ae, #7a9a91);
-}
-
-.chk-btn-submit .material-symbols-outlined {
-    font-size: 24px;
-}
-
-.chk-btn-cancel {
-    padding: 22px 28px;
-    font-size: 15px;
-    font-weight: 700;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background: #fff;
-    border: 2px solid var(--secondary-color);
-    color: var(--primary-color);
-    font-family: inherit;
-    white-space: nowrap;
-}
-
-.chk-btn-cancel:hover {
-    background: var(--secondary-color);
-    border-color: var(--primary-color);
-}
-
-.chk-final-status {
-    font-size: 14px;
-    text-align: center;
-    font-weight: 600;
-    padding: 12px;
-    border-radius: 10px;
-    background: var(--bg-color);
-    color: #6b7a77;
-}
-
-.chk-final-status.error {
-    color: var(--danger-color);
-    background: rgba(217, 79, 79, 0.08);
-}
-
-/* ============================================
-   💾 Apply Saved Info Banner
-   ============================================ */
-.chk-saved-info-bar {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 22px;
-    background: linear-gradient(135deg, #e8f5e0, #f0faf0);
-    border: 2px solid var(--primary-color);
-    border-radius: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-}
-
-.chk-saved-info-bar>.material-symbols-outlined {
-    font-size: 1.75rem;
-    color: var(--primary-color);
-    flex-shrink: 0;
-}
-
-.chk-saved-info-text {
-    flex: 1;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--text);
-    min-width: 200px;
-}
-
-.chk-use-saved-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 20px;
-    background: var(--primary-color);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 0.875rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    white-space: nowrap;
-}
-
-.chk-use-saved-btn:hover {
-    background: var(--dark-green);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(20, 92, 74, 0.2);
-}
-
-.chk-use-saved-btn .material-symbols-outlined {
-    font-size: 1.125rem;
-}
-
-@media (max-width: 48rem) {
-    .chk-saved-info-bar {
-        flex-direction: column;
-        text-align: center;
-        padding: 16px;
-    }
-
-    .chk-saved-info-bar>.material-symbols-outlined {
-        font-size: 1.5rem;
-    }
-
-    .chk-use-saved-btn {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
-/* ============================================
-   Responsive
-   ============================================ */
-@media (max-width: 900px) {
-    .chk-grid {
-        grid-template-columns: 1fr;
-        /* عمود واحد على التابلت */
-    }
-}
-
-@media (max-width: 768px) {
-    .chk-main {
-        padding: 32px 16px 50px;
-    }
-
-    .chk-hero h1 {
-        font-size: 30px;
-    }
-
-    .chk-hero p {
-        font-size: 16px;
-    }
-
-    .chk-section {
-        padding: 22px 20px;
-        border-radius: 16px;
-    }
-
-    .chk-section-header h3 {
-        font-size: 17px;
-    }
-
-    .chk-section-icon {
-        width: 38px;
-        height: 38px;
-        font-size: 17px;
-    }
-
-    .chk-field input,
-    .chk-field select {
-        font-size: 15px;
-        padding: 13px 14px;
-    }
-
-    .chk-inline-row {
-        grid-template-columns: 1fr;
-        /* حقل واحد لكل صف */
-    }
-
-    .chk-actions {
-        flex-direction: column-reverse;
-        gap: 10px;
-    }
-
-    .chk-btn-submit,
-    .chk-btn-cancel {
-        width: 100%;
-        padding: 18px 20px;
-        font-size: 17px;
-    }
-}
-
-/* ============================================
-   🎯 Grid 2x2 — أكبر وأفخم
-   ============================================ */
-.chk-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 28px;
-    /* ✅ من 24 إلى 28 */
-}
-
-/* ============================================
-   Sections — بطاقات أكبر
-   ============================================ */
-.chk-section {
-    background: #fff;
-    border-radius: 24px;
-    /* ✅ من 20 إلى 24 */
-    padding: 40px 44px;
-    /* ✅ من 30/32 إلى 40/44 */
-    box-shadow:
-        0 1px 3px rgba(20, 92, 74, 0.04),
-        0 8px 32px rgba(20, 92, 74, 0.06);
-    border: 1px solid rgba(20, 92, 74, 0.06);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-    /* ✅ من 16 إلى 22 (مسافات أوسع) */
-}
-
-.chk-section:hover {
-    box-shadow:
-        0 1px 3px rgba(20, 92, 74, 0.04),
-        0 16px 48px rgba(20, 92, 74, 0.12);
-    transform: translateY(-3px);
-    /* ✅ من -2 إلى -3 */
-}
-
-.chk-section-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 6px;
-    padding-bottom: 22px;
-    /* ✅ من 18 إلى 22 */
-    border-bottom: 1px solid var(--secondary-color);
-}
-
-.chk-section-icon {
-    width: 54px;
-    /* ✅ من 44 إلى 54 */
-    height: 54px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--primary-color), var(--success));
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    /* ✅ من 20 إلى 26 */
-    flex-shrink: 0;
-    box-shadow: 0 6px 16px rgba(20, 92, 74, 0.25);
-}
-
-.chk-section-header h3 {
-    font-size: 23px;
-    /* ✅ من 19 إلى 23 */
-    font-weight: 800;
-    color: var(--text);
-    margin: 0 0 4px 0;
-    letter-spacing: -0.4px;
-}
-
-.chk-section-sub {
-    font-size: 14px;
-    /* ✅ من 13 إلى 14 */
-    color: #6b7a77;
-    margin: 0;
-    font-weight: 500;
-}
-
-/* ============================================
-   Fields — أكبر وأوضح
-   ============================================ */
-.chk-field {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    /* ✅ من 7 إلى 10 */
-}
-
-.chk-field label {
-    font-size: 15px;
-    /* ✅ من 14 إلى 15 */
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: 0.2px;
-}
-
-.chk-field input,
-.chk-field select {
-    width: 100%;
-    padding: 17px 20px;
-    /* ✅ من 14/16 إلى 17/20 */
-    font-size: 17px;
-    /* ✅ من 16 إلى 17 */
-    font-family: inherit;
-    color: var(--text);
-    background: #FAFCFB;
-    border: 2px solid #E1EBE7;
-    /* ✅ من 1.5 إلى 2 */
-    border-radius: 13px;
-    /* ✅ من 11 إلى 13 */
-    outline: none;
-    transition: all 0.25s ease;
-}
-
-.chk-field input:hover,
-.chk-field select:hover {
-    border-color: #C2D9D0;
-}
-
-.chk-field input:focus,
-.chk-field select:focus {
-    border-color: var(--primary-color);
-    background: #fff;
-    box-shadow: 0 0 0 5px rgba(20, 92, 74, 0.1);
-    transform: translateY(-1px);
-}
-
-.chk-field input::placeholder {
-    color: #a0b0ac;
-    font-size: 15px;
-    /* ✅ من 14 إلى 15 */
-}
-
-.chk-field select {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23145c4a' stroke-width='2.5'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 18px center;
-    background-size: 20px;
-    /* ✅ من 17 إلى 20 */
-    padding-right: 50px;
-}
-
-.chk-hint {
-    font-size: 13.5px;
-    /* ✅ من 12.5 إلى 13.5 */
-    color: #6b7a77;
-    font-weight: 500;
-    line-height: 1.5;
-}
-
-/* ===== Inline Row (حقلان جانبيان) ===== */
-.chk-inline-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    /* ✅ من 12 إلى 16 */
-}
-
-/* ============================================
-   Selected Time Pill
-   ============================================ */
-.chk-selected-time {
-    margin-top: 8px;
-    padding: 14px 20px;
-    /* ✅ من 11/16 إلى 14/20 */
-    background: var(--secondary-color);
-    color: var(--primary-color);
-    border-radius: 12px;
-    font-size: 15px;
-    /* ✅ من 14 إلى 15 */
-    font-weight: 600;
-    border-left: 5px solid var(--primary-color);
-    /* ✅ من 4 إلى 5 */
-}
-
-/* ============================================
-   Shipping Section (Full Width)
-   ============================================ */
-.chk-shipping-section {
-    background: linear-gradient(135deg, #F7FAF8, #EFF5F1);
-    border: 2px dashed var(--primary-color);
-    padding: 40px 44px;
-    /* ✅ نفس باقي البطاقات */
-}
-
-.chk-shipping-section .chk-section-header {
-    border-bottom: 1px dashed rgba(20, 92, 74, 0.2);
-}
-
-.shipping-breakdown {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    /* ✅ من 10 إلى 14 */
-}
-
-.breakdown-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 17px;
-    /* ✅ من 15 إلى 17 */
-    color: var(--text);
-    font-weight: 500;
-    padding: 10px 0;
-    /* ✅ من 8 إلى 10 */
-    border-bottom: 1px dashed rgba(20, 92, 74, 0.15);
-}
-
-.breakdown-row:last-child {
-    border-bottom: none;
-}
-
-.breakdown-row.total-breakdown {
-    font-weight: 800;
-    color: var(--primary-color);
-    font-size: 21px;
-    /* ✅ من 18 إلى 21 */
-    border-top: 2px solid var(--primary-color);
-    border-bottom: none;
-    padding-top: 18px;
-    margin-top: 8px;
-}
-
-/* ============================================
-   Responsive
-   ============================================ */
-@media (max-width: 900px) {
-    .chk-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .chk-main {
-        padding: 32px 16px 50px;
-    }
-
-    .chk-hero h1 {
-        font-size: 30px;
-    }
-
-    .chk-hero p {
-        font-size: 16px;
-    }
-
-    .chk-section {
-        padding: 26px 22px;
-        border-radius: 18px;
-        gap: 18px;
-    }
-
-    .chk-section-header h3 {
-        font-size: 19px;
-    }
-
-    .chk-section-icon {
-        width: 44px;
-        height: 44px;
-        font-size: 20px;
-    }
-
-    .chk-field input,
-    .chk-field select {
-        font-size: 16px;
-        padding: 15px 16px;
-    }
-
-    .chk-inline-row {
-        grid-template-columns: 1fr;
-        gap: 14px;
-    }
-
-    .chk-actions {
-        flex-direction: column-reverse;
-        gap: 10px;
-    }
-
-    .chk-btn-submit,
-    .chk-btn-cancel {
-        width: 100%;
-        padding: 18px 20px;
-        font-size: 17px;
-    }
-}
-
-/* رسالة الخطأ */
-.chk-error {
-    font-size: 12.5px;
-    color: var(--danger-color);
-    font-weight: 600;
-    margin-top: 4px;
-    display: block;
-}
-
-.chk-field input.has-error,
-.chk-field textarea.has-error {
-    border-color: var(--danger-color);
-    background: rgba(217, 79, 79, 0.03);
+.chk-field input.has-error {
+  background: rgba(217, 79, 79, 0.03);
+  border-color: var(--danger-color);
 }
 
 .chk-field input.has-error:focus {
-    box-shadow: 0 0 0 5px rgba(217, 79, 79, 0.1);
+  box-shadow: 0 0 0 5px rgba(217, 79, 79, 0.1);
 }
 
-/* textarea */
-.chk-field textarea {
-    width: 100%;
-    padding: 14px 16px;
-    font-size: 15px;
-    font-family: inherit;
-    color: var(--text);
-    background: #fafcfb;
-    border: 2px solid #e1ebe7;
-    border-radius: 13px;
-    outline: none;
-    resize: vertical;
-    transition: all 0.25s ease;
-    box-sizing: border-box;
+.chk-error {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--danger-color);
 }
 
-.chk-field textarea:focus {
-    border-color: var(--primary-color);
-    background: #fff;
-    box-shadow: 0 0 0 5px rgba(20, 92, 74, 0.1);
+.chk-hint {
+  font-size: 0.8438rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--chk-muted);
+}
+
+.chk-hint--error { color: var(--danger-color); }
+
+/* حقلان جانبيان: يبقيان بعمودين على الجوال أيضًا (حقول قصيرة: رقم المنزل، PLZ، الطابق) */
+.chk-inline-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--chk-inline-gap);
+}
+
+/* ===== Shipping ===== */
+.chk-shipping-section {
+  background: linear-gradient(135deg, #f7faf8, #eff5f1);
+  border: 2px dashed var(--primary-color);
+}
+
+.chk-shipping-section .chk-section-header {
+  border-bottom: 1px dashed rgba(20, 92, 74, 0.2);
+}
+
+.shipping-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px dashed rgba(20, 92, 74, 0.15);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.breakdown-row:last-child { border-bottom: 0; }
+
+.breakdown-row.total-breakdown {
+  margin-top: 0.5rem;
+  padding-top: 1.125rem;
+  border-top: 2px solid var(--primary-color);
+  border-bottom: 0;
+  font-size: 1.3125rem;
+  font-weight: 800;
+  color: var(--primary-color);
+}
+
+/* ===== Saved info bar ===== */
+.chk-saved-info-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem 1.375rem;
+  background: linear-gradient(135deg, #e8f5e0, #f0faf0);
+  border: 2px solid var(--primary-color);
+  border-radius: 1rem;
+}
+
+.chk-saved-info-bar > .material-symbols-outlined {
+  flex-shrink: 0;
+  font-size: 1.75rem;
+  color: var(--primary-color);
+}
+
+.chk-saved-info-text {
+  flex: 1;
+  min-width: 200px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.chk-use-saved-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.75rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--primary-color);
+  color: #fff;
+  border-radius: 0.625rem;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chk-use-saved-btn .material-symbols-outlined { font-size: 1.125rem; }
+.chk-use-saved-btn:active { transform: scale(0.97); }
+
+/* ===== Actions ===== */
+.chk-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.chk-actions-total { display: none; } /* على الديسكتوب بطاقة الشحن تعرض الإجمالي */
+
+.chk-btn-submit {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.375rem 2rem;
+  background: linear-gradient(135deg, var(--primary-color), #0f4a3b);
+  color: #fff;
+  border-radius: 0.875rem;
+  box-shadow: 0 8px 24px rgba(20, 92, 74, 0.35);
+  font-family: inherit;
+  font-size: 1.1875rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  transition: box-shadow 0.25s ease, transform 0.25s ease, background 0.25s ease;
+}
+
+.chk-btn-submit .material-symbols-outlined { font-size: 1.5rem; }
+
+.chk-btn-submit:disabled {
+  background: linear-gradient(135deg, #9cb5ae, #7a9a91);
+  box-shadow: none;
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.chk-btn-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 1.375rem 1.75rem;
+  background: #fff;
+  color: var(--primary-color);
+  border: 2px solid var(--secondary-color);
+  border-radius: 0.875rem;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+@media (hover: hover) {
+  .chk-use-saved-btn:hover {
+    background: var(--dark-green);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(20, 92, 74, 0.2);
+  }
+
+  .chk-btn-submit:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--success), var(--primary-color));
+    box-shadow: 0 12px 32px rgba(20, 92, 74, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .chk-btn-cancel:hover { background: var(--secondary-color); border-color: var(--primary-color); }
+}
+
+.chk-btn-submit:active:not(:disabled) { transform: scale(0.98); }
+
+/* ============================================
+   Responsive — متغيرات أولًا
+   ============================================ */
+@media (max-width: 56.25rem) {
+  .chk-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 48rem) {
+  .chk-container {
+    --chk-gutter: 1rem;
+    --chk-main-pad: 2rem 1rem 0;
+    --chk-hero-gap: 1.5rem;
+    --chk-h1: 1.875rem;
+    --chk-lead: 1rem;
+    --chk-grid-gap: 1.125rem;
+    --chk-sec-pad: 1.375rem 1.125rem;
+    --chk-sec-radius: 1.125rem;
+    --chk-sec-gap: 1.125rem;
+    --chk-icon: 2.75rem;
+    --chk-h2: 1.1875rem;
+    --chk-input-pad: 0.9375rem 1rem;
+    --chk-input-fs: 1rem;
+    --chk-inline-gap: 0.875rem;
+  }
+
+  .chk-saved-info-bar { flex-direction: column; padding: 1rem; text-align: center; }
+  .chk-saved-info-bar > .material-symbols-outlined { font-size: 1.5rem; }
+  .chk-use-saved-btn { justify-content: center; width: 100%; }
+
+  .chk-section-header { padding-bottom: 1rem; }
+
+  /* ===== شريط ثابت أسفل الشاشة: الإجمالي + زر المتابعة دائمًا في متناول الإبهام =====
+     sticky داخل .chk-form: يلتصق بأسفل الشاشة أثناء التمرير ويتوقف عند نهاية النموذج (قبل الفوتر) */
+  .chk-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 0.75rem;
+    margin: 0.5rem calc(var(--chk-gutter) * -1) 0;
+    padding: 0.75rem var(--chk-gutter) calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid rgba(20, 92, 74, 0.12);
+    box-shadow: 0 -6px 20px rgba(20, 92, 74, 0.08);
+    backdrop-filter: blur(8px);
+  }
+
+  .chk-actions-total {
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--chk-muted);
+  }
+
+  .chk-actions-total strong { font-size: 1.125rem; font-weight: 800; color: var(--primary-color); }
+
+  .chk-btn-cancel { width: 3.25rem; padding: 0; font-size: 1.25rem; }
+  .chk-btn-cancel-label { display: none; } /* الاسم يبقى لقارئ الشاشة عبر aria-label */
+
+  .chk-btn-submit { min-height: 3.25rem; padding: 0.875rem 1rem; font-size: 1.0625rem; }
+}
+
+@media (max-width: 30rem) {
+  .chk-container {
+    --chk-gutter: 0.75rem;
+    --chk-main-pad: 1.5rem 0.75rem 0;
+    --chk-sec-pad: 1.25rem 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chk-field input,
+  .chk-field select,
+  .chk-use-saved-btn,
+  .chk-btn-submit,
+  .chk-btn-cancel { transition-duration: 0.01ms; }
 }

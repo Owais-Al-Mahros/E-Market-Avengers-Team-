@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useShippingSettings } from "../../../../../context/ShippingSettingsContext";
 import "./DayPicker.css";
 
@@ -12,6 +12,7 @@ const toDateKey = (date) => {
 
 export default function DayPicker({ selectedDate, onSelectDate }) {
     const { settings, loading } = useShippingSettings();
+    const gridRef = useRef(null);
 
     // ============================================
     // ✅ حساب أول تاريخ متاح بناءً على cutoff_hour
@@ -71,6 +72,17 @@ export default function DayPicker({ selectedDate, onSelectDate }) {
         return days;
     }, [earliestDate, settings.enabledDates]);
 
+    // على الجوال الشريط أفقي: إن كان يوم مختارًا مسبقًا (عودة من صفحة لاحقة) نُظهره في المنتصف.
+    // scrollLeft وليس scrollIntoView: الثاني قد يحرّك الصفحة نفسها عند التحميل.
+    useEffect(() => {
+        const grid = gridRef.current;
+        const chip = grid?.querySelector('[aria-pressed="true"]');
+        if (grid && chip) {
+            grid.scrollLeft = chip.offsetLeft - (grid.clientWidth - chip.offsetWidth) / 2;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [loading]);
+
     if (loading) {
         return (
             <div className="dp-container">
@@ -103,7 +115,7 @@ export default function DayPicker({ selectedDate, onSelectDate }) {
                     <p>Aktuell sind keine Liefertage verfügbar.</p>
                 </div>
             ) : (
-                <div className="dp-grid">
+                <div className="dp-grid" ref={gridRef} role="group" aria-label="Liefertag">
                     {availableDays.map((day) => {
                         const isSelected = selectedDate === day.dateStr;
                         const isDisabled = !day.isEnabled;
@@ -118,6 +130,12 @@ export default function DayPicker({ selectedDate, onSelectDate }) {
                                     !isDisabled && onSelectDate(day.dateStr)
                                 }
                                 disabled={isDisabled}
+                                aria-pressed={isSelected}
+                                aria-label={`${day.date.toLocaleDateString("de-DE", {
+                                    weekday: "long",
+                                    day: "numeric",
+                                    month: "long",
+                                })}${isDisabled ? " – nicht verfügbar" : ""}`}
                             >
                                 <span className="dp-day-name">
                                     {day.dayShort}

@@ -56,21 +56,6 @@ function Footer() {
               : "Ihr Online-Supermarkt."}
           </p>
 
-          <ul className="footer-social">
-            {SOCIAL.map(({ label, href, icon }) => (
-              <li key={label}>
-                <a
-                  href={href}
-                  className="footer-social-link"
-                  aria-label={label}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img src={icon} alt="" width="24" height="24" loading="lazy" />
-                </a>
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* ========== Contact ========== */}

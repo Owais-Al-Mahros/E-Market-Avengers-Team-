@@ -13,6 +13,7 @@ export default function TimeSlotPicker({
     const { settings } = useShippingSettings();
     const [ordersCount, setOrdersCount] = useState({});
     const [loadingOrders, setLoadingOrders] = useState(false);
+    const [reloadKey, setReloadKey] = useState(0); // "Neu laden" يعيد الجلب فقط (بدل إعادة تحميل الصفحة كلها)
 
     // ============================================
     // ✅ استخدم RPC بدل select مباشر (RLS يمنع anon)
@@ -21,6 +22,10 @@ export default function TimeSlotPicker({
     // ✅ جلب عدد الطلبات لكل ساعة عبر RPC (RLS-safe)
     // ============================================
     useEffect(() => {
+        // الطلب القديم كان بلا إلغاء: عند تبديل اليوم بسرعة قد يصل رد اليوم الأول بعد رد الثاني
+        // فتظهر توفّرية اليوم الخطأ (فترات "ausgebucht" لا تخص اليوم المختار).
+        let cancelled = false;
+
         const fetchOrdersCount = async () => {
             if (!selectedDate) return;
 
@@ -32,6 +37,7 @@ export default function TimeSlotPicker({
                 );
 
                 if (error) throw error;
+                if (cancelled) return;
 
                 // [{ slot: "10:00", cnt: 3 }, ...] → { "10:00": 3, ... }
                 const counts = {};
@@ -41,16 +47,20 @@ export default function TimeSlotPicker({
 
                 setOrdersCount(counts);
             } catch (err) {
+                if (cancelled) return;
                 console.error("Failed to count orders:", err);
                 // ✅ FIX: عطّل كل الساعات عند الفشل (آمن)
                 setOrdersCount(null);
             } finally {
-                setLoadingOrders(false);
+                if (!cancelled) setLoadingOrders(false);
             }
         };
 
         fetchOrdersCount();
-    }, [selectedDate]);;
+        return () => {
+            cancelled = true;
+        };
+    }, [selectedDate, reloadKey]);
 
 
     // ============================================
@@ -122,11 +132,6 @@ export default function TimeSlotPicker({
         ordersCount,
     ]);
 
-    const formatTime = (timeStr) => {
-        const [h, m] = timeStr.split(":");
-        return `${String(h).padStart(2, "0")}:${m || "00"} Uhr`;
-    };
-
     const maxOrders = settings.maxOrdersPerHour || 0;
 
     return (
@@ -146,7 +151,7 @@ export default function TimeSlotPicker({
                         <span>Verfügbarkeit konnte nicht geladen werden.</span>
                         <button
                             type="button"
-                            onClick={() => window.location.reload()}
+                            onClick={() => setReloadKey((k) => k + 1)}
                             className="tsp-retry-btn"
                         >
                             Neu laden
@@ -169,7 +174,7 @@ export default function TimeSlotPicker({
                     </p>
                 </div>
             ) : (
-                <div className="tsp-grid">
+                <div className="tsp-grid" role="group" aria-label="Lieferzeit">
                     {slots.map((slot) => {
                         const isSelected = selectedTime === slot.startStr;
                         const isDisabled = slot.isFull;
@@ -179,6 +184,7 @@ export default function TimeSlotPicker({
                                 key={slot.startStr}
                                 type="button"
                                 disabled={isDisabled}
+                                aria-pressed={isSelected}
                                 className={`tsp-slot ${isSelected ? "tsp-slot-selected" : ""
                                     } ${isDisabled ? "tsp-slot-full" : ""}`}
                                 onClick={() =>
@@ -186,8 +192,7 @@ export default function TimeSlotPicker({
                                 }
                             >
                                 <span className="tsp-slot-time">
-                                    {formatTime(slot.startStr)} –{" "}
-                                    {formatTime(slot.endStr)}
+                                    {slot.startStr} – {slot.endStr} Uhr
                                 </span>
                                 <span className="tsp-slot-duration">
                                     {slot.end - slot.start}h
