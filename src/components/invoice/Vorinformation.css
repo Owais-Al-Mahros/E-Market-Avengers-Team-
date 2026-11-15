@@ -10,6 +10,7 @@
     border: 1px solid rgba(20, 92, 74, 0.08);
     font-family: "IBM Plex Sans Arabic", -apple-system, sans-serif;
     color: #15312b;
+    width: 100%; /* عنصر شبكة/flex بـ margin:auto وبلا عرض = fit-content = أدنى عرض لمحتواه (406px) فيتجاوز الشاشة 32px على 390px */
     max-width: 680px;
     margin: 0 auto;
 }

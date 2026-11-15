@@ -121,3 +121,25 @@
   color: #145c4a; 
   font-weight: bold; 
 }
+/* ═══ جوال: الفاتورة تُعرض كما هي (لا تغيير في DOM الذي يُصدَّر PDF) لكن بحشوات وأعمدة تناسب 320–640px.
+   كانت أعمدة الجدول 50/15/15/20% ثابتة بحشوة 10px، فيُقصّ "GESAMT" ويتداخل "3,49 €/kg" مع السعر ═══ */
+@media (max-width: 40rem) {
+  .invoice-box { padding: 20px 14px 12px; }
+  .brand { font-size: 24px; }
+  .slogan { font-size: 11px; letter-spacing: 0.5px; }
+  .label,
+  .tax-title { font-size: 11px; }
+  .inv-addresses td { padding-right: 10px; }
+  .inv-table th,
+  .inv-table td { padding: 8px 4px; }
+  .inv-table th { font-size: 11px; }
+  .inv-table th:nth-child(1) { width: 36%; }
+  .inv-table th:nth-child(2) { width: 16%; }
+  .inv-table th:nth-child(3) { width: 22%; }
+  .inv-table th:nth-child(4) { width: 26%; }
+  .inv-table th:first-child,
+  .inv-table td:first-child { padding-left: 8px; }
+  .inv-table td.text-right { white-space: nowrap; }
+  .row-deposit td:first-child { padding-left: 16px; }
+  .invoice-footer-row { flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 24px; }
+}

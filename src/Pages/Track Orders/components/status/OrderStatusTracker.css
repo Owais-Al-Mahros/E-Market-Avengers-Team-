@@ -8,7 +8,7 @@
   border-radius: 20px;
   padding: 32px 28px;
   max-width: 800px;
-  margin: 20px auto;
+  margin: 0; /* كان 20px auto (12px على الجوال): داخل عمود flex يجعل البطاقة أضيق من بقية البطاقات ومنزاحة */
   box-shadow: 0 4px 20px rgba(20, 92, 74, 0.06);
   font-family: inherit;
 }
@@ -83,6 +83,8 @@
    PROGRESS STEPS
    ============================================ */
 .progress-steps {
+  padding: 0;
+  list-style: none; /* الآن <ol> */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -290,15 +292,19 @@
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 8px;
+  min-height: 44px;
   box-shadow: 0 6px 20px rgba(20, 92, 74, 0.2);
 }
 
-.btn-invoice:hover,
-.btn-contact:hover {
-  background: var(--dark-green);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(20, 92, 74, 0.3);
+@media (hover: hover) {
+  .btn-invoice:hover,
+  .btn-contact:hover {
+    background: var(--dark-green);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(20, 92, 74, 0.3);
+  }
 }
+
 
 /* ============================================
    WAITING SPINNER
@@ -364,7 +370,7 @@
   .tracker-container {
     padding: 20px 16px;
     border-radius: 16px;
-    margin: 12px;
+    margin: 0;
   }
 
   .tracker-header {
@@ -377,7 +383,7 @@
   }
 
   .status-badge {
-    font-size: 10.5px;
+    font-size: 11px;
     padding: 5px 12px;
   }
 
@@ -397,7 +403,7 @@
   }
 
   .step-label {
-    font-size: 10px;
+    font-size: 11px;
     margin-top: 6px;
     white-space: normal;
     line-height: 1.2;
@@ -463,7 +469,7 @@
   }
 
   .step-label {
-    font-size: 9px;
+    font-size: 11px;
   }
 
   .tracker-content h3 {
@@ -492,4 +498,13 @@
   50% {
     box-shadow: 0 0 0 12px rgba(245, 158, 11, 0.06);
   }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pulse .material-symbols-outlined,
+  .bounce .material-symbols-outlined,
+  .drive .material-symbols-outlined,
+  .confetti .material-symbols-outlined,
+  .step-circle.active.pending-step { animation: none; }
+  .step-circle,
+  .step-line { transition-duration: 0.01ms; }
 }
