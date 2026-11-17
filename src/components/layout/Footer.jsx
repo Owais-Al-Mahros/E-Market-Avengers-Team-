@@ -42,12 +42,6 @@ function Footer() {
             />
             <span className="footer-logo-name">{brand}</span>
           </Link>
-
-          <p className="footer-description">
-            {company?.owner_name
-              ? `${company.brand_name} · ${company.owner_name}`
-              : "Ihr Online-Supermarkt."}
-          </p>
         </div>
 
         {/* ========== Contact ========== */}
