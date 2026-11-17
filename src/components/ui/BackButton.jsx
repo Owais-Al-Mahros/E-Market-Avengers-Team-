@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
  * @param {string} label - النص المعروض
  * @param {string} to - إن مُرِّر، يذهب لهذا المسار مباشرة (بدل الرجوع)
  */
-export default function BackButton({ label = "Back", to }) {
+export default function BackButton({ label = "Zurück", to }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -19,7 +19,7 @@ export default function BackButton({ label = "Back", to }) {
 
   return (
     <button type="button" className="back-btn" onClick={handleClick}>
-      <span className="material-symbols-outlined">arrow_back</span>
+      <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
       <span>{label}</span>
     </button>
   );

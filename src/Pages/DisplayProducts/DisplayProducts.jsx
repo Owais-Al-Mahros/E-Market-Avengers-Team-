@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect, memo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import ProductCard from "../../components/product/ProductCard";
+import CategoryCard from "../../components/product/CategoryCard";
 import SubCategory from "./components/subCategory";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
@@ -13,6 +14,8 @@ import "./DisplayProducts.css";
 const StaticHeader = memo(Header);
 const StaticFooter = memo(Footer);
 const StaticSubscribe = memo(Subscribe);
+
+const MAX_SEARCH_RESULTS = 100;
 
 export default function DisplayProducts() {
   const navigate = useNavigate();
@@ -52,9 +55,6 @@ export default function DisplayProducts() {
   // ============================================
   // Filtered products — search mode OR category mode
   // ============================================
-  // ============================================
-  // Filtered products — search mode OR category mode
-  // ============================================
   const filteredProducts = useMemo(() => {
     // 🎯 Search mode — name فقط (لا product_number)
     if (searchTerm) {
@@ -62,7 +62,7 @@ export default function DisplayProducts() {
       return products
         .filter((p) => (p.name || "").toLowerCase().includes(term))
         .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
-        .slice(0, 100); // الحد الأقصى
+        .slice(0, MAX_SEARCH_RESULTS);
     }
 
     // 📂 Category mode — لا حد
@@ -102,13 +102,41 @@ export default function DisplayProducts() {
   // ============================================
   // Derived values
   // ============================================
+  // /DisplayProducts بلا فئة ولا بحث: كانت تعرض "Keine Produkte gefunden" وقائمة الفئات في أسفل الصفحة.
+  // الآن تعرض الفئات نفسها في الأعلى كنقطة بداية.
+  const isBrowseMode = !searchTerm && !activeCategoryId;
   const isLoading = categoriesLoading || productsLoading || subcategoriesLoading;
+
   const pageTitle = searchTerm
-    ? `Search results for "${searchTerm}"`
-    : currentCategory?.name || "Products";
+    ? `Suchergebnisse für „${searchTerm}“`
+    : isBrowseMode
+      ? "Alle Kategorien"
+      : currentCategory?.name || "Produkte";
+
+  const count = filteredProducts.length;
+  const countText =
+    `${count} ${count === 1 ? "Produkt" : "Produkte"}` +
+    (searchTerm && count >= MAX_SEARCH_RESULTS
+      ? ` (maximal ${MAX_SEARCH_RESULTS} Treffer angezeigt)`
+      : "");
 
   // نخفي الفئات الفرعية في وضع البحث
   const showSubcategories = !searchTerm && currentSubcategories.length > 0;
+
+  const categoriesGrid = categoriesLoading ? (
+    <div className="products-state" role="status">Kategorien werden geladen...</div>
+  ) : (
+    <div className="display-categories-grid">
+      {categories.map((cat) => (
+        <CategoryCard
+          key={cat.id}
+          category={cat}
+          onSelect={handleCategorySelect}
+          isActive={Number(cat.id) === Number(activeCategoryId) && !searchTerm}
+        />
+      ))}
+    </div>
+  );
 
   return (
     <>
@@ -120,7 +148,7 @@ export default function DisplayProducts() {
           className="display-back-btn"
           onClick={() => navigate(-1)}
         >
-          <span className="material-symbols-outlined">arrow_back</span>
+          <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
           <span>Zurück</span>
         </button>
       </div>
@@ -136,60 +164,43 @@ export default function DisplayProducts() {
           />
         )}
 
-        <div className="products-area">
-          {isLoading ? (
-            <div className="products-state">Produkte werden geladen...</div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="products-state">Keine Produkte gefunden.</div>
-          ) : (
-            <div className="products-grid">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} {...product} />
-              ))}
+        <div className="products-area" aria-busy={isLoading && !isBrowseMode}>
+          {isBrowseMode ? (
+            categoriesGrid
+          ) : isLoading ? (
+            <div className="products-state" role="status">Produkte werden geladen...</div>
+          ) : count === 0 ? (
+            <div className="products-state">
+              <p>
+                {searchTerm
+                  ? `Keine Produkte für „${searchTerm}“ gefunden.`
+                  : "In dieser Kategorie gibt es noch keine Produkte."}
+              </p>
+              <a className="products-state-link" href="#display-categories">
+                Kategorien ansehen
+              </a>
             </div>
+          ) : (
+            <>
+              <p className="display-products-count" aria-live="polite">{countText}</p>
+              <div className="products-grid">
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product.id} {...product} />
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>
 
       <StaticSubscribe />
 
-      <div className="category-sections-display">
-        <h2 className="category-sections-display-title">Kategorien</h2>
-
-        {categoriesLoading ? (
-          <div className="products-state">Kategorien werden geladen...</div>
-        ) : (
-          <div className="display-categories-grid">
-            {categories.map((cat) => (
-              <div
-                key={cat.id}
-                className={`display-category-card ${Number(cat.id) === Number(activeCategoryId) && !searchTerm
-                  ? "active"
-                  : ""
-                  }`}
-                onClick={() => handleCategorySelect(cat.id)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    handleCategorySelect(cat.id);
-                  }
-                }}
-              >
-                {cat.image && (
-                  <img
-                    src={cat.image}
-                    className="display-category-image"
-                    alt={cat.name}
-                  />
-                )}
-                <span className="display-category-name">{cat.name}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      {!isBrowseMode && (
+        <div className="category-sections-display" id="display-categories">
+          <h2 className="category-sections-display-title">Kategorien</h2>
+          {categoriesGrid}
+        </div>
+      )}
 
       <StaticFooter />
     </>

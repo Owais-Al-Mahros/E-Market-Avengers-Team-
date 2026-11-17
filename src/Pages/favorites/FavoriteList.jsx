@@ -20,9 +20,9 @@ export default function Favorites() {
             <span className="favorites-badge">Gespeicherte Artikel</span>
             <div className="BackButton-with-title">
               <h1 className="favorites-title">Meine Favoriten</h1>
-              <BackButton label={"Startseite"} />
+              <BackButton label="Startseite" to="/" /> {/* كان بلا to: يرجع للصفحة السابقة رغم أن النص "Startseite" */}
             </div>
-            <p className="favorites-subtitle">
+            <p className="favorites-subtitle" aria-live="polite">
               {favorite.length > 0
                 ? `Sie haben ${favorite.length} gespeicherte${favorite.length > 1 ? " Produkte" : "s Produkt"}`
                 : "Ihre Merkliste ist derzeit leer"}
@@ -33,7 +33,7 @@ export default function Favorites() {
         {favorite.length === 0 ? (
           <div className="favorites-empty">
             <div className="empty-icon-wrap">
-              <span className="material-symbols-outlined empty-icon">
+              <span className="material-symbols-outlined empty-icon" aria-hidden="true">
                 favorite_border
               </span>
             </div>
@@ -42,6 +42,7 @@ export default function Favorites() {
               Entdecken Sie unseren Shop, tippen Sie auf das Herz-Symbol bei einem Produkt und behalten Sie hier alles im Blick, was Ihnen gefällt.
             </p>
             <button
+              type="button"
               className="browse-products-btn"
               onClick={() => navigate("/")}
             >

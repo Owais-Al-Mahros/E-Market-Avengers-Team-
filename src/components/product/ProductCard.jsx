@@ -6,7 +6,7 @@ import { useCart } from "../../context/CartContext.jsx";
 import { useFavorite } from "../../context/FavoriteContext.jsx";
 import { calculatePriceByKg, getBaseUnitLabel } from "../../api/index.js";
 import { formatEuro, formatWeight } from "../../lib/format";
-import { formatPackLabel } from "../../lib/units"; // ✅ أضف هذا
+import { formatPackLabel, isProductUnitBased } from "../../lib/units";
 
 export default function ProductCard({
   id,
@@ -18,6 +18,7 @@ export default function ProductCard({
   tax_rate,
   weight,
   weight_unit,
+  product_type,
   pack_pieces,      // ✅ أضف
   piece_weight,     // ✅ أضف
   gross_weight,
@@ -39,6 +40,7 @@ export default function ProductCard({
   const displayPrice = parseFloat(total_price || price) || 0;
   const pricePerBase = calculatePriceByKg(displayPrice, weight, weight_unit);
   const baseUnit = getBaseUnitLabel(weight_unit);
+  const isPiece = isProductUnitBased({ product_type }) && !(Number(pack_pieces) > 1);
   const deposit = parseFloat(deposit_amount) || 0;
   const depositRate = parseFloat(deposit_tax_rate) || parseFloat(tax_rate) || 0;
 
@@ -87,6 +89,7 @@ export default function ProductCard({
         tax_rate: parseFloat(tax_rate) || 0,
         weight,
         weight_unit,
+        product_type,
         gross_weight,
         deposit_amount: deposit,
         deposit_tax_rate: depositRate,
@@ -133,7 +136,7 @@ export default function ProductCard({
 
         <div className="rewe-meta">
           <span className="product-card-weight-value">
-            {formatWeight(weight, weight_unit)}
+            {isPiece ? "1 Stück" : formatWeight(weight, weight_unit)}
             {/* ✅ أضف هذا السطر */}
             {formatPackLabel({ pack_pieces, piece_weight, weight_unit }) && (
               <span style={{ marginLeft: 4, color: "#6b7a77", fontSize: "0.75rem" }}>

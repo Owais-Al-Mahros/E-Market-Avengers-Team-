@@ -8,13 +8,14 @@ export default function SubCategory({ subcategories, selectSubCat, onSelect }) {
 
   return (
     <div className="subcategory-bar">
-      <div className="subcategories-group">
+      <div className="subcategories-group" role="group" aria-label="Unterkategorien">
         <button
           type="button"
           className={`subcategories-chip ${isAllActive ? "active" : ""}`}
           onClick={() => onSelect(null)}
+          aria-pressed={isAllActive}
         >
-          <span>All</span>
+          <span>Alle</span>
         </button>
 
         {subcategories.map((sub) => {
@@ -25,13 +26,15 @@ export default function SubCategory({ subcategories, selectSubCat, onSelect }) {
               type="button"
               className={`subcategories-chip ${isActive ? "active" : ""}`}
               onClick={() => onSelect(sub.id)}
+              aria-pressed={isActive}
             >
               {sub.image && (
                 <img
                   src={sub.image}
-                  alt={sub.name}
+                  alt=""
                   className="subcategories-chip-img"
                   loading="lazy"
+                  decoding="async"
                 />
               )}
               <span>{sub.name}</span>

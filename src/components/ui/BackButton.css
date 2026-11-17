@@ -5,6 +5,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
+  min-height: 2.75rem;
   padding: 0.625rem 1rem;
   background: var(--primary-color);
   color: #fff;
@@ -14,25 +15,35 @@
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: var(--transition-fast);
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   white-space: nowrap;
 }
 
 .back-btn .material-symbols-outlined {
   font-size: 1.125rem;
-  transition: transform var(--transition-fast);
+  transition: transform 0.2s ease; /* كانت "transform var(--transition-fast)" = "transform all 0.2s ease": غير صالحة */
 }
 
-.back-btn:hover {
-  background: var(--success);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+@media (hover: hover) {
+  .back-btn:hover {
+    background: var(--success);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
 }
 
-.back-btn:hover .material-symbols-outlined {
-  transform: translateX(-3px);
+
+@media (hover: hover) {
+  .back-btn:hover .material-symbols-outlined {
+    transform: translateX(-3px);
+  }
 }
+
 
 .back-btn:active {
   transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .back-btn,
+  .back-btn .material-symbols-outlined { transition-duration: 0.01ms; }
 }
