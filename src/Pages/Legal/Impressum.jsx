@@ -13,7 +13,6 @@ export default function Impressum() {
         { id: "kontakt", title: "Kontakt" },
         { id: "register", title: "Registereintrag" },
         { id: "ust", title: "Umsatzsteuer-ID" },
-        { id: "verantwortlich", title: "Verantwortlich für den Inhalt" },
         { id: "streit", title: "Verbraucherstreitbeilegung" },
     ];
 
@@ -29,8 +28,6 @@ export default function Impressum() {
                 <br />
                 Inhaber: {company.owner_name}
                 <br />
-                Rechtsform: {company.legal_form}
-                <br />
                 {company.address}
                 <br />
                 {company.postal_code} {company.city}
@@ -40,20 +37,21 @@ export default function Impressum() {
 
             <h2 id="kontakt">Kontakt</h2>
             <p>
-                Telefon:{" "}
-                <a href={`tel:${company.contact_phone}`}>
-                    {company.contact_phone}
-                </a>
-                <br />
+                {company.contact_phone && (
+                    <>
+                        Telefon:{" "}
+                        <a href={`tel:${company.contact_phone}`}>
+                            {company.contact_phone}
+                        </a>
+                        <br />
+                    </>
+                )}
                 E-Mail:{" "}
                 <a href={`mailto:${company.contact_email}`}>
                     {company.contact_email}
                 </a>
                 <br />
-                Website:{" "}
-                <a href={`https://${company.website_url}`}>
-                    {company.website_url}
-                </a>
+                Kontaktformular: <a href="/help">Nachricht an uns senden</a>
             </p>
 
             {company.register_number && (
@@ -74,13 +72,6 @@ export default function Impressum() {
                 </>
             )}
 
-            <h2 id="verantwortlich">Verantwortlich für den Inhalt</h2>
-            <p>
-                {company.owner_name}
-                <br />
-                {company.address}, {company.postal_code} {company.city}
-            </p>
-
             <h2 id="streit">Verbraucherstreitbeilegung</h2>
             <p>
                 {company.participates_in_dispute ? (
@@ -97,12 +88,6 @@ export default function Impressum() {
                     </>
                 )}
             </p>
-
-            <div className="legal-box">
-                <strong>📌 Hinweis</strong>
-                Diese Seite erfüllt die gesetzlichen Anforderungen gemäß § 5 DDG
-                (früher § 5 TMG).
-            </div>
         </LegalLayout>
     );
 }

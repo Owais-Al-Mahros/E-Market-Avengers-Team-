@@ -48,9 +48,7 @@ export default function Widerruf() {
                 <a href={`mailto:${company.contact_email}`}>
                     {company.contact_email}
                 </a>
-                , Telefon: {company.contact_phone}, mittels einer eindeutigen
-                Erklärung (z.B. ein mit der Post versandter Brief oder E-Mail) über
-                Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.
+                {company.contact_phone && `, Telefon: ${company.contact_phone}`}, mittels einer eindeutigen
             </p>
             <p>
                 Sie können dafür das unten stehende Muster-Widerrufsformular

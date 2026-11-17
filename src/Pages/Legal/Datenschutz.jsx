@@ -46,8 +46,12 @@ export default function Datenschutz() {
                 <a href={`mailto:${company.contact_email}`}>
                     {company.contact_email}
                 </a>
-                <br />
-                Telefon: {company.contact_phone}
+                {company.contact_phone && (
+                    <>
+                        <br />
+                        Telefon: {company.contact_phone}
+                    </>
+                )}
             </p>
 
             <h2 id="daten">2. Welche Daten wir verarbeiten</h2>

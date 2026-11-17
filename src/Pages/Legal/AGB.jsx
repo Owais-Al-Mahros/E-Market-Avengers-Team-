@@ -205,8 +205,12 @@ export default function AGB() {
                 <a href={`mailto:${company.contact_email}`}>
                     {company.contact_email}
                 </a>
-                <br />
-                Telefon: {company.contact_phone}
+                {company.contact_phone && (
+                    <>
+                        <br />
+                        Telefon: {company.contact_phone}
+                    </>
+                )}
             </p>
         </LegalLayout>
     );
