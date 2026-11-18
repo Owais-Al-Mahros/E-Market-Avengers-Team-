@@ -15,7 +15,7 @@
     "@fontsource/readex-pro": "^5.3.0",
     "@stripe/react-stripe-js": "^6.10.0",
     "@stripe/stripe-js": "^9.16.0",
-    "@supabase/supabase-js": "^2.112.3",
+    "@supabase/supabase-js": "^2.119.0",
     "html2pdf.js": "^0.14.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
@@ -32,5 +32,18 @@
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
     "vite": "^8.1.1"
-  }
+  },
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Owais-Al-Mahros/E-Market-Avengers-Team-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Owais-Al-Mahros/E-Market-Avengers-Team-/issues"
+  },
+  "homepage": "https://github.com/Owais-Al-Mahros/E-Market-Avengers-Team-#readme"
 }
