@@ -75,7 +75,7 @@ function SectionHeader({ icon, title, sub }) {
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
-  const { totalPrice, totalWeight } = useCart();
+  const { totalPrice, totalWeight, cartItems } = useCart();
   const { checkoutData, updateField, updateFields } = useCheckout();
   const { info } = useMyInfo();
 
@@ -205,7 +205,8 @@ export default function CheckoutPage() {
           },
           body: JSON.stringify({
             customerAddress: `${street} ${houseNumber}, ${postalCode} ${city}, Germany`,
-            itemsWeight: totalWeight,
+            // الخادم يحسب الوزن والمجموع من قاعدة البيانات اعتمادًا على (id, quantity) فقط
+            items: cartItems.map(({ id, quantity }) => ({ id, quantity })),
             floor: parseInt(floor) || 0,
             hasElevator: hasElevator === "yes",
             cartSubtotal: totalPrice,
@@ -244,6 +245,7 @@ export default function CheckoutPage() {
     checkoutData.hasElevator,
     totalPrice,
     totalWeight,
+    cartItems,
   ]);
 
   // ============================================

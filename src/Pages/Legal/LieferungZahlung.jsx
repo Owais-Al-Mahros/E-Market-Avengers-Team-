@@ -10,6 +10,13 @@ export default function LieferungZahlung() {
         return <div>Loading...</div>;
     }
 
+    const byFrom = (a, b) => parseFloat(a.from) - parseFloat(b.from);
+    const distanceTiers = [...(pricing?.distanceTiers || [])].sort(byFrom);
+    const weightTiers = [...(pricing?.weightTiers || [])].sort(byFrom);
+    const lastDistance = distanceTiers[distanceTiers.length - 1];
+    const maxKm = parseFloat(pricing?.maxDeliveryDistanceKm) || 0;
+    const euro = (v) => `€${(parseFloat(v) || 0).toFixed(2)}`;
+
     const sections = [
         { id: "liefergebiet", title: "1. Liefergebiet" },
         { id: "preise", title: "2. Lieferpreise" },
@@ -30,7 +37,7 @@ export default function LieferungZahlung() {
             <p>
                 {company.brand_name} liefert ausschließlich innerhalb des im Checkout
                 angezeigten Liefergebiets. Die maximale Lieferentfernung beträgt{" "}
-                <strong>{pricing?.maxDeliveryDistanceKm || 30} km</strong> vom
+                <strong>{maxKm} km</strong> vom
                 zentralen Lager.
             </p>
             <p>
@@ -46,15 +53,34 @@ export default function LieferungZahlung() {
             </p>
             <ul>
                 <li>
-                    <strong>Entfernung:</strong> €
-                    {pricing?.pricePerKm?.toFixed(2) || "1.50"} pro Kilometer vom Lager
-                    zur Lieferadresse
+                    <strong>Entfernung</strong> (Straßenentfernung vom Lager zur
+                    Lieferadresse):
+                    <ul>
+                        {distanceTiers.map((t, i) => (
+                            <li key={i}>
+                                {t.from} bis {t.to} km: {euro(t.price)}
+                            </li>
+                        ))}
+                        {lastDistance && maxKm > parseFloat(lastDistance.to) && (
+                            <li>
+                                {lastDistance.to} bis {maxKm} km:{" "}
+                                {euro(lastDistance.price)}
+                            </li>
+                        )}
+                    </ul>
                 </li>
                 <li>
-                    <strong>Gewicht:</strong> Kostenlos bis{" "}
-                    {pricing?.freeWeightThresholdKg || 50} kg. Darüber hinaus €
-                    {pricing?.pricePerExtraKg?.toFixed(2) || "0.50"} pro zusätzlichem
-                    Kilogramm
+                    <strong>Gewicht:</strong>
+                    <ul>
+                        {weightTiers.map((t, i) => (
+                            <li key={i}>
+                                {t.from} bis {t.to} kg:{" "}
+                                {parseFloat(t.price) === 0
+                                    ? "kostenlos"
+                                    : euro(t.price)}
+                            </li>
+                        ))}
+                    </ul>
                 </li>
                 <li>
                     <strong>Etage:</strong> €

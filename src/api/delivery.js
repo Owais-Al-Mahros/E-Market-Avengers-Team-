@@ -7,7 +7,7 @@ const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 /**
  * Calculate delivery cost via Edge Function.
- * @param {object} payload - { customerAddress, itemsWeight, floor, hasElevator, cartSubtotal }
+ * @param {object} payload - { customerAddress, items: [{ id, quantity }], floor, hasElevator }
  */
 export async function calculateDelivery(payload) {
     try {
