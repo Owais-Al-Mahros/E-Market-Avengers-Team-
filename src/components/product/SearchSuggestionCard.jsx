@@ -3,12 +3,13 @@ import toast from "react-hot-toast";
 import { useCart } from "../../context/CartContext.jsx";
 import { calculatePriceByKg, getBaseUnitLabel } from "../../api";
 import { formatEuro, formatWeight } from "../../lib/format";
-import { isProductUnitBased } from "../../lib/units";
+import { formatPackHeadline, isProductUnitBased } from "../../lib/units";
 
 export default function SearchSuggestionCard({ product, onClick }) {
     // ✅ أضفنا product_number هنا
-    const { id, product_number, name, image, price, total_price, weight, weight_unit, product_type, pack_pieces } = product;
+    const { id, product_number, name, image, price, total_price, weight, weight_unit, product_type, pack_pieces, piece_weight } = product;
     const isPiece = isProductUnitBased({ product_type }) && !(Number(pack_pieces) > 1);
+    const packHeadline = formatPackHeadline({ pack_pieces, piece_weight, weight_unit });
     const { addToCart } = useCart();
 
     const displayPrice = parseFloat(total_price || price) || 0;
@@ -75,8 +76,8 @@ export default function SearchSuggestionCard({ product, onClick }) {
                 <span className="search-suggestion-name">{name}</span>
                 {(weight || isPiece) && (
                     <span className="search-suggestion-meta">
-                        {isPiece ? "1 Stück" : formatWeight(weight, weight_unit)}
-                        {!isPiece && pricePerBase > 0 && baseUnit &&
+                        {isPiece ? "1 Stück" : packHeadline || formatWeight(weight, weight_unit)}
+                        {!isPiece && !packHeadline && pricePerBase > 0 && baseUnit &&
                             ` (1 ${baseUnit} = ${pricePerBase} €)`}
                         {deposit > 0 && ` · +${formatEuro(deposit)} Pfand`}
                     </span>

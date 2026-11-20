@@ -1,46 +1,45 @@
 /* ==========================================
-   FOOTER — أخضر عميق بتدرج، خط أخضر علوي يقابل خط الـ Header السفلي
+   FOOTER — أخضر عميق من هوية الموقع
+   - العناوين بالليموني، الروابط بالنعناعي، الشريط السفلي خافت
+   - عنصر واحد لافت: اسم العلامة الكبير الباهت المقصوص في أسفل الصفحة
    Desktop: 3 أعمدة | Tablet: الهوية فوق وعمودان تحتها | Mobile: عمود واحد
-   كل ما يتغير مع الشاشة = متغيرات --ft-* على .footer
    ========================================== */
 .footer {
-  --ft-top: 3.5rem;
+  --ft-top: 4rem;
   --ft-gutter: 2rem;
   --ft-gap: 3rem;
-  --ft-logo: 3.5rem;
+  --ft-logo: 3.25rem;
   --ft-brand: 1.5rem;
   --ft-font: 0.9375rem;
-  --ft-glass: rgba(255, 255, 255, 0.08);
-  --ft-line: rgba(255, 255, 255, 0.14);
+  --ft-line: rgba(221, 244, 234, 0.16);
+  --ft-muted: rgba(221, 244, 234, 0.78);
 
   position: relative;
   width: 100%;
   margin-top: auto;
   padding: var(--ft-top) var(--ft-gutter) 0;
+  overflow: hidden; /* يقصّ اسم العلامة الكبير من الأسفل */
   font-size: var(--ft-font);
   color: var(--secondary-color);
-  background:
-    radial-gradient(40rem 18rem at 100% 0, rgba(185, 231, 105, 0.12), transparent 70%),
-    linear-gradient(180deg, var(--primary-color), var(--primary-hover));
+  background: linear-gradient(180deg, var(--primary-color), var(--primary-hover));
   border-top: 0.1875rem solid var(--neon-green);
 }
 
 .footer-inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between; /* الشعار يسارًا، العنوان بالوسط، التواصل في الزاوية اليمنى */
   gap: var(--ft-gap);
   max-width: 1280px;
   margin: 0 auto;
-  padding-bottom: var(--space-6);
+  padding-bottom: 2.5rem;
 }
 
 /* ===== Brand ===== */
 .footer-brand {
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-4);
-  max-width: 22rem;
 }
 
 .footer-logo {
@@ -48,7 +47,6 @@
   align-items: center;
   gap: var(--space-3);
   color: #fff;
-  
 }
 
 .footer-logo-icon {
@@ -57,59 +55,13 @@
   object-fit: cover;
   border-radius: 50%;
   background-color: #fff;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.14);
 }
 
 .footer-logo-name {
+  font-family: "Readex Pro", "IBM Plex Sans Arabic", sans-serif;
   font-size: var(--ft-brand);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.02em;
-}
-
-.footer-description {
-  margin: 0;
-  line-height: 1.6;
-  opacity: 0.85;
-}
-
-/* ===== Social: دوائر زجاجية. الأيقونات PNG سوداء، فنحوّلها لأبيض بـ filter ===== */
-.footer-social {
-  display: flex;
-  gap: var(--space-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.footer-social-link,
-.footer-contact-chip {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  background: var(--ft-glass);
-  border: 1px solid var(--ft-line);
-  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
-}
-
-.footer-social-link {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-}
-
-.footer-contact-chip {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 0.75rem;
-}
-
-.footer-social-link img,
-.footer-contact-chip img {
-  width: 1.25rem;
-  height: 1.25rem;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  transition: filter 0.25s ease;
 }
 
 /* ===== Sections ===== */
@@ -120,38 +72,40 @@
   min-width: 0;
 }
 
+/* قسم التواصل: في الزاوية اليمنى */
+.footer-section-end {
+  align-items: flex-end;
+  margin-left: auto;
+  text-align: right;
+}
+
 .footer-section-title {
   margin: 0;
-  font-size: 1.0625rem;
-  font-weight: 800;
-  letter-spacing: 0.01em;
-  color: #fff;
+  font-family: "Readex Pro", "IBM Plex Sans Arabic", sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--accent-color);
 }
 
-/* خط ليموني قصير تحت العنوان */
-.footer-section-title::after {
-  content: "";
-  display: block;
-  width: 2rem;
-  height: 3px;
-  margin-top: 0.5rem;
-  background: var(--accent-color);
-  border-radius: 3px;
-}
-
-.footer-list,
 .footer-contact-list,
-.footer-legal {
+.footer-nav-list {
   display: flex;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.footer-list,
 .footer-contact-list {
   flex-direction: column;
   gap: var(--space-3);
+}
+
+.footer-address {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-style: normal;
+  line-height: 1.5;
 }
 
 .footer-contact-item {
@@ -160,7 +114,27 @@
   gap: var(--space-3);
 }
 
-/* ===== Links: تحتها خط يتمدد عند hover (بدل تغيير اللون فقط) ===== */
+/* أيقونات التواصل: PNG سوداء → نحوّلها لأبيض، داخل دائرة هادئة */
+.footer-contact-chip {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--ft-line);
+  border-radius: 50%;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.footer-contact-chip img {
+  width: 1.125rem;
+  height: 1.125rem;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  transition: filter 0.25s ease;
+}
+
+/* ===== Links: خط ليموني يتمدد عند hover ===== */
 .footer-link {
   display: inline-flex;
   align-items: center;
@@ -171,57 +145,92 @@
   transition: color 0.2s ease, background-size 0.3s ease;
 }
 
-/* ===== Bottom bar ===== */
-.footer-bottom {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3) var(--space-5);
+/* رابط التواصل أكبر: هو أهم ما يبحث عنه الزائر في الفوتر */
+.footer-link-lg {
+  font-family: "Readex Pro", "IBM Plex Sans Arabic", sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 500;
+}
+
+/* ===== صف الصفحات الأفقي ===== */
+.footer-nav {
+  position: relative;
+  z-index: 1;
   max-width: 1280px;
   margin: 0 auto;
-  padding: var(--space-4) 0;
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--ft-line);
+}
+
+.footer-nav-list {
+  flex-wrap: wrap;
+  justify-content: center; /* الصفحات في الوسط */
+  gap: var(--space-2) var(--space-6);
+}
+
+/* ===== Bottom bar ===== */
+.footer-bottom {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* الحقوق في الوسط */
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-4) 3.5rem; /* مساحة على الجانبين لزر الصعود */
   border-top: 1px solid var(--ft-line);
 }
 
 .footer-copyright {
   margin: 0;
   font-size: 0.8125rem;
-  opacity: 0.8; /* 0.7 كان يعطي تباينًا ≈ 4.2:1 */
-}
-
-.footer-legal {
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-5);
-  margin-left: auto;
-}
-
-.footer-legal .footer-link {
-  font-size: 0.8125rem;
+  text-align: center;
+  color: var(--ft-muted);
 }
 
 .footer-top-btn {
+  position: absolute; /* في الزاوية اليمنى من الشريط، والحقوق تبقى في الوسط */
+  right: 0;
+  top: 50%;
+  margin-top: -1.25rem;
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
   background: var(--accent-color);
   border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: transform 0.25s ease, background-color 0.25s ease;
 }
 
 .footer-top-btn svg {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.125rem;
+  height: 1.125rem;
   fill: none;
-  stroke: var(--primary-color);
+  stroke: var(--primary-hover);
   stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .footer-top-btn:active { transform: scale(0.94); }
+
+/* ===== اسم العلامة الكبير: زخرفة فقط، يُقصّ من الأسفل ===== */
+.footer-mark {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-top: var(--space-2);
+  font-family: "Readex Pro", "IBM Plex Sans Arabic", sans-serif;
+  font-size: clamp(4.5rem, 19vw, 17rem);
+  font-weight: 700;
+  line-height: 0.78;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+  color: rgba(221, 244, 234, 0.07);
+  transform: translateY(0.14em); /* يخفي الجزء السفلي من الحروف */
+  user-select: none;
+  pointer-events: none;
+}
 
 .footer a:focus-visible,
 .footer-top-btn:focus-visible {
@@ -234,14 +243,11 @@
 @media (hover: hover) {
   .footer-link:hover { color: #fff; background-size: 100% 1px; }
 
-  .footer-social-link:hover,
   .footer-contact-item:hover .footer-contact-chip {
     background: var(--accent-color);
     border-color: var(--accent-color);
-    transform: translateY(-2px);
   }
 
-  .footer-social-link:hover img,
   .footer-contact-item:hover .footer-contact-chip img { filter: none; } /* الأيقونة السوداء فوق الليموني */
 
   .footer-top-btn:hover { transform: translateY(-3px); background: #fff; }
@@ -250,38 +256,33 @@
 /* ===== شاشات اللمس: هدف ≥ 44px ===== */
 @media (pointer: coarse) {
   .footer-link { min-height: 2.75rem; }
-  .footer-list,
   .footer-contact-list { gap: 0; }
   .footer-contact-item { min-height: 2.75rem; }
+  .footer-top-btn { width: 2.75rem; height: 2.75rem; margin-top: -1.375rem; }
 }
 
 /* ============================================
-   Responsive — متغيرات + مواضع الأعمدة
+   Responsive
    ============================================ */
 @media (max-width: 64rem) {
-  .footer { --ft-top: 2.75rem; --ft-gutter: 1.5rem; --ft-gap: 2rem; }
+  .footer { --ft-top: 3rem; --ft-gutter: 1.5rem; --ft-gap: 2rem; }
 
-  .footer-inner { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .footer-brand { grid-column: 1 / -1; max-width: 36rem; }
+  .footer-inner { padding-bottom: 2rem; }
+  .footer-brand { flex-basis: 100%; }
 }
 
 @media (max-width: 48rem) {
-  .footer { --ft-top: 2.25rem; --ft-gutter: 1rem; --ft-gap: 1.75rem; --ft-font: 0.875rem; }
+  .footer { --ft-top: 2.5rem; --ft-gutter: 1rem; --ft-gap: 1.5rem; --ft-font: 0.875rem; }
 
-  .footer-inner { grid-template-columns: minmax(0, 1fr); }
+  .footer-inner { flex-direction: column; flex-wrap: nowrap; }
+  .footer-section-end { align-items: flex-start; margin-left: 0; text-align: left; }
 
-  /* روابط الخدمة الأربعة بعمودين: نصف الارتفاع */
-  .footer-list {
+  /* الصفحات السبع بعمودين على الجوال */
+  .footer-nav-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: var(--space-4);
   }
-
-  .footer-bottom { flex-direction: column; align-items: flex-start; padding-right: 3.5rem; } /* مساحة للزر العائم */
-  .footer-legal { margin-left: 0; }
-
-  /* الزر العائم الصغير ينتقل لأقصى اليمين في سطر الحقوق */
-  .footer-top-btn { position: absolute; right: var(--ft-gutter); bottom: var(--space-4); }
 }
 
 @media (max-width: 30rem) {
@@ -290,7 +291,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .footer-link,
-  .footer-social-link,
   .footer-contact-chip,
+  .footer-contact-chip img,
   .footer-top-btn { transition-duration: 0.01ms; }
 }

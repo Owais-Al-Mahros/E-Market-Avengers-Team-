@@ -32,8 +32,13 @@ export function formatNumber(num, decimals = 2) {
 export function formatWeight(value, unit) {
     const n = parseFloat(value) || 0;
     const u = String(unit || "").trim();
-    const decimals = u === "g" || u === "ml" ? 0 : 3;
-    return `${formatNumber(n, decimals)} ${u}`;
+    // نخفي الأصفار الزائدة فقط: 1,500 → 1,5 | 1,546 يبقى كما هو | 2,000 → 2
+    const maxDecimals = u === "g" || u === "ml" ? 0 : 3;
+    const text = n.toLocaleString("de-DE", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: maxDecimals,
+    });
+    return `${text} ${u}`.trim();
 }
 
 /**

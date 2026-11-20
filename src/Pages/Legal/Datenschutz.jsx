@@ -10,7 +10,7 @@ export default function Datenschutz() {
         { id: "daten", title: "2. Verarbeitete Daten" },
         { id: "zwecke", title: "3. Zwecke & Rechtsgrundlagen" },
         { id: "hosting", title: "4. Hosting" },
-        { id: "konto", title: "5. Kundenkonto & Bestellungen" },
+        { id: "konto", title: "5. Bestellungen" },
         { id: "zahlung", title: "6. Zahlungsabwicklung" },
         { id: "lieferung", title: "7. Lieferung & Routing" },
         { id: "email", title: "8. E-Mail" },
@@ -95,27 +95,44 @@ export default function Datenschutz() {
 
             <h2 id="hosting">4. Hosting und technische Bereitstellung</h2>
             <p>
-                Unsere Website wird auf Servern von <strong>Vercel Inc.</strong>{" "}
-                gehostet. Die Datenbank und Backend-Dienste werden von{" "}
-                <strong>Supabase Inc.</strong> bereitgestellt. Mit beiden Anbietern
-                bestehen Verträge zur Auftragsverarbeitung gemäß Art. 28 DSGVO.
+                <strong>Website:</strong> Unsere Website wird über{" "}
+                <strong>Vercel Inc.</strong> (USA) ausgeliefert. Beim Aufruf
+                verarbeitet Vercel technisch notwendige Verbindungsdaten
+                (insbesondere IP-Adresse, Datum und Uhrzeit, aufgerufene Seite,
+                Browser- und Geräteinformationen), damit die Seite bereitgestellt und
+                abgesichert werden kann. Dies kann auch über Server außerhalb der EU
+                erfolgen.
             </p>
             <p>
-                Die Serverstandorte befinden sich innerhalb der EU. Bei einer
-                Übermittlung in Drittländer (z.B. USA) stützen wir uns auf
-                Standardvertragsklauseln der EU-Kommission.
+                <strong>Datenbank und Backend:</strong> Datenbank, Dateispeicher (z.B.
+                Produktbilder) und Backend-Funktionen betreiben wir bei{" "}
+                <strong>Supabase, Inc.</strong> (USA) in der Region{" "}
+                <strong>Frankfurt am Main (Deutschland)</strong>. Ihre Bestell- und
+                Kundendaten werden dort innerhalb der EU gespeichert.
+            </p>
+            <p>
+                Mit Vercel und Supabase bestehen Verträge zur Auftragsverarbeitung
+                gemäß Art. 28 DSGVO. Soweit Daten in die USA übermittelt werden oder
+                ein Zugriff von dort möglich ist, stützen wir uns auf Garantien nach
+                Art. 46 DSGVO (Standardvertragsklauseln) bzw., soweit der jeweilige
+                Anbieter zertifiziert ist, auf den Angemessenheitsbeschluss zum
+                EU-US Data Privacy Framework.
             </p>
 
-            <h2 id="konto">5. Kundenkonto und Bestellungen</h2>
+            <h2 id="konto">5. Bestellungen</h2>
             <p>
-                Bei Registrierung und Bestellung verarbeiten wir die für Konto,
-                Vertrag, Lieferung und Support erforderlichen Daten. Pflichtfelder
-                sind auf das notwendige Maß begrenzt.
+                Sie können bei uns <strong>ohne Kundenkonto als Gast</strong>{" "}
+                bestellen. Bei einer Bestellung verarbeiten wir die für Vertrag,
+                Lieferung und Support erforderlichen Daten (Name, Kontaktdaten,
+                Liefer- und Rechnungsadresse, Zugangshinweise und Bestelldetails).
+                Pflichtfelder sind auf das notwendige Maß begrenzt. Ein
+                Kundenkonto mit Registrierung bieten wir derzeit nicht an;
+                Zugangskonten bestehen nur für unsere Mitarbeiter.
             </p>
             <p>
                 <strong>Speicherdauer:</strong> Bestelldaten werden gemäß den
-                handels- und steuerrechtlichen Aufbewahrungsfristen (in der Regel 10
-                Jahre) gespeichert.
+                handels- und steuerrechtlichen Aufbewahrungsfristen gespeichert
+                (siehe Abschnitt 11).
             </p>
 
             <h2 id="zahlung">6. Zahlungsabwicklung</h2>
@@ -138,17 +155,53 @@ export default function Datenschutz() {
 
             <h2 id="lieferung">7. Lieferung, Karten und Routing</h2>
             <p>
-                Zur Berechnung von Lieferkosten und Routen nutzen wir
-                Geocoding-Dienste (OpenStreetMap Nominatim). Die Lieferadresse wird
-                hierfür in Koordinaten umgewandelt.
+                Um die Lieferkosten zu berechnen und zu prüfen, ob Ihre Adresse in
+                unserem Liefergebiet liegt, wandeln wir Ihre Lieferadresse (Straße,
+                Hausnummer, Postleitzahl, Ort) in Koordinaten um und berechnen die
+                Entfernung zu unserem Lager. Dies geschieht über unseren Server und
+                nicht direkt aus Ihrem Browser; Ihre IP-Adresse wird dabei nicht an
+                die Kartendienste weitergegeben.
+            </p>
+            <p>
+                Hierfür nutzen wir <strong>Mapbox</strong> (Mapbox, Inc., USA).
+                Findet Mapbox eine Adresse nicht, verwenden wir ersatzweise{" "}
+                <strong>OpenStreetMap Nominatim</strong> (OpenStreetMap Foundation,
+                Vereinigtes Königreich). Weitere Daten wie Name, Telefonnummer oder
+                Warenkorb werden an diese Dienste nicht übermittelt. Rechtsgrundlage
+                ist Art. 6 Abs. 1 lit. b DSGVO. Für Übermittlungen in die USA stützen
+                wir uns auf Standardvertragsklauseln bzw. den Angemessenheitsbeschluss
+                zum EU-US Data Privacy Framework, soweit der Anbieter zertifiziert
+                ist.
+            </p>
+            <p>
+                Für die Zustellung erhalten die mit der Auslieferung befassten
+                Personen die dafür erforderlichen Daten (Name, Lieferadresse,
+                Zugangshinweise, Telefonnummer, Bestellinhalt).
             </p>
 
             <h2 id="email">8. E-Mail und Benachrichtigungen</h2>
             <p>
-                Für den Versand von Bestellbestätigungen und
-                Lieferbenachrichtigungen nutzen wir <strong>Resend</strong> (Resend,
-                Inc., USA). Die Übermittlung erfolgt auf Basis von
-                Standardvertragsklauseln.
+                <strong>Transaktions-E-Mails:</strong> Bestellbestätigungen,
+                Lieferbenachrichtigungen und Bestätigungen zu Widerrufen versenden wir
+                über <strong>Resend</strong> (Resend, Inc., USA; Versand über Server
+                in der EU). Dabei verarbeitet Resend Empfängeradresse, Betreff und
+                Inhalt der Nachricht.
+            </p>
+            <p>
+                <strong>Geschäftliche Kommunikation:</strong> Für unser
+                E-Mail-Postfach (z.B. Beantwortung Ihrer Anfragen an{" "}
+                <a href={`mailto:${company.contact_email}`}>
+                    {company.contact_email}
+                </a>
+                ) nutzen wir <strong>Google Workspace</strong> (Google Ireland
+                Limited, Irland, ggf. Google LLC, USA). Wenn Sie uns schreiben,
+                werden Ihre Nachricht und Ihre Absenderdaten dort verarbeitet.
+            </p>
+            <p>
+                Mit beiden Anbietern bestehen Verträge zur Auftragsverarbeitung gemäß
+                Art. 28 DSGVO. Für Übermittlungen in die USA stützen wir uns auf
+                Standardvertragsklauseln bzw. den Angemessenheitsbeschluss zum EU-US
+                Data Privacy Framework, soweit der Anbieter zertifiziert ist.
             </p>
             <p>
                 Marketing-E-Mails senden wir nur mit Ihrer ausdrücklichen Einwilligung
@@ -157,23 +210,90 @@ export default function Datenschutz() {
 
             <h2 id="cookies">9. Cookies und lokale Speicherung</h2>
             <p>
-                Wir setzen technisch notwendige Cookies und lokale Speicherung ein
-                (z.B. Warenkorb, Login-Session). Diese sind für den Betrieb der
-                Website erforderlich (Art. 6 Abs. 1 lit. f DSGVO).
+                Wir setzen <strong>keine Tracking-, Analyse- oder
+                    Marketing-Technologien</strong> ein. Unsere Website speichert
+                ausschließlich technisch erforderliche Informationen in Ihrem Browser
+                (Local Storage bzw. Session Storage). Das ist nach § 25 Abs. 2 Nr. 2
+                TDDDG ohne Einwilligung zulässig; die weitere Verarbeitung erfolgt
+                auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Im Einzelnen:
+            </p>
+            <ul>
+                <li>
+                    <strong>Warenkorb</strong> (Local Storage): Produkte und Mengen,
+                    damit Ihr Warenkorb erhalten bleibt.
+                </li>
+                <li>
+                    <strong>Favoriten</strong> (Local Storage): von Ihnen markierte
+                    Produkte.
+                </li>
+                <li>
+                    <strong>Gespeicherte Kontakt- und Lieferdaten</strong> (Local
+                    Storage): Angaben, die Sie für künftige Bestellungen im Shop
+                    speichern. Sie bleiben auf Ihrem Gerät und werden erst bei einer
+                    Bestellung an uns übermittelt.
+                </li>
+                <li>
+                    <strong>Eingaben im Bestellablauf</strong> (Session Storage):
+                    werden beim Schließen des Browser-Tabs gelöscht.
+                </li>
+                <li>
+                    <strong>Letzte Bestellung</strong> (Local Storage):
+                    Bestellnummer, E-Mail-Adresse und Zeitpunkt, bis zu 30 Tage, zur
+                    Bestellverfolgung.
+                </li>
+                <li>
+                    <strong>Einstellung zu Ersatzprodukten</strong> (Local Storage).
+                </li>
+                <li>
+                    <strong>Anmeldesitzung und Anzeigeeinstellungen</strong>{" "}
+                    (ausschließlich für Mitarbeiter im Verwaltungsbereich).
+                </li>
+            </ul>
+            <p>
+                Auf der Bezahlseite lädt Ihr Browser das Skript{" "}
+                <strong>Stripe.js</strong> von Stripe. Stripe kann dabei zur
+                Zahlungsabwicklung und Betrugsprävention technisch erforderliche
+                Kennungen setzen (siehe Abschnitt 6).
             </p>
             <p>
-                Analyse- oder Marketing-Cookies setzen wir nur nach Ihrer
-                ausdrücklichen Einwilligung.
+                Sie können die gespeicherten Daten jederzeit über die Einstellungen
+                Ihres Browsers löschen. Sollten wir künftig Analyse- oder
+                Marketing-Dienste einsetzen, holen wir vorher Ihre Einwilligung ein.
             </p>
 
             <h2 id="empfaenger">10. Empfänger und Auftragsverarbeiter</h2>
-            <p>Ihre Daten können an folgende Empfänger übermittelt werden:</p>
+            <p>
+                Ihre Daten können an folgende Empfänger übermittelt werden.
+            </p>
+            <p>
+                <strong>Auftragsverarbeiter</strong> (Art. 28 DSGVO):
+            </p>
             <ul>
-                <li>Supabase (Datenbank & Backend)</li>
-                <li>Vercel (Hosting)</li>
-                <li>Stripe (Zahlungsabwicklung)</li>
-                <li>Resend (E-Mail-Versand)</li>
-                <li>OpenStreetMap / Nominatim (Geocoding)</li>
+                <li>Supabase (Datenbank, Dateispeicher & Backend; Region Frankfurt)</li>
+                <li>Vercel (Hosting der Website)</li>
+                <li>Resend (Versand von Transaktions-E-Mails)</li>
+                <li>Google Workspace (geschäftliche E-Mail-Kommunikation)</li>
+                <li>Mapbox (Adress- und Entfernungsberechnung für den Versand)</li>
+            </ul>
+            <p>
+                <strong>Weitere Empfänger:</strong>
+            </p>
+            <ul>
+                <li>
+                    Stripe (Zahlungsabwicklung; teilweise in eigener Verantwortung,
+                    z.B. bei Betrugsprävention)
+                </li>
+                <li>
+                    OpenStreetMap Nominatim (Adressauflösung, nur als Ersatz für
+                    Mapbox)
+                </li>
+                <li>
+                    mit der Auslieferung befasste Personen (nur Lieferdaten)
+                </li>
+                <li>
+                    Steuerberater, Behörden und Gerichte, soweit gesetzlich
+                    erforderlich
+                </li>
             </ul>
 
             <h2 id="speicherdauer">11. Speicherdauer</h2>

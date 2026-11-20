@@ -27,6 +27,8 @@ const EMPTY_FORM = {
     pack_pieces: 1,
     piece_weight: "",
     piece_gross_weight: "",
+    container_weight: "",
+    carrier_deposit: "",
     pack_extra_weight: "",
     deposit_per_piece: "",
     deposit_amount: "",
@@ -46,6 +48,13 @@ const TAX_RATE_OPTIONS = [
 ];
 
 const WEIGHT_UNITS = ["kg", "g", "L", "ml"];
+
+// تحويل الصافي إلى كغ (1 لتر ≈ 1 كغ، g/ml ÷ 1000)
+const unitToKg = (w, unit) => {
+    const v = parseFloat(w) || 0;
+    const u = String(unit || "kg").toLowerCase();
+    return u === "g" || u === "ml" ? v / 1000 : v;
+};
 
 const WEIGHT_META = {
     unit_based: {
@@ -86,6 +95,14 @@ export default function ProductFormPage({
                 pack_pieces: product.pack_pieces ?? 1,
                 piece_weight: product.piece_weight ?? "",
                 piece_gross_weight: product.piece_gross_weight ?? "",
+                // وزن العبوة/الغلاف = الوزن الإجمالي − الصافي (مشتق من القيم المخزنة)
+                container_weight: (() => {
+                    const isP = Number(product.pack_pieces) > 1;
+                    const net = unitToKg(isP ? product.piece_weight : product.weight, product.weight_unit);
+                    const gross = parseFloat(isP ? product.piece_gross_weight : product.gross_weight) || 0;
+                    const c = gross - net;
+                    return c > 0.0005 ? String(+c.toFixed(3)) : "";
+                })(),
                 pack_extra_weight: product.pack_extra_weight ? product.pack_extra_weight : "",
                 deposit_per_piece: product.pack_pieces > 1 && product.deposit_amount
                     ? Number((product.deposit_amount / product.pack_pieces).toFixed(4))
@@ -171,15 +188,18 @@ export default function ProductFormPage({
     };
     const packTotals = useMemo(() => {
         const pw = parseFloat(form.piece_weight) || 0;
-        const pg = parseFloat(form.piece_gross_weight) || 0;
+        // الوزن الإجمالي للقطعة = الصافي (بالكغ) + وزن العبوة/الزجاجة — تلقائي دائمًا
+        const pg = pw > 0 ? unitToKg(pw, form.weight_unit) + (parseFloat(form.container_weight) || 0) : 0;
         const extra = parseFloat(form.pack_extra_weight) || 0;
         const dep = parseFloat(form.deposit_per_piece) || 0;
+        const carrier = parseFloat(form.carrier_deposit) || 0; // Pfand für Kasten/Träger (einmalig pro Packung)
         return {
+            pieceGross: pg,
             net: packPieces * pw,
             gross: pg > 0 ? packPieces * pg + extra : 0,
-            deposit: packPieces * dep,
+            deposit: packPieces * dep + carrier,
         };
-    }, [packPieces, form.piece_weight, form.piece_gross_weight, form.pack_extra_weight, form.deposit_per_piece]);
+    }, [packPieces, form.piece_weight, form.weight_unit, form.container_weight, form.pack_extra_weight, form.deposit_per_piece, form.carrier_deposit]);
 
     // عبوة: الإجماليات تُشتق تلقائيًا هنا، والخادم يعيد حسابها أيضًا (trigger)
     useEffect(() => {
@@ -191,6 +211,14 @@ export default function ProductFormPage({
             deposit_amount: packTotals.deposit > 0 ? String(+packTotals.deposit.toFixed(2)) : prev.deposit_amount,
         }));
     }, [isPack, packTotals]);
+
+    // منتج عادي: الوزن الإجمالي = الصافي + وزن العبوة (تلقائي)
+    useEffect(() => {
+        if (isPack) return;
+        const net = unitToKg(form.weight, form.weight_unit);
+        const g = net > 0 ? net + (parseFloat(form.container_weight) || 0) : 0;
+        setForm((prev) => ({ ...prev, gross_weight: g > 0 ? String(+g.toFixed(3)) : "" }));
+    }, [isPack, form.weight, form.weight_unit, form.container_weight]);
 
     useEffect(() => {
         const num = String(form.product_number || "").trim();
@@ -308,9 +336,9 @@ export default function ProductFormPage({
         if (isPack) {
             if (packPieces > 200) return "Stück pro Packung: maximal 200.";
             if (!(parseFloat(form.piece_weight) > 0)) return "Inhalt pro Stück ist erforderlich.";
-            if (!(parseFloat(form.piece_gross_weight) > 0)) return "Versandgewicht pro Stück (kg) ist erforderlich.";
             if (parseFloat(form.pack_extra_weight) < 0) return "Zusatzgewicht darf nicht negativ sein.";
         }
+        if (parseFloat(form.container_weight) < 0) return "Verpackungsgewicht darf nicht negativ sein.";
         const grossKg = parseFloat(form.gross_weight);
         if (form.gross_weight === "" || isNaN(grossKg) || grossKg <= 0) {
             return "Versandgewicht (Brutto, in kg) ist erforderlich.";
@@ -371,7 +399,7 @@ export default function ProductFormPage({
                 gross_weight: parseFloat(form.gross_weight),
                 pack_pieces: packPieces,
                 piece_weight: isPack ? parseFloat(form.piece_weight) : null,
-                piece_gross_weight: isPack ? parseFloat(form.piece_gross_weight) : null,
+                piece_gross_weight: isPack ? Number(packTotals.pieceGross.toFixed(3)) : null,
                 pack_extra_weight: isPack ? (parseFloat(form.pack_extra_weight) || 0) : 0,
                 deposit_amount: parseFloat(form.deposit_amount) || 0,
                 deposit_tax_rate: parseFloat(form.deposit_amount) > 0 ? (parseFloat(form.deposit_tax_rate) || Number(form.tax_rate)) : 0,
@@ -562,8 +590,8 @@ export default function ProductFormPage({
                                                 <input type="number" step="0.001" min="0" className="pf-input" value={form.piece_weight} onChange={(e) => setField("piece_weight", e.target.value)} placeholder="z.B. 1,5" />
                                             </div>
                                             <div className="pf-field">
-                                                <label>Versandgewicht pro Stück [kg] <span className="pf-required">*</span></label>
-                                                <input type="number" step="0.001" min="0" className="pf-input" value={form.piece_gross_weight} onChange={(e) => setField("piece_gross_weight", e.target.value)} placeholder="z.B. 1,55" />
+                                                <label>Verpackung/Behälter pro Stück [kg]</label>
+                                                <input type="number" step="0.001" min="0" className="pf-input" value={form.container_weight} onChange={(e) => setField("container_weight", e.target.value)} placeholder="z.B. 0,4 (Glasflasche)" />
                                             </div>
                                         </div>
                                         <div className="pf-grid-2 pf-mt-2">
@@ -576,10 +604,21 @@ export default function ProductFormPage({
                                                 <input type="number" step="0.01" min="0" className="pf-input" value={form.deposit_per_piece} onChange={(e) => setField("deposit_per_piece", e.target.value)} placeholder="z.B. 0,25" />
                                             </div>
                                         </div>
+                                        <div className="pf-grid-2 pf-mt-2">
+                                            <div className="pf-field">
+                                                <label>Pfand Kasten/Träger — einmalig pro Packung (€)</label>
+                                                <input type="number" step="0.01" min="0" className="pf-input" value={form.carrier_deposit} onChange={(e) => setField("carrier_deposit", e.target.value)} placeholder="z.B. 1,50 (Getränkekasten)" />
+                                                <small className="pf-hint">Wird zum Pfand der Stücke addiert. Leer lassen, wenn es keinen Kasten gibt.</small>
+                                            </div>
+                                        </div>
                                         <div className="pf-price-breakdown pf-mt-2" style={{ padding: "12px 16px", marginTop: 12 }}>
                                             <div className="pf-price-row">
                                                 <span>Packung:</span>
                                                 <strong>{packPieces} × {parseFloat(form.piece_weight) || 0} {form.weight_unit}</strong>
+                                            </div>
+                                            <div className="pf-price-row">
+                                                <span>Versandgewicht pro Stück (Inhalt + Verpackung):</span>
+                                                <strong>{+packTotals.pieceGross.toFixed(3)} kg</strong>
                                             </div>
                                             <div className="pf-price-row">
                                                 <span>Gesamtinhalt (netto, für den Kunden):</span>
@@ -615,19 +654,27 @@ export default function ProductFormPage({
                                     <small className="pf-hint">{weightMeta.hint}</small>
                                 )}
 
+                                {!isPack && (
+                                    <div className="pf-field pf-mt-2">
+                                        <label>Verpackungsgewicht [kg]</label>
+                                        <input type="number" step="0.001" min="0" className="pf-input" value={form.container_weight} onChange={(e) => setField("container_weight", e.target.value)} placeholder="z.B. 0,05 (Schale/Folie)" />
+                                        <small className="pf-hint">Gewicht von Glas, Dose, Schale oder Folie — wird zum Nettogewicht addiert.</small>
+                                    </div>
+                                )}
+
                                 <div className="pf-field pf-mt-2">
-                                    <label>Versandgewicht (Brutto) [kg] <span className="pf-required">*</span></label>
+                                    <label>Versandgewicht (Brutto) [kg] — automatisch <span className="pf-required">*</span></label>
                                     <input
                                         type="number" step="0.001" min="0" className="pf-input"
                                         value={form.gross_weight}
                                         onChange={(e) => setField("gross_weight", e.target.value)}
-                                        disabled={isPack}
+                                        disabled
                                         placeholder={toBase(parseFloat(form.weight) || 0, form.weight_unit) > 0
                                             ? `mind. ${toBase(parseFloat(form.weight) || 0, form.weight_unit).toFixed(3)} kg`
                                             : "z.B. 0,450"}
                                     />
                                     <small className="pf-hint">
-                                        Produkt + Flüssigkeit + Glas/Verpackung — immer in kg. Nur für Versand/Fahrer, wird dem Kunden nie angezeigt.
+                                        Wird automatisch berechnet: Nettoinhalt + Verpackung (bei Packungen: Stück × (Inhalt + Verpackung) + Zusatzgewicht). Nur für Versand/Fahrer, wird dem Kunden nie angezeigt.
                                     </small>
                                 </div>
 

@@ -315,3 +315,15 @@ export function formatPackLabel({ pack_pieces, piece_weight, weight_unit }) {
     const num = w.toLocaleString("de-DE", { maximumFractionDigits: 3 });
     return `${n} × ${num} ${weight_unit || ""}`.trim();
 }
+
+/**
+ * "3 Stück" لمنتج الباك الصلب (kg / g) فقط، وإلا null.
+ * السوائل (L / ml) تبقى بالشكل القديم: "6 l (6 × 1 l)".
+ */
+export function formatPackHeadline({ pack_pieces, piece_weight, weight_unit }) {
+    const n = parseInt(pack_pieces) || 1;
+    const u = String(weight_unit || "").toLowerCase();
+    if (n <= 1 || !(parseFloat(piece_weight) > 0)) return null;
+    if (u !== "kg" && u !== "g") return null;
+    return `${n} Stück`;
+}

@@ -2,15 +2,12 @@ import "./Footer.css";
 import { Link } from "react-router-dom";
 import { useCompany } from "../../context/CompanyContext";
 
-const SERVICE_LINKS = [
+/* كل الصفحات في صف أفقي واحد: خدمة العملاء ثم القانونية */
+const PAGE_LINKS = [
   { to: "/faq", label: "FAQ" },
   { to: "/help", label: "Kontakt" },
   { to: "/lieferung-zahlung", label: "Lieferung & Zahlung" },
   { to: "/widerruf", label: "Widerruf" },
-];
-
-/* الروابط القانونية في الشريط السفلي (النمط المعتاد)، فتقصر قائمة الخدمة */
-const LEGAL_LINKS = [
   { to: "/agb", label: "AGB" },
   { to: "/datenschutz", label: "Datenschutz" },
   { to: "/impressum", label: "Impressum" },
@@ -44,71 +41,40 @@ function Footer() {
           </Link>
         </div>
 
-        {/* ========== Contact ========== */}
-        <div className="footer-section">
-          <h3 className="footer-section-title">Kontakt</h3>
-          <ul className="footer-contact-list">
-            {company?.contact_phone && (
-              <li className="footer-contact-item">
-                <span className="footer-contact-chip">
-                  <img src="/phone-call.png" alt="" width="20" height="20" loading="lazy" />
-                </span>
-                <a href={`tel:${company.contact_phone}`} className="footer-link">
-                  {company.contact_phone}
-                </a>
-              </li>
-            )}
-            {company?.contact_email && (
+        {/* ========== Contact (E-Mail فقط، بدون رقم الهاتف) ========== */}
+        {company?.contact_email && (
+          <div className="footer-section">
+            <h3 className="footer-section-title">Kontakt</h3>
+            <ul className="footer-contact-list">
               <li className="footer-contact-item">
                 <span className="footer-contact-chip">
                   <img src="/email.png" alt="" width="20" height="20" loading="lazy" />
                 </span>
-                <a href={`mailto:${company.contact_email}`} className="footer-link">
+                <a href={`mailto:${company.contact_email}`} className="footer-link footer-link-lg">
                   {company.contact_email}
                 </a>
               </li>
-            )}
-            {company?.address && (
-              <li className="footer-contact-item">
-                <span className="footer-contact-chip">
-                  <img src="/location-pin.png" alt="" width="20" height="20" loading="lazy" />
-                </span>
-                <span className="footer-link">
-                  {company.address}
-                  {company.house_number && ` ${company.house_number}`},{" "}
-                  {company.postal_code} {company.city}
-                </span>
-              </li>
-            )}
-          </ul>
-        </div>
-
-        {/* ========== Customer service ========== */}
-        <div className="footer-section">
-          <h3 className="footer-section-title">Kundenservice</h3>
-          <ul className="footer-list">
-            {SERVICE_LINKS.map(({ to, label }) => (
-              <li key={to}>
-                <Link to={to} className="footer-link">{label}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+            </ul>
+          </div>
+        )}
       </div>
+
+      {/* ========== Pages: صف أفقي ========== */}
+      <nav className="footer-nav" aria-label="Seiten">
+        <ul className="footer-nav-list">
+          {PAGE_LINKS.map(({ to, label }) => (
+            <li key={to}>
+              <Link to={to} className="footer-link">{label}</Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
       {/* ========== Bottom bar ========== */}
       <div className="footer-bottom">
         <p className="footer-copyright">
           © {new Date().getFullYear()} {brand}. Alle Rechte vorbehalten.
         </p>
-
-        <ul className="footer-legal">
-          {LEGAL_LINKS.map(({ to, label }) => (
-            <li key={to}>
-              <Link to={to} className="footer-link">{label}</Link>
-            </li>
-          ))}
-        </ul>
 
         <button
           type="button"
@@ -121,6 +87,7 @@ function Footer() {
           </svg>
         </button>
       </div>
+
     </footer>
   );
 }
